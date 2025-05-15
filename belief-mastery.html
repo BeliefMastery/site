@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Belief Mastery</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .card {
+      position: relative;
+    }
+    .card:hover .extended {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .extended {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 10;
+      background: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateY(10px);
+      max-width: 28rem;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -26,23 +50,45 @@
     <section>
       <h2>Chapter Overview</h2>
       <div class="grid">
-        <div class="card"><strong>Chapter 1 – Foundations:</strong> Core principles and sovereignty criteria.</div>
-        <div class="card"><strong>Chapter 2 – Archetypal Imprints:</strong> Imprint formation and transformation via visualization.</div>
-        <div class="card"><strong>Chapter 3 – The Journey Home:</strong> Reveals internalized parental archetypes.</div>
-        <div class="card"><strong>Chapter 4 – The Return:</strong> Reintegration and sovereign archetype embodiment.</div>
-        <div class="card"><strong>Chapter 5 – Needs and Beliefs:</strong> Mapping needs to belief scaffolds and vice regulation.</div>
-        <div class="card"><strong>Chapter 6 – Belief Inference:</strong> 12-step inference process to rewire belief structure.</div>
-        <div class="card"><strong>Chapter 7 – Dismantling Beliefs:</strong> Strategic contradiction, catharsis, and belief release.</div>
+        <div class="card"><strong>Chapter 1 – Foundations:</strong> Core principles and sovereignty criteria.
+          <div class="extended">Establishes engagement prerequisites, core tenets of emotional ownership, and the shift from inherited narrative to sovereign reconstruction.</div>
+        </div>
+        <div class="card"><strong>Chapter 2 – Archetypal Imprints:</strong> Imprint formation and transformation via visualization.
+          <div class="extended">Explores how early masculine/feminine dynamics are etched into the subconscious, and introduces hemisphere-specific imprint correction via visualization.</div>
+        </div>
+        <div class="card"><strong>Chapter 3 – The Journey Home:</strong> Reveals internalized parental archetypes.
+          <div class="extended">A guided narrative exercise designed to expose inherited imprints, their emotional residue, and corresponding behavior loops.</div>
+        </div>
+        <div class="card"><strong>Chapter 4 – The Return:</strong> Reintegration and sovereign archetype embodiment.
+          <div class="extended">A second guided visualization focused on reconstructing empowered archetypes and reforming the internal parental structure through sovereign intention.</div>
+        </div>
+        <div class="card"><strong>Chapter 5 – Needs and Beliefs:</strong> Mapping needs to belief scaffolds and vice regulation.
+          <div class="extended">Uncovers how unmet core needs crystallize into compensatory beliefs and introduces the Needs & Vice Vocabulary to trace and transmute these belief layers.</div>
+        </div>
+        <div class="card"><strong>Chapter 6 – Belief Inference:</strong> 12-step inference process to rewire belief structure.
+          <div class="extended">A rigorous diagnostic framework for isolating subconscious beliefs—from vice to exiled emotion to origin memory—leading to reconditioning through contradiction.</div>
+        </div>
+        <div class="card"><strong>Chapter 7 – Dismantling Beliefs:</strong> Strategic contradiction, catharsis, and belief release.
+          <div class="extended">Equips the user to engage contradiction, emotional catharsis, and ritual integration to collapse outdated beliefs at their root structure.</div>
+        </div>
       </div>
     </section>
 
     <section>
       <h2>Appendices</h2>
       <div class="grid">
-        <div class="card"><strong>Patterns Compendium:</strong> Coping strategies, trauma types, and insecurity adaptations.</div>
-        <div class="card"><strong>Reference Guides:</strong> Glossaries, mappings, and inference vocabularies.</div>
-        <div class="card"><strong>Case Studies:</strong> Real client walkthroughs applying the 12-step process.</div>
-        <div class="card"><strong>Realms of Relevance:</strong> Where and how BM applies—from therapy to group work.</div>
+        <div class="card"><strong>Patterns Compendium:</strong> Coping strategies, trauma types, and insecurity adaptations.
+          <div class="extended">Detailed inventory of strategic defenses used to avoid pain or gain acceptance, and their correlation to developmental trauma markers.</div>
+        </div>
+        <div class="card"><strong>Reference Guides:</strong> Glossaries, mappings, and inference vocabularies.
+          <div class="extended">Quick-reference terms and emotional mapping tables to support real-time belief tracking and transformation work.</div>
+        </div>
+        <div class="card"><strong>Case Studies:</strong> Real client walkthroughs applying the 12-step process.
+          <div class="extended">Actual belief inference transcripts across various ages and scenarios to anchor the abstract process into lived example.</div>
+        </div>
+        <div class="card"><strong>Realms of Relevance:</strong> Where and how BM applies—from therapy to group work.
+          <div class="extended">Outlines practical domains and environments where Belief Mastery serves as both diagnostic and transformational tool—personal, relational, and professional.</div>
+        </div>
       </div>
     </section>
 
