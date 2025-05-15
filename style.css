@@ -1,8 +1,12 @@
+/* style.css */
+
 :root {
-  --brand: #0e0e0e;
-  --accent: #e0a100;
-  --bg: #fdfdfc;
-  --muted: #8a8a8a;
+  --brand: #0a0a0a;
+  --accent: #f59e0b;
+  --bg: #fafafa;
+  --text: #1a1a1a;
+  --card: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -14,7 +18,7 @@
 
 body {
   background: var(--bg);
-  color: var(--brand);
+  color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -23,26 +27,25 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
-  background: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.25rem 2rem;
+  background: #fff;
+  box-shadow: 0 2px 6px var(--shadow);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 999;
 }
 
 .logo {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.5px;
 }
 
 nav a {
-  margin-left: 1.75rem;
+  margin-left: 1.5rem;
   text-decoration: none;
   font-weight: 500;
   color: var(--brand);
-  transition: color 0.2s;
 }
 
 nav a:hover {
@@ -61,13 +64,12 @@ nav a:hover {
 .hero h1 {
   font-size: clamp(2.25rem, 5vw, 3.5rem);
   font-weight: 700;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .hero p {
   max-width: 48rem;
   font-size: 1.125rem;
-  color: var(--muted);
   margin-bottom: 2.5rem;
 }
 
@@ -86,6 +88,7 @@ nav a:hover {
   cursor: pointer;
   font-weight: 600;
   transition: all 0.25s ease;
+  text-decoration: none;
 }
 
 .btn-primary {
@@ -121,15 +124,10 @@ section {
 }
 
 .card {
-  background: #ffffff;
+  background: var(--card);
   padding: 2rem;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 .card h3 {
@@ -137,13 +135,8 @@ section {
   font-size: 1.25rem;
 }
 
-.card p {
-  color: var(--muted);
-  font-size: 1rem;
-}
-
 footer {
-  background: #0e0e0e;
+  background: var(--brand);
   color: #d4d4d4;
   padding: 3rem 1rem;
   text-align: center;
@@ -154,6 +147,10 @@ footer a {
   text-decoration: none;
 }
 
-input[type="email"]::placeholder {
-  color: #6b7280;
+input[type="email"] {
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--brand);
+  border-radius: 0.5rem;
+  flex: 1 1 12rem;
 }
