@@ -49,6 +49,33 @@
       transform: translateY(10px);
       max-width: 28rem;
     }
+   .three-image-row {
+   display: flex;
+   justify-content: center;
+   gap: 1.5rem;
+   margin: 2rem 0;
+   flex-wrap: wrap;
+    }
+
+   .three-image-row img {
+   max-width: 30%;
+   height: auto;
+   border-radius: 0.5rem;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   transition: transform 0.3s ease;
+    }
+
+   .three-image-row img:hover {
+   transform: scale(1.03);
+    }
+   .three-image-row img {
+   height: 300px; /* Adjust this value as needed */
+   width: auto;
+   object-fit: cover;
+   border-radius: 0.5rem;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   transition: transform 0.3s ease;
+    }
   </style>
   
 </head>
