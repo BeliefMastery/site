@@ -130,6 +130,25 @@
 
     
   </style>
+<!-- add once, before </body> -->
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const els=[...document.querySelectorAll('.reveal')];
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('shown');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:.15});
+  els.forEach(el=>io.observe(el));
+});
+</script>
+<style>
+.reveal{opacity:0;transform:translateY(40px);transition:all .8s ease;}
+.reveal.shown{opacity:1;transform:none;}
+</style>
   
 </head>
 <body>
