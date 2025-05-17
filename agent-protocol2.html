@@ -2,27 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Operational Architecture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Protocol</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
+      background-image: url('images/AI-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
       font-family: 'Segoe UI', sans-serif;
-      background: #111;
+      background-color: #111;
       color: #eee;
       padding: 2rem;
+      text-align: center;
     }
 
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #444;
-      padding-bottom: 0.5rem;
-      color: #f0f0f0;
+    section {
+      background-color: rgba(255, 255, 255, 0.88);
+      border-radius: 0.75rem;
+      padding: 3rem 1rem;
+      margin: 2rem auto;
+      max-width: 80rem;
     }
 
     .grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 1.5rem;
+      justify-items: center;
     }
 
     .card {
@@ -32,6 +41,9 @@
       border-radius: 0.5rem;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
+      text-align: left;
+      width: 90%;
+      max-width: 48rem;
     }
 
     .card:hover {
@@ -61,6 +73,7 @@
       padding-left: 1.25rem;
       list-style-type: square;
       color: #ccc;
+      text-align: left;
     }
 
     abbr {
@@ -78,6 +91,14 @@
       font-family: monospace;
     }
 
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #444;
+      padding-bottom: 0.5rem;
+      color: #f0f0f0;
+    }
+
     h4 {
       color: #ddd;
       margin-top: 1rem;
@@ -86,6 +107,16 @@
     em {
       color: #ccc;
       font-style: italic;
+    }
+
+    header, nav, footer {
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 1rem;
+      color: #f0f0f0;
+      text-decoration: none;
     }
   </style>
 </head>
