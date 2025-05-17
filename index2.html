@@ -119,6 +119,15 @@
            }
 .card:hover::before{opacity:1;}
 
+.card{
+  /* keep previous styles */
+  transform-style:preserve-3d;
+  perspective:800px;
+     }
+.card:hover{
+  transform:perspective(800px) rotateX(5deg) rotateY(-4deg) translateY(-8px);
+           }
+
     
   </style>
   
