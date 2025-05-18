@@ -320,7 +320,7 @@
       return;
     }
 
-    const baseURL = "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
     const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
 
     fetch(url, { method: "GET", mode: "no-cors" })
