@@ -156,11 +156,36 @@
     <section id="contact" style="background:#fff;">
       <h2 style="text-align:center;font-size:2rem;margin-bottom:2.5rem;">Stay Informed</h2>
       <p style="max-width:42rem;margin:0 auto 2rem;text-align:center;">Receive chapter drops, protocol updates, and sovereignty tools straight to your inbox.</p>
-<form id="subscribe-form">
-  <input type="email" id="email" name="email" required placeholder="Email address" />
-  <button type="submit">Subscribe</button>
-  <p id="status"></p>
+<form id="subscribe-form" style="display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;max-width:32rem;margin:0 auto;">
+  <input 
+    type="email" 
+    id="email" 
+    name="email" 
+    required 
+    placeholder="Email address"
+    style="flex:1 1 12rem;
+           padding:.85rem 1rem;
+           border:2px solid var(--brand, #333);
+           border-radius:.5rem;
+           font-size:1rem;
+           font-family:'Inter', sans-serif;
+           background:#fff;
+           box-shadow: 0 2px 6px rgba(0,0,0,0.1);" />
+  <button 
+    type="submit"
+    class="btn btn-primary"
+    style="padding:.85rem 1.25rem;
+           background:var(--brand, #333);
+           color:#fff;
+           border:none;
+           border-radius:.5rem;
+           font-weight:600;
+           cursor:pointer;
+           transition:background 0.3s ease;">
+    Subscribe
+  </button>
 </form>
+<p id="status" style="text-align:center;margin-top:1rem;font-size:0.95rem;color:#333;"></p>
 
 <script>
   const form = document.getElementById("subscribe-form");
