@@ -127,7 +127,67 @@
     }
   </style>
 </head>
-<body>
+
+  <!-- Intent Modal -->
+<div id="intent-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:2rem; border-radius:1rem; width:90%; max-width:500px; box-shadow:0 10px 20px rgba(0,0,0,0.25);">
+    <h3 style="margin-top:0;">Let's get you connected</h3>
+    <input id="intent-email" type="email" placeholder="Your email" style="width:100%; padding:0.75rem 1rem; margin-bottom:1rem; border:2px solid #ccc; border-radius:0.5rem; font-size:1rem;" />
+    <textarea id="intent-message" rows="4" placeholder="Your message (optional)" style="width:100%; padding:0.75rem 1rem; border:2px solid #ccc; border-radius:0.5rem; font-size:1rem;"></textarea>
+    <div style="margin-top:1rem; display:flex; justify-content:space-between;">
+      <button onclick="submitModalIntent()" class="btn btn-primary">Submit</button>
+      <button onclick="closeModal()" class="btn btn-outline">Cancel</button>
+    </div>
+    <input type="hidden" id="intent-type" />
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById("intent-modal");
+  const emailField = document.getElementById("intent-email");
+  const messageField = document.getElementById("intent-message");
+  const intentTypeField = document.getElementById("intent-type");
+
+  function openIntentModal(intentType) {
+    modal.style.display = "flex";
+    intentTypeField.value = intentType;
+    messageField.style.display = (intentType === "question") ? "block" : "none";
+    messageField.value = "";
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+    emailField.value = "";
+    messageField.value = "";
+  }
+
+  function submitModalIntent() {
+    const email = emailField.value.trim();
+    const message = messageField.value.trim();
+    const intent = intentTypeField.value;
+
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
+
+    console.log("SENDING", { email, intent, message });
+
+    const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
+    const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
+
+    fetch(url, { method: "GET", mode: "no-cors" })
+      .then(() => {
+        alert("✅ Submitted. We'll be in touch soon.");
+        closeModal();
+      })
+      .catch(() => {
+        alert("❌ Something went wrong.");
+      });
+  }
+</script>  
+  
+  <body>
   <header>
     <div class="logo">Invest in Your Freedom</div>
     <nav>
@@ -277,65 +337,9 @@
       No fluff. No mysticism. No soft-core coping. Just weaponized clarity—designed to hold under pressure.</p>
       <blockquote>“These books aren’t meant to comfort you. They’re meant to end the search.”</blockquote>
 
-<!-- Intent Modal -->
-<div id="intent-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:2rem; border-radius:1rem; width:90%; max-width:500px; box-shadow:0 10px 20px rgba(0,0,0,0.25);">
-    <h3 style="margin-top:0;">Let's get you connected</h3>
-    <input id="intent-email" type="email" placeholder="Your email" style="width:100%; padding:0.75rem 1rem; margin-bottom:1rem; border:2px solid #ccc; border-radius:0.5rem; font-size:1rem;" />
-    <textarea id="intent-message" rows="4" placeholder="Your message (optional)" style="width:100%; padding:0.75rem 1rem; border:2px solid #ccc; border-radius:0.5rem; font-size:1rem;"></textarea>
-    <div style="margin-top:1rem; display:flex; justify-content:space-between;">
-      <button onclick="submitModalIntent()" class="btn btn-primary">Submit</button>
-      <button onclick="closeModal()" class="btn btn-outline">Cancel</button>
-    </div>
-    <input type="hidden" id="intent-type" />
-  </div>
-</div>
 
-<script>
-  const modal = document.getElementById("intent-modal");
-  const emailField = document.getElementById("intent-email");
-  const messageField = document.getElementById("intent-message");
-  const intentTypeField = document.getElementById("intent-type");
 
-  function openIntentModal(intentType) {
-    modal.style.display = "flex";
-    intentTypeField.value = intentType;
-    messageField.style.display = (intentType === "question") ? "block" : "none";
-    messageField.value = "";
-  }
 
-  function closeModal() {
-    modal.style.display = "none";
-    emailField.value = "";
-    messageField.value = "";
-  }
-
-function submitModalIntent() {
-  const email = emailField.value.trim();
-  const message = messageField.value.trim();
-  const intent = intentTypeField.value;
-
-  if (!email) {
-    alert("Please enter your email.");
-    return;
-  }
-
-  console.log("Sending:", { email, intent, message }); // 🔍 debug output
-
-  const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
-  const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
-
-  fetch(url, { method: "GET", mode: "no-cors" })
-    .then(() => {
-      alert("✅ Submitted. We'll be in touch soon.");
-      closeModal();
-    })
-    .catch(() => {
-      alert("❌ Something went wrong.");
-    });
-}
-
-</script>
 
 
       <div class="cta">
