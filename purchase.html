@@ -150,6 +150,8 @@
     const intentTypeField = document.getElementById("intent-type");
 
     function openIntentModal(intentType) {
+      console.log("Intent type received:", intentType); // what’s being passed
+      console.log("Intent type field:", intentTypeField); // the DOM node itself
       modal.style.display = "flex";
       intentTypeField.value = intentType;
       messageField.style.display = (intentType === "question") ? "block" : "none";
