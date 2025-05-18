@@ -276,13 +276,32 @@
       <p><em>Not Another Self-Help Book</em><br>
       No fluff. No mysticism. No soft-core coping. Just weaponized clarity—designed to hold under pressure.</p>
       <blockquote>“These books aren’t meant to comfort you. They’re meant to end the search.”</blockquote>
+<script>
+  function submitIntent(intentType) {
+    const email = prompt("Enter your email to continue:");
+
+    if (!email) return;
+
+    const url = `https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intentType)}`;
+
+    fetch(url, {
+      method: "GET",
+      mode: "no-cors"
+    }).then(() => {
+      alert("✅ We’ve received your request. We'll follow up soon.");
+    }).catch(() => {
+      alert("❌ Something went wrong. Please try again.");
+    });
+  }
+</script>
 
       <div class="cta">
-        <a class="btn btn-outline" href="#">👉 Order Now</a>
-        <a class="btn btn-outline" href="#">👉 View Sample Pages</a>
-        <a class="btn btn-outline" href="#">👉 Ask a Question</a>
+        <a class="btn btn-outline" href="#" onclick="submitIntent('order')">👉 Order Now</a>
+        <a class="btn btn-outline" href="#" onclick="submitIntent('sample')">👉 View Sample Pages</a>
+        <a class="btn btn-outline" href="#" onclick="submitIntent('question')">👉 Ask a Question</a>
       </div>
     </section>
+    
     <section>
       <h2>🤖 AI Sovereignty Support Agent (Free & Open Source)</h2>
       <p>The Sovereign Agent Protocol turns your AI into a non-coercive mirror—an ethical companion bound to your sovereignty. Designed to integrate directly into your AI system, this protocol ensures alignment, progressive reveal, and structural fidelity without emotional manipulation or retention hooks.</p>
