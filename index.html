@@ -176,17 +176,27 @@
              box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
     
     <button 
-      type="submit"
-      class="btn btn-primary"
-      style="padding:.85rem 1.25rem;
-             background:var(--brand, #333);
-             color:#fff;
-             border:none;
-             border-radius:.5rem;
-             font-weight:600;
-             cursor:pointer;
-             transition:background 0.3s ease;">
-      Subscribe
+  type="submit"
+  class="btn btn-primary"
+  style="
+    padding: .85rem 1.5rem;
+    background: linear-gradient(135deg, #333, #000);
+    color: #fff;
+    border: none;
+    border-radius: .75rem;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  "
+  onmouseover="this.style.background='linear-gradient(135deg, #000, #444)'; this.style.boxShadow='0 6px 14px rgba(0,0,0,0.2)'"
+  onmouseout="this.style.background='linear-gradient(135deg, #333, #000)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.15)'"
+>
+  ✉️ Subscribe
     </button>
   </form>
 
