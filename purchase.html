@@ -143,48 +143,55 @@
 </div>
 
 <script>
-  const modal = document.getElementById("intent-modal");
-  const emailField = document.getElementById("intent-email");
-  const messageField = document.getElementById("intent-message");
-  const intentTypeField = document.getElementById("intent-type");
+  window.onload = function () {
+    const modal = document.getElementById("intent-modal");
+    const emailField = document.getElementById("intent-email");
+    const messageField = document.getElementById("intent-message");
+    const intentTypeField = document.getElementById("intent-type");
 
-  function openIntentModal(intentType) {
-    modal.style.display = "flex";
-    intentTypeField.value = intentType;
-    messageField.style.display = (intentType === "question") ? "block" : "none";
-    messageField.value = "";
-  }
-
-  function closeModal() {
-    modal.style.display = "none";
-    emailField.value = "";
-    messageField.value = "";
-  }
-
-  function submitModalIntent() {
-    const email = emailField.value.trim();
-    const message = messageField.value.trim();
-    const intent = intentTypeField.value;
-
-    if (!email) {
-      alert("Please enter your email.");
-      return;
+    function openIntentModal(intentType) {
+      modal.style.display = "flex";
+      intentTypeField.value = intentType;
+      messageField.style.display = (intentType === "question") ? "block" : "none";
+      messageField.value = "";
     }
 
-    console.log("SENDING", { email, intent, message });
+    function closeModal() {
+      modal.style.display = "none";
+      emailField.value = "";
+      messageField.value = "";
+    }
 
-    const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
-    const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
+    function submitModalIntent() {
+      const email = emailField.value.trim();
+      const message = messageField.value.trim();
+      const intent = intentTypeField.value;
 
-    fetch(url, { method: "GET", mode: "no-cors" })
-      .then(() => {
-        alert("✅ Submitted. We'll be in touch soon.");
-        closeModal();
-      })
-      .catch(() => {
-        alert("❌ Something went wrong.");
-      });
-  }
+      if (!email) {
+        alert("Please enter your email.");
+        return;
+      }
+
+      console.log("SENDING", { email, intent, message });
+
+      const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
+      const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
+
+      fetch(url, { method: "GET", mode: "no-cors" })
+        .then(() => {
+          alert("✅ Submitted. We'll be in touch soon.");
+          closeModal();
+        })
+        .catch(() => {
+          alert("❌ Something went wrong.");
+        });
+    }
+
+    // Expose to global scope
+    window.openIntentModal = openIntentModal;
+    window.closeModal = closeModal;
+    window.submitModalIntent = submitModalIntent;
+  };
 </script>  
   
   <body>
