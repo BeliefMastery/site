@@ -156,10 +156,35 @@
     <section id="contact" style="background:#fff;">
       <h2 style="text-align:center;font-size:2rem;margin-bottom:2.5rem;">Stay Informed</h2>
       <p style="max-width:42rem;margin:0 auto 2rem;text-align:center;">Receive chapter drops, protocol updates, and sovereignty tools straight to your inbox.</p>
-      <form style="display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;max-width:32rem;margin:0 auto;">
-        <input type="email" placeholder="Email address" required style="flex:1 1 12rem;padding:.85rem 1rem;border:2px solid var(--brand);border-radius:.5rem;font-size:1rem;" />
-        <button type="submit" class="btn btn-primary">Subscribe</button>
-      </form>
+<form id="subscribe-form">
+  <input type="email" id="email" name="email" required placeholder="Email address" />
+  <button type="submit">Subscribe</button>
+  <p id="status"></p>
+</form>
+
+<script>
+  const form = document.getElementById("subscribe-form");
+  const status = document.getElementById("status");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+
+    fetch("YOUR_WEB_APP_URL", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "email=" + encodeURIComponent(email)
+    }).then(() => {
+      status.textContent = "✅ Thank you for subscribing!";
+      form.reset();
+    }).catch((err) => {
+      status.textContent = "❌ Submission failed.";
+    });
+  });
+</script>
     </section>
   </main>
 
