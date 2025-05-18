@@ -44,6 +44,76 @@
       transform: translateY(10px);
       max-width: 28rem;
     }
+.btn {
+  padding: 0.9rem 1.75rem;
+  border: none;
+  border-radius: 0.85rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background-size: 300% 300%;
+  transition: all 0.35s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: perspective(1px) translateZ(0); /* Enable GPU acceleration */
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 130%;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* PRIMARY BUTTON */
+.btn-primary {
+  background: linear-gradient(135deg, #ffe000, #ffc800, #ffb800);
+  background-size: 200% 200%;
+  color: #000;
+  animation: gradientShift 6s ease infinite;
+}
+
+/* PRIMARY HOVER ENHANCEMENT */
+.btn-primary:hover {
+  background: linear-gradient(135deg, #ffdd33, #ffbb00);
+}
+
+/* OUTLINE BUTTON */
+.btn-outline {
+  background: transparent;
+  color: #000;
+  border: 2px solid #000;
+}
+
+.btn-outline:hover {
+  background-color: #fffbe6;
+  border-color: #ffcc00;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+}
+
+/* Optional: Pulse animation */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}    
   </style>
 </head>
 <body>
