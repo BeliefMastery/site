@@ -310,28 +310,31 @@
     messageField.value = "";
   }
 
-  function submitModalIntent() {
-    const email = emailField.value.trim();
-    const message = messageField.value.trim();
-    const intent = intentTypeField.value;
+function submitModalIntent() {
+  const email = emailField.value.trim();
+  const message = messageField.value.trim();
+  const intent = intentTypeField.value;
 
-    if (!email) {
-      alert("Please enter your email.");
-      return;
-    }
-
-const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
-    const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
-
-    fetch(url, { method: "GET", mode: "no-cors" })
-      .then(() => {
-        alert("✅ Submitted. We'll be in touch soon.");
-        closeModal();
-      })
-      .catch(() => {
-        alert("❌ Something went wrong.");
-      });
+  if (!email) {
+    alert("Please enter your email.");
+    return;
   }
+
+  console.log("Sending:", { email, intent, message }); // 🔍 debug output
+
+  const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
+  const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
+
+  fetch(url, { method: "GET", mode: "no-cors" })
+    .then(() => {
+      alert("✅ Submitted. We'll be in touch soon.");
+      closeModal();
+    })
+    .catch(() => {
+      alert("❌ Something went wrong.");
+    });
+}
+
 </script>
 
 
