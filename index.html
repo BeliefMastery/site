@@ -152,67 +152,72 @@
       </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" style="background:#fff;">
-      <h2 style="text-align:center;font-size:2rem;margin-bottom:2.5rem;">Stay Informed</h2>
-      <p style="max-width:42rem;margin:0 auto 2rem;text-align:center;">Receive chapter drops, protocol updates, and sovereignty tools straight to your inbox.</p>
-<form id="subscribe-form" style="display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;max-width:32rem;margin:0 auto;">
-  <input 
-    type="email" 
-    id="email" 
-    name="email" 
-    required 
-    placeholder="Email address"
-    style="flex:1 1 12rem;
-           padding:.85rem 1rem;
-           border:2px solid var(--brand, #333);
-           border-radius:.5rem;
-           font-size:1rem;
-           font-family:'Inter', sans-serif;
-           background:#fff;
-           box-shadow: 0 2px 6px rgba(0,0,0,0.1);" />
-  <button 
-    type="submit"
-    class="btn btn-primary"
-    style="padding:.85rem 1.25rem;
-           background:var(--brand, #333);
-           color:#fff;
-           border:none;
-           border-radius:.5rem;
-           font-weight:600;
-           cursor:pointer;
-           transition:background 0.3s ease;">
-    Subscribe
-  </button>
-</form>
-<p id="status" style="text-align:center;margin-top:1rem;font-size:0.95rem;color:#333;"></p>
+<!-- Contact Section -->
+<section id="contact" style="background:#fff;">
+  <h2 style="text-align:center;font-size:2rem;margin-bottom:2.5rem;">Stay Informed</h2>
+  <p style="max-width:42rem;margin:0 auto 2rem;text-align:center;">
+    Receive chapter drops, protocol updates, and sovereignty tools straight to your inbox.
+  </p>
 
-<script>
-  const form = document.getElementById("subscribe-form");
-  const status = document.getElementById("status");
+  <form id="subscribe-form" style="display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;max-width:32rem;margin:0 auto;">
+    <input 
+      type="email" 
+      id="email" 
+      name="email" 
+      required 
+      placeholder="Email address"
+      style="flex:1 1 12rem;
+             padding:.85rem 1rem;
+             border:2px solid var(--brand, #333);
+             border-radius:.5rem;
+             font-size:1rem;
+             font-family:'Inter', sans-serif;
+             background:#fff;
+             box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
+    
+    <button 
+      type="submit"
+      class="btn btn-primary"
+      style="padding:.85rem 1.25rem;
+             background:var(--brand, #333);
+             color:#fff;
+             border:none;
+             border-radius:.5rem;
+             font-weight:600;
+             cursor:pointer;
+             transition:background 0.3s ease;">
+      Subscribe
+    </button>
+  </form>
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+  <p id="status" style="text-align:center;margin-top:1rem;font-size:0.95rem;color:#333;"></p>
 
-    const email = document.getElementById("email").value;
+  <script>
+    const form = document.getElementById("subscribe-form");
+    const status = document.getElementById("status");
 
-    const formData = new URLSearchParams();
-    formData.append("email", email);
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-   fetch("https://script.google.com/macros/s/AKfycby_P7Jba1EINaZPxVphxp_DrPtKBAlDKFsngWupRyN34R3mqGn9Umn9tLv5d_4bAjiXKA/exec", {
-  method: "POST",
-  mode: "no-cors", // <-- This suppresses errors and lets the POST go through
-  body: formData
-}).then(() => {
-      status.textContent = "✅ Thank you for subscribing!";
-      form.reset();
-    }).catch((err) => {
-      status.textContent = "❌ Submission failed.";
-      console.error("Submission error:", err);
+      const email = document.getElementById("email").value;
+
+      const formData = new URLSearchParams();
+      formData.append("email", email);
+
+      fetch("https://script.google.com/macros/s/AKfycby_P7Jba1EINaZPxVphxp_DrPtKBAlDKFsngWupRyN34R3mqGn9Umn9tLv5d_4bAjiXKA/exec", {
+        method: "POST",
+        mode: "no-cors", // This suppresses errors and allows submission
+        body: formData
+      }).then(() => {
+        status.textContent = "✅ Thank you for subscribing!";
+        form.reset();
+      }).catch((err) => {
+        status.textContent = "❌ Submission failed.";
+        console.error("Submission error:", err);
+      });
     });
-  });
-</script>
-    </section>
+  </script>
+</section>
   </main>
 
   <footer>
