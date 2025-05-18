@@ -192,31 +192,28 @@
 
   <p id="status" style="text-align:center;margin-top:1rem;font-size:0.95rem;color:#333;"></p>
 
-  <script>
-    const form = document.getElementById("subscribe-form");
-    const status = document.getElementById("status");
+<script>
+  const form = document.getElementById("subscribe-form");
+  const status = document.getElementById("status");
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-      const email = document.getElementById("email").value;
+    const email = encodeURIComponent(document.getElementById("email").value);
+    const url = `https://script.google.com/macros/s/AKfycby_P7Jba1EINaZPxVphxp_DrPtKBAlDKFsngWupRyN34R3mqGn9Umn9tLv5d_4bAjiXKA/exec?email=${email}`;
 
-      const formData = new URLSearchParams();
-      formData.append("email", email);
-
-      fetch("https://script.google.com/macros/s/AKfycby_P7Jba1EINaZPxVphxp_DrPtKBAlDKFsngWupRyN34R3mqGn9Umn9tLv5d_4bAjiXKA/exec", {
-        method: "POST",
-        mode: "no-cors", // This suppresses errors and allows submission
-        body: formData
-      }).then(() => {
-        status.textContent = "✅ Thank you for subscribing!";
-        form.reset();
-      }).catch((err) => {
-        status.textContent = "❌ Submission failed.";
-        console.error("Submission error:", err);
-      });
+    fetch(url, {
+      method: "GET",
+      mode: "no-cors"
+    }).then(() => {
+      status.textContent = "✅ Thank you for subscribing!";
+      form.reset();
+    }).catch((err) => {
+      status.textContent = "❌ Submission failed.";
+      console.error("Submission error:", err);
     });
-  </script>
+  });
+</script>
 </section>
   </main>
 
