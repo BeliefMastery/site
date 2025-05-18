@@ -199,10 +199,11 @@
     const formData = new URLSearchParams();
     formData.append("email", email);
 
-    fetch("https://script.google.com/macros/s/AKfycby_P7Jba1EINaZPxVphxp_DrPtKBAlDKFsngWupRyN34R3mqGn9Umn9tLv5d_4bAjiXKA/exec", {
-      method: "POST",
-      body: formData
-    }).then(() => {
+   fetch("https://script.google.com/macros/s/AKfycby_P7Jba1EINaZPxVphxp_DrPtKBAlDKFsngWupRyN34R3mqGn9Umn9tLv5d_4bAjiXKA/exec", {
+  method: "POST",
+  mode: "no-cors", // <-- This suppresses errors and lets the POST go through
+  body: formData
+}).then(() => {
       status.textContent = "✅ Thank you for subscribing!";
       form.reset();
     }).catch((err) => {
