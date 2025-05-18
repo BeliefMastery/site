@@ -72,6 +72,40 @@
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
    transition: transform 0.3s ease;
     }
+.btn {
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffd700, #ffcc00); /* yellow gradient */
+  color: #000;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #ffcc00, #ffaa00);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #000;
+  border: 2px solid #000;
+}
+
+.btn-outline:hover {
+  background: #fffae6;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
   </style>
   
 </head>
@@ -94,8 +128,8 @@
         <strong>Belief Mastery</strong> and <strong>Sovereign of Mind</strong> offer a dual framework for full-spectrum mental sovereignty. One excavates the subconscious. The other shields conscious authorship. Together, they return you to command.
       </p>
       <div class="cta">
-        <a class="btn btn-primary" href="belief-mastery.html">Explore Belief Mastery</a>
-        <a class="btn btn-outline" href="sovereign-of-mind.html">Explore Sovereign of Mind</a>
+<a class="btn btn-primary" href="belief-mastery.html">Explore Belief Mastery</a>
+<a class="btn btn-primary" href="sovereign-of-mind.html">Explore Sovereign of Mind</a>
       </div>
       <div class="image-row">
         <a href="belief-mastery.html">
@@ -175,28 +209,7 @@
              background:#fff;
              box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
     
-    <button 
-  type="submit"
-  class="btn btn-primary"
-  style="
-    padding: .85rem 1.5rem;
-    background: linear-gradient(135deg, #333, #000);
-    border: none;
-    border-radius: .75rem;
-    font-weight: 700;
-    font-size: 1rem;
-    font-family: 'Inter', sans-serif;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  "
-  onmouseover="this.style.background='linear-gradient(135deg, #000, #444)'; this.style.boxShadow='0 6px 14px rgba(0,0,0,0.2)'"
-  onmouseout="this.style.background='linear-gradient(135deg, #333, #000)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.15)'"
->
-  ✉️ Subscribe
-    </button>
+   <button type="submit" class="btn btn-primary">✉️ Subscribe</button>
   </form>
 
   <p id="status" style="text-align:center;margin-top:1rem;font-size:0.95rem;color:#333;"></p>
