@@ -160,64 +160,62 @@
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
+
+  /* ---- reference DOM ---- */
   const modal           = document.getElementById('intent-modal');
   const emailField      = document.getElementById('intent-email');
   const messageField    = document.getElementById('intent-message');
   const intentTypeField = document.getElementById('intent-type');
 
-  /* open / close */
-  window.openIntentModal = (intentType) => {
-    modal.style.display   = 'flex';
-    intentTypeField.value = intentType;              // sets hidden field
-    messageField.style.display = intentType === 'question' ? 'block' : 'none';
-    messageField.value    = '';
-  };
+  /* ---- constant ---- */
+  const WEB_APP_URL =
+    'https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec';
 
-  window.closeModal = () => {
+  /* ---- modal helpers ---- */
+  function openIntentModal (intent) {
+    modal.style.display   = 'flex';
+    intentTypeField.value = intent;
+    messageField.style.display = intent === 'question' ? 'block' : 'none';
+    messageField.value    = '';
+  }
+
+  function closeModal () {
     modal.style.display = 'none';
     emailField.value    = '';
     messageField.value  = '';
-  };
+  }
 
-  /* submit */
-  window.submitModalIntent = async () => {
+  /* ---- submit to Apps Script ---- */
+  async function submitModalIntent () {
     const email   = emailField.value.trim();
     const message = messageField.value.trim();
     const intent  = intentTypeField.value;
 
-    if (!email) { alert('Please enter your email.'); return; }
+    if (!email) { alert('Please enter your email'); return; }
 
-const WEB_APP_URL =
-  'https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec';
+    const body = new URLSearchParams({ email, intent, message });
 
-async function submitModalIntent () {
-  const email   = emailField.value.trim();
-  const message = messageField.value.trim();
-  const intent  = intentTypeField.value;
-  window.submitModalIntent = submitModalIntent;   // expose to global scope
-
-  document
-  .getElementById('intent-submit')
-  .addEventListener('click', submitModalIntent);
-  
-  if (!email) { alert('Enter your email'); return; }
-
-  const body = new URLSearchParams({ email, intent, message });
-
-  try {
-    await fetch(WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body
-    });
-    alert('✅ Submitted. We’ll be in touch soon.');
-    closeModal();
-  } catch (err) {
-    console.error(err);
-    alert('❌ Something went wrong.');
+    try {
+      await fetch(WEB_APP_URL, {
+        method : 'POST',
+        headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+        body
+      });
+      alert('✅ Submitted. We’ll be in touch soon.');
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert('❌ Something went wrong.');
+    }
   }
-}
-  };
+  /* make it reachable from inline onclick on the modal button */
+  window.submitModalIntent = submitModalIntent;
+  window.closeModal        = closeModal;
+
+  /* ---- wire the three CTA buttons ---- */
+  document.querySelectorAll('.intent-btn')
+          .forEach(btn => btn.addEventListener('click', () =>
+                openIntentModal(btn.dataset.intent)));
 });
 </script>
   
@@ -330,11 +328,11 @@ async function submitModalIntent () {
 
 
 
-      <div class="cta">
-<button id="intent-submit" class="btn btn-primary">👉 Order Now</a>
-<button id="intent-submit" class="btn btn-primary">👉 View Sample Pages</a>
-<button id="intent-submit" class="btn btn-primary">👉 Ask a Question</a>
-      </div>
+<div class="cta">
+  <button class="btn btn-primary intent-btn" data-intent="order">👉 Order&nbsp;Now</button>
+  <button class="btn btn-primary intent-btn" data-intent="sample">👉 View&nbsp;Sample&nbsp;Pages</button>
+  <button class="btn btn-primary intent-btn" data-intent="question">👉 Ask&nbsp;a&nbsp;Question</button>
+</div>
     </section>
     <section>
       <h2>🔹 BELIEF MASTERY</h2>
