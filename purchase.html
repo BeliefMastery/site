@@ -194,7 +194,12 @@ async function submitModalIntent () {
   const email   = emailField.value.trim();
   const message = messageField.value.trim();
   const intent  = intentTypeField.value;
+  window.submitModalIntent = submitModalIntent;   // expose to global scope
 
+  document
+  .getElementById('intent-submit')
+  .addEventListener('click', submitModalIntent);
+  
   if (!email) { alert('Enter your email'); return; }
 
   const body = new URLSearchParams({ email, intent, message });
@@ -326,9 +331,9 @@ async function submitModalIntent () {
 
 
       <div class="cta">
-<a class="btn btn-outline" href="#" onclick="openIntentModal('order')">👉 Order Now</a>
-<a class="btn btn-outline" href="#" onclick="openIntentModal('sample')">👉 View Sample Pages</a>
-<a class="btn btn-outline" href="#" onclick="openIntentModal('question')">👉 Ask a Question</a>
+<button id="intent-submit" class="btn btn-primary">👉 Order Now</a>
+<button id="intent-submit" class="btn btn-primary">👉 View Sample Pages</a>
+<button id="intent-submit" class="btn btn-primary">👉 Ask a Question</a>
       </div>
     </section>
     <section>
