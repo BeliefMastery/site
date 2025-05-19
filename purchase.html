@@ -128,74 +128,77 @@
   </style>
 </head>
 
-  <!-- Intent Modal -->
-<div id="intent-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:2rem; border-radius:1rem; width:90%; max-width:500px; box-shadow:0 10px 20px rgba(0,0,0,0.25);">
-    <h3 style="margin-top:0;">Let's get you connected</h3>
-    <input id="intent-email" type="email" placeholder="Your email" style="width:100%; padding:0.75rem 1rem; margin-bottom:1rem; border:2px solid #ccc; border-radius:0.5rem; font-size:1rem;" />
-    <textarea id="intent-message" rows="4" placeholder="Your message (optional)" style="width:100%; padding:0.75rem 1rem; border:2px solid #ccc; border-radius:0.5rem; font-size:1rem;"></textarea>
-    <div style="margin-top:1rem; display:flex; justify-content:space-between;">
+<!-- Intent Modal -->
+<div id="intent-modal"
+     style="display:none;position:fixed;inset:0;width:100vw;height:100vh;
+            background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:2rem;border-radius:1rem;width:90%;max-width:500px;
+              box-shadow:0 10px 20px rgba(0,0,0,.25);">
+    <h3 style="margin-top:0">Let's get you connected</h3>
+
+    <!-- add name="email" -->
+    <input id="intent-email" name="email" type="email" placeholder="Your email"
+           style="width:100%;padding:.75rem 1rem;margin-bottom:1rem;
+                  border:2px solid #ccc;border-radius:.5rem;font-size:1rem;" />
+
+    <!-- add name="message" -->
+    <textarea id="intent-message" name="message" rows="4" placeholder="Your message (optional)"
+              style="width:100%;padding:.75rem 1rem;
+                     border:2px solid #ccc;border-radius:.5rem;font-size:1rem;"></textarea>
+
+    <div style="margin-top:1rem;display:flex;justify-content:space-between;">
       <button onclick="submitModalIntent()" class="btn btn-primary">Submit</button>
-      <button onclick="closeModal()" class="btn btn-outline">Cancel</button>
+      <button onclick="closeModal()"        class="btn btn-outline">Cancel</button>
     </div>
-    <input type="hidden" id="intent-type" />
+
+    <!-- hidden field now has name="intent" -->
+    <input type="hidden" id="intent-type" name="intent" />
   </div>
 </div>
 
 <script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("intent-modal");
-    const emailField = document.getElementById("intent-email");
-    const messageField = document.getElementById("intent-message");
-    const intentTypeField = document.getElementById("intent-type");
+window.addEventListener('DOMContentLoaded', () => {
+  const modal           = document.getElementById('intent-modal');
+  const emailField      = document.getElementById('intent-email');
+  const messageField    = document.getElementById('intent-message');
+  const intentTypeField = document.getElementById('intent-type');
 
-    function openIntentModal(intentType) {
-      console.log("Intent type received:", intentType);
-      console.log("Intent type field exists:", !!intentTypeField);
+  /* ---------- open / close ---------- */
+  window.openIntentModal = (intentType) => {
+    modal.style.display   = 'flex';
+    intentTypeField.value = intentType;                      // set hidden field
+    messageField.style.display = intentType === 'question' ? 'block' : 'none';
+    messageField.value    = '';
+  };
 
-      modal.style.display = "flex";
-      intentTypeField.value = intentType; // <- this line was silently failing if DOM wasn't ready
-      messageField.style.display = (intentType === "question") ? "block" : "none";
-      messageField.value = "";
+  window.closeModal = () => {
+    modal.style.display = 'none';
+    emailField.value    = '';
+    messageField.value  = '';
+  };
+
+  /* ---------- submit ---------- */
+  window.submitModalIntent = async () => {
+    const email   = emailField.value.trim();
+    const message = messageField.value.trim();
+    const intent  = intentTypeField.value;
+
+    if (!email) { alert('Please enter your email.'); return; }
+
+    try {
+      const url  = 'https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec';
+      const body = new URLSearchParams({ email, intent, message });
+
+      await fetch(url, { method: 'POST', body });           // no-cors removed
+      alert('✅ Submitted. We’ll be in touch soon.');
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert('❌ Something went wrong.');
     }
-
-    function closeModal() {
-      modal.style.display = "none";
-      emailField.value = "";
-      messageField.value = "";
-    }
-
-    function submitModalIntent() {
-      const email = emailField.value.trim();
-      const message = messageField.value.trim();
-      const intent = intentTypeField.value;
-
-      console.log("SUBMITTING:", { email, intent, message });
-
-      if (!email) {
-        alert("Please enter your email.");
-        return;
-      }
-
-      const baseURL = "https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec";
-      const url = `${baseURL}?email=${encodeURIComponent(email)}&intent=${encodeURIComponent(intent)}&message=${encodeURIComponent(message)}`;
-
-      fetch(url, { method: "GET", mode: "no-cors" })
-        .then(() => {
-          alert("✅ Submitted. We'll be in touch soon.");
-          closeModal();
-        })
-        .catch(() => {
-          alert("❌ Something went wrong.");
-        });
-    }
-
-    // Expose functions globally
-    window.openIntentModal = openIntentModal;
-    window.submitModalIntent = submitModalIntent;
-    window.closeModal = closeModal;
-  });
-</script> 
+  };
+});
+</script>
   
   <body>
   <header>
