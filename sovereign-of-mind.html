@@ -21,30 +21,48 @@
       margin: 2rem auto;
       max-width: 80rem;
     }
-    
-    .card {
-      position: relative;
-    }
-    .card:hover .extended {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .extended {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      z-index: 10;
-      background: #fff;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 1rem;
-      font-size: 0.95rem;
-      line-height: 1.45;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(10px);
-      max-width: 28rem;
-    }
+    .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  margin: 2.5rem 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  padding: 2.25rem 1.25rem 2.25rem 1.25rem;
+  min-height: 180px;
+  overflow: visible;
+}
+.card .btn {
+  margin-top: 1rem;
+}
+.extended {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background: rgba(255,255,255,0.97);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+  padding: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(10px);
+  max-width: 28rem;
+  pointer-events: none;
+}
+.card:hover .extended {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
     .image-row 
     {
    display: flex;
