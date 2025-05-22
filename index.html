@@ -27,20 +27,27 @@
     }
 
     .card {
-      position: relative;
-    }
+  position: relative;
+  padding: 2.25rem 1.25rem 2.75rem 1.25rem; /* top, right, bottom, left */
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
     .card:hover .extended {
       opacity: 1;
       transform: translateY(0);
     }
     .card {
-  position: relative;
-  padding-bottom: 2.5rem;
-    }
-    .card .btn {
-  margin-top: 1.2rem;
-  margin-bottom: 0.5rem;
-    }
+  display: flex;
+  flex-direction: column;
+  }
+  .card .btn {
+  margin-top: auto; /* pushes the button to the bottom of the card */
+  margin-bottom: 0.25rem; /* tiny space from card edge */
+  }
     .extended {
       position: absolute;
       top: 100%;
