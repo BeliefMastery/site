@@ -1,1 +1,112 @@
-#
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulacra</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-image: url('images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    section {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 0.75rem;
+      padding: 3rem 1rem;
+      margin: 2rem auto;
+      max-width: 80rem;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-size: 1rem;
+      border: 2px solid var(--brand);
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    #posts .card {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Simulacra</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="belief-mastery.html">Belief Mastery</a>
+      <a href="sovereign-of-mind.html">Sovereign of Mind</a>
+      <a href="agent-protocol.html">AI Protocol</a>
+      <a href="purchase.html">Purchase</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1>Simulacra</h1>
+      <div class="card" id="posts" style="margin-bottom:2rem;"></div>
+      <form id="post-form" class="card">
+        <textarea id="post-text" rows="3" placeholder="Share your thoughts..."></textarea>
+        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Send</button>
+        <p id="post-status" style="margin-top:0.5rem;"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery & Sovereign of Mind. All rights reserved.</p>
+    <p><a href="https://instagram.com/belief.mastery" target="_blank">@belief.mastery</a> on Instagram</p>
+  </footer>
+
+  <script>
+    const postForm = document.getElementById('post-form');
+    const postText = document.getElementById('post-text');
+    const status = document.getElementById('post-status');
+    const postsDiv = document.getElementById('posts');
+
+    const saved = JSON.parse(localStorage.getItem('simulacraPosts') || '[]');
+    saved.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.textContent = m;
+      postsDiv.appendChild(div);
+    });
+
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec';
+
+    postForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = postText.value.trim();
+      if (!message) return;
+
+      const body = new URLSearchParams({ intent: 'forum', message });
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        });
+        status.textContent = '✅ Posted!';
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.textContent = message;
+        postsDiv.prepend(div);
+        saved.push(message);
+        localStorage.setItem('simulacraPosts', JSON.stringify(saved));
+        postText.value = '';
+      } catch (err) {
+        console.error('Submission error:', err);
+        status.textContent = '❌ Submission failed.';
+      }
+    });
+  </script>
+</body>
+</html>
