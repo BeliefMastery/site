@@ -158,7 +158,7 @@
   100% { background-position: 0% 50%; }
 }
 
-  </style>
+ </style>
   
 </head>
 <body>
@@ -183,6 +183,12 @@
 <a class="btn btn-primary" href="belief-mastery.html">Explore Belief Mastery</a>
 <a class="btn btn-primary" href="sovereign-of-mind.html">Explore Sovereign of Mind</a>
       </div>
+      <form id="buy-form" style="display:flex;justify-content:center;gap:.5rem;margin-top:1rem;flex-wrap:wrap;">
+        <input type="email" id="buy-email" name="email" required placeholder="Email address" style="flex:1 1 12rem;padding:.85rem 1rem;border:2px solid var(--brand, #333);border-radius:.5rem;font-size:1rem;font-family:'Inter', sans-serif;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
+        <button type="submit" class="btn btn-primary">Buy Now</button>
+        <a class="btn btn-outline" href="purchase.html">Learn More</a>
+      </form>
+      <p id="buy-status" style="text-align:center;margin-top:.75rem;font-size:0.95rem;color:#333;"></p>
       <div class="image-row">
         <a href="belief-mastery.html">
           <img src="images/BM-cover.JPG" alt="Belief Mastery" />
@@ -208,42 +214,7 @@
           <div class="extended"><i>Refine your worldview into a structure that cannot be hijacked—no matter the pressure.</i><p>Sovereign of Mind is a tactical and philosophical upgrade for those ready to live without illusion. It equips you with perceptual diagnostics, fallacy recognition, justification mapping, and paradigm integrity tools that expose distortions before they take root. Whether facing social coercion, relational compromise, or institutional gaslighting, this book installs a logic framework that makes your internal map unshakable—one that can stand under recursive assault. Conscious Fortification is not about becoming hardened; it's about becoming structurally coherent. It returns your will to your grasp.</p></div>
         </div>
       </div>
-    </section>
-
-    <!-- Method Section -->
-    <section id="method" style="background:#fff;">
-      <h2 style="text-align:center;font-size:2rem;margin-bottom:2.5rem;">Core Techniques</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Belief Inference Process</h3>
-          <p>12 diagnostic steps to identify, trace, and resolve the core-limiting beliefs beneath dissatisfaction and sabotage. The centerpoint of the BM method.</p>
-          <p></p>
-          <a class="btn btn-outline" href="belief-mastery.html">View Process</a>
-          
-        </div>
-        <div class="card">
-          <h3>Reality Map Construction</h3>
-          <p>SoM’s method for building a resilient, contradiction-resistant internal map. Teaches how to spot projection, trace fallacy, and live in perceptual clarity.</p>
-          <p></p>
-          <a class="btn btn-outline" href="sovereign-of-mind.html">Read Chapter Overview</a>
-          
-        </div>
-        <div class="card">
-          <h3>AI Agent Protocol</h3>
-          <p>Transforms AI from tool to mirror. Locks agent fidelity to SoM and BM. Enables tiered reveal, CITI audits, and sovereign-aligned dialogue scaffolds.</p>
-          <p></p>
-          <a class="btn btn-outline" href="agent-protocol.html">Open the Protocol</a>
-          
-        </div>
-      </div>
-    </section>
-
-<!-- Contact Section -->
-<section id="contact" style="background:#fff;">
-  <h2 style="text-align:center;font-size:2rem;margin-bottom:2.5rem;">Stay Informed</h2>
-  <p style="max-width:42rem;margin:0 auto 2rem;text-align:center;">
-    Receive chapter drops, protocol updates, and sovereignty tools straight to your inbox.
-  </p>
+@@ -247,53 +253,73 @@
 
   <form id="subscribe-form" style="display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;max-width:32rem;margin:0 auto;">
     <input 
@@ -269,6 +240,8 @@
 <script>
   const form = document.getElementById("subscribe-form");
   const status = document.getElementById("status");
+  const buyForm = document.getElementById("buy-form");
+  const buyStatus = document.getElementById("buy-status");
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -284,6 +257,24 @@
       form.reset();
     }).catch((err) => {
       status.textContent = "❌ Submission failed.";
+      console.error("Submission error:", err);
+    });
+  });
+
+  buyForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const email = encodeURIComponent(document.getElementById("buy-email").value);
+    const url = `https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec?email=${email}&intent=purchase`;
+
+    fetch(url, {
+      method: "GET",
+      mode: "no-cors"
+    }).then(() => {
+      buyStatus.textContent = "✅ We'll be in touch soon!";
+      buyForm.reset();
+    }).catch((err) => {
+      buyStatus.textContent = "❌ Submission failed.";
       console.error("Submission error:", err);
     });
   });
