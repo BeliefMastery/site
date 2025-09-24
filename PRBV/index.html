@@ -1,182 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Villa Bookings Widget</title>
-    <style>
-        #booking-widget {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        #booking-widget h2 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .no-bookings {
-            text-align: center;
-            color: #888;
-            font-style: italic;
-        }
-        .loading {
-            text-align: center;
-            color: #666;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Villa Bookings Overview</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .calendar-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .calendar-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #4CAF50;
+    }
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
-    <!-- Your other HTML content here -->
+  <h1>Upcoming Villa Bookings (Next 4 Days)</h1>
 
-    <div id="booking-widget">
-        <h2>Upcoming Bookings (Next 4 Days)</h2>
-        <div id="loading" class="loading">Loading bookings...</div>
-        <div id="content"></div>
+  <div class="calendar-grid">
+    <div class="calendar-card">
+      <h2>Villa 1</h2>
+      <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC&mode=AGENDA&dates=20250924/20250928"></iframe>
     </div>
-
-    <script>
-        // Configuration: Villa names and ICS URLs
-        const villas = [
-            { name: 'Villa 1', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8&showtime=true' },
-            { name: 'Villa 2', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411&showtime=true' },
-            { name: 'Villa 3', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84&showtime=true' },
-            { name: 'Villa 4', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8&showtime=true' }
-        ];
-
-        // Function to parse .ics content into events
-        function parseICS(icsText) {
-            const events = [];
-            const lines = icsText.split('\n');
-            let currentEvent = null;
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line === 'BEGIN:VEVENT') {
-                    currentEvent = {};
-                } else if (line === 'END:VEVENT' && currentEvent) {
-                    events.push(currentEvent);
-                    currentEvent = null;
-                } else if (currentEvent) {
-                    const [key, ...valueParts] = line.split(':');
-                    const value = valueParts.join(':').replace(/\\,/g, ','); // Unescape commas
-                    if (key === 'DTSTART') {
-                        currentEvent.start = new Date(value.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6'));
-                    } else if (key === 'DTEND') {
-                        currentEvent.end = new Date(value.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6'));
-                    } else if (key === 'SUMMARY') {
-                        currentEvent.summary = value;
-                    } else if (key === 'DESCRIPTION') {
-                        currentEvent.description = value;
-                    }
-                }
-            }
-            return events.filter(e => e.start && e.end); // Filter valid events
-        }
-
-        // Function to get events for the next 4 days
-        function getUpcomingEvents(events) {
-            const today = new Date('2025-09-24T00:00:00'); // Current date
-            const endDate = new Date(today);
-            endDate.setDate(today.getDate() + 4);
-            return events.filter(event => {
-                const eventDate = new Date(event.start.getFullYear(), event.start.getMonth(), event.start.getDate());
-                return eventDate >= today && eventDate < endDate;
-            }).sort((a, b) => a.start - b.start);
-        }
-
-        // Function to group events by day
-        function groupByDay(events) {
-            const grouped = {};
-            events.forEach(event => {
-                const dateKey = event.start.toISOString().split('T')[0];
-                if (!grouped[dateKey]) grouped[dateKey] = [];
-                grouped[dateKey].push(event);
-            });
-            return grouped;
-        }
-
-        // Function to format event details
-        function formatEvent(event) {
-            const startTime = event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const endTime = event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const details = event.description ? `${event.summary || 'Booking'} (${event.description})` : (event.summary || 'Booking');
-            return `${details} | ${startTime} - ${endTime}`;
-        }
-
-        // Main function to fetch and display
-        async function loadBookings() {
-            const contentDiv = document.getElementById('content');
-            const loadingDiv = document.getElementById('loading');
-            loadingDiv.style.display = 'block';
-            contentDiv.innerHTML = '';
-
-            let hasData = false;
-
-            for (const villa of villas) {
-                try {
-                    const response = await fetch(villa.url);
-                    if (!response.ok) throw new Error('Fetch failed');
-                    const icsText = await response.text();
-                    const events = parseICS(icsText);
-                    const upcoming = getUpcomingEvents(events);
-                    const grouped = groupByDay(upcoming);
-
-                    // Build table for this villa
-                    let villaHtml = `<h3>${villa.name}</h3><table><tr><th>Date</th><th>Bookings</th></tr>`;
-                    if (Object.keys(grouped).length === 0) {
-                        villaHtml += `<tr><td colspan="2" class="no-bookings">No bookings for the next 4 days</td></tr>`;
-                    } else {
-                        hasData = true;
-                        Object.entries(grouped).forEach(([date, dayEvents]) => {
-                            const dateStr = new Date(date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                            const bookingsList = dayEvents.map(formatEvent).join('<br>');
-                            villaHtml += `<tr><td>${dateStr}</td><td>${bookingsList}</td></tr>`;
-                        });
-                    }
-                    villaHtml += '</table><br>';
-                    contentDiv.innerHTML += villaHtml;
-                } catch (error) {
-                    contentDiv.innerHTML += `<h3>${villa.name}</h3><p class="no-bookings">Error loading bookings (check console for details).</p><br>`;
-                }
-            }
-
-            loadingDiv.style.display = 'none';
-            if (!hasData) {
-                contentDiv.innerHTML = '<p class="no-bookings" style="text-align: center;">No upcoming bookings across all villas.</p>';
-            }
-        }
-
-        // Load on page load
-        window.addEventListener('load', loadBookings);
-    </script>
-
-<iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-
-<iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&ctz=UTC" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-
-
-<iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&ctz=UTC" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-
-
-<iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&ctz=UTC" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-    
-    <!-- Your other HTML content here -->
+    <div class="calendar-card">
+      <h2>Villa 2</h2>
+      <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&ctz=UTC&mode=AGENDA&dates=20250924/20250928"></iframe>
+    </div>
+    <div class="calendar-card">
+      <h2>Villa 3</h2>
+      <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&ctz=UTC&mode=AGENDA&dates=20250924/20250928"></iframe>
+    </div>
+    <div class="calendar-card">
+      <h2>Villa 4</h2>
+      <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&ctz=UTC&mode=AGENDA&dates=20250924/20250928"></iframe>
+    </div>
+  </div>
 </body>
 </html>
