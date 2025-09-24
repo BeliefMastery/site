@@ -1,108 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Patons Rock Beach Villas - Bookings</title>
-  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .villa-card {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .villa-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    }
-  </style>
-</head>
-<body class="bg-gradient-to-b from-blue-50 to-white text-gray-800 font-sans">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-4xl font-bold mb-4 text-center text-indigo-800">Patons Rock Beach Villas</h1>
-    <p class="text-lg mb-10 text-center text-gray-700 max-w-3xl mx-auto">
-      Welcome to Patons Rock Beach Villas, your beachfront escape in Golden Bay. Nestled just steps from the sand, each villa offers comfort, privacy, and direct access to one of New Zealand’s most beautiful coastlines. Below you can view the upcoming bookings for each villa over the next four days, to help you plan your perfect seaside stay.
-    </p>
-
-    <div id="calendar-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-  </div>
-
-  <script>
-    const calendars = [
-      { name: "Villa 1", url: "https://github.com/BeliefMastery/site/blob/main/PRBV//ical-proxy.php?url=" + encodeURIComponent("https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8&showtime=true") },
-      { name: "Villa 2", url: "https://github.com/BeliefMastery/site/blob/main/PRBV//ical-proxy.php?url=" + encodeURIComponent("https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411&showtime=true") },
-      { name: "Villa 3", url: "https://github.com/BeliefMastery/site/blob/main/PRBV//ical-proxy.php?url=" + encodeURIComponent("https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84&showtime=true") },
-      { name: "Villa 4", url: "https://github.com/BeliefMastery/site/blob/main/PRBV//ical-proxy.php?url=" + encodeURIComponent("https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8&showtime=true") }
-    ];
-
-    const today = luxon.DateTime.local().startOf("day");
-    const endDate = today.plus({ days: 4 });
-
-    async function fetchCalendar(url) {
-      const response = await fetch(url);
-      const text = await response.text();
-      return new ICAL.Component(ICAL.parse(text));
-    }
-
-    function getEvents(comp) {
-      const vevents = comp.getAllSubcomponents("vevent");
-      return vevents.map(v => new ICAL.Event(v));
-    }
-
-    function filterUpcoming(events) {
-      return events.filter(e => {
-        const start = luxon.DateTime.fromJSDate(e.startDate.toJSDate());
-        return start >= today && start < endDate;
-      });
-    }
-
-    function renderCalendar(name, events) {
-      const container = document.getElementById("calendar-container");
-      const card = document.createElement("div");
-      card.className = "villa-card bg-white rounded-2xl shadow-lg p-5 flex flex-col";
-
-      const header = document.createElement("h2");
-      header.className = "text-2xl font-semibold mb-4 text-indigo-700 text-center";
-      header.textContent = name;
-      card.appendChild(header);
-
-      if (events.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "text-gray-500 text-center";
-        empty.textContent = "No bookings in the next 4 days.";
-        card.appendChild(empty);
-      } else {
-        const list = document.createElement("ul");
-        list.className = "space-y-2";
-
-        events.forEach(e => {
-          const li = document.createElement("li");
-          li.className = "bg-indigo-50 p-2 rounded-lg border border-indigo-100 text-sm";
-          const start = luxon.DateTime.fromJSDate(e.startDate.toJSDate());
-          li.textContent = `${start.toFormat("ccc dd LLL")} - ${e.summary}`;
-          list.appendChild(li);
-        });
-
-        card.appendChild(list);
-      }
-
-      container.appendChild(card);
-    }
-
-    async function init() {
-      for (const cal of calendars) {
-        try {
-          const comp = await fetchCalendar(cal.url);
-          const events = getEvents(comp);
-          const filtered = filterUpcoming(events);
-          renderCalendar(cal.name, filtered);
-        } catch (err) {
-          console.error("Error loading calendar", cal.name, err);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Villa Bookings Widget</title>
+    <style>
+        #booking-widget {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
         }
-      }
-    }
+        #booking-widget h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .no-bookings {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Your other HTML content here -->
 
-    init();
-  </script>
+    <div id="booking-widget">
+        <h2>Upcoming Bookings (Next 4 Days)</h2>
+        <div id="loading" class="loading">Loading bookings...</div>
+        <div id="content"></div>
+    </div>
+
+    <script>
+        // Configuration: Villa names and ICS URLs
+        const villas = [
+            { name: 'Villa 1', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8&showtime=true' },
+            { name: 'Villa 2', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411&showtime=true' },
+            { name: 'Villa 3', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84&showtime=true' },
+            { name: 'Villa 4', url: 'https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8&showtime=true' }
+        ];
+
+        // Function to parse .ics content into events
+        function parseICS(icsText) {
+            const events = [];
+            const lines = icsText.split('\n');
+            let currentEvent = null;
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line === 'BEGIN:VEVENT') {
+                    currentEvent = {};
+                } else if (line === 'END:VEVENT' && currentEvent) {
+                    events.push(currentEvent);
+                    currentEvent = null;
+                } else if (currentEvent) {
+                    const [key, ...valueParts] = line.split(':');
+                    const value = valueParts.join(':').replace(/\\,/g, ','); // Unescape commas
+                    if (key === 'DTSTART') {
+                        currentEvent.start = new Date(value.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6'));
+                    } else if (key === 'DTEND') {
+                        currentEvent.end = new Date(value.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6'));
+                    } else if (key === 'SUMMARY') {
+                        currentEvent.summary = value;
+                    } else if (key === 'DESCRIPTION') {
+                        currentEvent.description = value;
+                    }
+                }
+            }
+            return events.filter(e => e.start && e.end); // Filter valid events
+        }
+
+        // Function to get events for the next 4 days
+        function getUpcomingEvents(events) {
+            const today = new Date('2025-09-24T00:00:00'); // Current date
+            const endDate = new Date(today);
+            endDate.setDate(today.getDate() + 4);
+            return events.filter(event => {
+                const eventDate = new Date(event.start.getFullYear(), event.start.getMonth(), event.start.getDate());
+                return eventDate >= today && eventDate < endDate;
+            }).sort((a, b) => a.start - b.start);
+        }
+
+        // Function to group events by day
+        function groupByDay(events) {
+            const grouped = {};
+            events.forEach(event => {
+                const dateKey = event.start.toISOString().split('T')[0];
+                if (!grouped[dateKey]) grouped[dateKey] = [];
+                grouped[dateKey].push(event);
+            });
+            return grouped;
+        }
+
+        // Function to format event details
+        function formatEvent(event) {
+            const startTime = event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const endTime = event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const details = event.description ? `${event.summary || 'Booking'} (${event.description})` : (event.summary || 'Booking');
+            return `${details} | ${startTime} - ${endTime}`;
+        }
+
+        // Main function to fetch and display
+        async function loadBookings() {
+            const contentDiv = document.getElementById('content');
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'block';
+            contentDiv.innerHTML = '';
+
+            let hasData = false;
+
+            for (const villa of villas) {
+                try {
+                    const response = await fetch(villa.url);
+                    if (!response.ok) throw new Error('Fetch failed');
+                    const icsText = await response.text();
+                    const events = parseICS(icsText);
+                    const upcoming = getUpcomingEvents(events);
+                    const grouped = groupByDay(upcoming);
+
+                    // Build table for this villa
+                    let villaHtml = `<h3>${villa.name}</h3><table><tr><th>Date</th><th>Bookings</th></tr>`;
+                    if (Object.keys(grouped).length === 0) {
+                        villaHtml += `<tr><td colspan="2" class="no-bookings">No bookings for the next 4 days</td></tr>`;
+                    } else {
+                        hasData = true;
+                        Object.entries(grouped).forEach(([date, dayEvents]) => {
+                            const dateStr = new Date(date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                            const bookingsList = dayEvents.map(formatEvent).join('<br>');
+                            villaHtml += `<tr><td>${dateStr}</td><td>${bookingsList}</td></tr>`;
+                        });
+                    }
+                    villaHtml += '</table><br>';
+                    contentDiv.innerHTML += villaHtml;
+                } catch (error) {
+                    contentDiv.innerHTML += `<h3>${villa.name}</h3><p class="no-bookings">Error loading bookings (check console for details).</p><br>`;
+                }
+            }
+
+            loadingDiv.style.display = 'none';
+            if (!hasData) {
+                contentDiv.innerHTML = '<p class="no-bookings" style="text-align: center;">No upcoming bookings across all villas.</p>';
+            }
+        }
+
+        // Load on page load
+        window.addEventListener('load', loadBookings);
+    </script>
+
+    <!-- Your other HTML content here -->
 </body>
 </html>
