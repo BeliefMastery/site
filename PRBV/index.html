@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patons Rock Beach Villas - Bookings</title>
+  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <div class="max-w-5xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4 text-center">Patons Rock Beach Villas</h1>
+    <p class="text-lg mb-8 text-center text-gray-600">Welcome! Below are the upcoming bookings for each villa over the next 4 days.</p>
+
+    <div id="calendar-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </div>
+
+  <script>
+    // Replace these with your actual public Google Calendar ICS links
+    const calendars = [
+      { name: "Villa 1", url: "https://example.com/calendar1.ics" },
+      { name: "Villa 2", url: "https://example.com/calendar2.ics" },
+      { name: "Villa 3", url: "https://example.com/calendar3.ics" },
+      { name: "Villa 4", url: "https://example.com/calendar4.ics" }
+    ];
+
+    const today = luxon.DateTime.local().startOf("day");
+    const endDate = today.plus({ days: 4 });
+
+    async function fetchCalendar(url) {
+      const response = await fetch(url);
+      const text = await response.text();
+      return new ICAL.Component(ICAL.parse(text));
+    }
+
+    function getEvents(comp) {
+      const vevents = comp.getAllSubcomponents("vevent");
+      return vevents.map(v => new ICAL.Event(v));
+    }
+
+    function filterUpcoming(events) {
+      return events.filter(e => {
+        const start = luxon.DateTime.fromJSDate(e.startDate.toJSDate());
+        return start >= today && start < endDate;
+      });
+    }
+
+    function renderCalendar(name, events) {
+      const container = document.getElementById("calendar-container");
+      const card = document.createElement("div");
+      card.className = "bg-white rounded-2xl shadow p-4";
+
+      const header = document.createElement("h2");
+      header.className = "text-xl font-semibold mb-3 text-indigo-700";
+      header.textContent = name;
+      card.appendChild(header);
+
+      if (events.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "text-gray-500";
+        empty.textContent = "No bookings in the next 4 days.";
+        card.appendChild(empty);
+      } else {
+        const list = document.createElement("ul");
+        list.className = "space-y-2";
+
+        events.forEach(e => {
+          const li = document.createElement("li");
+          li.className = "border-b border-gray-200 pb-1";
+          const start = luxon.DateTime.fromJSDate(e.startDate.toJSDate());
+          li.textContent = `${start.toFormat("ccc dd LLL")} - ${e.summary}`;
+          list.appendChild(li);
+        });
+
+        card.appendChild(list);
+      }
+
+      container.appendChild(card);
+    }
+
+    async function init() {
+      for (const cal of calendars) {
+        try {
+          const comp = await fetchCalendar(cal.url);
+          const events = getEvents(comp);
+          const filtered = filterUpcoming(events);
+          renderCalendar(cal.name, filtered);
+        } catch (err) {
+          console.error("Error loading calendar", cal.name, err);
+        }
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
