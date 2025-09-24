@@ -15,34 +15,37 @@
             max-width: 1200px;
             margin: 30px auto;
             padding: 20px;
+            text-align: center;
         }
         .welcome-banner {
             background: linear-gradient(135deg, #004466, #0077b6);
             color: #ffffff;
             padding: 20px;
             border-radius: 10px;
-            text-align: center;
-            margin-bottom: 30px;
+            margin: 0 auto 30px auto;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            max-width: 800px;
         }
         .welcome-banner h1 {
             margin: 0 0 10px;
             font-size: 1.8em;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.5);
         }
         .welcome-banner p {
             margin: 0;
             font-size: 1.1em;
         }
         #booking-widget h2 {
-            text-align: center;
             margin-bottom: 25px;
             font-size: 1.6em;
             color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.5);
         }
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 25px;
+            justify-content: center;
         }
         .calendar-container {
             background: #222222;
@@ -61,32 +64,30 @@
         .calendar-container::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: -150%;
-            width: 80%;
-            height: 100%;
-            background: linear-gradient(
-                120deg,
-                transparent,
-                rgba(255, 255, 255, 0.15),
-                transparent
-            );
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 10%, transparent 20%);
             pointer-events: none;
         }
         .calendar-container::before {
-            animation: sparkle1 6s infinite linear;
+            width: 20px;
+            height: 20px;
+            top: 20%;
+            left: 30%;
+            animation: twinkle 4s infinite ease-in-out;
         }
         .calendar-container::after {
-            animation: sparkle2 9s infinite linear;
+            width: 30px;
+            height: 30px;
+            top: 60%;
+            left: 70%;
+            animation: sparkle 5s infinite ease-in-out 1s;
         }
-        @keyframes sparkle1 {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(300%); }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.5); }
         }
-        @keyframes sparkle2 {
-            0% { transform: translateX(0) translateY(0); }
-            50% { transform: translateX(250%) translateY(-10%); }
-            100% { transform: translateX(300%) translateY(0); }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.8; transform: scale(1.8); }
         }
         .calendar-container h3 {
             margin: 0 0 10px;
