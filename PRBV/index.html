@@ -55,84 +55,13 @@
             border: 1px solid #333333;
             padding: 15px;
             text-align: center;
-            transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
-            position: relative;
-            overflow: hidden;
             min-width: 250px;
             max-width: 500px;
-        }
-        .calendar-container::before,
-        .calendar-container::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 80%;
-            height: 100%;
-            background: linear-gradient(
-                120deg,
-                transparent,
-                rgba(255, 255, 255, 0.15),
-                transparent
-            );
-            pointer-events: none;
-        }
-        .calendar-container::before {
-            animation: sparkle1 6s infinite linear;
-        }
-        .calendar-container::after {
-            animation: sparkle2 9s infinite linear;
-        }
-        @keyframes sparkle1 {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(300%); }
-        }
-        @keyframes sparkle2 {
-            0% { transform: translateX(0) translateY(0); }
-            50% { transform: translateX(250%) translateY(-10%); }
-            100% { transform: translateX(300%) translateY(0); }
         }
         .calendar-container h3 {
             margin: 0 0 10px;
             font-size: 1.2em;
             color: #00b4d8;
-        }
-        .calendar-container span.spark {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 70%);
-            width: 10px;
-            height: 10px;
-            opacity: 0;
-            animation: sparkleAnim 4s infinite ease-in-out;
-        }
-        .calendar-container span.spark:nth-child(2) {
-            top: 20%;
-            left: 30%;
-            animation-delay: 0s;
-        }
-        .calendar-container span.spark:nth-child(3) {
-            top: 50%;
-            left: 70%;
-            width: 14px;
-            height: 14px;
-            animation-delay: 1s;
-        }
-        .calendar-container span.spark:nth-child(4) {
-            top: 70%;
-            left: 40%;
-            animation-delay: 2s;
-        }
-        .calendar-container span.spark:nth-child(5) {
-            top: 35%;
-            left: 80%;
-            width: 12px;
-            height: 12px;
-            animation-delay: 3s;
-        }
-        @keyframes sparkleAnim {
-            0%, 100% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.5); }
         }
         iframe {
             border: 0;
@@ -157,23 +86,19 @@
         <div class="calendar-grid">
             <div class="calendar-container">
                 <h3>Villa 1</h3>
-                <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC&mode=DAY" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-
+                <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC&mode=DAY" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>
             </div>
             <div class="calendar-container">
                 <h3>Villa 2</h3>
                 <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&ctz=UTC&mode=DAY" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>
-
             </div>
             <div class="calendar-container">
                 <h3>Villa 3</h3>
                 <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&ctz=UTC&mode=DAY" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>
-
             </div>
             <div class="calendar-container">
                 <h3>Villa 4</h3>
                 <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&ctz=UTC&mode=DAY" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>
-
             </div>
         </div>
     </div>
