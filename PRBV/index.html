@@ -86,34 +86,31 @@
         <div class="calendar-grid">
             <div class="calendar-container">
                 <h1>Villa 1</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+                <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
             </div>
             <div class="calendar-container">
                 <h1>Villa 2</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+                <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
             </div>
             <div class="calendar-container">
                 <h1>Villa 3</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+                <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
             </div>
             <div class="calendar-container">
                 <h1>Villa 4</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+                <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
             </div>
         </div>
     </div>
+
     <script>
-        function getTodayDateUTC() {
-            const today = new Date();
-            const year = today.getUTCFullYear();
-            const month = String(today.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(today.getUTCDate()).padStart(2, '0');
-            return `${year}${month}${day}`;
-        }
+        // Automatically detect and apply the viewer's timezone
+        const viewerTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Pacific/Auckland';
+
         document.querySelectorAll('iframe').forEach(iframe => {
-            const src = iframe.src;
-            const today = getTodayDateUTC();
-            iframe.src = src.replace(/&dates=[^&]*/, '') + `&dates=${today}/${today}`;
+            const src = new URL(iframe.src);
+            src.searchParams.set('ctz', viewerTZ);  // set timezone for display
+            iframe.src = src.toString();
         });
     </script>
 </body>
