@@ -29,20 +29,23 @@
     .welcome-banner h1 {
       margin: 0 0 10px;
       font-size: 1.8em;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6),
-                   0 0 10px rgba(255, 215, 0, 0.4);
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4);
     }
     .welcome-banner p {
       margin: 0;
       font-size: 1.1em;
+    }
+    #current-date {
+      margin-top: 10px;
+      font-size: 1.2em;
+      color: #FFD700;
     }
     #booking-widget h2 {
       text-align: center;
       margin-bottom: 25px;
       font-size: 1.6em;
       color: #ffffff;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6),
-                   0 0 10px rgba(255, 215, 0, 0.4);
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4);
     }
     .calendar-grid {
       display: grid;
@@ -53,8 +56,7 @@
     .calendar-container {
       background: #222222;
       border-radius: 17px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.5),
-                  inset 0 0 5px rgba(255,255,255,0.1);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 0 5px rgba(255,255,255,0.1);
       border: 2px solid #333333;
       padding: 18px;
       text-align: center;
@@ -84,52 +86,34 @@
     <div class="welcome-banner">
       <h1>Welcome to Patons Rock Beach Villas</h1>
       <p>We’re delighted to host you. Enjoy your stay, and if you need assistance please call <strong>027 356 3551</strong>.</p>
+      <div id="current-date"></div>
     </div>
-    <h2>Today's Bookings</h2>
+
+    <h2>Upcoming Bookings</h2>
     <div class="calendar-grid">
       <div class="calendar-container">
         <h1>Villa 1</h1>
-        <iframe data-src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
       </div>
       <div class="calendar-container">
         <h1>Villa 2</h1>
-        <iframe data-src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
       </div>
       <div class="calendar-container">
         <h1>Villa 3</h1>
-        <iframe data-src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
       </div>
       <div class="calendar-container">
         <h1>Villa 4</h1>
-        <iframe data-src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
       </div>
     </div>
   </div>
 
   <script>
-    // Function to get today's date in UTC rolled forward to NZ local
-    function getNZLocalDateRange() {
-      const now = new Date();
-      // Determine NZ local offset from UTC (handles DST automatically)
-      const nzOffsetMs = new Date().toLocaleString("en-US", { timeZone: "Pacific/Auckland" });
-      const nzNow = new Date(nzOffsetMs);
-      const start = new Date(nzNow);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(start);
-      end.setDate(start.getDate() + 1);
-
-      const toYMD = d =>
-        `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
-
-      return { start: toYMD(start), end: toYMD(end) };
-    }
-
-    const { start, end } = getNZLocalDateRange();
-
-    document.querySelectorAll('iframe').forEach(iframe => {
-      const baseSrc = iframe.getAttribute('data-src');
-      iframe.src = `${baseSrc}&dates=${start}/${end}`;
-    });
+    // Display current NZ local date in the banner
+    const nowNZ = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('current-date').textContent = `Today in New Zealand: ${nowNZ}`;
   </script>
 </body>
 </html>
