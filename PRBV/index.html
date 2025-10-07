@@ -8,8 +8,8 @@
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 0;
-      background: #000000;
-      color: #ffffff;
+      background: #000;
+      color: #fff;
     }
     #booking-widget {
       max-width: 1200px;
@@ -19,7 +19,7 @@
     }
     .welcome-banner {
       background: linear-gradient(135deg, #004466, #0077b6);
-      color: #ffffff;
+      color: #fff;
       padding: 20px;
       border-radius: 10px;
       margin: 0 auto 30px auto;
@@ -29,23 +29,13 @@
     .welcome-banner h1 {
       margin: 0 0 10px;
       font-size: 1.8em;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4);
+      text-shadow: 0 0 6px rgba(255,215,0,0.6), 0 0 10px rgba(255,215,0,0.4);
     }
-    .welcome-banner p {
-      margin: 0;
-      font-size: 1.1em;
-    }
+    .welcome-banner p { margin: 0; font-size: 1.1em; }
     #current-date {
       margin-top: 10px;
       font-size: 1.2em;
       color: #FFD700;
-    }
-    #booking-widget h2 {
-      text-align: center;
-      margin-bottom: 25px;
-      font-size: 1.6em;
-      color: #ffffff;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4);
     }
     .calendar-grid {
       display: grid;
@@ -54,10 +44,10 @@
       justify-content: center;
     }
     .calendar-container {
-      background: #222222;
+      background: #222;
       border-radius: 17px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 0 5px rgba(255,255,255,0.1);
-      border: 2px solid #333333;
+      border: 2px solid #333;
       padding: 18px;
       text-align: center;
       min-width: 250px;
@@ -74,11 +64,7 @@
       height: 90px;
       border-radius: 10px;
     }
-    @media (max-width: 700px) {
-      .calendar-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width:700px){.calendar-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -93,27 +79,33 @@
     <div class="calendar-grid">
       <div class="calendar-container">
         <h1>Villa 1</h1>
-        <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=UTC"></iframe>
       </div>
       <div class="calendar-container">
         <h1>Villa 2</h1>
-        <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=UTC"></iframe>
       </div>
       <div class="calendar-container">
         <h1>Villa 3</h1>
-        <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=UTC"></iframe>
       </div>
       <div class="calendar-container">
         <h1>Villa 4</h1>
-        <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=Pacific/Auckland"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&hl=en&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&ctz=UTC"></iframe>
       </div>
     </div>
   </div>
 
   <script>
-    // Display current NZ local date in the banner
-    const nowNZ = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    document.getElementById('current-date').textContent = `Today in New Zealand: ${nowNZ}`;
+    // Show current NZ date but keep calendar in UTC to preserve times
+    const now = new Date();
+    // Add 13 hours for NZDT (or use Intl for auto adjustment)
+    const nzTime = new Date(now.getTime() + (13 * 60 * 60 * 1000));
+    const formatted = nzTime.toLocaleString('en-NZ', { 
+      timeZone: 'Pacific/Auckland',
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+    });
+    document.getElementById('current-date').textContent = `Today in New Zealand: ${formatted}`;
   </script>
 </body>
 </html>
