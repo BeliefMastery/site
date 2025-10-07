@@ -1,123 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Villa Bookings Widget</title>
-    <style>
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            margin: 0;
-            background: #000000;
-            color: #ffffff;
-        }
-        #booking-widget {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            text-align: center;
-        }
-        .welcome-banner {
-            background: linear-gradient(135deg, #004466, #0077b6);
-            color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 0 auto 30px auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            max-width: 800px;
-        }
-        .welcome-banner h1 {
-            margin: 0 0 10px;
-            font-size: 1.8em;
-            text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4);
-        }
-        .welcome-banner p {
-            margin: 0;
-            font-size: 1.1em;
-        }
-        #booking-widget h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.6em;
-            color: #ffffff;
-            text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4);
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            justify-content: center;
-        }
-        .calendar-container {
-            background: #222222;
-            border-radius: 17px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 0 5px rgba(255,255,255,0.1);
-            border: 2px solid #333333;
-            padding: 18px;
-            text-align: center;
-            min-width: 250px;
-            max-width: 500px;
-        }
-        .calendar-container h1 {
-            margin: 0 0 10px;
-            font-size: 1.2em;
-            color: #00b4d8;
-        }
-        iframe {
-            border: 0;
-            width: 100%;
-            height: 90px;
-            border-radius: 10px;
-        }
-        @media (max-width: 700px) {
-            .calendar-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        h1 {
-  font-size: 2.2em;   /* slightly larger */
-  font-weight: 700;   /* bold */
-  color: #ffffff;     /* white */
-  margin-bottom: 0.5em;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Villa Bookings Widget</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background: #000000;
+      color: #ffffff;
+    }
+    #booking-widget {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    .welcome-banner {
+      background: linear-gradient(135deg, #004466, #0077b6);
+      color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      max-width: 800px;
+    }
+    .welcome-banner h1 {
+      margin: 0 0 10px;
+      font-size: 1.8em;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6),
+                   0 0 10px rgba(255, 215, 0, 0.4);
+    }
+    .welcome-banner p {
+      margin: 0;
+      font-size: 1.1em;
+    }
+    #booking-widget h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.6em;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6),
+                   0 0 10px rgba(255, 215, 0, 0.4);
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      justify-content: center;
+    }
+    .calendar-container {
+      position: relative;
+      background: #222222;
+      border-radius: 17px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5),
+                  inset 0 0 5px rgba(255,255,255,0.1);
+      border: 2px solid #333333;
+      padding: 18px;
+      text-align: center;
+      min-width: 250px;
+      max-width: 500px;
+    }
+    .calendar-container h1 {
+      margin: 0 0 10px;
+      font-size: 1.2em;
+      color: #00b4d8;
+    }
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 90px;
+      border-radius: 10px;
+    }
+    .tz-label {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 0.75em;
+      padding: 4px 8px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(255,255,255,0.2);
+    }
+    @media (max-width: 700px) {
+      .calendar-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="booking-widget">
-        <div class="welcome-banner">
-            <h1>Welcome to Patons Rock Beach Villas</h1>
-            <p>We’re delighted to host you. Enjoy your stay, and if you need assistance please call <strong>027 356 3551</strong>.</p>
-        </div>
-        <h2>Upcoming Bookings</h2>
-        <div class="calendar-grid">
-            <div class="calendar-container">
-                <h1>Villa 1</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
-            </div>
-            <div class="calendar-container">
-                <h1>Villa 2</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
-            </div>
-            <div class="calendar-container">
-                <h1>Villa 3</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
-            </div>
-            <div class="calendar-container">
-                <h1>Villa 4</h1>
-                <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
-            </div>
-        </div>
+  <div id="booking-widget">
+    <div class="welcome-banner">
+      <h1>Welcome to Patons Rock Beach Villas</h1>
+      <p>We’re delighted to host you. Enjoy your stay, and if you need assistance please call <strong>027 356 3551</strong>.</p>
     </div>
+    <h2>Upcoming Bookings</h2>
+    <div class="calendar-grid">
 
-    <script>
-        // Automatically detect and apply the viewer's timezone
-        const viewerTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Pacific/Auckland';
+      <div class="calendar-container">
+        <h1>Villa 1</h1>
+        <iframe src="https://calendar.google.com/calendar/embed?src=dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+      </div>
 
-        document.querySelectorAll('iframe').forEach(iframe => {
-            const src = new URL(iframe.src);
-            src.searchParams.set('ctz', viewerTZ);  // set timezone for display
-            iframe.src = src.toString();
-        });
-    </script>
+      <div class="calendar-container">
+        <h1>Villa 2</h1>
+        <iframe src="https://calendar.google.com/calendar/embed?src=u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+      </div>
+
+      <div class="calendar-container">
+        <h1>Villa 3</h1>
+        <iframe src="https://calendar.google.com/calendar/embed?src=ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+      </div>
+
+      <div class="calendar-container">
+        <h1>Villa 4</h1>
+        <iframe src="https://calendar.google.com/calendar/embed?src=sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com&ctz=UTC&hl=en_US&mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Add a small label showing local offset interpretation
+    const localOffsetHours = 11; // switch to 13 during NZDT if needed
+    document.querySelectorAll('.calendar-container').forEach(container => {
+      const label = document.createElement('div');
+      label.className = 'tz-label';
+      label.textContent = `UTC (+${localOffsetHours} h NZ local)`;
+      container.appendChild(label);
+    });
+  </script>
 </body>
 </html>
