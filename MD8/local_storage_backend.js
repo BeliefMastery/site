@@ -63,6 +63,14 @@ class LocalStorageBackend {
         if (!this.get('case_timeline')) {
             this.set('case_timeline', []);
         }
+
+        if (!this.get('information_requests')) {
+            this.set('information_requests', []);
+        }
+
+        if (!this.get('notifications')) {
+            this.set('notifications', []);
+        }
     }
 
     // Storage helper methods
@@ -533,10 +541,197 @@ class LocalStorageBackend {
             if (data.cases) this.set('cases', data.cases);
             if (data.case_participants) this.set('case_participants', data.case_participants);
             if (data.case_timeline) this.set('case_timeline', data.case_timeline);
+            if (data.information_requests) this.set('information_requests', data.information_requests);
+            if (data.notifications) this.set('notifications', data.notifications);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
         }
+    }
+
+    // Information Request Methods
+    createInformationRequest(mediatorId, clientId, caseId, title, description, requestedFields) {
+        const requests = this.get('information_requests') || [];
+        const requestId = this.generateId();
+        
+        const newRequest = {
+            request_id: requestId,
+            mediator_id: mediatorId,
+            client_id: clientId,
+            case_id: caseId || null,
+            request_title: title,
+            request_description: description,
+            requested_fields: requestedFields || [],
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            completed_at: null,
+            client_response: null
+        };
+
+        requests.push(newRequest);
+        this.set('information_requests', requests);
+
+        // Create notification for client
+        this.createNotification(clientId, 'info_request', 
+            'New Information Request', 
+            `Your mediator has requested additional information: ${title}`,
+            requestId);
+
+        return { success: true, request_id: requestId };
+    }
+
+    getInformationRequestsForUser(userId, userRole) {
+        const requests = this.get('information_requests') || [];
+        const users = this.get('users') || [];
+        
+        if (userRole === 'mediator') {
+            return requests
+                .filter(r => r.mediator_id === userId)
+                .map(request => {
+                    const client = users.find(u => u.user_id === request.client_id);
+                    return {
+                        ...request,
+                        client_name: client ? client.full_name : 'Unknown',
+                        client_email: client ? client.email : ''
+                    };
+                });
+        } else if (userRole === 'client') {
+            return requests
+                .filter(r => r.client_id === userId)
+                .map(request => {
+                    const mediator = users.find(u => u.user_id === request.mediator_id);
+                    return {
+                        ...request,
+                        mediator_name: mediator ? mediator.full_name : 'Unknown',
+                        mediator_email: mediator ? mediator.email : ''
+                    };
+                });
+        }
+        
+        return [];
+    }
+
+    updateInformationRequestResponse(requestId, clientId, response) {
+        const requests = this.get('information_requests') || [];
+        const requestIndex = requests.findIndex(r => r.request_id === requestId);
+        
+        if (requestIndex === -1) {
+            return { success: false, error: 'Request not found' };
+        }
+
+        if (requests[requestIndex].client_id !== clientId) {
+            return { success: false, error: 'Unauthorized' };
+        }
+
+        requests[requestIndex].client_response = response;
+        requests[requestIndex].status = 'completed';
+        requests[requestIndex].completed_at = new Date().toISOString();
+        
+        this.set('information_requests', requests);
+
+        // Create notification for mediator
+        this.createNotification(requests[requestIndex].mediator_id, 'info_request', 
+            'Information Request Completed', 
+            `Client has completed your information request: ${requests[requestIndex].request_title}`,
+            requestId);
+
+        return { success: true };
+    }
+
+    // Notification Methods
+    createNotification(userId, type, title, message, relatedId = null) {
+        const notifications = this.get('notifications') || [];
+        const notificationId = this.generateId();
+        
+        const newNotification = {
+            notification_id: notificationId,
+            user_id: userId,
+            type: type,
+            title: title,
+            message: message,
+            is_read: 0,
+            related_id: relatedId,
+            created_at: new Date().toISOString()
+        };
+
+        notifications.push(newNotification);
+        this.set('notifications', notifications);
+
+        return { success: true, notification_id: notificationId };
+    }
+
+    getNotificationsForUser(userId) {
+        const notifications = this.get('notifications') || [];
+        return notifications
+            .filter(n => n.user_id === userId)
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    markNotificationAsRead(notificationId, userId) {
+        const notifications = this.get('notifications') || [];
+        const notificationIndex = notifications.findIndex(n => n.notification_id === notificationId);
+        
+        if (notificationIndex === -1) {
+            return { success: false, error: 'Notification not found' };
+        }
+
+        if (notifications[notificationIndex].user_id !== userId) {
+            return { success: false, error: 'Unauthorized' };
+        }
+
+        notifications[notificationIndex].is_read = 1;
+        this.set('notifications', notifications);
+
+        return { success: true };
+    }
+
+    getUnreadNotificationCount(userId) {
+        const notifications = this.get('notifications') || [];
+        return notifications.filter(n => n.user_id === userId && !n.is_read).length;
+    }
+
+    // Client-Mediator Association Methods
+    getClientsForMediator(mediatorId) {
+        const users = this.get('users') || [];
+        return users
+            .filter(u => u.role === 'client' && 
+                        u.preferred_mediators && 
+                        u.preferred_mediators.includes(mediatorId))
+            .map(client => {
+                const { password_hash, ...clientWithoutPassword } = client;
+                return clientWithoutPassword;
+            });
+    }
+
+    getMediatorsForClient(clientId) {
+        const users = this.get('users') || [];
+        const client = users.find(u => u.user_id === clientId);
+        
+        if (!client || !client.preferred_mediators) {
+            return [];
+        }
+
+        return users
+            .filter(u => u.role === 'mediator' && 
+                        client.preferred_mediators.includes(u.user_id))
+            .map(mediator => {
+                const { password_hash, ...mediatorWithoutPassword } = mediator;
+                return mediatorWithoutPassword;
+            });
+    }
+
+    updateClientMediatorAssociation(clientId, mediatorIds) {
+        const users = this.get('users') || [];
+        const clientIndex = users.findIndex(u => u.user_id === clientId);
+        
+        if (clientIndex === -1) {
+            return { success: false, error: 'Client not found' };
+        }
+
+        users[clientIndex].preferred_mediators = mediatorIds;
+        this.set('users', users);
+
+        return { success: true };
     }
 }
 

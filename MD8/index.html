@@ -1867,6 +1867,8 @@
         function loadClientDashboard() {
             loadClientCases();
             loadClientForms();
+            loadClientMediators();
+            loadClientInformationRequests();
         }
 
         // Global case storage
@@ -1941,42 +1943,82 @@
         }
 
         function loadClientCases() {
-            const casesContainer = document.getElementById('client-cases');
-            
-            // Filter cases where current user is assigned as a client
-            const clientCases = userCases.filter(caseItem => 
-                caseItem.assignedClients && caseItem.assignedClients.includes(currentUser.email)
-            );
-            
-            if (clientCases.length === 0) {
-                casesContainer.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
-                        <h3>No Assigned Cases</h3>
-                        <p>You haven't been assigned to any cases yet. Contact your mediator to get started.</p>
-                    </div>
-                `;
-            } else {
-                casesContainer.innerHTML = clientCases.map(caseItem => `
-                    <div class="case-card">
-                        <div class="case-header">
-                            <div>
-                                <div class="case-title">${caseItem.title}</div>
-                                <div class="case-number">${caseItem.number}</div>
+            try {
+                const casesContainer = document.getElementById('client-cases');
+                
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Loading client cases from local storage');
+                    const clientCases = window.LSBackend.getCasesForUser(currentUser.user_id, userRole);
+                    
+                    if (clientCases.length === 0) {
+                        casesContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                                <h3>No Assigned Cases</h3>
+                                <p>You haven't been assigned to any cases yet. Contact your mediator to get started.</p>
                             </div>
-                            <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
-                        </div>
-                        <div class="case-description">${caseItem.description}</div>
-                        <div class="case-meta">
-                            <span>Mediator: ${caseItem.mediator}</span>
-                            <span>Created: ${caseItem.created}</span>
-                        </div>
-                        <div class="case-actions">
-                            <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View Details</button>
-                            <button class="btn btn-secondary btn-sm" onclick="openClientCaseDetails('${caseItem.id}')">Complete Case Details</button>
-                        </div>
-                    </div>
-                `).join('');
+                        `;
+                    } else {
+                        casesContainer.innerHTML = clientCases.map(caseItem => `
+                            <div class="case-card">
+                                <div class="case-header">
+                                    <div>
+                                        <div class="case-title">${caseItem.title}</div>
+                                        <div class="case-number">${caseItem.case_number}</div>
+                                    </div>
+                                    <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
+                                </div>
+                                <div class="case-description">${caseItem.description}</div>
+                                <div class="case-meta">
+                                    <span>Mediator: ${caseItem.mediator_name}</span>
+                                    <span>Created: ${new Date(caseItem.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div class="case-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.case_id}')">View Details</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="openClientCaseDetails('${caseItem.case_id}')">Complete Case Details</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    // Fallback to old system
+                    const clientCases = userCases.filter(caseItem => 
+                        caseItem.assignedClients && caseItem.assignedClients.includes(currentUser.email)
+                    );
+                    
+                    if (clientCases.length === 0) {
+                        casesContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                                <h3>No Assigned Cases</h3>
+                                <p>You haven't been assigned to any cases yet. Contact your mediator to get started.</p>
+                            </div>
+                        `;
+                    } else {
+                        casesContainer.innerHTML = clientCases.map(caseItem => `
+                            <div class="case-card">
+                                <div class="case-header">
+                                    <div>
+                                        <div class="case-title">${caseItem.title}</div>
+                                        <div class="case-number">${caseItem.number}</div>
+                                    </div>
+                                    <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
+                                </div>
+                                <div class="case-description">${caseItem.description}</div>
+                                <div class="case-meta">
+                                    <span>Mediator: ${caseItem.mediator}</span>
+                                    <span>Created: ${caseItem.created}</span>
+                                </div>
+                                <div class="case-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View Details</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="openClientCaseDetails('${caseItem.id}')">Complete Case Details</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading client cases:', error);
             }
             
             // Update metrics
@@ -2048,13 +2090,114 @@
         }
 
         function updateClientMetrics() {
-            const clientCases = userCases.filter(caseItem => 
-                caseItem.assignedClients && caseItem.assignedClients.includes(currentUser.email)
-            );
-            
-            document.getElementById('client-cases-count').textContent = clientCases.length;
-            document.getElementById('upcoming-sessions-count').textContent = '0'; // TODO: Implement session tracking
-            document.getElementById('pending-forms-count').textContent = '0'; // TODO: Implement form tracking
+            try {
+                if (USE_LOCAL_STORAGE) {
+                    // Get client's cases
+                    const cases = window.LSBackend.getCasesForUser(currentUser.user_id, userRole);
+                    document.getElementById('client-cases-count').textContent = cases.length;
+                    
+                    // Get assigned mediators
+                    const mediators = window.LSBackend.getMediatorsForClient(currentUser.user_id);
+                    document.getElementById('assigned-mediators-count').textContent = mediators.length;
+                    
+                    // Get pending information requests
+                    const requests = window.LSBackend.getInformationRequestsForUser(currentUser.user_id, userRole);
+                    const pendingRequests = requests.filter(r => r.status === 'pending');
+                    document.getElementById('pending-requests-count').textContent = pendingRequests.length;
+                    
+                    // Get unread notifications
+                    const unreadCount = window.LSBackend.getUnreadNotificationCount(currentUser.user_id);
+                    document.getElementById('upcoming-sessions-count').textContent = unreadCount;
+                } else {
+                    // Fallback to old system
+                    const clientCases = userCases.filter(caseItem => 
+                        caseItem.assignedClients && caseItem.assignedClients.includes(currentUser.email)
+                    );
+                    
+                    document.getElementById('client-cases-count').textContent = clientCases.length;
+                    document.getElementById('upcoming-sessions-count').textContent = '0';
+                    document.getElementById('pending-forms-count').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error updating client metrics:', error);
+            }
+        }
+
+        function loadClientMediators() {
+            try {
+                if (USE_LOCAL_STORAGE) {
+                    const mediators = window.LSBackend.getMediatorsForClient(currentUser.user_id);
+                    const mediatorsContainer = document.getElementById('client-mediators');
+                    
+                    if (mediators.length === 0) {
+                        mediatorsContainer.innerHTML = `
+                            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">👥</div>
+                                <h3>No Assigned Mediators</h3>
+                                <p>Contact your administrator to get assigned to a mediator.</p>
+                            </div>
+                        `;
+                    } else {
+                        mediatorsContainer.innerHTML = mediators.map(mediator => `
+                            <div class="mediator-card">
+                                <div class="mediator-info">
+                                    <h4>${mediator.full_name}</h4>
+                                    <p>${mediator.organization}</p>
+                                    <p class="mediator-email">${mediator.email}</p>
+                                </div>
+                                <div class="mediator-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="contactMediator('${mediator.user_id}')">Contact</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="viewMediatorInfo('${mediator.user_id}')">View Info</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading client mediators:', error);
+            }
+        }
+
+        function loadClientInformationRequests() {
+            try {
+                if (USE_LOCAL_STORAGE) {
+                    const requests = window.LSBackend.getInformationRequestsForUser(currentUser.user_id, userRole);
+                    const requestsContainer = document.getElementById('client-requests');
+                    
+                    if (requests.length === 0) {
+                        requestsContainer.innerHTML = `
+                            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">📋</div>
+                                <h3>No Information Requests</h3>
+                                <p>Your mediator will send you requests for additional information when needed.</p>
+                            </div>
+                        `;
+                    } else {
+                        requestsContainer.innerHTML = requests.map(request => `
+                            <div class="request-card ${request.status}">
+                                <div class="request-header">
+                                    <h4>${request.request_title}</h4>
+                                    <span class="status-badge status-${request.status}">${request.status}</span>
+                                </div>
+                                <div class="request-details">
+                                    <p><strong>From:</strong> ${request.mediator_name}</p>
+                                    <p><strong>Description:</strong> ${request.request_description}</p>
+                                    <p><strong>Requested:</strong> ${new Date(request.created_at).toLocaleDateString()}</p>
+                                </div>
+                                <div class="request-actions">
+                                    ${request.status === 'pending' ? `
+                                        <button class="btn btn-primary btn-sm" onclick="respondToRequest('${request.request_id}')">Respond</button>
+                                    ` : `
+                                        <button class="btn btn-secondary btn-sm" onclick="viewRequestResponse('${request.request_id}')">View Response</button>
+                                    `}
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading client information requests:', error);
+            }
         }
 
         // Case management functions
