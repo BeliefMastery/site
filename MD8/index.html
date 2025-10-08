@@ -846,6 +846,90 @@
                 padding: 1.5rem;
             }
         }
+
+        /* Case Details View Styles */
+        .case-details-view {
+            max-width: 100%;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            align-items: flex-start;
+        }
+
+        .detail-row label {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 120px;
+            margin-right: 1rem;
+        }
+
+        .detail-row span {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+
+        .detail-section {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .detail-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .participant {
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-event {
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--primary-color);
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        .priority-high, .priority-urgent {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .priority-medium {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .priority-low {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .status-active {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .status-pending {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .status-completed {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .status-retired {
+            color: var(--error-color);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -1136,6 +1220,67 @@
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('new-case-modal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create Case</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Case Modal -->
+    <div id="edit-case-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Case</h2>
+                <button class="modal-close" onclick="closeModal('edit-case-modal')">&times;</button>
+            </div>
+            <form id="edit-case-form">
+                <div class="form-group">
+                    <label for="edit-case-title">Case Title *</label>
+                    <input type="text" id="edit-case-title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-case-description">Description</label>
+                    <textarea id="edit-case-description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-case-category">Category *</label>
+                        <select id="edit-case-category" required>
+                            <option value="">Select Category</option>
+                            <option value="property">Property Dispute</option>
+                            <option value="family">Family Mediation</option>
+                            <option value="business">Business Dispute</option>
+                            <option value="employment">Employment</option>
+                            <option value="community">Community</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-case-priority">Priority</label>
+                        <select id="edit-case-priority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-case-status">Status</label>
+                        <select id="edit-case-status">
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="on-hold">On Hold</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('edit-case-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Case</button>
                 </div>
             </form>
         </div>
@@ -1914,30 +2059,141 @@
 
         // Case management functions
         function viewCase(caseId) {
-            const caseItem = userCases.find(c => c.id === caseId);
-            if (!caseItem) {
-                alert('Case not found');
-                return;
-            }
-
-            const caseDetails = `
-Case Details:
-Title: ${caseItem.title}
-Number: ${caseItem.number}
-Status: ${caseItem.status}
-Category: ${caseItem.category}
-Description: ${caseItem.description}
-Created: ${caseItem.created}
-Mediator: ${caseItem.mediator}
-Parties: ${caseItem.parties}
-Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', ') : 'None'}
-            `;
+            console.log('Viewing case:', caseId);
             
-            alert(caseDetails);
+            try {
+                let caseDetails;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Getting case details from local storage');
+                    caseDetails = window.LSBackend.getCaseDetails(caseId);
+                } else {
+                    // API call would go here
+                    alert('API mode not implemented for case viewing');
+                    return;
+                }
+                
+                if (caseDetails) {
+                    // Create a detailed view modal
+                    const modal = document.createElement('div');
+                    modal.className = 'modal active';
+                    modal.id = 'case-details-modal';
+                    modal.innerHTML = `
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2>Case Details</h2>
+                                <button class="close-btn" onclick="closeModal('case-details-modal')">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="case-details-view">
+                                    <div class="detail-row">
+                                        <label>Case Number:</label>
+                                        <span>${caseDetails.case_number}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Title:</label>
+                                        <span>${caseDetails.title}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Description:</label>
+                                        <span>${caseDetails.description}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Category:</label>
+                                        <span>${caseDetails.category}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Priority:</label>
+                                        <span class="priority-${caseDetails.priority}">${caseDetails.priority}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Status:</label>
+                                        <span class="status-${caseDetails.status}">${caseDetails.status}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Mediator:</label>
+                                        <span>${caseDetails.mediator_name}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <label>Created:</label>
+                                        <span>${new Date(caseDetails.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    
+                                    ${caseDetails.participants && caseDetails.participants.length > 0 ? `
+                                    <div class="detail-section">
+                                        <h3>Participants</h3>
+                                        ${caseDetails.participants.map(p => `
+                                            <div class="participant">
+                                                <strong>${p.full_name}</strong> (${p.role})<br>
+                                                <small>${p.email}</small>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    ` : ''}
+                                    
+                                    ${caseDetails.timeline && caseDetails.timeline.length > 0 ? `
+                                    <div class="detail-section">
+                                        <h3>Case Timeline</h3>
+                                        ${caseDetails.timeline.map(event => `
+                                            <div class="timeline-event">
+                                                <strong>${event.event_type}</strong>: ${event.event_description}<br>
+                                                <small>${new Date(event.created_at).toLocaleString()}</small>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" onclick="closeModal('case-details-modal')">Close</button>
+                                <button class="btn btn-primary" onclick="editCase('${caseId}')">Edit Case</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(modal);
+                } else {
+                    alert('Case not found');
+                }
+            } catch (error) {
+                console.error('Error viewing case:', error);
+                alert('Error loading case details');
+            }
         }
 
         function editCase(caseId) {
-            alert(`Editing Case #${caseId}`);
+            console.log('Editing case:', caseId);
+            
+            try {
+                let caseDetails;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Getting case details for editing from local storage');
+                    caseDetails = window.LSBackend.getCaseDetails(caseId);
+                } else {
+                    // API call would go here
+                    alert('API mode not implemented for case editing');
+                    return;
+                }
+                
+                if (caseDetails) {
+                    // Populate edit form with case data
+                    document.getElementById('edit-case-title').value = caseDetails.title;
+                    document.getElementById('edit-case-description').value = caseDetails.description;
+                    document.getElementById('edit-case-category').value = caseDetails.category;
+                    document.getElementById('edit-case-priority').value = caseDetails.priority;
+                    document.getElementById('edit-case-status').value = caseDetails.status;
+                    
+                    // Store current case ID for update
+                    document.getElementById('edit-case-modal').dataset.caseId = caseId;
+                    
+                    // Show edit modal
+                    openModal('edit-case-modal');
+                } else {
+                    alert('Case not found');
+                }
+            } catch (error) {
+                console.error('Error editing case:', error);
+                alert('Error loading case for editing');
+            }
         }
 
         function assignClient(caseId) {
@@ -2236,6 +2492,68 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
             } catch (error) {
                 console.error('Error creating case:', error);
                 alert('Error creating case. Please try again.');
+            }
+        });
+
+        document.getElementById('edit-case-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const modal = document.getElementById('edit-case-modal');
+                const caseId = modal.dataset.caseId;
+                
+                // Get form data
+                const title = document.getElementById('edit-case-title').value;
+                const description = document.getElementById('edit-case-description').value;
+                const category = document.getElementById('edit-case-category').value;
+                const priority = document.getElementById('edit-case-priority').value;
+                const status = document.getElementById('edit-case-status').value;
+                
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Updating case with local storage backend');
+                    
+                    // Get current case details
+                    const currentCase = window.LSBackend.getCaseDetails(caseId);
+                    if (!currentCase) {
+                        alert('Case not found');
+                        return;
+                    }
+                    
+                    // Update case in local storage
+                    const cases = window.LSBackend.get('cases') || [];
+                    const caseIndex = cases.findIndex(c => c.case_id === caseId);
+                    
+                    if (caseIndex !== -1) {
+                        cases[caseIndex].title = title;
+                        cases[caseIndex].description = description;
+                        cases[caseIndex].category = category;
+                        cases[caseIndex].priority = priority;
+                        cases[caseIndex].status = status;
+                        cases[caseIndex].updated_at = new Date().toISOString();
+                        
+                        window.LSBackend.set('cases', cases);
+                        
+                        // Add to timeline
+                        window.LSBackend.addTimelineEvent(caseId, 'case_updated', 
+                            `Case '${title}' updated by ${currentUser.full_name}`, 
+                            currentUser.user_id);
+                        
+                        alert('Case updated successfully!');
+                        closeModal('edit-case-modal');
+                        this.reset();
+                        
+                        // Reload cases
+                        loadMediatorCases();
+                    } else {
+                        alert('Case not found in database');
+                    }
+                } else {
+                    alert('API mode not implemented for case editing');
+                }
+                
+            } catch (error) {
+                console.error('Error updating case:', error);
+                alert('Error updating case. Please try again.');
             }
         });
 
