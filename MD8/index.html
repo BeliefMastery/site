@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Mediation Platform</title>
+    <meta name="description" content="Professional Case Management & Mediation Platform">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mediation Platform">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-menu a:hover, .nav-menu a.active {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e3c72;
+            display: block;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .action-btn {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+        
+        .btn {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2a5298;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .case-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e3c72;
+        }
+        
+        .case-card h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-meta {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span>⚖️</span>
+                <span>Unified Mediation Platform</span>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" class="active" onclick="showDashboard()">📊 Dashboard</a></li>
+                    <li><a href="#" onclick="showCases()">📋 Cases</a></li>
+                    <li><a href="#" onclick="showSessions()">🤝 Sessions</a></li>
+                    <li><a href="#" onclick="showUsers()">👥 Users</a></li>
+                    <li><a href="#" onclick="showAnalytics()">📈 Analytics</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+            <div class="dashboard">
+                <div class="card">
+                    <h3>📋 Active Cases</h3>
+                    <span class="stat-number" id="active-cases">12</span>
+                    <p>Cases currently in progress</p>
+                </div>
+                <div class="card">
+                    <h3>🤝 Sessions Today</h3>
+                    <span class="stat-number" id="sessions-today">3</span>
+                    <p>Mediation sessions scheduled</p>
+                </div>
+                <div class="card">
+                    <h3>✅ Resolved</h3>
+                    <span class="stat-number" id="resolved-cases">45</span>
+                    <p>Cases successfully resolved</p>
+                </div>
+                <div class="card">
+                    <h3>👥 Participants</h3>
+                    <span class="stat-number" id="total-participants">89</span>
+                    <p>Registered platform users</p>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="openModal('new-case-modal')">
+                    <span>➕</span>
+                    <span>Create New Case</span>
+                </button>
+                <button class="action-btn" onclick="openModal('new-session-modal')">
+                    <span>🤝</span>
+                    <span>Start Mediation Session</span>
+                </button>
+                <button class="action-btn" onclick="showUsers()">
+                    <span>👥</span>
+                    <span>Manage Users</span>
+                </button>
+                <button class="action-btn" onclick="showAnalytics()">
+                    <span>📊</span>
+                    <span>View Analytics</span>
+                </button>
+            </div>
+
+            <div class="section">
+                <h2>📋 Recent Cases</h2>
+                <div class="cases-grid" id="recent-cases">
+                    <div class="case-card">
+                        <h4>Property Boundary Dispute</h4>
+                        <div class="case-meta">
+                            <span>Case #001</span>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <p>Dispute between neighbors regarding property boundary lines and fence placement.</p>
+                        <div style="margin-top: 1rem;">
+                            <button class="btn" onclick="viewCase('001')">View Details</button>
+                            <button class="btn btn-secondary" onclick="startSession('001')">Start Session</button>
+                        </div>
+                    </div>
+                    <div class="case-card">
+                        <h4>Business Partnership Conflict</h4>
+                        <div class="case-meta">
+                            <span>Case #002</span>
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                        <p>Partnership dissolution and asset division between business partners.</p>
+                        <div style="margin-top: 1rem;">
+                            <button class="btn" onclick="viewCase('002')">View Details</button>
+                            <button class="btn btn-secondary" onclick="startSession('002')">Start Session</button>
+                        </div>
+                    </div>
+                    <div class="case-card">
+                        <h4>Employment Contract Dispute</h4>
+                        <div class="case-meta">
+                            <span>Case #003</span>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                        <p>Contract termination and severance package negotiation.</p>
+                        <div style="margin-top: 1rem;">
+                            <button class="btn" onclick="viewCase('003')">View Details</button>
+                            <button class="btn btn-secondary" onclick="viewReport('003')">View Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cases Section -->
+        <div id="cases-section" class="hidden">
+            <div class="section">
+                <h2>📋 Case Management</h2>
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn" onclick="openModal('new-case-modal')">Create New Case</button>
+                    <button class="btn btn-secondary" onclick="filterCases('all')">All Cases</button>
+                    <button class="btn btn-secondary" onclick="filterCases('active')">Active</button>
+                    <button class="btn btn-secondary" onclick="filterCases('pending')">Pending</button>
+                    <button class="btn btn-secondary" onclick="filterCases('completed')">Completed</button>
+                </div>
+                <div class="cases-grid" id="all-cases">
+                    <!-- Cases will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions Section -->
+        <div id="sessions-section" class="hidden">
+            <div class="section">
+                <h2>🤝 Mediation Sessions</h2>
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn" onclick="openModal('new-session-modal')">Schedule New Session</button>
+                    <button class="btn btn-secondary" onclick="filterSessions('today')">Today</button>
+                    <button class="btn btn-secondary" onclick="filterSessions('upcoming')">Upcoming</button>
+                    <button class="btn btn-secondary" onclick="filterSessions('completed')">Completed</button>
+                </div>
+                <div id="sessions-list">
+                    <!-- Sessions will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users-section" class="hidden">
+            <div class="section">
+                <h2>👥 User Management</h2>
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn" onclick="openModal('new-user-modal')">Add New User</button>
+                    <button class="btn btn-secondary" onclick="filterUsers('all')">All Users</button>
+                    <button class="btn btn-secondary" onclick="filterUsers('mediators')">Mediators</button>
+                    <button class="btn btn-secondary" onclick="filterUsers('clients')">Clients</button>
+                </div>
+                <div id="users-list">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics-section" class="hidden">
+            <div class="section">
+                <h2>📈 Analytics & Reports</h2>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>📊 Success Rate</h3>
+                        <span class="stat-number">87%</span>
+                        <p>Cases successfully resolved</p>
+                    </div>
+                    <div class="card">
+                        <h3>⏱️ Avg. Resolution Time</h3>
+                        <span class="stat-number">4.2</span>
+                        <p>Days to resolution</p>
+                    </div>
+                    <div class="card">
+                        <h3>⭐ Client Satisfaction</h3>
+                        <span class="stat-number">4.6/5</span>
+                        <p>Average rating</p>
+                    </div>
+                    <div class="card">
+                        <h3>💰 Revenue</h3>
+                        <span class="stat-number">$24.5K</span>
+                        <p>This month</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Case Modal -->
+    <div id="new-case-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Create New Case</h2>
+                <span class="close" onclick="closeModal('new-case-modal')">&times;</span>
+            </div>
+            <form id="new-case-form">
+                <div class="form-group">
+                    <label for="case-title">Case Title</label>
+                    <input type="text" id="case-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="case-description">Description</label>
+                    <textarea id="case-description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="case-category">Category</label>
+                    <select id="case-category" required>
+                        <option value="">Select Category</option>
+                        <option value="property">Property Dispute</option>
+                        <option value="business">Business Conflict</option>
+                        <option value="family">Family Mediation</option>
+                        <option value="employment">Employment Dispute</option>
+                        <option value="community">Community Dispute</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="case-priority">Priority</label>
+                    <select id="case-priority" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('new-case-modal')">Cancel</button>
+                    <button type="submit" class="btn">Create Case</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Session Modal -->
+    <div id="new-session-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🤝 Schedule Mediation Session</h2>
+                <span class="close" onclick="closeModal('new-session-modal')">&times;</span>
+            </div>
+            <form id="new-session-form">
+                <div class="form-group">
+                    <label for="session-case">Select Case</label>
+                    <select id="session-case" required>
+                        <option value="">Select Case</option>
+                        <option value="001">Case #001 - Property Boundary Dispute</option>
+                        <option value="002">Case #002 - Business Partnership Conflict</option>
+                        <option value="003">Case #003 - Employment Contract Dispute</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="session-date">Session Date & Time</label>
+                    <input type="datetime-local" id="session-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="session-location">Location</label>
+                    <input type="text" id="session-location" placeholder="Conference Room A" required>
+                </div>
+                <div class="form-group">
+                    <label for="session-mediator">Assigned Mediator</label>
+                    <select id="session-mediator" required>
+                        <option value="">Select Mediator</option>
+                        <option value="mediator1">John Smith</option>
+                        <option value="mediator2">Sarah Johnson</option>
+                        <option value="mediator3">Michael Brown</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('new-session-modal')">Cancel</button>
+                    <button type="submit" class="btn">Schedule Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New User Modal -->
+    <div id="new-user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👥 Add New User</h2>
+                <span class="close" onclick="closeModal('new-user-modal')">&times;</span>
+            </div>
+            <form id="new-user-form">
+                <div class="form-group">
+                    <label for="user-name">Full Name</label>
+                    <input type="text" id="user-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-email">Email</label>
+                    <input type="email" id="user-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-phone">Phone</label>
+                    <input type="tel" id="user-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-role">Role</label>
+                    <select id="user-role" required>
+                        <option value="">Select Role</option>
+                        <option value="mediator">Mediator</option>
+                        <option value="client">Client</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('new-user-modal')">Cancel</button>
+                    <button type="submit" class="btn">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functions
+        function showDashboard() {
+            hideAllSections();
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            updateActiveNav('dashboard');
+        }
+
+        function showCases() {
+            hideAllSections();
+            document.getElementById('cases-section').classList.remove('hidden');
+            updateActiveNav('cases');
+            loadAllCases();
+        }
+
+        function showSessions() {
+            hideAllSections();
+            document.getElementById('sessions-section').classList.remove('hidden');
+            updateActiveNav('sessions');
+            loadSessions();
+        }
+
+        function showUsers() {
+            hideAllSections();
+            document.getElementById('users-section').classList.remove('hidden');
+            updateActiveNav('users');
+            loadUsers();
+        }
+
+        function showAnalytics() {
+            hideAllSections();
+            document.getElementById('analytics-section').classList.remove('hidden');
+            updateActiveNav('analytics');
+        }
+
+        function hideAllSections() {
+            const sections = ['dashboard-section', 'cases-section', 'sessions-section', 'users-section', 'analytics-section'];
+            sections.forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+        }
+
+        function updateActiveNav(active) {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Case functions
+        function viewCase(caseId) {
+            alert(`Viewing details for Case #${caseId}`);
+        }
+
+        function startSession(caseId) {
+            alert(`Starting mediation session for Case #${caseId}`);
+        }
+
+        function viewReport(caseId) {
+            alert(`Viewing report for Case #${caseId}`);
+        }
+
+        function filterCases(status) {
+            alert(`Filtering cases by status: ${status}`);
+        }
+
+        function loadAllCases() {
+            // Load cases data
+            console.log('Loading all cases...');
+        }
+
+        function filterSessions(filter) {
+            alert(`Filtering sessions: ${filter}`);
+        }
+
+        function loadSessions() {
+            // Load sessions data
+            console.log('Loading sessions...');
+        }
+
+        function filterUsers(filter) {
+            alert(`Filtering users: ${filter}`);
+        }
+
+        function loadUsers() {
+            // Load users data
+            console.log('Loading users...');
+        }
+
+        // Form handlers
+        document.getElementById('new-case-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('New case created successfully!');
+            closeModal('new-case-modal');
+            this.reset();
+        });
+
+        document.getElementById('new-session-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Mediation session scheduled successfully!');
+            closeModal('new-session-modal');
+            this.reset();
+        });
+
+        document.getElementById('new-user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('New user added successfully!');
+            closeModal('new-user-modal');
+            this.reset();
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Initialize dashboard
+        showDashboard();
+    </script>
+</body>
+</html>
