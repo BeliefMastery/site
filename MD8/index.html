@@ -1053,8 +1053,8 @@
                         </div>
                         <div class="metric-value">0%</div>
                         <div class="metric-description">Overall case progress</div>
-                    </div>
-                </div>
+        </div>
+    </div>
 
                 <div class="section">
                     <div class="section-header">
@@ -1359,11 +1359,15 @@
         </div>
     </div>
     
+    <!-- Include Local Storage Backend -->
+    <script src="local_storage_backend.js"></script>
+    
     <script>
         // Global state
         let currentUser = null;
         let userRole = null;
         let selectedMediators = [];
+        const USE_LOCAL_STORAGE = true; // Set to false to use API server
         const API_BASE_URL = 'http://localhost:5000/api';
         let caseTypes = {
             'property': {
@@ -1532,29 +1536,37 @@
         async function login(email, password) {
             try {
                 console.log('Attempting login for:', email);
-                console.log('API URL:', `${API_BASE_URL}/auth/login`);
                 
-                const response = await fetch(`${API_BASE_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password })
-                });
+                let result;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Using local storage backend');
+                    result = window.LSBackend.authenticateUser(email, password);
+                } else {
+                    console.log('API URL:', `${API_BASE_URL}/auth/login`);
+                    
+                    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
 
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    result = await response.json();
                 }
-
-                const data = await response.json();
-                console.log('Response data:', data);
                 
-                if (data.success) {
-                    currentUser = data.user;
-                    userRole = data.user.role;
+                console.log('Login result:', result);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    userRole = result.user.role;
                     console.log('Login successful, user:', currentUser);
                     console.log('User role:', userRole);
                     
@@ -1565,12 +1577,16 @@
                     
                     return true;
                 } else {
-                    console.log('Login failed:', data.error);
+                    console.log('Login failed:', result.error);
                     return false;
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert(`Login failed: ${error.message}. Please check if the API server is running at ${API_BASE_URL}`);
+                if (USE_LOCAL_STORAGE) {
+                    alert(`Login failed: ${error.message}`);
+                } else {
+                    alert(`Login failed: ${error.message}. Please check if the API server is running at ${API_BASE_URL}`);
+                }
                 return false;
             }
         }
@@ -1579,12 +1595,10 @@
             try {
                 const { name, email, role, password, organization, phone, preferred_mediators } = formData;
                 
-                const response = await fetch(`${API_BASE_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                let result;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Registering with local storage backend');
+                    result = window.LSBackend.addUser({
                         email,
                         password,
                         full_name: name,
@@ -1592,15 +1606,32 @@
                         organization,
                         phone,
                         preferred_mediators
-                    })
-                });
+                    });
+                } else {
+                    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email,
+                            password,
+                            full_name: name,
+                            role,
+                            organization,
+                            phone,
+                            preferred_mediators
+                        })
+                    });
 
-                const data = await response.json();
+                    result = await response.json();
+                }
                 
-                if (data.success) {
+                if (result.success) {
                     // Auto-login after successful registration
                     return await login(email, password);
                 } else {
+                    console.error('Registration failed:', result.error);
                     return false;
                 }
             } catch (error) {
@@ -1699,12 +1730,19 @@
 
         async function loadMediatorCases() {
             try {
-                const response = await fetch(`${API_BASE_URL}/cases?user_id=${currentUser.user_id}&role=${userRole}`);
-                const data = await response.json();
+                let cases;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Loading cases from local storage');
+                    cases = window.LSBackend.getCasesForUser(currentUser.user_id, userRole);
+                } else {
+                    const response = await fetch(`${API_BASE_URL}/cases?user_id=${currentUser.user_id}&role=${userRole}`);
+                    const data = await response.json();
+                    cases = data.success ? data.cases : [];
+                }
                 
                 const casesContainer = document.getElementById('mediator-cases');
                 
-                if (!data.success || data.cases.length === 0) {
+                if (!cases || cases.length === 0) {
                     casesContainer.innerHTML = `
                         <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
@@ -1714,7 +1752,7 @@
                         </div>
                     `;
                 } else {
-                    casesContainer.innerHTML = data.cases.map(caseItem => `
+                    casesContainer.innerHTML = cases.map(caseItem => `
                         <div class="case-card">
                             <div class="case-header">
                                 <div>
@@ -1744,14 +1782,14 @@
                 }
                 
                 // Update metrics
-                updateMediatorMetrics(data.cases);
+                updateMediatorMetrics(cases || []);
                 
             } catch (error) {
                 console.error('Error loading cases:', error);
                 document.getElementById('mediator-cases').innerHTML = `
                     <div style="text-align: center; padding: 3rem; color: var(--error-color);">
                         <h3>Error Loading Cases</h3>
-                        <p>Please check if the API server is running.</p>
+                        <p>Please refresh the page and try again.</p>
                     </div>
                 `;
             }
@@ -2148,13 +2186,11 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
                     });
                 }
                 
-                // Create case via API
-                const response = await fetch(`${API_BASE_URL}/cases`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                // Create case
+                let result;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Creating case with local storage backend');
+                    result = window.LSBackend.createCase({
                         title,
                         description,
                         category,
@@ -2162,13 +2198,29 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
                         assigned_mediator_id: currentUser.user_id, // Current user is the mediator
                         created_by: currentUser.user_id,
                         case_details: caseDetails
-                    })
-                });
+                    });
+                } else {
+                    const response = await fetch(`${API_BASE_URL}/cases`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title,
+                            description,
+                            category,
+                            priority,
+                            assigned_mediator_id: currentUser.user_id, // Current user is the mediator
+                            created_by: currentUser.user_id,
+                            case_details: caseDetails
+                        })
+                    });
+                    
+                    result = await response.json();
+                }
                 
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert(`New case created successfully! Case ID: ${data.case_id}`);
+                if (result.success) {
+                    alert(`New case created successfully! Case ID: ${result.case_id}`);
                     closeModal('new-case-modal');
                     this.reset();
                     
@@ -2178,7 +2230,7 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
                     // Reload cases
                     loadMediatorCases();
                 } else {
-                    alert(`Error creating case: ${data.error}`);
+                    alert(`Error creating case: ${result.error}`);
                 }
                 
             } catch (error) {
@@ -2236,41 +2288,54 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
             const reason = document.getElementById('archive-reason').value;
             
             try {
+                let result;
                 if (action === 'archive') {
-                    const response = await fetch(`${API_BASE_URL}/cases/${caseId}/archive`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            archived_by: currentUser.user_id,
-                            reason: reason
-                        })
-                    });
+                    if (USE_LOCAL_STORAGE) {
+                        console.log('Archiving case with local storage backend');
+                        result = window.LSBackend.archiveCase(caseId, currentUser.user_id, reason);
+                    } else {
+                        const response = await fetch(`${API_BASE_URL}/cases/${caseId}/archive`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                archived_by: currentUser.user_id,
+                                reason: reason
+                            })
+                        });
+                        
+                        result = await response.json();
+                    }
                     
-                    const data = await response.json();
-                    if (data.success) {
+                    if (result.success) {
                         alert(`Case has been archived. Reason: ${reason}`);
                     } else {
-                        alert(`Error archiving case: ${data.error}`);
+                        alert(`Error archiving case: ${result.error}`);
                     }
                 } else {
-                    const response = await fetch(`${API_BASE_URL}/cases/${caseId}/delete`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            deleted_by: currentUser.user_id,
-                            reason: reason
-                        })
-                    });
+                    if (USE_LOCAL_STORAGE) {
+                        console.log('Deleting case with local storage backend');
+                        result = window.LSBackend.deleteCase(caseId, currentUser.user_id, reason);
+                    } else {
+                        const response = await fetch(`${API_BASE_URL}/cases/${caseId}/delete`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                deleted_by: currentUser.user_id,
+                                reason: reason
+                            })
+                        });
+                        
+                        result = await response.json();
+                    }
                     
-                    const data = await response.json();
-                    if (data.success) {
+                    if (result.success) {
                         alert(`Case has been permanently deleted. Reason: ${reason}`);
                     } else {
-                        alert(`Error deleting case: ${data.error}`);
+                        alert(`Error deleting case: ${result.error}`);
                     }
                 }
                 
@@ -2293,23 +2358,56 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
             const selectedData = Array.from(document.querySelectorAll('input[name="export-data"]:checked')).map(cb => cb.value);
             
             try {
-                const response = await fetch(`${API_BASE_URL}/cases/${caseId}/export`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        export_options: {
-                            'case-details': selectedData.includes('case-details'),
-                            'client-info': selectedData.includes('client-info'),
-                            'case-logs': selectedData.includes('case-logs'),
-                            'documents': selectedData.includes('documents')
-                        }
-                    })
-                });
+                let result;
+                if (USE_LOCAL_STORAGE) {
+                    console.log('Exporting case data with local storage backend');
+                    result = window.LSBackend.exportCaseDataToCSV(caseId, {
+                        'case-details': selectedData.includes('case-details'),
+                        'client-info': selectedData.includes('client-info'),
+                        'case-logs': selectedData.includes('case-logs'),
+                        'documents': selectedData.includes('documents')
+                    });
+                } else {
+                    const response = await fetch(`${API_BASE_URL}/cases/${caseId}/export`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            export_options: {
+                                'case-details': selectedData.includes('case-details'),
+                                'client-info': selectedData.includes('client-info'),
+                                'case-logs': selectedData.includes('case-logs'),
+                                'documents': selectedData.includes('documents')
+                            }
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `case-${caseId}-export.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                        alert(`Case data exported successfully in ${format.toUpperCase()} format!`);
+                        closeModal('export-data-modal');
+                        this.reset();
+                        return;
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Error exporting data: ${errorData.error}`);
+                        return;
+                    }
+                }
                 
-                if (response.ok) {
-                    const blob = await response.blob();
+                if (result.success) {
+                    // Create and download CSV file
+                    const blob = new Blob([result.csv_data], { type: 'text/csv' });
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -2323,8 +2421,7 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
                     closeModal('export-data-modal');
                     this.reset();
                 } else {
-                    const errorData = await response.json();
-                    alert(`Error exporting data: ${errorData.error}`);
+                    alert(`Error exporting data: ${result.error}`);
                 }
                 
             } catch (error) {
