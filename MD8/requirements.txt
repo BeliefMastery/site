@@ -1,4 +1,6 @@
-# Core Streamlit and Web Framework
+# Core Web Framework
+flask>=2.3.0
+flask-cors>=4.0.0
 streamlit>=1.28.0
 streamlit-authenticator>=0.2.3
 

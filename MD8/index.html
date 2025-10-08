@@ -1357,6 +1357,7 @@
         let currentUser = null;
         let userRole = null;
         let selectedMediators = [];
+        const API_BASE_URL = 'http://localhost:5000/api';
         let caseTypes = {
             'property': {
                 name: 'Property Dispute',
@@ -1521,39 +1522,64 @@
             document.getElementById(`${tab}-form`).classList.add('active');
         }
 
-        function login(email, password) {
-            // Simulate authentication
-            const users = {
-                'mediator@example.com': { role: 'mediator', name: 'Dr. Sarah Johnson', password: 'password123' },
-                'client@example.com': { role: 'client', name: 'John Smith', password: 'password123' }
-            };
+        async function login(email, password) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
 
-            const user = users[email];
-            if (user && user.password === password) {
-                currentUser = { email, ...user };
-                userRole = user.role;
-                showDashboard();
-                return true;
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    userRole = data.user.role;
+                    showDashboard();
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                return false;
             }
-            return false;
         }
 
-        function register(formData) {
-            // Simulate registration
-            const { name, email, role, password } = formData;
-            
-            // Create new user
-            currentUser = {
-                email,
-                name,
-                role,
-                organization: formData.organization || '',
-                phone: formData.phone || ''
-            };
-            userRole = role;
-            
-            showDashboard();
-            return true;
+        async function register(formData) {
+            try {
+                const { name, email, role, password, organization, phone, preferred_mediators } = formData;
+                
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        full_name: name,
+                        role,
+                        organization,
+                        phone,
+                        preferred_mediators
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Auto-login after successful registration
+                    return await login(email, password);
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                return false;
+            }
         }
 
         function showDashboard() {
@@ -1609,50 +1635,64 @@
         let userCases = [];
         let caseCounter = 1;
 
-        function loadMediatorCases() {
-            const casesContainer = document.getElementById('mediator-cases');
-            
-            if (userCases.length === 0) {
-                casesContainer.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
-                        <h3>No Cases Yet</h3>
-                        <p>Create your first case to get started with mediation management.</p>
-                        <button class="btn btn-primary" onclick="openModal('new-case-modal')" style="margin-top: 1rem;">Create First Case</button>
+        async function loadMediatorCases() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cases?user_id=${currentUser.user_id}&role=${userRole}`);
+                const data = await response.json();
+                
+                const casesContainer = document.getElementById('mediator-cases');
+                
+                if (!data.success || data.cases.length === 0) {
+                    casesContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                            <h3>No Cases Yet</h3>
+                            <p>Create your first case to get started with mediation management.</p>
+                            <button class="btn btn-primary" onclick="openModal('new-case-modal')" style="margin-top: 1rem;">Create First Case</button>
+                        </div>
+                    `;
+                } else {
+                    casesContainer.innerHTML = data.cases.map(caseItem => `
+                        <div class="case-card">
+                            <div class="case-header">
+                                <div>
+                                    <div class="case-title">${caseItem.title}</div>
+                                    <div class="case-number">${caseItem.case_number}</div>
+                                </div>
+                                <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
+                            </div>
+                            <div class="case-description">${caseItem.description}</div>
+                            <div class="case-meta">
+                                <span>Category: ${caseItem.category}</span>
+                                <span>Created: ${caseItem.created_at.split('T')[0]}</span>
+                            </div>
+                            <div class="case-actions">
+                                <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.case_id}')">View</button>
+                                <button class="btn btn-secondary btn-sm" onclick="editCase('${caseItem.case_id}')">Edit</button>
+                                <button class="btn btn-success btn-sm" onclick="assignClient('${caseItem.case_id}')">Assign Client</button>
+                                <button class="btn btn-warning btn-sm" onclick="scheduleSession('${caseItem.case_id}')">Schedule Session</button>
+                            </div>
+                            <div class="case-actions-extended">
+                                <button class="btn btn-export btn-sm" onclick="exportCaseData('${caseItem.case_id}')">Export</button>
+                                <button class="btn btn-archive btn-sm" onclick="archiveCase('${caseItem.case_id}')">Archive</button>
+                                <button class="btn btn-delete btn-sm" onclick="deleteCase('${caseItem.case_id}')">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Update metrics
+                updateMediatorMetrics(data.cases);
+                
+            } catch (error) {
+                console.error('Error loading cases:', error);
+                document.getElementById('mediator-cases').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--error-color);">
+                        <h3>Error Loading Cases</h3>
+                        <p>Please check if the API server is running.</p>
                     </div>
                 `;
-            } else {
-                casesContainer.innerHTML = userCases.map(caseItem => `
-                    <div class="case-card">
-                        <div class="case-header">
-                            <div>
-                                <div class="case-title">${caseItem.title}</div>
-                                <div class="case-number">${caseItem.number}</div>
-                            </div>
-                            <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
-                        </div>
-                        <div class="case-description">${caseItem.description}</div>
-                        <div class="case-meta">
-                            <span>Parties: ${caseItem.parties}</span>
-                            <span>Created: ${caseItem.created}</span>
-                        </div>
-                        <div class="case-actions">
-                            <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editCase('${caseItem.id}')">Edit</button>
-                            <button class="btn btn-success btn-sm" onclick="assignClient('${caseItem.id}')">Assign Client</button>
-                            <button class="btn btn-warning btn-sm" onclick="scheduleSession('${caseItem.id}')">Schedule Session</button>
-                        </div>
-                        <div class="case-actions-extended">
-                            <button class="btn btn-export btn-sm" onclick="exportCaseData('${caseItem.id}')">Export</button>
-                            <button class="btn btn-archive btn-sm" onclick="archiveCase('${caseItem.id}')">Archive</button>
-                            <button class="btn btn-delete btn-sm" onclick="deleteCase('${caseItem.id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
             }
-            
-            // Update metrics
-            updateMediatorMetrics();
         }
 
         function loadClientCases() {
@@ -1751,10 +1791,10 @@
         }
 
         // Metrics update functions
-        function updateMediatorMetrics() {
-            const activeCases = userCases.filter(c => c.status === 'active').length;
-            const resolvedCases = userCases.filter(c => c.status === 'completed').length;
-            const totalClients = userCases.reduce((sum, c) => sum + (c.assignedClients ? c.assignedClients.length : 0), 0);
+        function updateMediatorMetrics(cases = []) {
+            const activeCases = cases.filter(c => c.status === 'active').length;
+            const resolvedCases = cases.filter(c => c.status === 'completed').length;
+            const totalClients = cases.length; // Simplified for now
             
             document.getElementById('active-cases-count').textContent = activeCases;
             document.getElementById('resolved-cases-count').textContent = resolvedCases;
@@ -1975,44 +2015,65 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
             }
         });
 
-        document.getElementById('new-case-form').addEventListener('submit', function(e) {
+        document.getElementById('new-case-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Get form data
-            const title = document.getElementById('case-title').value;
-            const description = document.getElementById('case-description').value;
-            const category = document.getElementById('case-category').value;
-            const priority = document.getElementById('case-priority').value;
-            const mediator = document.getElementById('case-mediator').value;
-            
-            // Create new case
-            const newCase = {
-                id: String(caseCounter++).padStart(3, '0'),
-                title: title,
-                number: `CASE-${String(caseCounter - 1).padStart(3, '0')}`,
-                description: description,
-                category: category,
-                priority: priority,
-                status: 'active',
-                mediator: mediator === 'current' ? currentUser.name : mediator,
-                parties: 0,
-                assignedClients: [],
-                created: new Date().toISOString().split('T')[0],
-                createdBy: currentUser.email
-            };
-            
-            // Add to user cases
-            userCases.push(newCase);
-            
-            alert(`New case created successfully! Case #${newCase.number}`);
-            closeModal('new-case-modal');
-            this.reset();
-            
-            // Hide case type fields
-            document.getElementById('case-type-fields-container').classList.add('hidden');
-            
-            // Reload cases
-            loadMediatorCases();
+            try {
+                // Get form data
+                const title = document.getElementById('case-title').value;
+                const description = document.getElementById('case-description').value;
+                const category = document.getElementById('case-category').value;
+                const priority = document.getElementById('case-priority').value;
+                const mediator = document.getElementById('case-mediator').value;
+                
+                // Collect case type specific fields
+                const caseDetails = {};
+                if (category && caseTypes[category]) {
+                    caseTypes[category].fields.forEach(field => {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            caseDetails[field.id] = element.value;
+                        }
+                    });
+                }
+                
+                // Create case via API
+                const response = await fetch(`${API_BASE_URL}/cases`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        category,
+                        priority,
+                        assigned_mediator_id: currentUser.user_id, // Current user is the mediator
+                        created_by: currentUser.user_id,
+                        case_details: caseDetails
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`New case created successfully! Case ID: ${data.case_id}`);
+                    closeModal('new-case-modal');
+                    this.reset();
+                    
+                    // Hide case type fields
+                    document.getElementById('case-type-fields-container').classList.add('hidden');
+                    
+                    // Reload cases
+                    loadMediatorCases();
+                } else {
+                    alert(`Error creating case: ${data.error}`);
+                }
+                
+            } catch (error) {
+                console.error('Error creating case:', error);
+                alert('Error creating case. Please try again.');
+            }
         });
 
         document.getElementById('assign-client-form').addEventListener('submit', function(e) {
@@ -2056,48 +2117,109 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
         });
 
         // Archive case form handler
-        document.getElementById('archive-case-form').addEventListener('submit', function(e) {
+        document.getElementById('archive-case-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const modal = document.getElementById('archive-case-modal');
             const caseId = modal.dataset.caseId;
             const action = document.querySelector('input[name="archive-action"]:checked').value;
             const reason = document.getElementById('archive-reason').value;
             
-            const caseItem = userCases.find(c => c.id === caseId);
-            if (!caseItem) {
-                alert('Case not found');
-                return;
+            try {
+                if (action === 'archive') {
+                    const response = await fetch(`${API_BASE_URL}/cases/${caseId}/archive`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            archived_by: currentUser.user_id,
+                            reason: reason
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        alert(`Case has been archived. Reason: ${reason}`);
+                    } else {
+                        alert(`Error archiving case: ${data.error}`);
+                    }
+                } else {
+                    const response = await fetch(`${API_BASE_URL}/cases/${caseId}/delete`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            deleted_by: currentUser.user_id,
+                            reason: reason
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        alert(`Case has been permanently deleted. Reason: ${reason}`);
+                    } else {
+                        alert(`Error deleting case: ${data.error}`);
+                    }
+                }
+                
+                closeModal('archive-case-modal');
+                this.reset();
+                loadMediatorCases(); // Refresh the list
+                
+            } catch (error) {
+                console.error('Archive/Delete error:', error);
+                alert('Error processing request. Please try again.');
             }
-            
-            if (action === 'archive') {
-                caseItem.status = 'archived';
-                alert(`Case #${caseItem.number} has been archived. Reason: ${reason}`);
-            } else {
-                // Permanently delete
-                userCases = userCases.filter(c => c.id !== caseId);
-                alert(`Case #${caseItem.number} has been permanently deleted. Reason: ${reason}`);
-            }
-            
-            closeModal('archive-case-modal');
-            this.reset();
-            loadMediatorCases(); // Refresh the list
         });
 
         // Export data form handler
-        document.getElementById('export-data-form').addEventListener('submit', function(e) {
+        document.getElementById('export-data-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const modal = document.getElementById('export-data-modal');
             const caseId = modal.dataset.caseId;
             const format = document.getElementById('export-format').value;
             const selectedData = Array.from(document.querySelectorAll('input[name="export-data"]:checked')).map(cb => cb.value);
             
-            // Simulate CSV export
-            const csvData = generateCSVData(caseId, selectedData);
-            downloadCSV(csvData, `case-${caseId}-export.csv`);
-            
-            alert(`Case #${caseId} data exported successfully in ${format.toUpperCase()} format!`);
-            closeModal('export-data-modal');
-            this.reset();
+            try {
+                const response = await fetch(`${API_BASE_URL}/cases/${caseId}/export`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        export_options: {
+                            'case-details': selectedData.includes('case-details'),
+                            'client-info': selectedData.includes('client-info'),
+                            'case-logs': selectedData.includes('case-logs'),
+                            'documents': selectedData.includes('documents')
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `case-${caseId}-export.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    alert(`Case data exported successfully in ${format.toUpperCase()} format!`);
+                    closeModal('export-data-modal');
+                    this.reset();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error exporting data: ${errorData.error}`);
+                }
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Error exporting data. Please try again.');
+            }
         });
 
         // Client case details form handler
