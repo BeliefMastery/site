@@ -89,7 +89,7 @@
             text-align: center;
             margin-bottom: 2rem;
         }
-
+        
         .auth-logo {
             font-size: 3rem;
             margin-bottom: 1rem;
@@ -252,7 +252,7 @@
             max-width: 1400px;
             margin: 0 auto;
         }
-
+        
         .logo {
             display: flex;
             align-items: center;
@@ -370,7 +370,7 @@
             align-items: center;
             margin-bottom: 2rem;
         }
-
+        
         .section-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -386,7 +386,7 @@
             gap: 1rem;
             margin-bottom: 2rem;
         }
-
+        
         .action-card {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -621,6 +621,186 @@
             border-bottom: 2px solid var(--border-color);
         }
 
+        /* Mediator Selection Styles */
+        .mediator-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .mediator-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mediator-option:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-hover);
+        }
+
+        .mediator-option input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .mediator-info {
+            flex: 1;
+        }
+
+        .mediator-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .mediator-specialties {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Case Type Specific Forms */
+        .case-type-fields {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .case-type-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Visibility Controls */
+        .visibility-controls {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .visibility-section {
+            margin-bottom: 1rem;
+        }
+
+        .visibility-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .visibility-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .visibility-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .visibility-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visibility-option input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .visibility-option label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* Archive and Export Styles */
+        .case-actions-extended {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-export {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #2c5282;
+        }
+
+        .btn-archive {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-archive:hover {
+            background: #b7791f;
+        }
+
+        .btn-delete {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c53030;
+        }
+
+        /* Archive Modal Styles */
+        .archive-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .archive-option {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .archive-option:hover {
+            border-color: var(--warning-color);
+            background: var(--bg-hover);
+        }
+
+        .archive-option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .archive-option-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .archive-option-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
         /* Hidden class */
         .hidden {
             display: none !important;
@@ -638,7 +818,7 @@
             }
 
             .main-content {
-                padding: 1rem;
+            padding: 1rem;
             }
 
             .dashboard {
@@ -688,11 +868,11 @@
                 <div class="form-group">
                     <label for="login-email">Email Address</label>
                     <input type="email" id="login-email" required placeholder="your.email@example.com">
-                </div>
+            </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
                     <input type="password" id="login-password" required>
-                </div>
+            </div>
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>
 
@@ -701,7 +881,7 @@
                 <div class="form-group">
                     <label for="reg-name">Full Name</label>
                     <input type="text" id="reg-name" required>
-                </div>
+            </div>
                 <div class="form-group">
                     <label for="reg-email">Email Address</label>
                     <input type="email" id="reg-email" required>
@@ -716,11 +896,18 @@
                 </div>
                 <div class="form-group">
                     <label for="reg-role">Account Type</label>
-                    <select id="reg-role" required>
+                    <select id="reg-role" required onchange="toggleMediatorSelection()">
                         <option value="">Select Role</option>
                         <option value="mediator">Mediator - Create and manage cases</option>
                         <option value="client">Client - Access assigned cases</option>
                     </select>
+                </div>
+                <div id="mediator-selection" class="form-group hidden">
+                    <label for="preferred-mediators">Select Preferred Mediators (Optional)</label>
+                    <div id="mediator-checkboxes" class="mediator-selection">
+                        <!-- Mediators will be loaded here -->
+                    </div>
+                    <small style="color: var(--text-muted);">You can change your mediator preferences later. Mediators will be able to assign you to cases based on your selections.</small>
                 </div>
                 <div class="form-group">
                     <label for="reg-password">Password</label>
@@ -732,9 +919,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Register</button>
             </form>
+            </div>
         </div>
-    </div>
-
+        
     <!-- Main Application -->
     <div id="app-section" class="app-container">
         <!-- Header -->
@@ -777,20 +964,20 @@
                         <div class="metric-header">
                             <span class="metric-icon">👥</span>
                             <span class="metric-title">Assigned Clients</span>
-                        </div>
+            </div>
                         <div class="metric-value" id="assigned-clients-count">24</div>
                         <div class="metric-description">Clients assigned to your cases</div>
-                    </div>
+            </div>
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-icon">✅</span>
                             <span class="metric-title">Resolved Cases</span>
-                        </div>
+            </div>
                         <div class="metric-value" id="resolved-cases-count">45</div>
                         <div class="metric-description">Successfully resolved this month</div>
-                    </div>
-                </div>
-
+            </div>
+        </div>
+        
                 <div class="quick-actions">
                     <a href="#" class="action-card" onclick="openModal('new-case-modal')">
                         <div class="action-icon">📋</div>
@@ -823,8 +1010,8 @@
                         <!-- Cases will be loaded here -->
                     </div>
                 </div>
-            </div>
-
+        </div>
+        
             <!-- Client Dashboard -->
             <div id="client-dashboard" class="hidden">
                 <div class="dashboard">
@@ -900,18 +1087,27 @@
                     <textarea id="case-description" rows="4" required placeholder="Describe the nature of the dispute..."></textarea>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="case-category">Category</label>
-                        <select id="case-category" required>
-                            <option value="">Select Category</option>
-                            <option value="property">Property Dispute</option>
-                            <option value="business">Business Conflict</option>
-                            <option value="family">Family Mediation</option>
-                            <option value="employment">Employment Dispute</option>
-                            <option value="community">Community Dispute</option>
-                            <option value="commercial">Commercial Dispute</option>
-                        </select>
+                <div class="form-group">
+                    <label for="case-category">Category</label>
+                    <select id="case-category" required onchange="loadCaseTypeFields()">
+                        <option value="">Select Category</option>
+                        <option value="property">Property Dispute</option>
+                        <option value="business">Business Conflict</option>
+                        <option value="family">Family Mediation</option>
+                        <option value="employment">Employment Dispute</option>
+                        <option value="community">Community Dispute</option>
+                        <option value="commercial">Commercial Dispute</option>
+                    </select>
+                </div>
+                <div id="case-type-fields-container" class="case-type-fields hidden">
+                    <div class="case-type-title">
+                        <span id="case-type-icon">📋</span>
+                        <span id="case-type-name">Case Type Specific Information</span>
                     </div>
+                    <div id="case-type-fields">
+                        <!-- Dynamic fields will be loaded here -->
+                    </div>
+                </div>
                     <div class="form-group">
                         <label for="case-priority">Priority</label>
                         <select id="case-priority" required>
@@ -978,8 +1174,8 @@
                 </div>
             </form>
         </div>
-    </div>
-
+        </div>
+        
     <!-- New Session Modal -->
     <div id="new-session-modal" class="modal">
         <div class="modal-content">
@@ -1031,10 +1227,288 @@
         </div>
     </div>
 
+    <!-- Archive Case Modal -->
+    <div id="archive-case-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📦 Archive Case</h3>
+                <button class="modal-close" onclick="closeModal('archive-case-modal')">&times;</button>
+            </div>
+            <form id="archive-case-form">
+                <div class="form-group">
+                    <label>Select Archive Action:</label>
+                    <div class="archive-options">
+                        <label class="archive-option">
+                            <input type="radio" name="archive-action" value="archive" checked>
+                            <div class="archive-option-title">Archive Case</div>
+                            <div class="archive-option-description">Move case to archive. Can be restored later.</div>
+                        </label>
+                        <label class="archive-option">
+                            <input type="radio" name="archive-action" value="delete">
+                            <div class="archive-option-title">Delete Case</div>
+                            <div class="archive-option-description">Permanently delete case and all associated data.</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="archive-reason">Reason for Archiving/Deletion</label>
+                    <textarea id="archive-reason" rows="3" placeholder="Explain why this case is being archived or deleted..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('archive-case-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Archive/Delete Case</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Data Modal -->
+    <div id="export-data-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📊 Export Case Data</h3>
+                <button class="modal-close" onclick="closeModal('export-data-modal')">&times;</button>
+            </div>
+            <form id="export-data-form">
+                <div class="form-group">
+                    <label>Select Data to Export:</label>
+                    <div class="archive-options">
+                        <label class="archive-option">
+                            <input type="checkbox" name="export-data" value="case-details" checked>
+                            <div class="archive-option-title">Case Details</div>
+                            <div class="archive-option-description">Basic case information and status</div>
+                        </label>
+                        <label class="archive-option">
+                            <input type="checkbox" name="export-data" value="client-info" checked>
+                            <div class="archive-option-title">Client Information</div>
+                            <div class="archive-option-description">All client details and contact information</div>
+                        </label>
+                        <label class="archive-option">
+                            <input type="checkbox" name="export-data" value="case-logs" checked>
+                            <div class="archive-option-title">Case Logs</div>
+                            <div class="archive-option-description">Session notes and activity history</div>
+                        </label>
+                        <label class="archive-option">
+                            <input type="checkbox" name="export-data" value="documents">
+                            <div class="archive-option-title">Documents</div>
+                            <div class="archive-option-description">Uploaded files and attachments</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="export-format">Export Format</label>
+                    <select id="export-format" required>
+                        <option value="csv">CSV (Excel Compatible)</option>
+                        <option value="json">JSON (Structured Data)</option>
+                        <option value="pdf">PDF Report</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('export-data-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-export">Export Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Client Case Details Modal -->
+    <div id="client-case-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📝 Case Details & Information Collection</h3>
+                <button class="modal-close" onclick="closeModal('client-case-details-modal')">&times;</button>
+            </div>
+            <form id="client-case-details-form">
+                <div id="client-case-info">
+                    <!-- Case information will be loaded here -->
+                </div>
+                <div id="client-case-fields">
+                    <!-- Case-specific fields will be loaded here -->
+                </div>
+                <div class="visibility-controls">
+                    <div class="visibility-section">
+                        <div class="visibility-title">🔒 Information Visibility Settings</div>
+                        <div class="visibility-options">
+                            <div class="visibility-option">
+                                <input type="checkbox" id="visible-to-mediator" checked disabled>
+                                <label for="visible-to-mediator">Visible to Mediator (Always)</label>
+                            </div>
+                            <div class="visibility-option">
+                                <input type="checkbox" id="visible-to-other-parties">
+                                <label for="visible-to-other-parties">Visible to Other Parties</label>
+                            </div>
+                            <div class="visibility-option">
+                                <input type="checkbox" id="visible-to-support">
+                                <label for="visible-to-support">Visible to Support Persons</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('client-case-details-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Information</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script>
         // Global state
         let currentUser = null;
         let userRole = null;
+        let selectedMediators = [];
+        let caseTypes = {
+            'property': {
+                name: 'Property Dispute',
+                fields: [
+                    { id: 'property_address', label: 'Property Address', type: 'text', required: true },
+                    { id: 'dispute_type', label: 'Type of Dispute', type: 'select', options: ['Boundary', 'Easement', 'Access Rights', 'Zoning', 'Other'], required: true },
+                    { id: 'property_value', label: 'Estimated Property Value', type: 'number', required: false },
+                    { id: 'survey_available', label: 'Survey Available', type: 'select', options: ['Yes', 'No', 'Partial'], required: true },
+                    { id: 'legal_documents', label: 'Legal Documents Available', type: 'textarea', required: false },
+                    { id: 'timeline_urgency', label: 'Timeline Urgency', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'], required: true }
+                ]
+            },
+            'business': {
+                name: 'Business Conflict',
+                fields: [
+                    { id: 'business_type', label: 'Type of Business', type: 'text', required: true },
+                    { id: 'conflict_nature', label: 'Nature of Conflict', type: 'select', options: ['Partnership', 'Contract', 'Intellectual Property', 'Employment', 'Financial', 'Other'], required: true },
+                    { id: 'business_value', label: 'Business Value/Range', type: 'text', required: false },
+                    { id: 'contracts_available', label: 'Contracts/Agreements Available', type: 'select', options: ['Yes', 'No', 'Partial'], required: true },
+                    { id: 'financial_documents', label: 'Financial Documents', type: 'textarea', required: false },
+                    { id: 'resolution_timeline', label: 'Preferred Resolution Timeline', type: 'select', options: ['ASAP', '1 month', '3 months', '6 months', 'Flexible'], required: true }
+                ]
+            },
+            'family': {
+                name: 'Family Mediation',
+                fields: [
+                    { id: 'family_relationship', label: 'Family Relationship', type: 'select', options: ['Spouse', 'Parent-Child', 'Siblings', 'Extended Family', 'Other'], required: true },
+                    { id: 'mediation_focus', label: 'Mediation Focus', type: 'select', options: ['Divorce', 'Custody', 'Estate', 'Care Arrangements', 'Financial Support', 'Other'], required: true },
+                    { id: 'children_involved', label: 'Children Involved', type: 'select', options: ['Yes', 'No'], required: true },
+                    { id: 'children_ages', label: 'Children Ages (if applicable)', type: 'text', required: false },
+                    { id: 'legal_proceedings', label: 'Ongoing Legal Proceedings', type: 'select', options: ['Yes', 'No', 'Pending'], required: true },
+                    { id: 'safety_concerns', label: 'Safety Concerns', type: 'select', options: ['None', 'Low', 'Medium', 'High'], required: true }
+                ]
+            },
+            'employment': {
+                name: 'Employment Dispute',
+                fields: [
+                    { id: 'employment_type', label: 'Employment Type', type: 'select', options: ['Full-time', 'Part-time', 'Contract', 'Consultant', 'Other'], required: true },
+                    { id: 'dispute_category', label: 'Dispute Category', type: 'select', options: ['Termination', 'Discrimination', 'Harassment', 'Wages', 'Benefits', 'Workplace Conditions', 'Other'], required: true },
+                    { id: 'employment_duration', label: 'Employment Duration', type: 'text', required: false },
+                    { id: 'contract_available', label: 'Employment Contract Available', type: 'select', options: ['Yes', 'No'], required: true },
+                    { id: 'supporting_documents', label: 'Supporting Documents', type: 'textarea', required: false },
+                    { id: 'resolution_preference', label: 'Resolution Preference', type: 'select', options: ['Financial Settlement', 'Reinstatement', 'Reference Letter', 'Policy Change', 'Other'], required: true }
+                ]
+            },
+            'community': {
+                name: 'Community Dispute',
+                fields: [
+                    { id: 'community_type', label: 'Community Type', type: 'select', options: ['Residential', 'Commercial', 'Mixed Use', 'HOA', 'Strata', 'Other'], required: true },
+                    { id: 'dispute_scope', label: 'Dispute Scope', type: 'select', options: ['Individual', 'Multiple Residents', 'Community-wide', 'External Party'], required: true },
+                    { id: 'issue_type', label: 'Issue Type', type: 'select', options: ['Noise', 'Property Maintenance', 'Shared Spaces', 'Rules/By-laws', 'Financial', 'Other'], required: true },
+                    { id: 'duration_issue', label: 'How Long Has This Been an Issue', type: 'select', options: ['Days', 'Weeks', 'Months', 'Years'], required: true },
+                    { id: 'previous_attempts', label: 'Previous Resolution Attempts', type: 'textarea', required: false },
+                    { id: 'community_impact', label: 'Community Impact Level', type: 'select', options: ['Minimal', 'Moderate', 'Significant', 'Community-wide'], required: true }
+                ]
+            },
+            'commercial': {
+                name: 'Commercial Dispute',
+                fields: [
+                    { id: 'business_relationship', label: 'Business Relationship', type: 'select', options: ['Vendor-Client', 'Partnership', 'Joint Venture', 'Franchise', 'Supply Chain', 'Other'], required: true },
+                    { id: 'dispute_value', label: 'Estimated Dispute Value', type: 'select', options: ['Under $10K', '$10K-$50K', '$50K-$100K', '$100K-$500K', 'Over $500K'], required: true },
+                    { id: 'contract_basis', label: 'Contract Basis', type: 'select', options: ['Written Contract', 'Verbal Agreement', 'Implied Terms', 'No Contract'], required: true },
+                    { id: 'performance_issues', label: 'Performance Issues', type: 'textarea', required: false },
+                    { id: 'financial_impact', label: 'Financial Impact', type: 'textarea', required: false },
+                    { id: 'resolution_priority', label: 'Resolution Priority', type: 'select', options: ['Financial Recovery', 'Relationship Repair', 'Precedent Setting', 'Time Efficiency', 'Other'], required: true }
+                ]
+            }
+        };
+
+        // Mediator selection functions
+        function toggleMediatorSelection() {
+            const role = document.getElementById('reg-role').value;
+            const mediatorSelection = document.getElementById('mediator-selection');
+            
+            if (role === 'client') {
+                mediatorSelection.classList.remove('hidden');
+                loadAvailableMediators();
+            } else {
+                mediatorSelection.classList.add('hidden');
+            }
+        }
+
+        function loadAvailableMediators() {
+            const container = document.getElementById('mediator-checkboxes');
+            const mediators = [
+                { id: 'mediator1', name: 'Dr. Sarah Johnson', specialties: 'Property, Business, Commercial' },
+                { id: 'mediator2', name: 'Michael Brown', specialties: 'Family, Employment, Community' },
+                { id: 'mediator3', name: 'Lisa Chen', specialties: 'Property, Family, Commercial' },
+                { id: 'mediator4', name: 'Robert Wilson', specialties: 'Business, Employment, Community' }
+            ];
+
+            container.innerHTML = mediators.map(mediator => `
+                <div class="mediator-option">
+                    <input type="checkbox" id="${mediator.id}" name="preferred-mediators" value="${mediator.id}">
+                    <div class="mediator-info">
+                        <div class="mediator-name">${mediator.name}</div>
+                        <div class="mediator-specialties">${mediator.specialties}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadCaseTypeFields() {
+            const category = document.getElementById('case-category').value;
+            const container = document.getElementById('case-type-fields-container');
+            const fieldsContainer = document.getElementById('case-type-fields');
+            const typeName = document.getElementById('case-type-name');
+            const typeIcon = document.getElementById('case-type-icon');
+
+            if (category && caseTypes[category]) {
+                const caseType = caseTypes[category];
+                typeName.textContent = `${caseType.name} - Required Information`;
+                
+                // Set appropriate icon based on case type
+                const icons = {
+                    'property': '🏠',
+                    'business': '🏢',
+                    'family': '👨‍👩‍👧‍👦',
+                    'employment': '💼',
+                    'community': '🏘️',
+                    'commercial': '🤝'
+                };
+                typeIcon.textContent = icons[category] || '📋';
+
+                fieldsContainer.innerHTML = caseType.fields.map(field => {
+                    let input = '';
+                    if (field.type === 'select') {
+                        input = `
+                            <select id="${field.id}" ${field.required ? 'required' : ''}>
+                                <option value="">Select ${field.label}</option>
+                                ${field.options.map(option => `<option value="${option}">${option}</option>`).join('')}
+                            </select>
+                        `;
+                    } else if (field.type === 'textarea') {
+                        input = `<textarea id="${field.id}" rows="3" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}..."></textarea>`;
+                    } else {
+                        input = `<input type="${field.type}" id="${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}...">`;
+                    }
+
+                    return `
+                        <div class="form-group">
+                            <label for="${field.id}">${field.label} ${field.required ? '*' : ''}</label>
+                            ${input}
+                        </div>
+                    `;
+                }).join('');
+
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
 
         // Authentication functions
         function showAuthTab(tab) {
@@ -1183,6 +1657,11 @@
                         <button class="btn btn-success btn-sm" onclick="assignClient('${caseItem.id}')">Assign Client</button>
                         <button class="btn btn-warning btn-sm" onclick="scheduleSession('${caseItem.id}')">Schedule Session</button>
                     </div>
+                    <div class="case-actions-extended">
+                        <button class="btn btn-export btn-sm" onclick="exportCaseData('${caseItem.id}')">Export</button>
+                        <button class="btn btn-archive btn-sm" onclick="archiveCase('${caseItem.id}')">Archive</button>
+                        <button class="btn btn-delete btn-sm" onclick="deleteCase('${caseItem.id}')">Delete</button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -1226,7 +1705,7 @@
                     </div>
                     <div class="case-actions">
                         <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View Details</button>
-                        <button class="btn btn-secondary btn-sm" onclick="submitInfo('${caseItem.id}')">Submit Information</button>
+                        <button class="btn btn-secondary btn-sm" onclick="openClientCaseDetails('${caseItem.id}')">Complete Case Details</button>
                     </div>
                 </div>
             `).join('');
@@ -1305,6 +1784,113 @@
             alert(`Submitting information for Case #${caseId}`);
         }
 
+        // New advanced functions
+        function exportCaseData(caseId) {
+            openModal('export-data-modal');
+            // Store case ID for export
+            document.getElementById('export-data-modal').dataset.caseId = caseId;
+        }
+
+        function archiveCase(caseId) {
+            openModal('archive-case-modal');
+            // Store case ID for archiving
+            document.getElementById('archive-case-modal').dataset.caseId = caseId;
+        }
+
+        function deleteCase(caseId) {
+            if (confirm('Are you sure you want to permanently delete this case? This action cannot be undone.')) {
+                alert(`Case #${caseId} has been permanently deleted.`);
+                loadMediatorCases(); // Refresh the list
+            }
+        }
+
+        function openClientCaseDetails(caseId) {
+            openModal('client-case-details-modal');
+            
+            // Load case information
+            const caseInfo = document.getElementById('client-case-info');
+            const caseFields = document.getElementById('client-case-fields');
+            
+            // Sample case data
+            const caseData = {
+                id: caseId,
+                title: 'Property Boundary Dispute',
+                number: 'CASE-001',
+                category: 'property',
+                description: 'Dispute between neighbors regarding property boundary lines and fence placement.',
+                mediator: 'Dr. Sarah Johnson',
+                created: '2024-01-15'
+            };
+
+            caseInfo.innerHTML = `
+                <div class="case-type-fields">
+                    <div class="case-type-title">
+                        <span>🏠</span>
+                        <span>Case Information</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Case Title</label>
+                            <input type="text" value="${caseData.title}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Case Number</label>
+                            <input type="text" value="${caseData.number}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea rows="3" readonly>${caseData.description}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Assigned Mediator</label>
+                            <input type="text" value="${caseData.mediator}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Case Created</label>
+                            <input type="text" value="${caseData.created}" readonly>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Load case-specific fields
+            const caseType = caseTypes[caseData.category];
+            if (caseType) {
+                caseFields.innerHTML = `
+                    <div class="case-type-fields">
+                        <div class="case-type-title">
+                            <span>📝</span>
+                            <span>Complete Case Details</span>
+                        </div>
+                        ${caseType.fields.map(field => {
+                            let input = '';
+                            if (field.type === 'select') {
+                                input = `
+                                    <select id="client-${field.id}" ${field.required ? 'required' : ''}>
+                                        <option value="">Select ${field.label}</option>
+                                        ${field.options.map(option => `<option value="${option}">${option}</option>`).join('')}
+                                    </select>
+                                `;
+                            } else if (field.type === 'textarea') {
+                                input = `<textarea id="client-${field.id}" rows="3" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}..."></textarea>`;
+                            } else {
+                                input = `<input type="${field.type}" id="client-${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}...">`;
+                            }
+
+                            return `
+                                <div class="form-group">
+                                    <label for="client-${field.id}">${field.label} ${field.required ? '*' : ''}</label>
+                                    ${input}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+        }
+
         // Form handlers
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1361,12 +1947,171 @@
             this.reset();
         });
 
+        // Archive case form handler
+        document.getElementById('archive-case-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const modal = document.getElementById('archive-case-modal');
+            const caseId = modal.dataset.caseId;
+            const action = document.querySelector('input[name="archive-action"]:checked').value;
+            const reason = document.getElementById('archive-reason').value;
+            
+            if (action === 'archive') {
+                alert(`Case #${caseId} has been archived. Reason: ${reason}`);
+            } else {
+                alert(`Case #${caseId} has been permanently deleted. Reason: ${reason}`);
+            }
+            
+            closeModal('archive-case-modal');
+            this.reset();
+            loadMediatorCases(); // Refresh the list
+        });
+
+        // Export data form handler
+        document.getElementById('export-data-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const modal = document.getElementById('export-data-modal');
+            const caseId = modal.dataset.caseId;
+            const format = document.getElementById('export-format').value;
+            const selectedData = Array.from(document.querySelectorAll('input[name="export-data"]:checked')).map(cb => cb.value);
+            
+            // Simulate CSV export
+            const csvData = generateCSVData(caseId, selectedData);
+            downloadCSV(csvData, `case-${caseId}-export.csv`);
+            
+            alert(`Case #${caseId} data exported successfully in ${format.toUpperCase()} format!`);
+            closeModal('export-data-modal');
+            this.reset();
+        });
+
+        // Client case details form handler
+        document.getElementById('client-case-details-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const caseData = {};
+            
+            // Get all case-specific fields
+            document.querySelectorAll('#client-case-fields input, #client-case-fields select, #client-case-fields textarea').forEach(field => {
+                caseData[field.id.replace('client-', '')] = field.value;
+            });
+            
+            // Get visibility settings
+            const visibility = {
+                mediator: true, // Always visible to mediator
+                otherParties: document.getElementById('visible-to-other-parties').checked,
+                support: document.getElementById('visible-to-support').checked
+            };
+            
+            alert('Case details submitted successfully! Your information has been saved and shared according to your visibility preferences.');
+            closeModal('client-case-details-modal');
+            this.reset();
+        });
+
         // Close modal when clicking outside
         window.addEventListener('click', function(e) {
             if (e.target.classList.contains('modal')) {
                 e.target.classList.remove('active');
             }
         });
+
+        // CSV Export functionality
+        function generateCSVData(caseId, selectedData) {
+            const caseData = {
+                id: caseId,
+                title: 'Property Boundary Dispute',
+                number: 'CASE-001',
+                status: 'active',
+                category: 'property',
+                description: 'Dispute between neighbors regarding property boundary lines and fence placement.',
+                mediator: 'Dr. Sarah Johnson',
+                created: '2024-01-15',
+                parties: [
+                    { name: 'John Smith', email: 'john@example.com', role: 'Primary Party', phone: '555-0123' },
+                    { name: 'Jane Doe', email: 'jane@example.com', role: 'Secondary Party', phone: '555-0456' }
+                ],
+                sessions: [
+                    { date: '2024-01-20', type: 'Joint Session', duration: '2 hours', status: 'Completed' },
+                    { date: '2024-01-25', type: 'Individual Session', duration: '1 hour', status: 'Scheduled' }
+                ],
+                documents: [
+                    { name: 'Property Survey', type: 'PDF', uploaded: '2024-01-16' },
+                    { name: 'Legal Correspondence', type: 'PDF', uploaded: '2024-01-18' }
+                ]
+            };
+
+            let csvContent = '';
+            let headers = [];
+            let rows = [];
+
+            if (selectedData.includes('case-details')) {
+                headers.push('Case ID', 'Title', 'Number', 'Status', 'Category', 'Description', 'Mediator', 'Created');
+                rows.push([
+                    caseData.id,
+                    caseData.title,
+                    caseData.number,
+                    caseData.status,
+                    caseData.category,
+                    `"${caseData.description}"`,
+                    caseData.mediator,
+                    caseData.created
+                ]);
+            }
+
+            if (selectedData.includes('client-info')) {
+                headers.push('Party Name', 'Email', 'Phone', 'Role');
+                caseData.parties.forEach(party => {
+                    rows.push([
+                        party.name,
+                        party.email,
+                        party.phone,
+                        party.role
+                    ]);
+                });
+            }
+
+            if (selectedData.includes('case-logs')) {
+                headers.push('Session Date', 'Type', 'Duration', 'Status');
+                caseData.sessions.forEach(session => {
+                    rows.push([
+                        session.date,
+                        session.type,
+                        session.duration,
+                        session.status
+                    ]);
+                });
+            }
+
+            if (selectedData.includes('documents')) {
+                headers.push('Document Name', 'Type', 'Uploaded');
+                caseData.documents.forEach(doc => {
+                    rows.push([
+                        doc.name,
+                        doc.type,
+                        doc.uploaded
+                    ]);
+                });
+            }
+
+            csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.join(',') + '\n';
+            });
+
+            return csvContent;
+        }
+
+        function downloadCSV(csvContent, filename) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         // Initialize
         console.log('Unified Mediation Platform loaded');
