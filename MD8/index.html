@@ -856,6 +856,13 @@
                 <div class="auth-logo">⚖️</div>
                 <h1 class="auth-title">Unified Mediation Platform</h1>
                 <p class="auth-subtitle">Professional Case Management & Mediation</p>
+                
+                <!-- Debug button (remove in production) -->
+                <div style="margin-top: 1rem; text-align: center;">
+                    <button type="button" onclick="testDashboard()" style="background: #6c757d; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem;">
+                        🔧 Test Dashboard (Debug)
+                    </button>
+                </div>
             </div>
 
             <div class="auth-tabs">
@@ -1524,6 +1531,9 @@
 
         async function login(email, password) {
             try {
+                console.log('Attempting login for:', email);
+                console.log('API URL:', `${API_BASE_URL}/auth/login`);
+                
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: {
@@ -1532,18 +1542,35 @@
                     body: JSON.stringify({ email, password })
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (data.success) {
                     currentUser = data.user;
                     userRole = data.user.role;
-                    showDashboard();
+                    console.log('Login successful, user:', currentUser);
+                    console.log('User role:', userRole);
+                    
+                    // Ensure dashboard shows - add a small delay to make sure DOM is ready
+                    setTimeout(() => {
+                        showDashboard();
+                    }, 100);
+                    
                     return true;
                 } else {
+                    console.log('Login failed:', data.error);
                     return false;
                 }
             } catch (error) {
                 console.error('Login error:', error);
+                alert(`Login failed: ${error.message}. Please check if the API server is running at ${API_BASE_URL}`);
                 return false;
             }
         }
@@ -1583,24 +1610,39 @@
         }
 
         function showDashboard() {
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('app-section').classList.remove('hidden');
-            document.getElementById('app-section').classList.add('active');
+            console.log('showDashboard called');
+            console.log('currentUser:', currentUser);
+            console.log('userRole:', userRole);
+            
+            // Hide auth section
+            const authSection = document.getElementById('auth-section');
+            const appSection = document.getElementById('app-section');
+            
+            console.log('Auth section:', authSection);
+            console.log('App section:', appSection);
+            
+            authSection.classList.add('hidden');
+            appSection.classList.remove('hidden');
+            appSection.classList.add('active');
 
             // Update user info in header
-            document.getElementById('user-name').textContent = currentUser.name;
+            document.getElementById('user-name').textContent = currentUser.full_name || currentUser.name;
             const roleElement = document.getElementById('user-role');
             roleElement.textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1);
             roleElement.className = `user-role role-${userRole}`;
 
             // Show appropriate dashboard
             if (userRole === 'mediator') {
+                console.log('Showing mediator dashboard');
                 document.getElementById('mediator-dashboard').classList.remove('hidden');
                 loadMediatorDashboard();
             } else {
+                console.log('Showing client dashboard');
                 document.getElementById('client-dashboard').classList.remove('hidden');
                 loadClientDashboard();
             }
+            
+            console.log('Dashboard setup complete');
         }
 
         function logout() {
@@ -1610,6 +1652,26 @@
             document.getElementById('auth-section').classList.remove('hidden');
             document.getElementById('mediator-dashboard').classList.add('hidden');
             document.getElementById('client-dashboard').classList.add('hidden');
+        }
+        
+        // Debug function to test dashboard display
+        function testDashboard() {
+            console.log('Testing dashboard display...');
+            
+            // Create test user data
+            currentUser = {
+                user_id: 'test-user-123',
+                full_name: 'Test User',
+                email: 'test@example.com',
+                role: 'mediator'
+            };
+            userRole = 'mediator';
+            
+            console.log('Test user created:', currentUser);
+            console.log('Test role:', userRole);
+            
+            // Try to show dashboard
+            showDashboard();
         }
 
         // Modal functions
@@ -1982,19 +2044,40 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
         }
 
         // Form handlers
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
-            if (login(email, password)) {
-                alert('Login successful!');
-            } else {
-                alert('Invalid email or password. Try: mediator@example.com or client@example.com (password: password123)');
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Logging in...';
+            submitButton.disabled = true;
+            
+            try {
+                const success = await login(email, password);
+                if (success) {
+                    // Don't show alert - just proceed to dashboard
+                    console.log('Login successful, proceeding to dashboard');
+                    // Clear the form
+                    this.reset();
+                } else {
+                    alert('Invalid email or password. Try: mediator@test.com or client1@test.com (password: password123)');
+                    // Reset button state only on failure
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed. Please check if the API server is running.');
+                // Reset button state on error
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
             }
         });
 
-        document.getElementById('register-form').addEventListener('submit', function(e) {
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = {
                 name: document.getElementById('reg-name').value,
@@ -2010,8 +2093,36 @@ Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', 
                 return;
             }
             
-            if (register(formData)) {
-                alert('Registration successful!');
+            // Get preferred mediators if client
+            const preferredMediators = [];
+            if (formData.role === 'client') {
+                const mediatorCheckboxes = document.querySelectorAll('input[name="preferred-mediators"]:checked');
+                mediatorCheckboxes.forEach(checkbox => {
+                    preferredMediators.push(checkbox.value);
+                });
+            }
+            formData.preferred_mediators = preferredMediators;
+            
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Registering...';
+            submitButton.disabled = true;
+            
+            try {
+                const success = await register(formData);
+                if (success) {
+                    alert('Registration successful!');
+                } else {
+                    alert('Registration failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed. Please check if the API server is running.');
+            } finally {
+                // Reset button state
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
             }
         });
 
