@@ -949,7 +949,7 @@
                             <span class="metric-icon">📋</span>
                             <span class="metric-title">Active Cases</span>
                         </div>
-                        <div class="metric-value" id="active-cases-count">12</div>
+                        <div class="metric-value" id="active-cases-count">0</div>
                         <div class="metric-description">Cases currently in progress</div>
                     </div>
                     <div class="metric-card">
@@ -957,26 +957,26 @@
                             <span class="metric-icon">🤝</span>
                             <span class="metric-title">Sessions Today</span>
                         </div>
-                        <div class="metric-value" id="sessions-today-count">3</div>
+                        <div class="metric-value" id="sessions-today-count">0</div>
                         <div class="metric-description">Mediation sessions scheduled</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-icon">👥</span>
                             <span class="metric-title">Assigned Clients</span>
-            </div>
-                        <div class="metric-value" id="assigned-clients-count">24</div>
+                        </div>
+                        <div class="metric-value" id="assigned-clients-count">0</div>
                         <div class="metric-description">Clients assigned to your cases</div>
-            </div>
+                    </div>
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-icon">✅</span>
                             <span class="metric-title">Resolved Cases</span>
-            </div>
-                        <div class="metric-value" id="resolved-cases-count">45</div>
+                        </div>
+                        <div class="metric-value" id="resolved-cases-count">0</div>
                         <div class="metric-description">Successfully resolved this month</div>
-            </div>
-        </div>
+                    </div>
+                </div>
         
                 <div class="quick-actions">
                     <a href="#" class="action-card" onclick="openModal('new-case-modal')">
@@ -1020,7 +1020,7 @@
                             <span class="metric-icon">📋</span>
                             <span class="metric-title">My Cases</span>
                         </div>
-                        <div class="metric-value" id="client-cases-count">2</div>
+                        <div class="metric-value" id="client-cases-count">0</div>
                         <div class="metric-description">Cases you're involved in</div>
                     </div>
                     <div class="metric-card">
@@ -1028,7 +1028,7 @@
                             <span class="metric-icon">🤝</span>
                             <span class="metric-title">Upcoming Sessions</span>
                         </div>
-                        <div class="metric-value" id="upcoming-sessions-count">1</div>
+                        <div class="metric-value" id="upcoming-sessions-count">0</div>
                         <div class="metric-description">Sessions scheduled this week</div>
                     </div>
                     <div class="metric-card">
@@ -1036,7 +1036,7 @@
                             <span class="metric-icon">📝</span>
                             <span class="metric-title">Forms Pending</span>
                         </div>
-                        <div class="metric-value" id="pending-forms-count">1</div>
+                        <div class="metric-value" id="pending-forms-count">0</div>
                         <div class="metric-description">Information forms to complete</div>
                     </div>
                     <div class="metric-card">
@@ -1044,7 +1044,7 @@
                             <span class="metric-icon">📊</span>
                             <span class="metric-title">Progress</span>
                         </div>
-                        <div class="metric-value">75%</div>
+                        <div class="metric-value">0%</div>
                         <div class="metric-description">Overall case progress</div>
                     </div>
                 </div>
@@ -1605,110 +1605,97 @@
             loadClientForms();
         }
 
+        // Global case storage
+        let userCases = [];
+        let caseCounter = 1;
+
         function loadMediatorCases() {
             const casesContainer = document.getElementById('mediator-cases');
-            const sampleCases = [
-                {
-                    id: '001',
-                    title: 'Property Boundary Dispute',
-                    number: 'CASE-001',
-                    status: 'active',
-                    description: 'Dispute between neighbors regarding property boundary lines and fence placement.',
-                    parties: 2,
-                    created: '2024-01-15'
-                },
-                {
-                    id: '002',
-                    title: 'Business Partnership Conflict',
-                    number: 'CASE-002',
-                    status: 'pending',
-                    description: 'Partnership dissolution and asset division between business partners.',
-                    parties: 3,
-                    created: '2024-01-20'
-                },
-                {
-                    id: '003',
-                    title: 'Employment Contract Dispute',
-                    number: 'CASE-003',
-                    status: 'completed',
-                    description: 'Contract termination and severance package negotiation.',
-                    parties: 2,
-                    created: '2024-01-10'
-                }
-            ];
-
-            casesContainer.innerHTML = sampleCases.map(caseItem => `
-                <div class="case-card">
-                    <div class="case-header">
-                        <div>
-                            <div class="case-title">${caseItem.title}</div>
-                            <div class="case-number">${caseItem.number}</div>
+            
+            if (userCases.length === 0) {
+                casesContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                        <h3>No Cases Yet</h3>
+                        <p>Create your first case to get started with mediation management.</p>
+                        <button class="btn btn-primary" onclick="openModal('new-case-modal')" style="margin-top: 1rem;">Create First Case</button>
+                    </div>
+                `;
+            } else {
+                casesContainer.innerHTML = userCases.map(caseItem => `
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div>
+                                <div class="case-title">${caseItem.title}</div>
+                                <div class="case-number">${caseItem.number}</div>
+                            </div>
+                            <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
                         </div>
-                        <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
+                        <div class="case-description">${caseItem.description}</div>
+                        <div class="case-meta">
+                            <span>Parties: ${caseItem.parties}</span>
+                            <span>Created: ${caseItem.created}</span>
+                        </div>
+                        <div class="case-actions">
+                            <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editCase('${caseItem.id}')">Edit</button>
+                            <button class="btn btn-success btn-sm" onclick="assignClient('${caseItem.id}')">Assign Client</button>
+                            <button class="btn btn-warning btn-sm" onclick="scheduleSession('${caseItem.id}')">Schedule Session</button>
+                        </div>
+                        <div class="case-actions-extended">
+                            <button class="btn btn-export btn-sm" onclick="exportCaseData('${caseItem.id}')">Export</button>
+                            <button class="btn btn-archive btn-sm" onclick="archiveCase('${caseItem.id}')">Archive</button>
+                            <button class="btn btn-delete btn-sm" onclick="deleteCase('${caseItem.id}')">Delete</button>
+                        </div>
                     </div>
-                    <div class="case-description">${caseItem.description}</div>
-                    <div class="case-meta">
-                        <span>Parties: ${caseItem.parties}</span>
-                        <span>Created: ${caseItem.created}</span>
-                    </div>
-                    <div class="case-actions">
-                        <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View</button>
-                        <button class="btn btn-secondary btn-sm" onclick="editCase('${caseItem.id}')">Edit</button>
-                        <button class="btn btn-success btn-sm" onclick="assignClient('${caseItem.id}')">Assign Client</button>
-                        <button class="btn btn-warning btn-sm" onclick="scheduleSession('${caseItem.id}')">Schedule Session</button>
-                    </div>
-                    <div class="case-actions-extended">
-                        <button class="btn btn-export btn-sm" onclick="exportCaseData('${caseItem.id}')">Export</button>
-                        <button class="btn btn-archive btn-sm" onclick="archiveCase('${caseItem.id}')">Archive</button>
-                        <button class="btn btn-delete btn-sm" onclick="deleteCase('${caseItem.id}')">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
+            
+            // Update metrics
+            updateMediatorMetrics();
         }
 
         function loadClientCases() {
             const casesContainer = document.getElementById('client-cases');
-            const sampleCases = [
-                {
-                    id: '001',
-                    title: 'Property Boundary Dispute',
-                    number: 'CASE-001',
-                    status: 'active',
-                    description: 'You are involved in a property boundary dispute with your neighbor.',
-                    mediator: 'Dr. Sarah Johnson',
-                    progress: 75
-                },
-                {
-                    id: '002',
-                    title: 'Business Partnership Conflict',
-                    number: 'CASE-002',
-                    status: 'pending',
-                    description: 'Partnership dissolution case where you are a secondary party.',
-                    mediator: 'Dr. Michael Brown',
-                    progress: 25
-                }
-            ];
-
-            casesContainer.innerHTML = sampleCases.map(caseItem => `
-                <div class="case-card">
-                    <div class="case-header">
-                        <div>
-                            <div class="case-title">${caseItem.title}</div>
-                            <div class="case-number">${caseItem.number}</div>
+            
+            // Filter cases where current user is assigned as a client
+            const clientCases = userCases.filter(caseItem => 
+                caseItem.assignedClients && caseItem.assignedClients.includes(currentUser.email)
+            );
+            
+            if (clientCases.length === 0) {
+                casesContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                        <h3>No Assigned Cases</h3>
+                        <p>You haven't been assigned to any cases yet. Contact your mediator to get started.</p>
+                    </div>
+                `;
+            } else {
+                casesContainer.innerHTML = clientCases.map(caseItem => `
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div>
+                                <div class="case-title">${caseItem.title}</div>
+                                <div class="case-number">${caseItem.number}</div>
+                            </div>
+                            <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
                         </div>
-                        <span class="status-badge status-${caseItem.status}">${caseItem.status}</span>
+                        <div class="case-description">${caseItem.description}</div>
+                        <div class="case-meta">
+                            <span>Mediator: ${caseItem.mediator}</span>
+                            <span>Created: ${caseItem.created}</span>
+                        </div>
+                        <div class="case-actions">
+                            <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View Details</button>
+                            <button class="btn btn-secondary btn-sm" onclick="openClientCaseDetails('${caseItem.id}')">Complete Case Details</button>
+                        </div>
                     </div>
-                    <div class="case-description">${caseItem.description}</div>
-                    <div class="case-meta">
-                        <span>Mediator: ${caseItem.mediator}</span>
-                        <span>Progress: ${caseItem.progress}%</span>
-                    </div>
-                    <div class="case-actions">
-                        <button class="btn btn-primary btn-sm" onclick="viewCase('${caseItem.id}')">View Details</button>
-                        <button class="btn btn-secondary btn-sm" onclick="openClientCaseDetails('${caseItem.id}')">Complete Case Details</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
+            
+            // Update metrics
+            updateClientMetrics();
         }
 
         function loadClientForms() {
@@ -1763,9 +1750,50 @@
             alert('User Management feature - would show user search, assignment, and management interface');
         }
 
+        // Metrics update functions
+        function updateMediatorMetrics() {
+            const activeCases = userCases.filter(c => c.status === 'active').length;
+            const resolvedCases = userCases.filter(c => c.status === 'completed').length;
+            const totalClients = userCases.reduce((sum, c) => sum + (c.assignedClients ? c.assignedClients.length : 0), 0);
+            
+            document.getElementById('active-cases-count').textContent = activeCases;
+            document.getElementById('resolved-cases-count').textContent = resolvedCases;
+            document.getElementById('assigned-clients-count').textContent = totalClients;
+            document.getElementById('sessions-today-count').textContent = '0'; // TODO: Implement session tracking
+        }
+
+        function updateClientMetrics() {
+            const clientCases = userCases.filter(caseItem => 
+                caseItem.assignedClients && caseItem.assignedClients.includes(currentUser.email)
+            );
+            
+            document.getElementById('client-cases-count').textContent = clientCases.length;
+            document.getElementById('upcoming-sessions-count').textContent = '0'; // TODO: Implement session tracking
+            document.getElementById('pending-forms-count').textContent = '0'; // TODO: Implement form tracking
+        }
+
         // Case management functions
         function viewCase(caseId) {
-            alert(`Viewing details for Case #${caseId}`);
+            const caseItem = userCases.find(c => c.id === caseId);
+            if (!caseItem) {
+                alert('Case not found');
+                return;
+            }
+
+            const caseDetails = `
+Case Details:
+Title: ${caseItem.title}
+Number: ${caseItem.number}
+Status: ${caseItem.status}
+Category: ${caseItem.category}
+Description: ${caseItem.description}
+Created: ${caseItem.created}
+Mediator: ${caseItem.mediator}
+Parties: ${caseItem.parties}
+Assigned Clients: ${caseItem.assignedClients ? caseItem.assignedClients.join(', ') : 'None'}
+            `;
+            
+            alert(caseDetails);
         }
 
         function editCase(caseId) {
@@ -1773,6 +1801,20 @@
         }
 
         function assignClient(caseId) {
+            // Populate case dropdown with actual cases
+            const caseSelect = document.getElementById('assign-case');
+            caseSelect.innerHTML = '<option value="">Select Case</option>';
+            
+            userCases.forEach(caseItem => {
+                const option = document.createElement('option');
+                option.value = caseItem.id;
+                option.textContent = `${caseItem.number} - ${caseItem.title}`;
+                if (caseItem.id === caseId) {
+                    option.selected = true;
+                }
+                caseSelect.appendChild(option);
+            });
+            
             openModal('assign-client-modal');
         }
 
@@ -1798,8 +1840,16 @@
         }
 
         function deleteCase(caseId) {
-            if (confirm('Are you sure you want to permanently delete this case? This action cannot be undone.')) {
-                alert(`Case #${caseId} has been permanently deleted.`);
+            const caseItem = userCases.find(c => c.id === caseId);
+            if (!caseItem) {
+                alert('Case not found');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to permanently delete "${caseItem.title}" (Case #${caseItem.number})? This action cannot be undone.`)) {
+                // Remove from array
+                userCases = userCases.filter(c => c.id !== caseId);
+                alert(`Case #${caseItem.number} has been permanently deleted.`);
                 loadMediatorCases(); // Refresh the list
             }
         }
@@ -1927,15 +1977,73 @@
 
         document.getElementById('new-case-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('New case created successfully!');
+            
+            // Get form data
+            const title = document.getElementById('case-title').value;
+            const description = document.getElementById('case-description').value;
+            const category = document.getElementById('case-category').value;
+            const priority = document.getElementById('case-priority').value;
+            const mediator = document.getElementById('case-mediator').value;
+            
+            // Create new case
+            const newCase = {
+                id: String(caseCounter++).padStart(3, '0'),
+                title: title,
+                number: `CASE-${String(caseCounter - 1).padStart(3, '0')}`,
+                description: description,
+                category: category,
+                priority: priority,
+                status: 'active',
+                mediator: mediator === 'current' ? currentUser.name : mediator,
+                parties: 0,
+                assignedClients: [],
+                created: new Date().toISOString().split('T')[0],
+                createdBy: currentUser.email
+            };
+            
+            // Add to user cases
+            userCases.push(newCase);
+            
+            alert(`New case created successfully! Case #${newCase.number}`);
             closeModal('new-case-modal');
             this.reset();
+            
+            // Hide case type fields
+            document.getElementById('case-type-fields-container').classList.add('hidden');
+            
+            // Reload cases
             loadMediatorCases();
         });
 
         document.getElementById('assign-client-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Client assigned successfully!');
+            
+            const caseId = document.getElementById('assign-case').value;
+            const clientEmail = document.getElementById('assign-client').value;
+            const clientRole = document.getElementById('client-role').value;
+            
+            // Find the case
+            const caseItem = userCases.find(c => c.id === caseId);
+            if (!caseItem) {
+                alert('Case not found');
+                return;
+            }
+            
+            // Add client to case
+            if (!caseItem.assignedClients) {
+                caseItem.assignedClients = [];
+            }
+            
+            if (!caseItem.assignedClients.includes(clientEmail)) {
+                caseItem.assignedClients.push(clientEmail);
+                caseItem.parties = caseItem.assignedClients.length;
+                
+                alert(`Client assigned successfully to Case #${caseItem.number}!`);
+                loadMediatorCases(); // Refresh the list
+            } else {
+                alert('Client is already assigned to this case');
+            }
+            
             closeModal('assign-client-modal');
             this.reset();
         });
@@ -1955,10 +2063,19 @@
             const action = document.querySelector('input[name="archive-action"]:checked').value;
             const reason = document.getElementById('archive-reason').value;
             
+            const caseItem = userCases.find(c => c.id === caseId);
+            if (!caseItem) {
+                alert('Case not found');
+                return;
+            }
+            
             if (action === 'archive') {
-                alert(`Case #${caseId} has been archived. Reason: ${reason}`);
+                caseItem.status = 'archived';
+                alert(`Case #${caseItem.number} has been archived. Reason: ${reason}`);
             } else {
-                alert(`Case #${caseId} has been permanently deleted. Reason: ${reason}`);
+                // Permanently delete
+                userCases = userCases.filter(c => c.id !== caseId);
+                alert(`Case #${caseItem.number} has been permanently deleted. Reason: ${reason}`);
             }
             
             closeModal('archive-case-modal');
