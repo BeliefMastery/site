@@ -24,7 +24,7 @@
       --card-radius:12px;
     }
     *{box-sizing:border-box}
-    html  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--brand);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--brand);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%;height:auto}
     main{position:relative;z-index:2}
@@ -39,23 +39,23 @@
     .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
 
     /* ---------- Header / nav ---------- */
-header.site-header{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  z-index:1000;
-  height:var(--nav-h);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72));
-  backdrop-filter: blur(10px) saturate(1.1);
-  border-bottom:1px solid rgba(0,0,0,0.06);
-  box-shadow:0 4px 16px rgba(0,0,0,0.06);
-  transition:background .3s ease, box-shadow .3s ease;
-  padding:0 1rem;
-}
+    header.site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      z-index:1000;
+      height:var(--nav-h);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72));
+      backdrop-filter: blur(10px) saturate(1.1);
+      border-bottom:1px solid rgba(0,0,0,0.06);
+      box-shadow:0 4px 16px rgba(0,0,0,0.06);
+      transition:background .3s ease, box-shadow .3s ease;
+      padding:0 1rem;
+    }
     .nav{max-width:var(--max-width);margin:0 auto;width:100%;display:flex;align-items:center;gap:1rem}
     .brand{font-weight:700;padding:.35rem .6rem;border-radius:.45rem}
     .nav-list{display:flex;gap:.4rem;margin-left:auto;list-style:none;padding:0}
@@ -64,11 +64,11 @@ header.site-header{
     .nav-list a.active{background:rgba(255,184,0,0.16);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
 
     /* ---------- Container & sections ---------- */
-.container{
-  max-width:var(--max-width);
-  margin:calc(var(--nav-h) + 60px) auto 80px; /* increased top margin */
-  padding:0 1rem;
-}
+    .container{
+      max-width:var(--max-width);
+      margin:calc(var(--nav-h) + 60px) auto 80px;
+      padding:0 1rem;
+    }
     section{background:var(--glass);border-radius:var(--card-radius);padding:var(--pad-md);margin:28px 0;box-shadow:0 12px 30px rgba(8,8,8,0.06);position:relative;z-index:2}
     .section-inner{max-width:980px;margin:0 auto}
 
@@ -114,7 +114,7 @@ header.site-header{
 
   <!-- Background layers for crossfade -->
   <div id="bgA" class="bg-layer" style="background-image:url('./images/index-background.JPG');"></div>
-  <div id="bgB" class="bg-layer hidden" style="background-image:url('images/index-background.JPG');"></div>
+  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/index-background.JPG');"></div>
   <div class="bg-overlay"></div>
 
   <header class="site-header" role="banner">
@@ -195,60 +195,53 @@ header.site-header{
 
         <section style="margin-top:1.25rem;">
           <h3>Expanded chapter guide</h3>
-<div class="grid">
-  <div class="card">
-    <strong>Chapter 1 – Belief Mastery: Foundations</strong>
-    <p style="margin:0;color:var(--muted)">Engagement criteria, core principles, and readiness reflection for subconscious liberation.</p>
-    <div class="extended">Outlines purpose, disclaimers, and prerequisites like emotional ownership. Bridges to archetypal work, framing belief mastery as accelerating authorship over inherited patterns.</div>
-  </div>
-
-  <div class="card">
-    <strong>Chapter 2 – Archetypal Imprints</strong>
-    <p style="margin:0;color:var(--muted)">Masculine/feminine halves and visualization's role in imprint transformation.</p>
-    <div class="extended">Defines imprints as blueprints of experience, emphasizing right-brain visualization to rewire subconscious relational dynamics and unlock structural change.</div>
-  </div>
-
-  <div class="card">
-    <strong>Chapter 3 – The Journey Home</strong>
-    <p style="margin:0;color:var(--muted)">Guided narrative to reveal primary imprints and developmental roots.</p>
-    <div class="extended">Seven-page immersive walk surfaces Main Character view, boundary/authority (Father), family positioning (Hallway), and nurturance (Mother). Analyzes interactions for subconscious patterning origins.</div>
-  </div>
-
-  <div class="card">
-    <strong>Chapter 4 – The Return</strong>
-    <p style="margin:0;color:var(--muted)">Second journey for repair, self-parenting, and archetype integration.</p>
-    <div class="extended">Reforms imprints via visualization, embodying internal Mother/Father for stability/acceptance. Includes real-time engagement, practical applications, and self-parenting guide to end external dependency.</div>
-  </div>
-
-  <div class="card">
-    <strong>Chapter 5 – Needs and Beliefs</strong>
-    <p style="margin:0;color:var(--muted)">Needs/vice vocabularies, dependency loops, and core-limiting beliefs.</p>
-    <div class="extended">Maps 18+ loops (e.g., SPACE, JOY, SECURITY) and chains, linking unmet needs to vices/beliefs. Explores outsourcing costs, sovereign resourcing, and barriers from outdated protective structures.</div>
-  </div>
-
-  <div class="card">
-    <strong>Chapter 6 – Belief Inference</strong>
-    <p style="margin:0;color:var(--muted)">12-step process to trace, confirm, and prepare beliefs for dismantling.</p>
-    <div class="extended">From dissatisfactory analysis/vice identification to exiled emotions/origin needs, inference, loop/resistance validation, denied expression, and sensitivity prep. Builds precision for root-level diagnosis.</div>
-  </div>
-
-  <div class="card">
-    <strong>Chapter 7 – Dismantling Beliefs</strong>
-    <p style="margin:0;color:var(--muted)">Strategic contradiction, cathartic release, and integration channels.</p>
-    <div class="extended">Harnesses fury for relevance testing, habit transitions, and second-order suffering navigation. Details "bucket and hose" catharsis, unfurling denied expressions, disclosure power, and dynamic flow markers for completion.</div>
-  </div>
-
-  <div class="card">
-    <strong>Appendices 1-5: Patterns, References, Cases, Methodology, & Tributaries</strong>
-    <p style="margin:0;color:var(--muted)">Coping compendium, taxonomies/tables, case studies, kinesiology/epistemics, and references.</p>
-    <div class="extended">Appendix 1: Insecurity strategies, attachments, pre-verbal traumas. Appendix 2: Needs/vice glossaries, quick tables for patterns/compulsions. Appendix 3: Six real-world cases with integrations. Appendix 4: Kinesiology application, scope/boundaries. Appendix 5: Methodological tributaries and influences.</div>
-  </div>
-</div>
+          <div class="grid">
+            <div class="card">
+              <strong>Chapter 1 – Belief Mastery: Foundations</strong>
+              <p style="margin:0;color:var(--muted)">Engagement criteria, core principles, and readiness reflection for subconscious liberation.</p>
+              <div class="extended">Outlines purpose, disclaimers, and prerequisites like emotional ownership. Bridges to archetypal work, framing belief mastery as accelerating authorship over inherited patterns.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 2 – Archetypal Imprints</strong>
+              <p style="margin:0;color:var(--muted)">Masculine/feminine halves and visualization's role in imprint transformation.</p>
+              <div class="extended">Defines imprints as blueprints of experience, emphasizing right-brain visualization to rewire subconscious relational dynamics and unlock structural change.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 3 – The Journey Home</strong>
+              <p style="margin:0;color:var(--muted)">Guided narrative to reveal primary imprints and developmental roots.</p>
+              <div class="extended">Seven-page immersive walk surfaces Main Character view, boundary/authority (Father), family positioning (Hallway), and nurturance (Mother). Analyzes interactions for subconscious patterning origins.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 4 – The Return</strong>
+              <p style="margin:0;color:var(--muted)">Second journey for repair, self-parenting, and archetype integration.</p>
+              <div class="extended">Reforms imprints via visualization, embodying internal Mother/Father for stability/acceptance. Includes real-time engagement, practical applications, and self-parenting guide to end external dependency.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 5 – Needs and Beliefs</strong>
+              <p style="margin:0;color:var(--muted)">Needs/vice vocabularies, dependency loops, and core-limiting beliefs.</p>
+              <div class="extended">Maps 18+ loops (e.g., SPACE, JOY, SECURITY) and chains, linking unmet needs to vices/beliefs. Explores outsourcing costs, sovereign resourcing, and barriers from outdated protective structures.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 6 – Belief Inference</strong>
+              <p style="margin:0;color:var(--muted)">12-step process to trace, confirm, and prepare beliefs for dismantling.</p>
+              <div class="extended">From dissatisfactory analysis/vice identification to exiled emotions/origin needs, inference, loop/resistance validation, denied expression, and sensitivity prep. Builds precision for root-level diagnosis.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 7 – Dismantling Beliefs</strong>
+              <p style="margin:0;color:var(--muted)">Strategic contradiction, cathartic release, and integration channels.</p>
+              <div class="extended">Harnesses fury for relevance testing, habit transitions, and second-order suffering navigation. Details "bucket and hose" catharsis, unfurling denied expressions, disclosure power, and dynamic flow markers for completion.</div>
+            </div>
+            <div class="card">
+              <strong>Appendices 1-5: Patterns, References, Cases, Methodology, & Tributaries</strong>
+              <p style="margin:0;color:var(--muted)">Coping compendium, taxonomies/tables, case studies, kinesiology/epistemics, and references.</p>
+              <div class="extended">Appendix 1: Insecurity strategies, attachments, pre-verbal traumas. Appendix 2: Needs/vice glossaries, quick tables for patterns/compulsions. Appendix 3: Six real-world cases with integrations. Appendix 4: Kinesiology application, scope/boundaries. Appendix 5: Methodological tributaries and influences.</div>
+            </div>
+          </div>
         </section>
 
         <!-- Bridge to Sovereign of Mind -->
         <section style="margin-top:18px;">
-          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line;line-height:1.6">
+          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.6">
             <h3 style="text-align:center;margin-bottom:.4rem">How authorship moves into perception</h3>
             <p>
               Working at belief-level creates a stable interior. That stability allows perception to be sharpened without collapse. The material in the next section supplies the tools and diagnostics that secure perception so internal shifts translate into outer competence.
@@ -266,7 +259,7 @@ header.site-header{
 
         <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
           <img src="./images/SoM-cover.JPG" alt="Sovereign of Mind cover" style="max-width:420px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)">
-          <p style="max-width:72コン;text-align:center;color:var(--muted);line-height:1.5;">
+          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
             <strong>Sovereign of Mind</strong> supplies perception tools, fallacy maps, and projection audits that make mental maps resilient under pressure. It elaborates diagnostics for ideological drift and cognitive compromise.
           </p>
           <a class="btn btn-outline" href="#purchase">Purchase Sovereign of Mind</a>
@@ -274,35 +267,203 @@ header.site-header{
 
         <section style="margin-top:1rem;">
           <h3>Highlights & Instruments</h3>
-<div class="grid">
-  <div class="card">
-    <strong>Chapter 1 – Foundations of Mental Sovereignty</strong>
-    <p style="margin:0;color:var(--muted)">Self-reviews for obstacles and satisfaction, defining sovereignty as self-governance.</p>
-    <div class="extended">Introduces 15-question sovereignty diagnostics and 10-domain satisfaction evaluations. Frames mental sovereignty as the core architecture against vulnerability, emphasizing perceptual integrity and the "last defensible border" in a world of systemic pressures.</div>
-  </div>
-
-  <!-- ... (rest of the cards remain unchanged) ... -->
-
-</div>
+          <div class="grid">
+            <div class="card">
+              <strong>Chapter 1 – Foundations of Mental Sovereignty</strong>
+              <p style="margin:0;color:var(--muted)">Self-reviews for obstacles and satisfaction, defining sovereignty as self-governance.</p>
+              <div class="extended">Introduces 15-question sovereignty diagnostics and 10-domain satisfaction evaluations. Frames mental sovereignty as the core architecture against vulnerability, emphasizing perceptual integrity and the "last defensible border" in a world of systemic pressures.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 2 – Applied Sovereignty</strong>
+              <p style="margin:0;color:var(--muted)">Reality map construction and orientation frameworks.</p>
+              <div class="extended">Tools to align intention, epistemic humility, and operational practice for daily clarity.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 3 – Perception</strong>
+              <p style="margin:0;color:var(--muted)">Dimensional truth frameworks and discernment techniques.</p>
+              <div class="extended">Methods to evaluate claims across literal, symbolic, and esoteric modalities.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 4 – Node Mapping</strong>
+              <p style="margin:0;color:var(--muted)">Internal channel mapping and voice harmonization.</p>
+              <div class="extended">42-direction channel model used to diagnose voice conflict and center the will in actionable nodes.</div>
+            </div>
+            <div class="card">
+              <strong>Chapter 5 – Manipulation</strong>
+              <p style="margin:0;color:var(--muted)">Exploitation strategies and healing pathways.</p>
+              <div class="extended">Profiles of predatory structures and recovery strategies for victims and perpetrators alike.</div>
+            </div>
+          </div>
         </section>
 
-        <!-- ... (rest of sections unchanged) ... -->
+        <section style="margin-top:1.25rem;">
+          <div class="card" style="display:flex;gap:1rem;align-items:flex-start;">
+            <img src="./images/AI-cover.JPG" alt="Sovereign Agent Protocol" style="width:120px;height:140px;object-fit:cover;border-radius:6px">
+            <div>
+              <h4 style="margin:0 0 .3rem 0">Sovereign Agent Protocol</h4>
+              <p style="margin:0;color:var(--muted)">An open-source protocol to align agents with your sovereignty parameters and calibrated reveal. It converts passive prediction into coherence amplification with guardrails for disclosure and redundancy.</p>
+              <div class="extended">Design principles and implementation notes for binding AI behaviour to structured ethical frames that centre human authorship and redundancy.</div>
+            </div>
+          </div>
+        </section>
 
+        <!-- Bridge to Distortion Codex -->
+        <section style="margin-top:18px;">
+          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.6">
+            <h4 style="text-align:center;margin-bottom:.4rem">From perception to pattern recognition</h4>
+            <p>
+              When perception is secure, pattern detection becomes reliable. The Codex provides heuristics to spot common collapse sequences and seduction strategies so practitioners can intervene early and preserve cohesion.
+            </p>
+          </div>
+        </section>
       </div>
     </section>
 
-    <!-- ... (other sections like distortion-codex and purchase remain the same as previous version) ... -->
+    <!-- DISTORTION CODEX -->
+    <section id="distortion-codex" data-bg="./images/index-background.JPG" aria-label="Distortion Codex">
+      <div class="section-inner">
+        <h2 style="text-align:center;margin:0 0 .4rem 0">The Sovereignty-Distortion Codex</h2>
+        <p style="text-align:center;color:var(--muted);margin-top:0">A structural exposure of sovereignty obstruction patterns and archetypal manipulation machinery.</p>
+
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
+          <img src="./images/SDC-cover.JPG" alt="Sovereignty-Distortion Codex cover" style="max-width:420px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)">
+          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+            The Codex maps twenty-three recurring structural distortions that erode will, fragment coherence, and hijack perception. Each mapping pairs a signature, seduction strategy, and repair pathway that can be applied in therapeutic practice or personal audit.
+          </p>
+          <a class="btn btn-outline" href="#purchase">Purchase Codex</a>
+        </div>
+
+        <section style="margin-top:1rem;">
+          <h3>What the Codex teaches</h3>
+          <ul style="color:var(--muted);max-width:72ch;margin:0 auto 1rem;line-height:1.55">
+            <li>Recognition heuristics for collapse sequences and mimicry patterns</li>
+            <li>Seduction strategy analysis to reveal how ideals or beauty can be co-opted</li>
+            <li>Diagnostic flows for early intervention in group or individual dynamics</li>
+            <li>Repair pathways that restore authorship by reattaching cost and accountability</li>
+          </ul>
+        </section>
+
+        <section style="margin-top:1rem;">
+          <h3 style="text-align:center">Use-cases</h3>
+          <div class="grid">
+            <div class="card">
+              <strong>Personal audit</strong>
+              <p style="margin:0;color:var(--muted)">A short checklist to test personal alignment against distortion signatures.</p>
+            </div>
+            <div class="card">
+              <strong>Group diagnostics</strong>
+              <p style="margin:0;color:var(--muted)">Tools to spot collective mimicry and spiritual bypass in communities and institutions.</p>
+            </div>
+            <div class="card">
+              <strong>Therapeutic application</strong>
+              <p style="margin:0;color:var(--muted)">A template for integrating Codex recognitions into session work and peer-counselling modules.</p>
+            </div>
+            <div class="card">
+              <strong>Policy & design</strong>
+              <p style="margin:0;color:var(--muted)">A short guide for designers and policy-makers to avoid creating systemic seduction loops in products or institutions.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- PURCHASE / CONTACT -->
+    <section id="purchase" data-bg="./images/index-background.JPG" aria-label="Purchase and contact">
+      <div class="section-inner">
+        <h2 style="text-align:center;margin:0 0 .4rem 0">Learn & Purchase</h2>
+        <p style="text-align:center;color:var(--muted);margin-top:0">Direct links and contact for purchase and enquiries.</p>
+
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
+          <div class="cta" style="flex-wrap:wrap;justify-content:center">
+            <a class="btn btn-primary" href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P" target="_blank">Buy Belief Mastery (Amazon)</a>
+            <a class="btn btn-primary" href="https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911" target="_blank">Buy Sovereign of Mind (Amazon)</a>
+            <a class="btn btn-primary" href="https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794" target="_blank">Buy Distortion Codex (Amazon)</a>
+          </div>
+
+          <p style="text-align:center;color:var(--muted);max-width:72ch;">
+            For direct author contact, use the email form or reach out via @belief.mastery on Instagram.
+          </p>
+
+          <form id="subscribe-form" style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;max-width:36rem;width:100%;margin-top:.75rem">
+            <input type="email" id="email" name="email" required placeholder="Email address" aria-label="Email address" />
+            <button type="submit" class="btn btn-primary">✉️ Contact the Author</button>
+          </form>
+          <p id="status" style="color:var(--muted);text-align:center;margin-top:.6rem"></p>
+        </div>
+      </div>
+    </section>
 
   </main>
 
   <footer>
-    <p>© 2025 Belief Mastery & Sovereign of Mind. All rights reserved.</p>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
     <p><a href="https://instagram.com/belief.mastery" target="_blank">@belief.mastery</a></p>
   </footer>
 
-  <!-- Scripts remain the same -->
+  <!-- ---------- Scripts: background crossfade, nav active, form ---------- -->
   <script>
-    // ... (all scripts unchanged from previous version) ...
+    // Background crossfade per visible section
+    (function(){
+      const sections = Array.from(document.querySelectorAll('section[data-bg]'));
+      if(!sections.length) return;
+      const bgA = document.getElementById('bgA');
+      const bgB = document.getElementById('bgB');
+      let front = bgA, back = bgB;
+
+      // Initialize front background to the first section
+      front.style.backgroundImage = `url('${sections[0].dataset.bg}')`;
+      back.style.backgroundImage = `url('${sections[0].dataset.bg}')`;
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting && entry.intersectionRatio > 0.45){
+            const url = entry.target.dataset.bg || sections[0].dataset.bg;
+            back.style.backgroundImage = `url('${url}')`;
+            back.classList.remove('hidden'); // bring in
+            front.classList.add('hidden');   // push out
+            // swap references
+            [front, back] = [back, front];
+          }
+        });
+      }, { threshold: [0.45], rootMargin: '0px 0px -20% 0px' });
+
+      sections.forEach(s => io.observe(s));
+    })();
+
+    // Active nav highlighting based on center intersection
+    (function(){
+      const navLinks = document.querySelectorAll('#top-nav a[data-target]');
+      const sections = Array.from(document.querySelectorAll('section[id]'));
+      function setActive(id){
+        navLinks.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if(e.isIntersecting){
+            setActive(e.target.id);
+          }
+        });
+      }, { threshold: [0.5] });
+      sections.forEach(s => observer.observe(s));
+    })();
+
+    // Subscribe/contact form
+    (function(){
+      const form = document.getElementById('subscribe-form');
+      const status = document.getElementById('status');
+      if(!form) return;
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const emailEl = document.getElementById('email');
+        const raw = (emailEl.value || '').trim();
+        if(!raw){ status.textContent = 'Enter an email address'; return; }
+        const email = encodeURIComponent(raw);
+        const url = `https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec?email=${email}`;
+        fetch(url, { method:'GET', mode:'no-cors' })
+          .then(()=>{ status.textContent = '✅ Thank you — message received'; form.reset(); })
+          .catch(err=>{ console.error('Submission error:', err); status.textContent = '❌ Submission failed'; });
+      });
+    })();
   </script>
 </body>
 </html>
