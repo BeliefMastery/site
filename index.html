@@ -39,12 +39,23 @@
     .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
 
     /* ---------- Header / nav ---------- */
-    header.site-header{
-      position:sticky;top:0;z-index:3;height:var(--nav-h);display:flex;align-items:center;
-      background:linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.62));
-      backdrop-filter: blur(6px) saturate(1.05);
-      border-bottom:1px solid rgba(0,0,0,0.06);padding:0 1rem;
-    }
+header.site-header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:1000;
+  height:var(--nav-h);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72));
+  backdrop-filter: blur(10px) saturate(1.1);
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 4px 16px rgba(0,0,0,0.06);
+  transition:background .3s ease, box-shadow .3s ease;
+  padding:0 1rem;
+}
     .nav{max-width:var(--max-width);margin:0 auto;width:100%;display:flex;align-items:center;gap:1rem}
     .brand{font-weight:700;padding:.35rem .6rem;border-radius:.45rem}
     .nav-list{display:flex;gap:.4rem;margin-left:auto;list-style:none;padding:0}
@@ -53,7 +64,11 @@
     .nav-list a.active{background:rgba(255,184,0,0.16);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
 
     /* ---------- Container & sections ---------- */
-    .container{max-width:var(--max-width);margin:calc(var(--nav-h) + 20px) auto 80px;padding:0 1rem}
+.container{
+  max-width:var(--max-width);
+  margin:calc(var(--nav-h) + 60px) auto 80px; /* increased top margin */
+  padding:0 1rem;
+}
     section{background:var(--glass);border-radius:var(--card-radius);padding:var(--pad-md);margin:28px 0;box-shadow:0 12px 30px rgba(8,8,8,0.06);position:relative;z-index:2}
     .section-inner{max-width:980px;margin:0 auto}
 
@@ -449,6 +464,16 @@
           .catch(err=>{ console.error('Submission error:', err); status.textContent = '❌ Submission failed'; });
       });
     })();
-  </script>
+window.addEventListener('scroll',()=>{
+  const header=document.querySelector('.site-header');
+  if(window.scrollY>50){
+    header.style.background='rgba(255,255,255,0.95)';
+    header.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)';
+  } else {
+    header.style.background='linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72))';
+    header.style.boxShadow='0 4px 16px rgba(0,0,0,0.06)';
+  }
+});
+</script>
 </body>
 </html>
