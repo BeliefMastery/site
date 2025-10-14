@@ -56,12 +56,77 @@
       transition:background .3s ease, box-shadow .3s ease;
       padding:0 1rem;
     }
-    .nav{max-width:var(--max-width);margin:0 auto;width:100%;display:flex;align-items:center;gap:1rem}
-    .brand{font-weight:700;padding:.35rem .6rem;border-radius:.45rem}
-    .nav-list{display:flex;gap:.4rem;margin-left:auto;list-style:none;padding:0}
-    .nav-list a{padding:.55rem .9rem;border-radius:.45rem;font-weight:600;transition:background .18s ease,transform .12s ease}
-    .nav-list a:hover{background:rgba(255,184,0,0.12);transform:translateY(-1px)}
-    .nav-list a.active{background:rgba(255,184,0,0.16);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+    .nav{
+      max-width:var(--max-width);
+      margin:0 auto;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .nav-list{
+      display:flex;
+      gap:.4rem;
+      list-style:none;
+      padding:0;
+      transition:all .3s ease;
+    }
+    .nav-list a{
+      padding:.55rem .9rem;
+      border-radius:.45rem;
+      font-weight:600;
+      transition:background .18s ease,transform .12s ease;
+    }
+    .nav-list a:hover{
+      background:rgba(255,184,0,0.12);
+      transform:translateY(-1px);
+    }
+    .nav-list a.active{
+      background:rgba(255,184,0,0.16);
+      box-shadow:0 4px 12px rgba(0,0,0,0.06);
+    }
+    /* Hamburger menu button */
+    .hamburger{
+      display:none;
+      font-size:1.5rem;
+      background:none;
+      border:none;
+      cursor:pointer;
+      padding:.5rem;
+      color:var(--brand);
+    }
+    /* Mobile navigation styles */
+    @media (max-width:768px){
+      .nav-list{
+        display:none;
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        flex-direction:column;
+        background:var(--glass-strong);
+        padding:1rem;
+        box-shadow:0 4px 16px rgba(0,0,0,0.06);
+        z-index:1000;
+      }
+      .nav-list.open{
+        display:flex;
+      }
+      .nav-list li{
+        width:100%;
+      }
+      .nav-list a{
+        display:block;
+        padding:1rem;
+        font-size:1.1rem;
+        border-radius:8px;
+        text-align:center;
+      }
+      .hamburger{
+        display:block;
+      }
+    }
 
     /* ---------- Container & sections ---------- */
     .container{
@@ -83,7 +148,7 @@
 
     /* ---------- Image row ---------- */
     .image-row{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem}
-    .image-card{flex:1 1 215px;max-width:360px;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:flex;flex-direction:column;}
+    .image-card{flex:1 1 215px;max-width:270px;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:flex;flex-direction:column;}
     .image-card a {display:block;flex:1;overflow:hidden;}
     .image-card img{width:100%;height:110%;object-fit:cover;object-position:center;transform:translateY(-5%);display:block}
     .image-card figcaption{padding:.6rem .8rem;font-weight:600;text-align:center;flex:0 0 auto;}
@@ -119,7 +184,7 @@
 
   <header class="site-header" role="banner">
     <nav class="nav" aria-label="Primary navigation">
-      <a class="brand" href="#home" aria-current="page">BM &amp; SoM</a>
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="#home" data-target="home" class="active">Home</a></li>
         <li role="none"><a role="menuitem" href="#belief-mastery" data-target="belief-mastery">Belief Mastery</a></li>
@@ -318,6 +383,11 @@
               <p style="margin:0;color:var(--muted)">Addressing foreign will influences and restoring volitional clarity.</p>
               <div class="extended">Defines three tiers of will anomalies (Contorted Self, Contracted Entity, Possession). Provides diagnostic frameworks, healing protocols, and displacement methods, including contract healing and exorcism reconsideration.</div>
             </div>
+            <div class="card">
+              <strong>Appendices 1-5: Truth, Fallacies, Manipulation, Channels, & References</strong>
+              <p style="margin:0;color:var(--muted)">Truth exercises, fallacy detection, manipulation tactics, channel taxonomy, and references.</p>
+              <div class="extended">Appendix 1: Exercises to define the good life and truth via six lenses (Correspondence, Coherence, Pragmatic, Consensus, Relational, Internal). Appendix 2: Tools for identifying flawed reasoning and ethical decision-making. Appendix 3: Catalog of 63 manipulation tactics across eight vectors for recognition and defense. Appendix 4: Maps 42 directional energy channels from seven nodes for self-governance. Appendix 5: Acknowledges intellectual lineage and aligns will-anomaly model with clinical frameworks.</div>
+            </div>
           </div>
         </section>
 
@@ -414,7 +484,7 @@
     <p><a href="https://instagram.com/belief.mastery" target="_blank">@belief.mastery</a></p>
   </footer>
 
-  <!-- ---------- Scripts: background crossfade, nav active, form ---------- -->
+  <!-- ---------- Scripts: background crossfade, nav active, form, hamburger toggle ---------- -->
   <script>
     // Background crossfade per visible section
     (function(){
@@ -476,6 +546,26 @@
         fetch(url, { method:'GET', mode:'no-cors' })
           .then(()=>{ status.textContent = '✅ Thank you — message received'; form.reset(); })
           .catch(err=>{ console.error('Submission error:', err); status.textContent = '❌ Submission failed'; });
+      });
+    })();
+
+    // Hamburger menu toggle
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const navList = document.querySelector('.nav-list');
+      if(!hamburger || !navList) return;
+      hamburger.addEventListener('click', () => {
+        const isOpen = navList.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+        hamburger.textContent = isOpen ? '✕' : '☰';
+      });
+      // Close menu when a link is clicked
+      navList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navList.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.textContent = '☰';
+        });
       });
     })();
   </script>
