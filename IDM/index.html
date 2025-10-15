@@ -18,8 +18,8 @@
       --nav-h:68px;
       --pad-lg:48px;
       --pad-md:28px;
-      --glass: rgba(0,0,0,0.88);
-      --glass-strong: rgba(0,0,0,0.96);
+      --glass: #2d2d2d;
+      --glass-strong: #3d3d3d;
       --card-radius:12px;
     }
     *{box-sizing:border-box}
@@ -147,20 +147,20 @@
 
     /* ---------- Image row ---------- */
     .image-row{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem}
-    .image-card{flex:1 1 210px;max-width:270px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.5);box-shadow:0 10px 30px rgba(0,0,0,0.5);display:flex;flex-direction:column;}
+    .image-card{flex:1 1 210px;max-width:270px;border-radius:8px;overflow:hidden;background:var(--glass);box-shadow:0 10px 30px rgba(0,0,0,0.5);display:flex;flex-direction:column;}
     .image-card a {display:block;flex:1;overflow:hidden;}
     .image-card img{width:100%;height:100%;object-fit:cover;object-position:center;clip-path: inset(0 0 3% 0);display:block}
     .image-card figcaption{padding:.6rem .8rem;font-weight:600;text-align:center;flex:0 0 auto;color:var(--brand);}
 
     /* ---------- Grid + cards ---------- */
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem;margin-top:1rem}
-    .card{background:rgba(0,0,0,0.6);padding:1.1rem;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.5);min-height:130px;position:relative;display:flex;flex-direction:column;gap:.6rem;color:var(--brand);}
+    .card{background:var(--glass-strong);padding:1.1rem;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.5);min-height:130px;position:relative;display:flex;flex-direction:column;gap:.6rem;color:var(--brand);}
     .card .extended{position:absolute;left:1rem;top:calc(100% - 8px);background:var(--glass-strong);padding:.8rem;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:all .18s ease;width:300px;z-index:6;color:var(--brand);}
     .card:hover .extended{opacity:1;transform:translateY(8px);pointer-events:auto}
 
     /* ---------- Forms ---------- */
     form#subscribe-form{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
-    input[type="email"]{padding:.85rem 1rem;border-radius:8px;border:2px solid rgba(255,255,255,0.2);min-width:220px;font-size:1rem;background:rgba(0,0,0,0.5);color:var(--brand);}
+    input[type="email"]{padding:.85rem 1rem;border-radius:8px;border:2px solid rgba(255,255,255,0.2);min-width:220px;font-size:1rem;background:var(--glass);color:var(--brand);}
 
     /* ---------- Footer ---------- */
     footer{margin:2rem 0 4rem;text-align:center;color:var(--muted);font-size:.95rem}
@@ -196,7 +196,7 @@
       height: 0;
       overflow: hidden;
       max-width: 100%;
-      background: rgba(0,0,0,0.5);
+      background: var(--glass);
       border-radius: 8px;
       margin: 1rem 0;
     }
@@ -209,7 +209,7 @@
       border-radius: 8px;
     }
     .pain-points {
-      background: rgba(0,0,0,0.6);
+      background: var(--glass-strong);
       padding: 1.5rem;
       border-radius: 10px;
       box-shadow: 0 8px 26px rgba(0,0,0,0.5);
@@ -229,7 +229,7 @@
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px;
       overflow: hidden;
-      background: rgba(0,0,0,0.5);
+      background: var(--glass);
     }
     summary {
       padding: 1rem;
@@ -243,11 +243,11 @@
     }
     .details-content {
       padding: 1rem;
-      background: rgba(0,0,0,0.6);
+      background: var(--glass-strong);
       color: var(--brand);
     }
     .demo-script {
-      background: rgba(0,0,0,0.5);
+      background: var(--glass);
       padding: 1rem;
       border-radius: 8px;
       margin: 1rem 0;
@@ -256,6 +256,7 @@
       color: var(--brand);
     }
     h1, h2, h3 { color: var(--brand); }
+    .section-image { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
   </style>
 </head>
 <body>
@@ -281,7 +282,7 @@
   <main class="container">
     <section id="executive" class="hero">
       <h1>Initial Marketing Strategy for IDMC Soil Screeners</h1>
-      <img src="https://idmcabc.com/wp-content/uploads/SLG68VF-Front-View.jpg" alt="SLG68V Soil Screener Front View" loading="lazy">
+      <img src="https://idmcabc.com/wp-content/uploads/SLG68VF-Front-View.jpg" alt="SLG68V Soil Screener Front View" class="section-image" loading="lazy">
       <p>Site Machinery Ltd, based at 105 Pascoe Street, Nelson, is launching sales of IDMC's DeSite SLG-series topsoil screeners (e.g., SLG-108VFRB, SLG-78VFRB, SLG-68V) and related attachments like telehandler bins. These portable, low-maintenance screeners process 15-45m³/hour of materials such as soil, gravel, and compost, enabling small-to-medium earthmoving businesses to repurpose waste into sellable grades—directly addressing high landfill dumping fees of $266-305 per tonne at York Valley Landfill. With New Zealand's earthmoving equipment market projected to grow through 2031 amid a 1-4% contraction in overall construction in 2025, the strategy focuses on initial low-cost tactics emphasizing visibility, demos, and networking in the small NZ market, drawing from Rob's Australian experience.</p>
       <div class="urgency">
         <strong>Urgent Market Shift:</strong> The escalating US-China tariff war, with an additional 100% tariff (up to 130%) on Chinese goods starting November 1, 2025, has already caused a 50% shutdown in Chinese manufacturing this week. Secure equipment now to avoid supply disruptions and price hikes.
@@ -294,6 +295,7 @@
     <section id="objectives">
       <div class="section-inner">
         <h2>Initial Objectives (First 3-6 Months)</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/side-view-of-screening-plant.jpg" alt="Side view of screening plant" class="section-image" style="float: right; max-width: 40%; margin-left: 1rem;" loading="lazy">
         <ul>
           <li><strong>Launch Focus</strong>: Establish local presence through 2-3 pilot demos and initial outreach to 50 key prospects in Nelson/Tasman.</li>
           <li><strong>Networking Emphasis</strong>: Leverage Rob's insights on peer visibility—aim for 10 networking intros via local hubs to spark desire among earthmovers.</li>
@@ -306,13 +308,13 @@
             <p>From Rob (Australian agent): Start with visible demos at job sites where earthmovers congregate—let them see peers using screeners to create desire. Network at fuel depots/rural co-ops over trade shows. For rural: Pitch product grading for roads/drains. For towns: Highlight fee avoidance via repurposing. Showcase via vehicle wraps and quick site talks.</p>
           </div>
         </details>
-        <img src="https://idmcabc.com/wp-content/uploads/side-view-of-screening-plant.jpg" alt="Side view of screening plant" style="float: right; max-width: 40%; margin-left: 1rem; border-radius: 8px;" loading="lazy">
       </div>
     </section>
 
     <section id="target">
       <div class="section-inner">
         <h2>Target Market</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/Buck-width-soil-screener.jpg" alt="Bucket width soil screener" class="section-image" loading="lazy">
         <p>NZ has approximately 1,500 small to medium earthmoving contractors nationwide (based on ~81,000 total construction firms, with earthmoving/site prep comprising ~2% per Stats NZ data). In Nelson/Tasman (focus region), ~25 SMBs. Approach rural landscapers for product creation (e.g., graded soil/stone sales) and urban/town contractors for fee reduction via repurposing.</p>
         <table>
           <thead>
@@ -359,6 +361,7 @@
     <section id="painpoints">
       <div class="section-inner">
         <h2>Pain Points for Cold Calls & Targeted Advertising</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/Rear-view-of-the-slg68v-with-bucket-width.jpg" alt="Rear view of SLG68V" class="section-image" loading="lazy">
         <p>Use these in outreach, tailored by segment (rural: product focus; urban: fees). Frame with Rob's networking tips: "Saw this at [local hub]—let's chat."</p>
         <div class="grid">
           <div class="card">
@@ -386,13 +389,13 @@
             <p>Peers screening faster—join via local demos.</p>
           </div>
         </div>
-        <img src="https://idmcabc.com/wp-content/uploads/Buck-width-soil-screener.jpg" alt="Bucket width soil screener" style="width: 100%; border-radius: 8px; margin-top: 1rem;" loading="lazy">
       </div>
     </section>
 
     <section id="positioning">
       <div class="section-inner">
         <h2>Positioning & Messaging</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/side-view-of-screening-plant.jpg" alt="Side view of screening plant" class="section-image" loading="lazy">
         <p>Position as "Your On-Site Profit Maker: Screen Waste into Wealth, Skip the Dump Fees." Tailor: Rural = "Grade Your Gravel On-Farm for Sales"; Urban = "Ditch $300/Tonne Fees—Repurpose Today." Add urgency: "Before Nov 1 Tariffs Hit Supplies."</p>
         <ul>
           <li><strong>Cost Recovery</strong>: Separate into grades, dodge fees/create products.</li>
@@ -411,6 +414,7 @@
     <section id="tactics">
       <div class="section-inner">
         <h2>Initial Tactics & Channels</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/Buck-width-soil-screener.jpg" alt="Bucket width soil screener" class="section-image" loading="lazy">
         <p>Pivot to relationship-driven: 70% offline demos/networking per Rob. Integrate segment approaches.</p>
         <table>
           <thead>
@@ -458,6 +462,7 @@
     <section id="facebook">
       <div class="section-inner">
         <h2>Optional: In-House Facebook Campaign</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/Rear-view-of-the-slg68v-with-bucket-width.jpg" alt="Rear view of SLG68V" class="section-image" loading="lazy">
         <p>If pursued, self-manage: AI-generate targeted ads/demos (e.g., Canva AI for visuals, ElevenLabs for drafts but use Rob's voiceover). Budget: $500 initial test. Target: Nelson/Tasman earthmovers (interests: excavation, landscaping). Language: Pain-focused, segment-tailored.</p>
         <h3>Demo Video Sequence (30-60s)</h3>
         <ol>
@@ -536,6 +541,7 @@ See it live? Call us at +64 3 979 7602 or email info@sitemachinery.co.nz. Let's 
     <section id="metrics">
       <div class="section-inner">
         <h2>Metrics & Measurement</h2>
+        <img src="https://idmcabc.com/wp-content/uploads/SLG68VF-Front-View.jpg" alt="SLG68V Soil Screener Front View" class="section-image" loading="lazy">
         <ul>
           <li><strong>Leads</strong>: Track sources (demo/network: aim 70%); 20-30 initial.</li>
           <li><strong>Engagement</strong>: Demo attendance (5+/event), email opens (30%).</li>
@@ -543,7 +549,6 @@ See it live? Call us at +64 3 979 7602 or email info@sitemachinery.co.nz. Let's 
           <li><strong>Tools</strong>: Google Analytics; quarterly pain resonance surveys.</li>
         </ul>
         <p>Monthly review; scale if demos >50% leads. This leverages NZ's small market for quick peer-driven growth. Contact Rob for tweaks; pilot Nov 2025. Reach out: info@sitemachinery.co.nz.</p>
-        <img src="https://idmcabc.com/wp-content/uploads/Rear-view-of-the-slg68v-with-bucket-width.jpg" alt="Rear view of SLG68V" style="width: 100%; border-radius: 8px;" loading="lazy">
       </div>
     </section>
   </main>
