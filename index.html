@@ -18,8 +18,66 @@
   <meta name="twitter:description" content="Excavate hidden beliefs. Fortify cognitive sovereignty. Map distortions for full mental agency.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/BM-cover.JPG">
 
+  <!-- Performance: Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <!-- Font used in original -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Structured Data: JSON-LD for Books (SEO enhancement for discoverability) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Belief Mastery & Sovereign of Mind",
+    "description": "A suite of books for mental sovereignty: excavate subconscious beliefs, fortify perception, and map distortions.",
+    "author": {
+      "@type": "Person",
+      "name": "Warwick Marshall"
+    },
+    "mainEntity": [
+      {
+        "@type": "Book",
+        "name": "Belief Mastery",
+        "description": "A structural method for rewriting hidden subconscious rules to restore joy and authorship.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P",
+        "image": "https://beliefmastery.github.io/site/images/BM-cover.JPG",
+        "genre": "Self-Help",
+        "datePublished": "2024"
+      },
+      {
+        "@type": "Book",
+        "name": "Sovereign of Mind",
+        "description": "Cognitive sovereignty in a manipulated world: fortify perception against persuasion and dependency.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911",
+        "image": "https://beliefmastery.github.io/site/images/SoM-cover.JPG",
+        "genre": "Philosophy",
+        "datePublished": "2024"
+      },
+      {
+        "@type": "Book",
+        "name": "The Sovereignty-Distortion Codex",
+        "description": "Mapping structural distortions that erode will and coherence for early intervention and repair.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794",
+        "image": "https://beliefmastery.github.io/site/images/SDC-cover.JPG",
+        "genre": "Psychology",
+        "datePublished": "2024"
+      }
+    ]
+  }
+  </script>
 
   <style>
     /* ---------- Variables & Reset ---------- */
@@ -181,7 +239,7 @@
 
     /* ---------- Dual Portal Cards ---------- */
     .portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;margin:2rem 0;align-items:start}
-    .portal-card{background:#fff;padding:2rem;border-radius:var(--radius);box-shadow:0 10px 28px rgba(0,0,0,0.06);text-align:center;transition:var(--transition);position:relative;overflow:hidden}
+    .portal-card{background:#fff;padding:2rem;border-radius:var(--radius);box-shadow:0 10px 28px rgba(0,0,0,0.06);text-align:center;transition:var(--transition);position:relative;overflow:hidden;cursor:pointer}
     .portal-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),transparent)}
     .portal-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08)}
     .portal-card blockquote{font-style:italic;font-size:1.1rem;color:var(--brand);margin:0 0 1rem;line-height:1.4}
@@ -266,19 +324,15 @@
           </div>
 
           <div class="portal-grid">
-            <article class="portal-card">
-              <a href="#belief-mastery">
-                <blockquote>The reason you’re not full of joy is because your subconscious is wired to get you to do things you don’t want to do.</blockquote>
-                <p>Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat the same emotional loops. <strong>Belief Mastery</strong> shows you how to address those cycles at the level of ‘need’ and ‘belief’ with a step-by-step process for tracing, exposing, and transforming the buried structures that govern behavior.</p>
-                <a class="btn btn-primary">Explore Inner Architecture</a>
-              </a>
+            <article class="portal-card" data-target="#belief-mastery">
+              <blockquote>The reason you’re not full of joy is because your subconscious is wired to get you to do things you don’t want to do.</blockquote>
+              <p>Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat the same emotional loops. <strong>Belief Mastery</strong> shows you how to address those cycles at the level of ‘need’ and ‘belief’ with a step-by-step process for tracing, exposing, and transforming the buried structures that govern behavior.</p>
+              <a class="btn btn-primary" href="#belief-mastery">Explore Inner Architecture</a>
             </article>
-            <article class="portal-card">
-              <a href="#sovereign-of-mind">
-                <blockquote>Your thoughts may not always be your own.</blockquote>
-                <p>In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.</p>
-                <a class="btn btn-primary">Fortify Cognitive Structure</a>
-              </a>
+            <article class="portal-card" data-target="#sovereign-of-mind">
+              <blockquote>Your thoughts may not always be your own.</blockquote>
+              <p>In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.</p>
+              <a class="btn btn-primary" href="#sovereign-of-mind">Fortify Cognitive Structure</a>
             </article>
           </div>
 
@@ -582,7 +636,7 @@
     <p><a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a></p>
   </footer>
 
-  <!-- ---------- Scripts: background crossfade, nav active, form, hamburger toggle ---------- -->
+  <!-- ---------- Scripts (deferred via placement at bottom; non-blocking) ---------- -->
   <script>
     // Background crossfade per visible section
     (function(){
@@ -627,6 +681,18 @@
         });
       }, { threshold: [0.5] });
       sections.forEach(s => observer.observe(s));
+    })();
+
+    // Portal card click handler (for whole-card navigation, avoiding nested anchors)
+    (function(){
+      document.querySelectorAll('.portal-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          const link = card.querySelector('a.btn');
+          if (link && !e.target.closest('a')) {
+            link.click();
+          }
+        });
+      });
     })();
 
     // Subscribe/contact form
