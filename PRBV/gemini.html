@@ -1,4 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Patons Rock Villas – Today’s Arrival</title>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/dist/luxon.min.js"></script>
+<style>
+/* --- Global Styles & Typography --- */
+body {
+    background: #0d1b2a; /* Dark Blue/Black background for high contrast */
+    color: #e0fbfc; /* Light Cyan text */
+    font-family: 'Poppins', sans-serif; /* Modern, clean font */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    min-height: 100vh;
+}
+/* Import Google Font (Poppins) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* --- Header & Welcome Banner --- */
+.header-container {
+    background: linear-gradient(135deg, #0077b6, #00b4d8); /* Blue gradient */
+    padding: 30px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
+}
+.header-container h1 {
+    margin: 0 0 5px;
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #ffffff; /* White title */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.header-container p {
+    font-size: 1.1em;
+    color: #e0fbfc;
+    margin: 5px 0 15px;
+}
+#current-date {
+    color: #ffc300; /* Gold/Yellow for date */
+    font-size: 1.4em;
+    font-weight: 600;
+}
+strong { font-weight: 700; }
+
+/* --- Main Arrival Title --- */
+h2 {
+    color: #ffc300;
+    font-size: 2em;
+    font-weight: 600;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+/* --- Villa Grid (Cards) --- */
+.calendar-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 0 20px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.calendar-container {
+    flex: 1 1 280px; /* Base width of 280px, allows flexible wrapping */
+    background: #1c2e4a; /* Slightly lighter dark blue for card background */
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+    min-height: 150px; /* Ensure visual consistency */
+    display: flex;
+    flex-direction: column;
+}
+.calendar-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+}
+.calendar-container h3 { /* Changed from h2 to h3 for better semantic structure */
+    color: #00b4d8;
+    margin-top: 0;
+    font-size: 1.8em;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* --- Arrival List --- */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: auto 0 0 0; /* Push content to bottom of card if space allows */
+}
+li {
+    padding: 10px 0;
+    font-size: 1.1em;
+    color: #e0fbfc;
+}
+.arrival-info {
+    color: #48e4d2; /* Bright Turquoise for arrivals */
+    font-weight: 600;
+    font-size: 1.2em;
+    line-height: 1.4;
+    display: block; /* Ensures it takes up full space */
+}
+.arrival-info strong {
+    font-weight: 700;
+    color: #ffc300; /* Highlight check-in time */
+    display: block;
+    margin-top: 5px;
+    font-size: 1.1em;
+}
+
+/* --- Debug / Footer --- */
+.debug {
+    background: #112a46;
+    border-top: 1px solid #334d70;
+    padding: 15px;
+    font-size: 0.85em;
+    color: #a9bcd0;
+    position: fixed; /* Fix to bottom */
+    bottom: 0;
+    width: 100%;
+    text-align: left;
+}
+.debug strong {
+    color: #00b4d8;
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+    .header-container h1 { font-size: 2em; }
+    h2 { font-size: 1.6em; }
+    .calendar-container { flex: 1 1 100%; } /* Full width on smaller screens */
+    .debug { position: static; margin-top: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header-container">
+    <h1>Welcome to Patons Rock Beach Villas</h1>
+    <p>For assistance please call <strong>027 356 3551</strong>.</p>
+    <div id="current-date"></div>
+</div>
+
+<h2>Today’s Arrivals</h2>
+<div class="calendar-grid" id="villaGrid">
+    <div class="calendar-container"><h3>Villa 1</h3><ul id="villa1"></ul></div>
+    <div class="calendar-container"><h3>Villa 2</h3><ul id="villa2"></ul></div>
+    <div class="calendar-container"><h3>Villa 3</h3><ul id="villa3"></ul></div>
+    <div class="calendar-container"><h3>Villa 4</h3><ul id="villa4"></ul></div>
+</div>
+
+<div class="debug" id="debug">Loading...</div>
+
 <script>
 const { DateTime, Settings } = luxon;
 Settings.defaultLocale = "en-NZ"; // Set default locale for output
@@ -20,7 +179,7 @@ const targetTimeZone = "Pacific/Auckland";
  * @returns {{summary: string, arrivalDate: luxon.DateTime} | null} Event data.
  */
 function parseICSEvent(block) {
-  const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/); // Capture date-only or datetime
+  const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
   const summaryLine = block.match(/SUMMARY:(.*)/);
 
   if (!startLine || !summaryLine) return null;
@@ -29,24 +188,19 @@ function parseICSEvent(block) {
   let summary = summaryLine[1].trim();
   let arrivalDate;
 
-  // Check if the DTSTART includes a time (ends with 'Z' for UTC or has a 'T')
+  // Check if the DTSTART includes a time (T) or is explicitly UTC (Z)
   const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
 
   if (isDateTime) {
-    // If it's a full datetime (usually ends in Z for UTC), parse it as UTC
-    // DTSTART:20251017T140000Z
+    // If it's a full datetime, parse it as UTC and convert to NZ time zone
     arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
   } else {
-    // If it's a date-only format (YYYYMMDD), beds24 uses the START DATE as the arrival day.
-    // The time will be *locally* at the beginning of the day (00:00:00) in UTC.
-    // We want the date component (YYYY-MM-DD) to be the arrival date in NZ.
-    // The arrival check-in time is fixed at 2 pm NZ time.
-    // DTSTART:20251018 (arrival date is Oct 18 in NZ)
+    // If it's a date-only format (YYYYMMDD), treat that date as the arrival day in NZ.
     const year = startRaw.substr(0, 4);
     const month = startRaw.substr(4, 2);
     const day = startRaw.substr(6, 2);
     
-    // Create the date for 2 pm on the day specified, in the target time zone
+    // Set the specific check-in time: 2 pm in the target time zone
     arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
   }
   
@@ -54,7 +208,7 @@ function parseICSEvent(block) {
 }
 
 /**
- * Checks if a Luxon DateTime object is the same day as 'today' in the target time zone.
+ * Checks if a Luxon DateTime object is the same calendar day as 'today' in the target time zone.
  * @param {luxon.DateTime} dt - The event's arrival date/time.
  * @param {luxon.DateTime} today - A DateTime object representing today (at midnight) in the target zone.
  * @returns {boolean} True if the dates are the same.
@@ -90,8 +244,8 @@ async function loadVilla(id, url) {
       if (!event) continue;
       
       if (isSameDayNZ(event.arrivalDate, todayNZ)) {
-        // Display the arrival information
-        arrival = `<span class="arrival">${formatNZDate(event.arrivalDate)} — ${event.summary} — check-in 2 pm</span>`;
+        // Enhanced display format
+        arrival = `<span class="arrival-info">${event.summary}<br>Arrival: ${formatNZDate(event.arrivalDate)}<strong>Check-in: 2:00 PM</strong></span>`;
         break; // Found today's arrival
       }
     }
@@ -111,14 +265,18 @@ async function refreshAll() {
     statuses.push(`${id}: ${st}`);
   }
   
+  // Update debug/footer info
   const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
-  document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
+  document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now} NZT | ` + statuses.join(" | ");
 }
 
 // Show current NZ date at top
 document.getElementById("current-date").textContent =
   DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
 
+// Initial load and refresh every 10 minutes
 refreshAll();
-setInterval(refreshAll, 10 * 60 * 1000); // Refresh every 10 minutes
+setInterval(refreshAll, 10 * 60 * 1000);
 </script>
+</body>
+</html>
