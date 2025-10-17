@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Patons Rock Villas – Today’s Arrivals</title>
+<title>Patons Rock Villas – Today’s Arrival</title>
 <style>
 body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; text-align:center; }
 .welcome-banner {
@@ -38,7 +38,7 @@ li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
   <div id="current-date"></div>
 </div>
 
-<h2>Today’s Arrivals</h2>
+<h2>Today’s First Arrival</h2>
 <div class="calendar-grid" id="villaGrid">
   <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
   <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
@@ -58,7 +58,6 @@ const villas = {
 
 const proxy = "https://api.allorigins.win/raw?url=";
 
-// Convert ICS date string to JS Date
 function parseICSEvent(block){
   const startLine = block.match(/DTSTART.*:(.*)/);
   if(!startLine) return null;
@@ -67,8 +66,8 @@ function parseICSEvent(block){
 
   let startRaw = startLine[1].trim();
   let summary = summaryLine[1].trim();
-
   let start;
+
   if(/^\d{8}$/.test(startRaw)){
     start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
   } else {
@@ -80,7 +79,6 @@ function parseICSEvent(block){
   return {summary, start};
 }
 
-// Check if two dates are same NZ day
 function isSameDayNZ(d1,d2){
   const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
   return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
@@ -95,23 +93,26 @@ async function loadVilla(id,url){
     const ics = await res.text();
     const blocks = ics.split("BEGIN:VEVENT").slice(1);
     const today = new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-    const arrivals = [];
+    let arrival = null;
 
-    blocks.forEach(block=>{
-      const event=parseICSEvent(block);
-      if(!event) return;
+    for(const block of blocks){
+      const event = parseICSEvent(block);
+      if(!event) continue;
       if(isSameDayNZ(event.start,today)){
-        arrivals.push(`<span class="arrival">${event.summary} — check-in 2 pm</span>`);
+        arrival = `<span class="arrival">${formatNZDate(today)} — ${event.summary} — check-in 2 pm</span>`;
+        break; // only first arrival
       }
-    });
+    }
 
-    list.innerHTML = arrivals.length ? arrivals.map(b=>`<li>${b}</li>`).join("") : "<li>No arrivals today</li>";
+    list.innerHTML = arrival ? `<li>${arrival}</li>` : "<li>No arrivals today</li>";
     return "✔ OK";
   }catch(err){
     list.innerHTML="<li>Feed unavailable</li>";
     return `✖ ${err.message}`;
   }
 }
+
+function formatNZDate(d){ return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"}); }
 
 async function refreshAll(){
   const statuses=[];
