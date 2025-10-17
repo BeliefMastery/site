@@ -7,21 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
 
     <style>
-        /* Custom styles for a Golden Bay Sunset look */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
-        
+        /* Gemini's Golden Bay Sunset Palette - High Contrast & Vibrancy */
         :root {
-            /* Golden Bay Sunset Palette */
-            --primary-teal: #0f766e; /* teal-700 for main accents/dark text */
-            --secondary-orange: #f59e0b; /* amber-500 for date/time accents */
-            --background-light: #f9f9f9; /* soft off-white background */
+            --primary-teal: #0f766e; /* Strong Deep Teal */
+            --secondary-orange: #f59e0b; /* Vibrant Amber/Sunset Orange */
+            --background-light: #f9f9f9; /* Soft off-white background */
             --background-card: #ffffff;
-            --text-dark: #1f2937; /* gray-800 */
-            --green-arrival: #10b981; /* emerald-500 for success */
-            --red-alert: #ef4444; /* red-500 for failure */
-            --info-status: #6b7280; /* gray-500 for 'no arrival' status */
+            --text-dark: #1f2937; /* Gray-800 */
+            --green-arrival: #10b981; /* Emerald-500 for success */
+            --red-alert: #ef4444; /* Red-500 for fatal error */
+            --info-status: #3b82f6; /* Blue-500 for "No Arrival" and "Ongoing Stay" statuses */
+            --ongoing-stay-text: #475569; /* Slate-600 for card text */
         }
         body {
             font-family: 'Poppins', sans-serif;
@@ -31,7 +30,6 @@
         }
         .card {
             background-color: var(--background-card);
-            /* Stronger visual accent line */
             border-left: 6px solid var(--secondary-orange); 
             border-radius: 12px;
             box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.12);
@@ -43,7 +41,7 @@
         }
         .villa-title {
             color: var(--primary-teal);
-            font-weight: 800; /* Extra bold */
+            font-weight: 800;
             font-size: 1.6rem; 
             margin-bottom: 0.5rem;
         }
@@ -59,11 +57,6 @@
             display: flex;
             align-items: center;
         }
-        .date {
-            font-size: 1rem;
-            color: #4b5563; /* gray-600 */
-            font-weight: 400;
-        }
         .check-in {
             font-size: 1rem; 
             color: var(--secondary-orange);
@@ -73,7 +66,7 @@
             align-items: center;
         }
 
-        /* Status and loading indicators */
+        /* Status and indicators */
         .loading-icon {
             animation: spin 1.5s linear infinite;
         }
@@ -81,19 +74,21 @@
             to { transform: rotate(360deg); }
         }
         .no-arrival {
-            color: var(--info-status); 
+            color: var(--ongoing-stay-text); /* Muted color for non-urgent status */
             font-style: italic;
             font-weight: 500;
             display: flex;
             align-items: center;
         }
-        /* New Status Styles for Debug Bar */
+
+        /* Debug Status Styles */
         .status-ok {
             color: var(--green-arrival);
             font-weight: 700;
         }
         .status-no-arrival {
-            color: var(--secondary-orange);
+            /* Status for No Booking or Ongoing Stay */
+            color: var(--info-status); 
             font-weight: 700;
         }
         .status-error {
@@ -189,131 +184,187 @@
     };
 
     /**
-     * Parses an ICS event block using Luxon for reliable time zone handling.
+     * Parses an ICS event block, now including DTEND.
      */
-    function parseICSEvent(block){
+    function parseICSEvent(block) {
         const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
+        const endLine = block.match(/DTEND(?:;VALUE=DATE)?:(.*)/);
         const summaryLine = block.match(/SUMMARY:(.*)/);
 
         if (!startLine || !summaryLine) return null;
 
         const startRaw = startLine[1].trim();
         const summary = summaryLine[1].trim();
-        let arrivalDate;
+        let arrivalDate, endDate;
 
-        // Check if the DTSTART includes a time (T) or is explicitly UTC (Z)
         const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
+        
+        const parseDate = (raw) => {
+             // Date-only format
+            const year = parseInt(raw.substr(0, 4), 10);
+            const month = parseInt(raw.substr(4, 2), 10);
+            const day = parseInt(raw.substr(6, 2), 10);
+            return DateTime.fromObject({ year, month, day }, { zone: targetTimeZone });
+        };
+
 
         if (isDateTime) {
             // Full datetime: Parse as UTC, then convert to NZ time zone
             arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+            if (endLine) {
+                // If it's a DTSTART:DATE-TIME, DTEND should be too
+                endDate = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' }).setZone(targetTimeZone);
+            }
         } else {
-            // Date-only (YYYYMMDD): Treat this calendar date as the NZ arrival day (set to 2 PM check-in time)
-            const year = parseInt(startRaw.substr(0,4),10);
-            const month = parseInt(startRaw.substr(4,2),10);
-            const day = parseInt(startRaw.substr(6,2),10);
-            arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
+            // Date-only (YYYYMMDD): Treat this calendar date as the NZ arrival/departure day
+            arrivalDate = parseDate(startRaw).set({ hour: 14, minute: 0 }); // 2 PM check-in
+            if (endLine) {
+                // The ICS end date for a DATE-ONLY event is EXCLUSIVE (the day after check-out).
+                // We parse it as a date and set the time to 10:00 AM (check-out time)
+                // However, for ongoing stay logic, we need the start of the DEPARTURE day.
+                // It is safest to keep the full day exclusive logic: END DATE > TODAY
+                endDate = parseDate(endLine[1].trim()); 
+            }
         }
-        return { summary, arrivalDate };
+        return { summary, arrivalDate, endDate };
     }
 
     /**
      * Checks if a Luxon DateTime object is the same calendar day as 'today' in NZT.
      */
-    function isSameDayNZ(dt, today){
+    function isSameDayNZ(dt, today) {
         return dt.hasSame(today, 'day');
+    }
+
+    /**
+     * NEW LOGIC: Checks if the booking spans today.
+     * DTSTART is the arrival date. DTEND is the departure date (often exclusive, meaning it's the day AFTER check-out).
+     * We use startOf('day') for comparison to simplify date-only vs datetime issues.
+     */
+    function isOngoingStay(startDate, endDate, today) {
+        const todayStart = today.startOf('day');
+        // Check if today is after the arrival date (or is the arrival date) AND before the departure date.
+        // Grok's logic (startDate <= today && endDate > today) is correct and robust for ICS date logic.
+        return startDate.startOf('day') <= todayStart && endDate.startOf('day') > todayStart;
     }
 
     /**
      * Formats a Luxon DateTime object to a readable NZ string.
      */
-    function formatNZDate(dt){
+    function formatNZDate(dt) {
         return dt.toFormat("ccc, dd MMM yyyy");
     }
 
+    /**
+     * Load one feed, return status and HTML.
+     */
+    async function tryFeed(url, todayNZ) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const ics = await res.text();
+            const blocks = ics.split("BEGIN:VEVENT").slice(1);
 
-    // Load one feed, return arrival HTML if successful
-    async function tryFeed(url){
-        const res = await fetch(url);
-        // Throwing an error here ensures the 'catch' block in loadVilla is executed
-        if(!res.ok) throw new Error(`HTTP ${res.status}`); 
-        const ics = await res.text();
-        const blocks = ics.split("BEGIN:VEVENT").slice(1);
-        const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+            let ongoingStayFound = null;
 
-        for(const block of blocks){
-            const event = parseICSEvent(block);
-            if(!event) continue;
-            // The core logic remains: look for an event that starts today in NZT
-            if(isSameDayNZ(event.arrivalDate, todayNZ)){
-                return `<span class="arrival-info">
-                    <span class="guest-name"><i class="fas fa-user-circle mr-2"></i> ${event.summary}</span>
-                    <span class="date"><i class="fas fa-calendar-alt mr-2"></i> ${formatNZDate(event.arrivalDate)}</span>
-                    <span class="check-in"><i class="fas fa-door-open mr-2"></i> Check-in: 2:00 PM</span>
-                </span>`;
+            for (const block of blocks) {
+                const event = parseICSEvent(block);
+                if (!event) continue;
+
+                // 1. Check for today's ARRIVAL
+                if (isSameDayNZ(event.arrivalDate, todayNZ)) {
+                    return { status: 'arrival', html: `<span class="arrival-info">
+                        <span class="guest-name"><i class="fas fa-user-circle mr-2"></i> ${event.summary}</span>
+                        <span class="date"><i class="fas fa-calendar-alt mr-2"></i> ${formatNZDate(event.arrivalDate)}</span>
+                        <span class="check-in"><i class="fas fa-door-open mr-2"></i> Check-in: 2:00 PM</span>
+                    </span>` };
+                }
+
+                // 2. Check for ONGOING STAY
+                if (event.endDate && isOngoingStay(event.arrivalDate, event.endDate, todayNZ)) {
+                    // We only need the *fact* that an ongoing stay exists. 
+                    // We don't return immediately because a new arrival takes priority.
+                    ongoingStayFound = { 
+                        status: 'ongoing', 
+                        html: `<li class='no-arrival'><i class='fas fa-house-user mr-2 text-info-status'></i> Room Occupied (Ongoing Stay)</li>` 
+                    };
+                }
             }
+
+            // If an ongoing stay was found but no arrival, return the ongoing status.
+            if (ongoingStayFound) {
+                return ongoingStayFound;
+            }
+
+            // 3. No arrival and no ongoing stay found in the feed.
+            return { status: 'no-booking', html: "<li class='no-arrival'><i class='fas fa-calendar-times mr-2 text-info-status'></i> No new check-ins scheduled for today.</li>" };
+            
+        } catch (e) {
+            return { status: 'error', error: e.message };
         }
-        return null; // No arrival today found in this specific feed
     }
 
     /**
      * Tries a series of feeds in order until an arrival is found or all fail.
      */
-    async function loadVilla(id, feeds){
+    async function loadVilla(id, feeds) {
         const list = document.getElementById(id);
-        list.innerHTML=`<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Loading data...</li>`;
-      
-      const attempts = [
-        { name: 'Beds24 (Proxy)', url: proxy + encodeURIComponent(feeds.beds24) },
-        { name: 'Google (Direct)', url: feeds.google },
-        { name: 'Google (Proxy)', url: proxy + encodeURIComponent(feeds.google) }
-      ];
+        list.innerHTML = `<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Loading data...</li>`;
 
-      let statusMessage = `<span class="status-error">✖ Failed All Feeds</span>`;
-      let arrivalFound = false;
+        const attempts = [
+            { name: 'Beds24 (Proxy)', url: proxy + encodeURIComponent(feeds.beds24) },
+            { name: 'Google (Direct)', url: feeds.google },
+            { name: 'Google (Proxy)', url: proxy + encodeURIComponent(feeds.google) }
+        ];
 
-        for(const attempt of attempts){
-            try {
-                const arrival = await tryFeed(attempt.url);
-                if(arrival){
-                    list.innerHTML = `<li>${arrival}</li>`;
-                    statusMessage = `<span class="status-ok">✔ OK (${attempt.name})</span>`;
-                    arrivalFound = true;
-                    return statusMessage;
+        const todayNZ = DateTime.now().setZone(targetTimeZone);
+        let finalResult = { status: 'error', html: "<li class='no-arrival'><i class='fas fa-exclamation-triangle mr-2 text-red-alert'></i> Failed to load data.</li>", debug: `<span class="status-error">✖ Failed All Feeds</span>` };
+        
+        for (const attempt of attempts) {
+            const result = await tryFeed(attempt.url, todayNZ);
+
+            if (result.status === 'arrival') {
+                list.innerHTML = `<li>${result.html}</li>`;
+                return `<span class="status-ok">✔ ARRIVAL (${attempt.name})</span>`;
+            } else if (result.status === 'ongoing') {
+                // If we find an ongoing stay, we log it, but keep checking for a primary feed success
+                finalResult = {
+                    status: 'ongoing',
+                    html: result.html,
+                    debug: `<span class="status-no-arrival">✔ ONGOING STAY (${attempt.name})</span>`
+                };
+            } else if (result.status === 'no-booking') {
+                 // If we find a clean 'no booking', we log it as the fallback, prioritizing it over errors
+                if (finalResult.status === 'error') {
+                     finalResult = {
+                        status: 'no-booking',
+                        html: result.html,
+                        debug: `<span class="status-no-arrival">✔ NO BOOKING (${attempt.name})</span>`
+                    };
                 }
-                // If tryFeed returns null, the feed worked but found no arrival today.
-                if(!arrivalFound) { 
-                    statusMessage = `<span class="status-no-arrival">✔ No Arrival Found</span>`;
-                }
-
-            } catch(e){
-                console.warn(`${id} - ${attempt.name} failed:`, e.message);
-                // If it fails, keep the default statusMessage of 'Failed All Feeds' 
-                // unless a successful 'No Arrival Found' was already set from a previous attempt.
+            } else if (result.status === 'error') {
+                console.warn(`${id} - ${attempt.name} failed:`, result.error);
+                // We keep the finalResult as error unless a better status (ongoing/no-booking) is found later
             }
         }
-
-        // If loop finishes without an arrival:
-        if (!arrivalFound) {
-            list.innerHTML = "<li class='no-arrival'><i class='fas fa-bed mr-2'></i> No new check-ins scheduled for today.</li>";
-        }
         
-        return statusMessage;
+        // Final update and return based on the best non-arrival status found
+        list.innerHTML = finalResult.html;
+        return finalResult.debug;
     }
 
     /**
      * The main function to run the refresh process for all villas.
      */
-    async function refreshAll(){
+    async function refreshAll() {
         const statuses = [];
-        for(const [id, feeds] of Object.entries(villaFeeds)){
+        for (const [id, feeds] of Object.entries(villaFeeds)) {
             const st = await loadVilla(id, feeds);
-            statuses.push(` ${id}: ${st}`);
+            statuses.push(` ${id.replace('villa', 'V')}: ${st}`);
         }
-        
-        // Update the debug status message
+
         const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
-        document.getElementById("debug").innerHTML = 
+        document.getElementById("debug").innerHTML =
             `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
     }
 
@@ -321,16 +372,11 @@
 
     // --- Initialization and Scheduling ---
 
-    window.onload = function() {
-        // Display NZ date immediately
+    window.onload = function () {
         document.getElementById("current-date").textContent =
             DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
-
-        // Run the initial load
         refreshAll();
-
-        // Schedule automatic refresh every 10 minutes (10 * 60 * 1000 milliseconds)
-        setInterval(refreshAll, 10 * 60 * 1000);
+        setInterval(refreshAll, 10 * 60 * 1000); // 10 minutes
     }
 </script>
 </body>
