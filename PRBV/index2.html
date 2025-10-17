@@ -1,64 +1,156 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Villa Bookings</title>
-  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-    .booking { margin-bottom: .6rem; padding:.4rem .8rem; border-radius:.4rem; background:#f7f7f7; }
-    .villa { font-weight:600; }
-    .time { color:#555; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Patons Rock Beach Villas — Live Bookings</title>
+<script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    background: #000;
+    color: #fff;
+  }
+  #booking-widget {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    text-align: center;
+  }
+  .welcome-banner {
+    background: linear-gradient(135deg, #004466, #0077b6);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto 30px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    max-width: 800px;
+  }
+  .welcome-banner h1 {
+    margin: 0 0 10px;
+    font-size: 1.8em;
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.6),
+                 0 0 10px rgba(255, 215, 0, 0.4);
+  }
+  .welcome-banner p {
+    margin: 0;
+    font-size: 1.1em;
+  }
+  #current-date {
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: #FFD700;
+  }
+  h2 {
+    color: #00b4d8;
+    margin-bottom: 20px;
+  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    justify-content: center;
+  }
+  .calendar-container {
+    background: #111;
+    border-radius: 17px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
+                inset 0 0 6px rgba(255, 255, 255, 0.1);
+    border: 2px solid #222;
+    padding: 18px;
+    text-align: center;
+  }
+  .calendar-container h1 {
+    margin: 0 0 10px;
+    font-size: 1.3em;
+    color: #00b4d8;
+  }
+  .booking {
+    background: #222;
+    border-radius: 10px;
+    margin: 6px 0;
+    padding: 8px;
+    font-size: 0.95em;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  .booking span {
+    display: block;
+    color: #FFD700;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  @media (max-width:700px){
+    .calendar-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
+<div id="booking-widget">
+  <div class="welcome-banner">
+    <h1>Welcome to Patons Rock Beach Villas</h1>
+    <p>We’re delighted to host you. Enjoy your stay, and if you need assistance please call <strong>027 356 3551</strong>.</p>
+    <div id="current-date"></div>
+  </div>
 
-<h2>Upcoming Bookings</h2>
-<div id="bookings"></div>
+  <h2>Upcoming Bookings</h2>
+  <div class="calendar-grid" id="villa-grid">
+    <div class="calendar-container" id="villa1"><h1>Villa 1</h1><div class="bookings"></div></div>
+    <div class="calendar-container" id="villa2"><h1>Villa 2</h1><div class="bookings"></div></div>
+    <div class="calendar-container" id="villa3"><h1>Villa 3</h1><div class="bookings"></div></div>
+    <div class="calendar-container" id="villa4"><h1>Villa 4</h1><div class="bookings"></div></div>
+  </div>
+</div>
 
 <script>
-const villaFeeds = {
-  "Villa 1": "villa1.ics",
-  "Villa 2": "villa2.ics",
-  "Villa 3": "villa3.ics",
-  "Villa 4": "villa4.ics"
+const feeds = {
+  "villa1": "villa1.ics",
+  "villa2": "villa2.ics",
+  "villa3": "villa3.ics",
+  "villa4": "villa4.ics"
 };
 const tz = "Pacific/Auckland";
 
-async function loadICS(name, url) {
+async function loadICS(url) {
   const res = await fetch(url);
   const text = await res.text();
   const jcal = ICAL.parse(text);
   const comp = new ICAL.Component(jcal);
   const events = comp.getAllSubcomponents("vevent");
-  return events.map(e => {
-    const ev = new ICAL.Event(e);
-    return {
-      villa: name,
-      summary: ev.summary,
-      start: ev.startDate.toJSDate(),
-      end: ev.endDate.toJSDate()
-    };
-  });
+  return events.map(e => new ICAL.Event(e));
+}
+
+function displayEvent(ev) {
+  const fmt = new Intl.DateTimeFormat("en-NZ", { timeZone: tz, hour: "numeric", minute: "2-digit", weekday:"short", day:"numeric", month:"short"});
+  const start = fmt.format(ev.startDate.toJSDate());
+  const end = fmt.format(ev.endDate.toJSDate());
+  return `<div class="booking">
+            ${ev.summary}
+            <span>${start} → ${end}</span>
+          </div>`;
 }
 
 (async () => {
-  let all = [];
-  for (const [name, url] of Object.entries(villaFeeds)) {
-    const evs = await loadICS(name, url);
-    all = all.concat(evs);
-  }
   const now = new Date();
-  all = all.filter(ev => ev.end > now)
-           .sort((a,b) => a.start - b.start);
-  const fmt = new Intl.DateTimeFormat("en-NZ", {weekday:"short", day:"numeric", month:"short", hour:"numeric", minute:"2-digit", timeZone:tz});
-  const div = document.getElementById("bookings");
-  div.innerHTML = all.map(ev =>
-    `<div class="booking">
-       <div class="villa">${ev.villa}</div>
-       <div>${ev.summary}</div>
-       <div class="time">${fmt.format(ev.start)} → ${fmt.format(ev.end)}</div>
-     </div>`).join("");
+  for (const [villaId, ics] of Object.entries(feeds)) {
+    try {
+      const evs = await loadICS(ics);
+      const future = evs.filter(ev => ev.endDate.toJSDate() > now)
+                        .sort((a,b) => a.startDate.toJSDate() - b.startDate.toJSDate());
+      document.querySelector(`#${villaId} .bookings`).innerHTML =
+        future.slice(0,5).map(displayEvent).join("") || "<div class='booking'>No upcoming stays</div>";
+    } catch (e) {
+      document.querySelector(`#${villaId} .bookings`).innerHTML =
+        "<div class='booking'>Feed unavailable</div>";
+    }
+  }
+
+  // Update header date
+  const today = new Date();
+  const formatted = today.toLocaleString("en-NZ", {
+    timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric"
+  });
+  document.getElementById("current-date").textContent = `Today in New Zealand: ${formatted}`;
 })();
 </script>
 </body>
