@@ -3,188 +3,112 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Patons Rock Beach Villas — Live Bookings</title>
-<script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+<title>Patons Rock Villas – Live Bookings</title>
 <style>
   body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    margin: 0;
-    background: #000;
-    color: #fff;
-  }
-  #booking-widget {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    text-align: center;
+    background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif;
+    margin:0; text-align:center;
   }
   .welcome-banner {
-    background: linear-gradient(135deg, #004466, #0077b6);
-    color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    margin: 0 auto 30px auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    max-width: 800px;
+    background:linear-gradient(135deg,#004466,#0077b6);
+    padding:20px; border-radius:10px; margin:20px auto;
+    max-width:800px; box-shadow:0 4px 12px rgba(0,0,0,0.5);
   }
-  .welcome-banner h1 {
-    margin: 0 0 10px;
-    font-size: 1.8em;
-    text-shadow: 0 0 6px rgba(255,215,0,0.6), 0 0 10px rgba(255,215,0,0.4);
-  }
-  .welcome-banner p { margin: 0; font-size: 1.1em; }
-  #current-date {
-    margin-top: 10px;
-    font-size: 1.2em;
-    color: #FFD700;
-  }
-  h2 { color: #00b4d8; margin-bottom: 20px; }
+  .welcome-banner h1 {margin:0 0 8px;font-size:1.8em;text-shadow:0 0 10px #FFD700;}
+  #current-date {color:#FFD700;font-size:1.1em;}
   .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-    justify-content: center;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px; max-width:1100px; margin:30px auto;
   }
   .calendar-container {
-    background: #111;
-    border-radius: 17px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.6), inset 0 0 6px rgba(255,255,255,0.1);
-    border: 2px solid #222;
-    padding: 18px;
-    text-align: center;
-    transition: box-shadow .3s;
+    background:#222; border-radius:15px; padding:15px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.6);
   }
-  .calendar-container.updated { box-shadow: 0 0 15px rgba(0,180,216,0.7); }
-  .calendar-container h1 {
-    margin: 0 0 10px;
-    font-size: 1.3em;
-    color: #00b4d8;
+  .calendar-container h2 {color:#00b4d8;margin-top:0;}
+  ul {list-style:none;padding:0;margin:0;}
+  li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
+  .debug {
+    background:#111; border-top:1px solid #333; margin-top:30px;
+    padding:10px; font-size:0.9em; color:#aaa;
   }
-  .booking {
-    background: #222;
-    border-radius: 10px;
-    margin: 6px 0;
-    padding: 8px;
-    font-size: 0.95em;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  }
-  .booking span {
-    display: block;
-    color: #FFD700;
-    font-weight: 600;
-    margin-top: 4px;
-  }
-  #debug-panel {
-    margin-top: 25px;
-    font-size: 0.85em;
-    color: #aaa;
-    background:#111;
-    border-radius:10px;
-    padding:10px;
-    max-width:800px;
-    margin-left:auto;
-    margin-right:auto;
-    text-align:left;
-  }
-  #debug-panel .ok { color:#00ff7f; }
-  #debug-panel .fail { color:#ff6666; }
-  @media (max-width:700px){
-    .calendar-grid { grid-template-columns: 1fr; }
-  }
+  .ok {color:#3fa43f;}
+  .fail {color:#ff4444;}
 </style>
 </head>
 <body>
-<div id="booking-widget">
   <div class="welcome-banner">
     <h1>Welcome to Patons Rock Beach Villas</h1>
-    <p>We’re delighted to host you. Enjoy your stay, and if you need assistance please call <strong>027 356 3551</strong>.</p>
+    <p>For assistance please call <strong>027 356 3551</strong>.</p>
     <div id="current-date"></div>
   </div>
 
   <h2>Upcoming Bookings</h2>
-  <div class="calendar-grid" id="villa-grid">
-    <div class="calendar-container" id="villa1"><h1>Villa 1</h1><div class="bookings"></div></div>
-    <div class="calendar-container" id="villa2"><h1>Villa 2</h1><div class="bookings"></div></div>
-    <div class="calendar-container" id="villa3"><h1>Villa 3</h1><div class="bookings"></div></div>
-    <div class="calendar-container" id="villa4"><h1>Villa 4</h1><div class="bookings"></div></div>
+  <div class="calendar-grid" id="villaGrid">
+    <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
+    <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
+    <div class="calendar-container"><h2>Villa 3</h2><ul id="villa3"></ul></div>
+    <div class="calendar-container"><h2>Villa 4</h2><ul id="villa4"></ul></div>
   </div>
 
-  <div id="debug-panel">
-    <strong>Debug Status:</strong><br/>
-    <div id="debug-log">Loading...</div>
-  </div>
-</div>
+  <div class="debug" id="debug">Loading...</div>
 
 <script>
-const feeds = {
-  "villa1": "villa1.ics",
-  "villa2": "villa2.ics",
-  "villa3": "villa3.ics",
-  "villa4": "villa4.ics"
+const villas = {
+  villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483",
+  villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484",
+  villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485",
+  villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486"
 };
-const tz = "Pacific/Auckland";
-const refreshInterval = 5 * 60 * 1000; // 5 minutes
 
-async function loadICS(url) {
-  const res = await fetch(url);
-  if(!res.ok) throw new Error(`HTTP ${res.status}`);
-  const text = await res.text();
-  const jcal = ICAL.parse(text);
-  const comp = new ICAL.Component(jcal);
-  const events = comp.getAllSubcomponents("vevent");
-  return events.map(e => new ICAL.Event(e));
+// Public proxy to bypass CORS (you can replace with your own later)
+const proxy = "https://api.allorigins.win/raw?url=";
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-NZ", {month:"short", day:"numeric"});
 }
 
-function displayEvent(ev) {
-  const fmt = new Intl.DateTimeFormat("en-NZ", {
-    timeZone: tz, hour: "numeric", minute: "2-digit",
-    weekday:"short", day:"numeric", month:"short"
-  });
-  const start = fmt.format(ev.startDate.toJSDate());
-  const end = fmt.format(ev.endDate.toJSDate());
-  return `<div class="booking">${ev.summary}<span>${start} → ${end}</span></div>`;
-}
-
-async function refreshData() {
-  const log = [];
-  const now = new Date();
-  for (const [villaId, ics] of Object.entries(feeds)) {
-    const container = document.getElementById(villaId);
-    container.classList.remove("updated");
-    try {
-      const evs = await loadICS(ics);
-      const future = evs.filter(ev => ev.endDate.toJSDate() > now)
-                        .sort((a,b) => a.startDate.toJSDate() - b.startDate.toJSDate());
-      container.querySelector(".bookings").innerHTML =
-        future.slice(0,5).map(displayEvent).join("") ||
-        "<div class='booking'>No upcoming stays</div>";
-      container.classList.add("updated");
-      log.push(`<span class="ok">✔ ${villaId}</span> (${future.length} events)`);
-    } catch (e) {
-      container.querySelector(".bookings").innerHTML =
-        "<div class='booking'>Feed unavailable</div>";
-      log.push(`<span class="fail">✖ ${villaId}</span> ${e.message}`);
+async function loadVilla(id, url) {
+  const list = document.getElementById(id);
+  list.innerHTML = "<li>Loading…</li>";
+  try {
+    const res = await fetch(proxy + encodeURIComponent(url));
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ics = await res.text();
+    const events = [...ics.matchAll(/SUMMARY:(.*?)\nDTSTART.*?:(.*?)\nDTEND.*?:(.*?)\n/gs)];
+    if (events.length === 0) {
+      list.innerHTML = "<li>No upcoming bookings</li>";
+      return "✔ No bookings";
     }
+    list.innerHTML = "";
+    events.slice(0,5).forEach(ev=>{
+      const [,summary,start,end] = ev;
+      list.innerHTML += `<li>${formatDate(start)} → ${formatDate(end)}<br><small>${summary}</small></li>`;
+    });
+    return "✔ OK";
+  } catch (err) {
+    list.innerHTML = "<li>Feed unavailable</li>";
+    return `✖ ${err.message}`;
   }
-  const time = new Date().toLocaleTimeString("en-NZ",{timeZone:tz});
-  document.getElementById("debug-log").innerHTML =
-    `Last refresh: ${time}<br>` + log.join("<br>");
 }
 
-function updateHeaderDate() {
-  const today = new Date();
-  const formatted = today.toLocaleString("en-NZ", {
-    timeZone: tz, weekday: "long", day: "numeric",
-    month: "long", year: "numeric"
-  });
-  document.getElementById("current-date").textContent =
-    `Today in New Zealand: ${formatted}`;
+async function refreshAll() {
+  const statuses = [];
+  for (const [id, url] of Object.entries(villas)) {
+    const st = await loadVilla(id, url);
+    statuses.push(`${id}: ${st}`);
+  }
+  const now = new Date().toLocaleTimeString("en-NZ");
+  document.getElementById("debug").innerHTML =
+    `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
 }
 
-// Initial load and schedule
-updateHeaderDate();
-refreshData();
-setInterval(refreshData, refreshInterval);
+// show local NZ date
+document.getElementById("current-date").textContent =
+  new Date().toLocaleString("en-NZ", {timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
+
+refreshAll();
+setInterval(refreshAll, 10*60*1000); // every 10 minutes
 </script>
 </body>
 </html>
