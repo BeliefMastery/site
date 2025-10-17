@@ -60,12 +60,25 @@ const villas = {
   villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486"
 };
 
-// Public proxy to bypass CORS (you can replace with your own later)
+// Public proxy (CORS bypass)
 const proxy = "https://api.allorigins.win/raw?url=";
 
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("en-NZ", {month:"short", day:"numeric"});
+function cleanICSDate(dt) {
+  // Convert e.g. 20251017T140000Z -> 2025-10-17T14:00:00Z
+  if (!dt) return null;
+  const match = dt.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?/);
+  if (!match) return null;
+  const [,y,m,d,h,min,s] = match;
+  return `${y}-${m}-${d}T${h}:${min}:${s}Z`;
+}
+
+function formatNZDate(iso) {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  return date.toLocaleDateString("en-NZ", {
+    timeZone:"Pacific/Auckland",
+    day:"numeric", month:"short"
+  });
 }
 
 async function loadVilla(id, url) {
@@ -75,15 +88,24 @@ async function loadVilla(id, url) {
     const res = await fetch(proxy + encodeURIComponent(url));
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const ics = await res.text();
-    const events = [...ics.matchAll(/SUMMARY:(.*?)\nDTSTART.*?:(.*?)\nDTEND.*?:(.*?)\n/gs)];
-    if (events.length === 0) {
+
+    const blocks = ics.split("BEGIN:VEVENT").slice(1);
+    if (blocks.length === 0) {
       list.innerHTML = "<li>No upcoming bookings</li>";
       return "✔ No bookings";
     }
+
     list.innerHTML = "";
-    events.slice(0,5).forEach(ev=>{
-      const [,summary,start,end] = ev;
-      list.innerHTML += `<li>${formatDate(start)} → ${formatDate(end)}<br><small>${summary}</small></li>`;
+    blocks.slice(0,6).forEach(block=>{
+      const summary = (block.match(/SUMMARY:(.*)/) || [,"Booking"])[1];
+      const startRaw = (block.match(/DTSTART.*:(.*)/) || [,""])[1];
+      const endRaw = (block.match(/DTEND.*:(.*)/) || [,""])[1];
+      const desc = (block.match(/DESCRIPTION:(.*?)(?:\n[A-Z]|$)/s) || [,""])[1]
+                      .replace(/\\n/g," ").trim();
+
+      const start = cleanICSDate(startRaw);
+      const end = cleanICSDate(endRaw);
+      list.innerHTML += `<li>${formatNZDate(start)} → ${formatNZDate(end)}<br><small>${summary}<br>${desc}</small></li>`;
     });
     return "✔ OK";
   } catch (err) {
@@ -108,7 +130,7 @@ document.getElementById("current-date").textContent =
   new Date().toLocaleString("en-NZ", {timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
 
 refreshAll();
-setInterval(refreshAll, 10*60*1000); // every 10 minutes
+setInterval(refreshAll, 10*60*1000);
 </script>
 </body>
 </html>
