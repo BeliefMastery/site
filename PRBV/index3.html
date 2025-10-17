@@ -247,102 +247,88 @@ const villas = {
 const proxy = "https://api.allorigins.win/raw?url=";
 const targetTimeZone = "Pacific/Auckland";
 
-function extractGuestName(summary) {
-  // Extract guest name from SUMMARY, e.g., "Booking #123 - John Doe" -> "John Doe"
-  const match = summary.match(/^(?:Booking #\d+ - )?(.+?)(?:\s*-\s*.*)?$/);
-  return match ? match[1].trim() : summary.trim() || "Guest";
-}
-
-function parseICSEvent(block) {
-  const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
+function parseICSEvent(block){
+  const startLine = block.match(/DTSTART.*:(.*)/);
+  if(!startLine) return null;
   const summaryLine = block.match(/SUMMARY:(.*)/);
-  if (!startLine || !summaryLine) return null;
+  if(!summaryLine) return null;
 
   let startRaw = startLine[1].trim();
   let summary = summaryLine[1].trim();
-  let arrivalDate;
+  let start;
 
-  const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
-
-  if (isDateTime) {
-    arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+  // Convert ICS date to JS Date in NZ time
+  if(/^\d{8}$/.test(startRaw)){
+    // Format YYYYMMDD → YYYY-MM-DD
+    start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
   } else {
-    const year = startRaw.substr(0, 4);
-    const month = startRaw.substr(4, 2);
-    const day = startRaw.substr(6, 2);
-    arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
+    start = new Date(startRaw);
   }
 
-  if (!arrivalDate.isValid) return null;
+  // Convert to NZ time
+  start = new Date(start.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
 
-  return { summary, arrivalDate, guestName: extractGuestName(summary) };
+  return {summary, start};
 }
 
-function isSameDayNZ(dt, today) {
-  return dt.hasSame(today, 'day');
+function isSameDayNZ(d1,d2){
+  const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
+  return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
 }
 
-function formatNZDate(dt) {
-  return dt.toFormat("ccc, dd MMM yyyy");
+function formatNZDate(d){
+  // Converts a Date to NZ local date string
+  return d.toLocaleDateString("en-NZ",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
 }
 
-async function loadVilla(id, url) {
-  const list = document.getElementById(id);
-  try {
-    const res = await fetch(proxy + encodeURIComponent(url));
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const ics = await res.text();
-    const blocks = ics.split("BEGIN:VEVENT").slice(1);
-    
-    const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
-    let firstArrival = null;
+async function loadVilla(id,url){
+  const list=document.getElementById(id);
+  list.innerHTML="<li class='loading'><i class='fas fa-spinner loading-icon'></i> Loading…</li>";
+  try{
+    const res=await fetch(proxy+encodeURIComponent(url));
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ics=await res.text();
+    const blocks=ics.split("BEGIN:VEVENT").slice(1);
+    const today=new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
+    let arrival=null;
 
-    for (const block of blocks) {
+    for(const block of blocks){
       const event = parseICSEvent(block);
-      if (!event) continue;
-      
-      if (isSameDayNZ(event.arrivalDate, todayNZ)) {
-        firstArrival = event;
-        break; // First matching arrival
+      if(!event) continue;
+      if(isSameDayNZ(event.start,today)){
+        arrival = `<span class="arrival-info">
+          <span class="guest-name">${event.summary}</span>
+          <span class="date">${formatNZDate(event.start)}</span>
+          <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
+        </span>`;
+        break; // only first arrival
       }
     }
 
-    if (firstArrival) {
-      list.innerHTML = `
-        <li class="arrival-info">
-          <span class="guest-name">${firstArrival.guestName}</span>
-          <span class="date">${formatNZDate(firstArrival.arrivalDate)}</span>
-          <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
-        </li>
-      `;
-    } else {
-      list.innerHTML = "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals today</li>";
-    }
+    list.innerHTML = arrival ? `<li>${arrival}</li>` : "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals today</li>";
     return "✔ OK";
-  } catch (err) {
-    list.innerHTML = "<li class='no-arrival'><i class='fas fa-exclamation-triangle'></i> Feed unavailable</li>";
-    return `<span class="status-error">✖ ${err.message}</span>`;
+  }catch(err){
+    list.innerHTML="<li class='no-arrival'><i class='fas fa-exclamation-triangle'></i> Feed unavailable</li>";
+    return `✖ ${err.message}`;
   }
 }
 
-async function refreshAll() {
-  const statuses = [];
-  for (const [id, url] of Object.entries(villas)) {
-    const st = await loadVilla(id, url);
+async function refreshAll(){
+  const statuses=[];
+  for(const [id,url] of Object.entries(villas)){
+    const st=await loadVilla(id,url);
     statuses.push(`${id}: ${st}`);
   }
-  
-  const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
-  document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now} NZT | ` + statuses.join(" | ");
+  const now=new Date().toLocaleTimeString("en-NZ");
+  document.getElementById("debug").innerHTML=
+    `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
 }
 
-// Show current NZ date at top
 document.getElementById("current-date").textContent =
-  DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
+  new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
 
-// Initial load and refresh every 10 minutes
 refreshAll();
-setInterval(refreshAll, 10 * 60 * 1000);
+setInterval(refreshAll,10*60*1000);
 </script>
 </body>
 </html>
