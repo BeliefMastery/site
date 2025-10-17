@@ -152,20 +152,19 @@ li {
     width: 100%;
     text-align: center;
 }
-/* Enhanced style for the arrival box */
 .arrival-info {
     color: #48e4d2;
     font-weight: 600;
     font-size: 1.25em;
     line-height: 1.5;
     display: block;
-    background: rgba(72, 228, 210, 0.1); /* Subtle background highlight */
+    background: rgba(72, 228, 210, 0.1);
     border-radius: 10px;
     padding: 15px 10px;
     border: 1px solid #48e4d2;
 }
 .arrival-info .guest-name {
-    font-size: 1.5em; /* Slightly larger name */
+    font-size: 1.5em;
     color: #ffffff;
     margin-bottom: 8px;
     font-weight: 700;
@@ -179,7 +178,7 @@ li {
 .arrival-info .check-in {
     color: #00b4d8;
     font-weight: 700;
-    font-size: 1.2em; /* Slightly larger check-in time */
+    font-size: 1.2em;
     display: block;
     margin-top: 10px;
     padding-top: 5px;
@@ -244,21 +243,24 @@ li {
 
 <script>
 const { DateTime, Settings } = luxon;
-Settings.defaultLocale = "en-NZ"; // Ensure Luxon outputs NZ format
+Settings.defaultLocale = "en-NZ"; 
 
+// --- NEW GOOGLE CALENDAR ICS URLs ---
 const villas = {
-  villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
-  villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
-  villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
-  villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8"
+  villa1: "https://calendar.google.com/calendar/ical/patonsrockbeachvillas.co.nz_5r3b0ovo5vn9l24j5503docbds%40group.calendar.google.com/public/basic.ics",
+  villa2: "https://calendar.google.com/calendar/ical/u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com/public/basic.ics",
+  villa3: "https://calendar.google.com/calendar/ical/ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com/public/basic.ics",
+  villa4: "https://calendar.google.com/calendar/ical/sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com/public/basic.ics"
 };
 
 const proxy = "https://api.allorigins.win/raw?url=";
 const targetTimeZone = "Pacific/Auckland";
 
+// Flag to control proxy usage (set to false to try direct access first)
+const useProxy = false; 
+
 /**
- * FIXED LOGIC: Parses an ICS event block using Luxon for reliable time zone handling.
- * This correctly interprets date-only DTSTART values as the NZ arrival day at 2 PM.
+ * Parses an ICS event block using Luxon for reliable time zone handling.
  */
 function parseICSEvent(block){
   const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
@@ -274,10 +276,10 @@ function parseICSEvent(block){
   const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
 
   if (isDateTime) {
-    // Full datetime (e.g., 20251017T140000Z): Parse as UTC, then set to NZ time zone
+    // Full datetime: Parse as UTC (Google default), then convert to NZ time zone
     arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
   } else {
-    // Date-only (e.g., 20251018): Treat this calendar date as the NZ arrival day.
+    // Date-only (YYYYMMDD): Treat this calendar date as the NZ arrival day.
     const year = startRaw.substr(0, 4);
     const month = startRaw.substr(4, 2);
     const day = startRaw.substr(6, 2);
@@ -290,48 +292,45 @@ function parseICSEvent(block){
 }
 
 /**
- * FIXED LOGIC: Checks if a Luxon DateTime object is the same calendar day as 'today' in NZT.
+ * Checks if a Luxon DateTime object is the same calendar day as 'today' in NZT.
  */
 function isSameDayNZ(dt, today){
   return dt.hasSame(today, 'day');
 }
 
 /**
- * FIXED LOGIC: Formats a Luxon DateTime object to a readable NZ string.
+ * Formats a Luxon DateTime object to a readable NZ string.
  */
 function formatNZDate(dt){
-  // Use Luxon's toFormat for reliable, locale-aware output
   return dt.toFormat("ccc, dd MMM yyyy");
 }
 
 async function loadVilla(id,url){
   const list=document.getElementById(id);
-  // Use Grok's better loading indicator
   list.innerHTML="<li class='loading'><i class='fas fa-spinner loading-icon'></i> Loading…</li>";
   try{
-    const res=await fetch(proxy+encodeURIComponent(url));
+    const fetchUrl = useProxy ? proxy + encodeURIComponent(url) : url;
+    
+    const res=await fetch(fetchUrl);
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const ics=await res.text();
     const blocks=ics.split("BEGIN:VEVENT").slice(1);
     
-    // FIXED LOGIC: Define 'today' at midnight NZT for accurate day comparison
+    // Define 'today' at midnight NZT for accurate day comparison
     const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
     let arrival=null;
 
     for(const block of blocks){
-      // Get Luxon event data
       const event = parseICSEvent(block);
       if(!event) continue;
       
-      // Use robust Luxon comparison
       if(isSameDayNZ(event.arrivalDate, todayNZ)){
-        // Use Grok's enhanced display structure
         arrival = `<span class="arrival-info">
           <span class="guest-name">${event.summary}</span>
           <span class="date">${formatNZDate(event.arrivalDate)}</span>
           <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
         </span>`;
-        break; // only first arrival
+        break;
       }
     }
 
@@ -339,7 +338,7 @@ async function loadVilla(id,url){
       ? `<li>${arrival}</li>` 
       : "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals today</li>";
     
-    return `<span class="status-ok">✔ OK</span>`; // Use Grok's status classes
+    return `<span class="status-ok">✔ OK</span>`;
   }catch(err){
     list.innerHTML="<li class='no-arrival'><i class='fas fa-exclamation-triangle'></i> Feed unavailable</li>";
     return `<span class="status-error">✖ ${err.message}</span>`;
@@ -349,20 +348,16 @@ async function loadVilla(id,url){
 async function refreshAll(){
   const statuses=[];
   for(const [id,url] of Object.entries(villas)){
-    // Capture HTML-formatted status
     const st=await loadVilla(id,url);
-    // Grok's debug line was broken by missing a pipe
     statuses.push(` ${id}: ${st}`); 
   }
     
-  // Use Luxon for accurate NZ time display
   const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
 
   document.getElementById("debug").innerHTML=
     `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
 }
 
-// Use Luxon for accurate NZ date display
 document.getElementById("current-date").textContent =
   DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
 
