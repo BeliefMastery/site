@@ -58,30 +58,38 @@ const villas = {
 
 const proxy = "https://api.allorigins.win/raw?url=";
 
+// Parse ICS event block and convert date to NZ
 function parseICSEvent(block){
   const startLine = block.match(/DTSTART.*:(.*)/);
-  if(!startLine) return null;
   const summaryLine = block.match(/SUMMARY:(.*)/);
-  if(!summaryLine) return null;
+  if(!startLine || !summaryLine) return null;
 
   let startRaw = startLine[1].trim();
   let summary = summaryLine[1].trim();
   let start;
 
+  // Handle YYYYMMDD or full datetime formats
   if(/^\d{8}$/.test(startRaw)){
     start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
   } else {
     start = new Date(startRaw);
   }
 
+  // Convert to NZ time
   start = new Date(start.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
 
   return {summary, start};
 }
 
+// Check if two dates are the same NZ day
 function isSameDayNZ(d1,d2){
   const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
   return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
+}
+
+// Format a Date object to NZ string
+function formatNZDate(d){
+  return d.toLocaleDateString("en-NZ",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
 }
 
 async function loadVilla(id,url){
@@ -99,7 +107,7 @@ async function loadVilla(id,url){
       const event = parseICSEvent(block);
       if(!event) continue;
       if(isSameDayNZ(event.start,today)){
-        arrival = `<span class="arrival">${formatNZDate(today)} — ${event.summary} — check-in 2 pm</span>`;
+        arrival = `<span class="arrival">${formatNZDate(event.start)} — ${event.summary} — check-in 2 pm</span>`;
         break; // only first arrival
       }
     }
@@ -112,8 +120,6 @@ async function loadVilla(id,url){
   }
 }
 
-function formatNZDate(d){ return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"}); }
-
 async function refreshAll(){
   const statuses=[];
   for(const [id,url] of Object.entries(villas)){
@@ -124,6 +130,7 @@ async function refreshAll(){
   document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
 }
 
+// Show current NZ date at top
 document.getElementById("current-date").textContent =
   new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
 
