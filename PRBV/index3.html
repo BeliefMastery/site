@@ -80,38 +80,69 @@ function formatDateOnly(dateStr) {
   });
 }
 
-function cleanICSDate(dt) {
-  // Convert e.g. 20251017T140000Z -> 2025-10-17T14:00:00Z
-  if (!dt) return null;
-  const match = dt.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?/);
-  if (!match) return null;
-  const [,y,m,d,h,min,s] = match;
-  return `${y}-${m}-${d}T${h}:${min}:${s}Z`;
-}
-
-function getDatePart(iso) {
-  if (!iso) return null;
-  return iso.split('T')[0];
-}
-
-function formatNZTime(iso) {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  return date.toLocaleTimeString("en-NZ", {
-    timeZone:"Pacific/Auckland",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+function formatTime24to12(time24) {
+  if (!time24) return "—";
+  const [h, m] = time24.split(':');
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? 'pm' : 'am';
+  const h12 = hour % 12 || 12;
+  return `${h12}:${m} ${ampm}`;
 }
 
 function extractName(summary, desc) {
-  // Try to extract name from SUMMARY or DESCRIPTION; fallback to "Guest"
-  let name = summary.trim() || "Guest";
-  if (name === "Booking" || name === "") {
-    // Assume DESCRIPTION has "Name: Guest Name" or similar; simple extract first words
-    name = (desc.match(/^(?:Name:\s*)?([A-Z][a-z]+ [A-Z][a-z]+)/i) || [,"Guest"])[1];
+  let name = summary.trim();
+  if (name.startsWith("Booking #")) {
+    const parts = name.split(" - ");
+    name = parts.length > 1 ? parts.pop().trim() : "Guest";
+  }
+  if (!name || name === "Booking" || name === "") {
+    const nameMatch = desc.match(/(?:Name|Guest):\s*([A-Za-z\s]+?)(?=\n|$)/i);
+    name = nameMatch ? nameMatch[1].trim() : "Guest";
   }
   return name;
+}
+
+function getICSValueInfo(lineType, block) {
+  const paramMatch = new RegExp(`${lineType}(;[^:]+)?:(.*)`).exec(block);
+  if (!paramMatch) return null;
+  const params = paramMatch[1] || '';
+  const value = paramMatch[2].trim();
+  const hasTZID = params.includes('TZID=Pacific/Auckland');
+  const isDateOnly = params.includes('VALUE=DATE');
+  const isUTC = value.endsWith('Z');
+  let dateStr, timeStr;
+  if (isDateOnly) {
+    dateStr = value.substring(0,4) + '-' + value.substring(4,2) + '-' + value.substring(6,2);
+    timeStr = lineType === 'DTSTART' ? '14:00' : '10:00';
+  } else {
+    const match = value.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z)?/);
+    if (!match) return null;
+    const [,y,m,d,h,mi,s,z] = match;
+    if (hasTZID || !isUTC) {
+      // local NZ time
+      dateStr = `${y}-${m}-${d}`;
+      timeStr = `${h}:${mi}`;
+    } else {
+      // UTC
+      const tempISO = `${y}-${m}-${d}T${h}:${mi}:${s}Z`;
+      const utcDate = new Date(tempISO);
+      dateStr = utcDate.toLocaleDateString("en-CA", {timeZone: "Pacific/Auckland"});
+      const localTimeParts = utcDate.toLocaleTimeString("en-NZ", {timeZone: "Pacific/Auckland", hour: '2-digit', minute: '2-digit', hour12: false}).split(':');
+      timeStr = `${localTimeParts[0]}:${localTimeParts[1]}`;
+    }
+  }
+  return {dateStr, timeStr};
+}
+
+function parseICSEvent(block) {
+  const startInfo = getICSValueInfo('DTSTART', block);
+  const endInfo = getICSValueInfo('DTEND', block);
+  if (!startInfo || !endInfo) return null;
+  const summaryMatch = block.match(/SUMMARY:(.+?)(?=\n[A-Z]|$)/);
+  const descriptionMatch = block.match(/DESCRIPTION:(.*?)(?:\n[A-Z]|$)/s);
+  const summary = summaryMatch ? summaryMatch[1].trim() : "Booking";
+  const description = descriptionMatch ? descriptionMatch[1].replace(/\\n/g, " ").replace(/\\,/g, ",").trim() : "";
+  return {summary, description, startInfo, endInfo};
 }
 
 async function loadVilla(id, url) {
@@ -132,37 +163,30 @@ async function loadVilla(id, url) {
     const nzTomorrow = getNZDateString(1);
 
     let hasEvents = false;
-    list.innerHTML = "";
+    let html = "";
 
     blocks.forEach(block => {
-      const summary = (block.match(/SUMMARY:(.*)/) || [,""])[1];
-      const startRaw = (block.match(/DTSTART.*:(.*)/) || [,""])[1];
-      const endRaw = (block.match(/DTEND.*:(.*)/) || [,""])[1];
-      const desc = (block.match(/DESCRIPTION:(.*?)(?:\n[A-Z]|$)/s) || [,""])[1]
-                      .replace(/\\n/g," ").trim();
+      const event = parseICSEvent(block);
+      if (!event) return;
 
-      const start = cleanICSDate(startRaw);
-      const end = cleanICSDate(endRaw);
-      const startDateStr = getDatePart(start);
-      const endDateStr = getDatePart(end);
+      const name = extractName(event.summary, event.description);
 
-      const name = extractName(summary, desc);
-
-      if (startDateStr === nzToday || startDateStr === nzTomorrow) {
-        const dateLabel = formatDateOnly(startDateStr);
-        list.innerHTML += `<li class="arrivals"><strong>Arrival ${dateLabel}:</strong> ${name} at ${formatNZTime(start)}<br><small>${desc}</small></li>`;
+      // Arrival
+      const startDay = event.startInfo.dateStr === nzToday ? "today" : (event.startInfo.dateStr === nzTomorrow ? "tomorrow" : null);
+      if (startDay) {
+        html += `<li class="arrivals"><strong>Arrival ${startDay}:</strong> ${name} at ${formatTime24to12(event.startInfo.timeStr)}<br><small>${event.description}</small></li>`;
         hasEvents = true;
       }
-      if (endDateStr === nzToday || endDateStr === nzTomorrow) {
-        const dateLabel = formatDateOnly(endDateStr);
-        list.innerHTML += `<li class="departures"><strong>Departure ${dateLabel}:</strong> ${name} at ${formatNZTime(end)}<br><small>${desc}</small></li>`;
+
+      // Departure
+      const endDay = event.endInfo.dateStr === nzToday ? "today" : (event.endInfo.dateStr === nzTomorrow ? "tomorrow" : null);
+      if (endDay) {
+        html += `<li class="departures"><strong>Departure ${endDay}:</strong> ${name} at ${formatTime24to12(event.endInfo.timeStr)}<br><small>${event.description}</small></li>`;
         hasEvents = true;
       }
     });
 
-    if (!hasEvents) {
-      list.innerHTML = "<li>No arrivals or departures today or tomorrow</li>";
-    }
+    list.innerHTML = hasEvents ? html : "<li>No arrivals or departures today or tomorrow</li>";
     return "✔ OK";
   } catch (err) {
     list.innerHTML = "<li>Feed unavailable</li>";
