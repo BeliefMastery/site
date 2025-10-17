@@ -10,95 +10,96 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
 
     <style>
-        /* Gemini's Golden Bay Sunset Palette - High Contrast & Vibrancy */
+        /* Gemini's Dark Mode Aesthetic */
         :root {
-            --primary-teal: #0f766e; /* Strong Deep Teal */
-            --secondary-orange: #f59e0b; /* Vibrant Amber/Sunset Orange */
-            --background-light: #f9f9f9; /* Soft off-white background */
-            --background-card: #ffffff;
-            --text-dark: #1f2937; /* Gray-800 */
+            --primary-navy: #0f172a; /* Slate-900: Dark background */
+            --primary-gold: #fde047; /* Yellow-300: Accent for dates/highlight */
+            --secondary-teal: #2dd4bf; /* Teal-400: Text/Title accent */
+            --background-dark: var(--primary-navy); 
+            --background-card: #ffffff; /* White card background */
+            --text-light: #f1f5f9; /* Slate-100: Light text for header/debug */
+            --text-dark: #1f2937; /* Gray-800: Black text for welcome card */
             --green-arrival: #10b981; /* Emerald-500 for success */
-            --red-alert: #ef4444; /* Red-500 for fatal error */
-            --info-status: #3b82f6; /* Blue-500 for "No Arrival" and "Ongoing Stay" statuses */
-            --ongoing-stay-text: #475569; /* Slate-600 for card text */
+            --red-alert: #f87171; /* Red-400 for errors */
+            --info-status: #60a5fa; /* Blue-400 for info statuses */
+            --ongoing-stay-text: #475569; /* Slate-600 for subtle card text */
         }
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--background-light);
-            color: var(--text-dark);
+            background-color: var(--background-dark);
+            color: var(--text-light); /* Default body text is light */
             min-height: 100vh;
         }
         .card {
             background-color: var(--background-card);
-            border-left: 6px solid var(--secondary-orange); 
+            /* Initial border is white/light for subtlety */
+            border-left: 6px solid #e2e8f0; 
             border-radius: 12px;
-            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.12);
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 30px -8px rgba(0, 0, 0, 0.15);
+        
+        /* New Active State for Cycling Animation */
+        .card-active {
+            transform: scale(1.03) translateY(-8px);
+            border-left: 6px solid var(--primary-gold);
+            box-shadow: 0 16px 30px -8px rgba(253, 224, 71, 0.4); /* Glowing effect */
         }
+
         .villa-title {
-            color: var(--primary-teal);
+            color: var(--primary-navy); /* Dark title on white card */
             font-weight: 800;
             font-size: 1.6rem; 
             margin-bottom: 0.5rem;
         }
-        /* Arrival information styling */
-        .arrival-info {
-            padding: 1rem 0;
-        }
-        .guest-name {
-            font-weight: 700;
-            font-size: 1.5rem; 
-            color: var(--green-arrival);
-            margin-bottom: 0.25rem;
-            display: flex;
-            align-items: center;
-        }
-        .check-in {
-            font-size: 1rem; 
-            color: var(--secondary-orange);
-            font-weight: 600;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-        }
+        
+        /* Text on Card */
+        .arrival-info { padding: 1rem 0; }
+        .guest-name { color: var(--green-arrival); }
+        .date { color: #64748b; } /* Slate-500 on white card */
+        .check-in { color: var(--primary-gold); font-weight: 700; }
 
         /* Status and indicators */
-        .loading-icon {
-            animation: spin 1.5s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        .loading-icon { animation: spin 1.5s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .no-arrival {
-            color: var(--ongoing-stay-text); /* Muted color for non-urgent status */
+            color: var(--ongoing-stay-text);
             font-style: italic;
             font-weight: 500;
             display: flex;
             align-items: center;
         }
+        .no-arrival i {
+            color: var(--info-status); /* Blue icon for clarity */
+        }
 
-        /* Debug Status Styles */
-        .status-ok {
-            color: var(--green-arrival);
-            font-weight: 700;
+        /* Header and Footer */
+        header { 
+            background-color: var(--primary-navy); 
+            border-bottom: 4px solid var(--primary-gold);
+            color: var(--text-light);
         }
-        .status-no-arrival {
-            /* Status for No Booking or Ongoing Stay */
-            color: var(--info-status); 
-            font-weight: 700;
+        header h1 {
+            color: var(--secondary-teal); 
         }
-        .status-error {
-            color: var(--red-alert);
-            font-weight: 700;
+        #current-date {
+            color: var(--primary-gold); 
         }
         .debug-bar {
-            border-top: 2px solid #e5e7eb;
-            font-size: 0.8rem;
-            color: #6b7280;
+            background-color: var(--background-dark);
+            border-top: 2px solid #334155; /* Slate-700 */
+            color: #94a3b8; /* Slate-400 */
+        }
+
+        /* Welcome Card Styling */
+        .welcome-card {
+            background-color: var(--background-card);
+            color: var(--text-dark); /* Black text on white card */
+        }
+        .welcome-card a {
+            color: var(--primary-navy); 
+            font-weight: 700;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -106,53 +107,53 @@
 
     <div class="max-w-7xl mx-auto">
         
-        <div class="bg-primary-teal text-white p-4 md:p-6 rounded-xl shadow-xl mb-8 text-center">
-            <p class="text-lg md:text-xl font-medium">
-                We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
-                <a href="tel:0273563551" class="font-bold tracking-wider underline hover:text-secondary-orange transition duration-300">027 356 3551</a>. 🏡
-            </p>
-        </div>
-
-        <header class="mb-10 text-center bg-white p-6 rounded-xl shadow-lg border-b-4 border-secondary-orange">
-            <h1 class="text-4xl font-extrabold text-primary-teal tracking-tight">
+        <header class="mb-10 text-center p-6 rounded-xl shadow-lg">
+            <h1 class="text-4xl font-extrabold tracking-tight">
                 Patons Rock Beach Villas
             </h1>
-            <p class="text-xl font-light text-gray-500 mt-2">Today's Arrivals Summary (New Zealand Time)</p>
-            <p id="current-date" class="text-2xl font-bold text-secondary-orange mt-4"></p>
+            <p class="text-xl font-light mt-2">Today's Arrivals Summary (New Zealand Time)</p>
+            <p id="current-date" class="text-2xl font-bold mt-4"></p>
         </header>
 
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        <main id="villa-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             
-            <div class="card p-6">
+            <div id="villa1-card" class="card p-6">
                 <h2 class="villa-title">Villa 1: The Beach House</h2>
-                <ul id="villa1" class="space-y-4 text-gray-500 mt-3">
+                <ul id="villa1" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <div class="card p-6">
+            <div id="villa2-card" class="card p-6">
                 <h2 class="villa-title">Villa 2: The Cottage</h2>
-                <ul id="villa2" class="space-y-4 text-gray-500 mt-3">
+                <ul id="villa2" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
             
-            <div class="card p-6">
+            <div id="villa3-card" class="card p-6">
                 <h2 class="villa-title">Villa 3: The Loft</h2>
-                <ul id="villa3" class="space-y-4 text-gray-500 mt-3">
+                <ul id="villa3" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <div class="card p-6">
+            <div id="villa4-card" class="card p-6">
                 <h2 class="villa-title">Villa 4: The Retreat</h2>
-                <ul id="villa4" class="space-y-4 text-gray-500 mt-3">
+                <ul id="villa4" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
         </main>
 
-        <footer class="debug-bar mt-auto p-4 bg-white rounded-xl shadow-inner">
+        <div class="welcome-card p-4 md:p-6 rounded-xl shadow-xl mb-8 text-center">
+            <p class="text-lg md:text-xl font-medium">
+                We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
+                <a href="tel:0273563551" class="tracking-wider hover:text-secondary-teal transition duration-300">027 356 3551</a>. 🏡
+            </p>
+        </div>
+
+        <footer class="debug-bar mt-auto p-4 rounded-xl shadow-inner">
             <p id="debug">System initializing...</p>
         </footer>
     </div>
@@ -212,17 +213,12 @@
             // Full datetime: Parse as UTC, then convert to NZ time zone
             arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
             if (endLine) {
-                // If it's a DTSTART:DATE-TIME, DTEND should be too
                 endDate = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' }).setZone(targetTimeZone);
             }
         } else {
-            // Date-only (YYYYMMDD): Treat this calendar date as the NZ arrival/departure day
+            // Date-only (YYYYMMDD)
             arrivalDate = parseDate(startRaw).set({ hour: 14, minute: 0 }); // 2 PM check-in
             if (endLine) {
-                // The ICS end date for a DATE-ONLY event is EXCLUSIVE (the day after check-out).
-                // We parse it as a date and set the time to 10:00 AM (check-out time)
-                // However, for ongoing stay logic, we need the start of the DEPARTURE day.
-                // It is safest to keep the full day exclusive logic: END DATE > TODAY
                 endDate = parseDate(endLine[1].trim()); 
             }
         }
@@ -237,14 +233,11 @@
     }
 
     /**
-     * NEW LOGIC: Checks if the booking spans today.
-     * DTSTART is the arrival date. DTEND is the departure date (often exclusive, meaning it's the day AFTER check-out).
-     * We use startOf('day') for comparison to simplify date-only vs datetime issues.
+     * Checks if the booking spans today.
      */
     function isOngoingStay(startDate, endDate, today) {
         const todayStart = today.startOf('day');
-        // Check if today is after the arrival date (or is the arrival date) AND before the departure date.
-        // Grok's logic (startDate <= today && endDate > today) is correct and robust for ICS date logic.
+        // Check if today is after the arrival date (or is the arrival date) AND before the departure date (which is exclusive).
         return startDate.startOf('day') <= todayStart && endDate.startOf('day') > todayStart;
     }
 
@@ -271,7 +264,7 @@
                 const event = parseICSEvent(block);
                 if (!event) continue;
 
-                // 1. Check for today's ARRIVAL
+                // 1. Check for today's ARRIVAL (takes priority)
                 if (isSameDayNZ(event.arrivalDate, todayNZ)) {
                     return { status: 'arrival', html: `<span class="arrival-info">
                         <span class="guest-name"><i class="fas fa-user-circle mr-2"></i> ${event.summary}</span>
@@ -280,13 +273,11 @@
                     </span>` };
                 }
 
-                // 2. Check for ONGOING STAY
+                // 2. Check for ONGOING STAY (If no arrival is found, this is the status)
                 if (event.endDate && isOngoingStay(event.arrivalDate, event.endDate, todayNZ)) {
-                    // We only need the *fact* that an ongoing stay exists. 
-                    // We don't return immediately because a new arrival takes priority.
                     ongoingStayFound = { 
                         status: 'ongoing', 
-                        html: `<li class='no-arrival'><i class='fas fa-house-user mr-2 text-info-status'></i> Room Occupied (Ongoing Stay)</li>` 
+                        html: `<li class='no-arrival'><i class='fas fa-house-user mr-2'></i> Room Occupied (Ongoing Stay)</li>` 
                     };
                 }
             }
@@ -297,7 +288,7 @@
             }
 
             // 3. No arrival and no ongoing stay found in the feed.
-            return { status: 'no-booking', html: "<li class='no-arrival'><i class='fas fa-calendar-times mr-2 text-info-status'></i> No new check-ins scheduled for today.</li>" };
+            return { status: 'no-booking', html: "<li class='no-arrival'><i class='fas fa-calendar-times mr-2'></i> No new check-ins scheduled for today.</li>" };
             
         } catch (e) {
             return { status: 'error', error: e.message };
@@ -327,14 +318,16 @@
                 list.innerHTML = `<li>${result.html}</li>`;
                 return `<span class="status-ok">✔ ARRIVAL (${attempt.name})</span>`;
             } else if (result.status === 'ongoing') {
-                // If we find an ongoing stay, we log it, but keep checking for a primary feed success
-                finalResult = {
-                    status: 'ongoing',
-                    html: result.html,
-                    debug: `<span class="status-no-arrival">✔ ONGOING STAY (${attempt.name})</span>`
-                };
+                // Ongoing is the best non-arrival status, keep it unless an error comes up later
+                if (finalResult.status === 'error' || finalResult.status === 'no-booking') {
+                     finalResult = {
+                        status: 'ongoing',
+                        html: result.html,
+                        debug: `<span class="status-no-arrival">✔ ONGOING STAY (${attempt.name})</span>`
+                    };
+                }
             } else if (result.status === 'no-booking') {
-                 // If we find a clean 'no booking', we log it as the fallback, prioritizing it over errors
+                 // No Booking is the second best non-arrival status, only keep it if no ongoing stay was found
                 if (finalResult.status === 'error') {
                      finalResult = {
                         status: 'no-booking',
@@ -344,7 +337,7 @@
                 }
             } else if (result.status === 'error') {
                 console.warn(`${id} - ${attempt.name} failed:`, result.error);
-                // We keep the finalResult as error unless a better status (ongoing/no-booking) is found later
+                // Keep the error status if nothing better has been found.
             }
         }
         
@@ -368,6 +361,30 @@
             `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
     }
 
+    // --- Cycling Animation Logic ---
+    const cardIds = ['villa1-card', 'villa2-card', 'villa3-card', 'villa4-card'];
+    let currentCardIndex = 0;
+    const cycleInterval = 2000; // 2 seconds per card
+
+    function startCardCycle() {
+        // Function to run every `cycleInterval`
+        setInterval(() => {
+            // 1. Remove active class from the current card
+            const prevCard = document.getElementById(cardIds[currentCardIndex]);
+            if (prevCard) {
+                prevCard.classList.remove('card-active');
+            }
+
+            // 2. Move to the next index
+            currentCardIndex = (currentCardIndex + 1) % cardIds.length;
+
+            // 3. Add active class to the new current card
+            const nextCard = document.getElementById(cardIds[currentCardIndex]);
+            if (nextCard) {
+                nextCard.classList.add('card-active');
+            }
+        }, cycleInterval);
+    }
     // -----------------------------------------------------------------
 
     // --- Initialization and Scheduling ---
@@ -375,8 +392,15 @@
     window.onload = function () {
         document.getElementById("current-date").textContent =
             DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
+        
+        // Start the background data refresh
         refreshAll();
-        setInterval(refreshAll, 10 * 60 * 1000); // 10 minutes
+
+        // Start the visual cycling animation immediately after the page loads
+        startCardCycle();
+
+        // Schedule automatic data refresh every 10 minutes (10 * 60 * 1000 milliseconds)
+        setInterval(refreshAll, 10 * 60 * 1000); 
     }
 </script>
 </body>
