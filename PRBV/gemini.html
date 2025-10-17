@@ -1,0 +1,124 @@
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/dist/luxon.min.js"></script>
+<script>
+const { DateTime, Settings } = luxon;
+Settings.defaultLocale = "en-NZ"; // Set default locale for output
+
+const villas = {
+  villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
+  villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
+  villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
+  villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8"
+};
+
+const proxy = "https://api.allorigins.win/raw?url=";
+const targetTimeZone = "Pacific/Auckland";
+
+/**
+ * Parses an ICS event block, determining the arrival date in the target time zone.
+ * Assumes the beds24 feed provides DTSTART in UTC for date-only values (YYYYMMDD).
+ * @param {string} block - The VEVENT block string.
+ * @returns {{summary: string, arrivalDate: luxon.DateTime} | null} Event data.
+ */
+function parseICSEvent(block) {
+  const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/); // Capture date-only or datetime
+  const summaryLine = block.match(/SUMMARY:(.*)/);
+
+  if (!startLine || !summaryLine) return null;
+
+  let startRaw = startLine[1].trim();
+  let summary = summaryLine[1].trim();
+  let arrivalDate;
+
+  // Check if the DTSTART includes a time (ends with 'Z' for UTC or has a 'T')
+  const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
+
+  if (isDateTime) {
+    // If it's a full datetime (usually ends in Z for UTC), parse it as UTC
+    // DTSTART:20251017T140000Z
+    arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+  } else {
+    // If it's a date-only format (YYYYMMDD), beds24 uses the START DATE as the arrival day.
+    // The time will be *locally* at the beginning of the day (00:00:00) in UTC.
+    // We want the date component (YYYY-MM-DD) to be the arrival date in NZ.
+    // The arrival check-in time is fixed at 2 pm NZ time.
+    // DTSTART:20251018 (arrival date is Oct 18 in NZ)
+    const year = startRaw.substr(0, 4);
+    const month = startRaw.substr(4, 2);
+    const day = startRaw.substr(6, 2);
+    
+    // Create the date for 2 pm on the day specified, in the target time zone
+    arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
+  }
+  
+  return { summary, arrivalDate };
+}
+
+/**
+ * Checks if a Luxon DateTime object is the same day as 'today' in the target time zone.
+ * @param {luxon.DateTime} dt - The event's arrival date/time.
+ * @param {luxon.DateTime} today - A DateTime object representing today (at midnight) in the target zone.
+ * @returns {boolean} True if the dates are the same.
+ */
+function isSameDayNZ(dt, today) {
+  return dt.hasSame(today, 'day');
+}
+
+/**
+ * Formats a Luxon DateTime object to a readable NZ string.
+ * @param {luxon.DateTime} dt - The date/time to format.
+ * @returns {string} Formatted date string.
+ */
+function formatNZDate(dt) {
+  return dt.toFormat("ccc, dd MMM yyyy");
+}
+
+async function loadVilla(id, url) {
+  const list = document.getElementById(id);
+  list.innerHTML = "<li>Loading…</li>";
+  try {
+    const res = await fetch(proxy + encodeURIComponent(url));
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ics = await res.text();
+    const blocks = ics.split("BEGIN:VEVENT").slice(1);
+    
+    // Get 'today' at midnight in the target time zone for comparison
+    const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+    let arrival = null;
+
+    for (const block of blocks) {
+      const event = parseICSEvent(block);
+      if (!event) continue;
+      
+      if (isSameDayNZ(event.arrivalDate, todayNZ)) {
+        // Display the arrival information
+        arrival = `<span class="arrival">${formatNZDate(event.arrivalDate)} — ${event.summary} — check-in 2 pm</span>`;
+        break; // Found today's arrival
+      }
+    }
+
+    list.innerHTML = arrival ? `<li>${arrival}</li>` : "<li>No arrivals today</li>";
+    return "✔ OK";
+  } catch (err) {
+    list.innerHTML = "<li>Feed unavailable</li>";
+    return `✖ ${err.message}`;
+  }
+}
+
+async function refreshAll() {
+  const statuses = [];
+  for (const [id, url] of Object.entries(villas)) {
+    const st = await loadVilla(id, url);
+    statuses.push(`${id}: ${st}`);
+  }
+  
+  const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
+  document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
+}
+
+// Show current NZ date at top
+document.getElementById("current-date").textContent =
+  DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
+
+refreshAll();
+setInterval(refreshAll, 10 * 60 * 1000); // Refresh every 10 minutes
+</script>
