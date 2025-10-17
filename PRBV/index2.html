@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Patons Rock Villas – Today & Tomorrow</title>
+<title>Patons Rock Villas – Today’s Arrivals</title>
 <style>
 body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; text-align:center; }
 .welcome-banner {
@@ -25,7 +25,6 @@ body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; mar
 ul {list-style:none;padding:0;margin:0;}
 li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
 .arrival { color:#00bfff; font-weight:bold; }
-.departure { color:#ff4d4d; font-weight:normal; }
 .debug {
   background:#111; border-top:1px solid #333; margin-top:30px;
   padding:10px; font-size:0.9em; color:#aaa;
@@ -39,12 +38,12 @@ li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
   <div id="current-date"></div>
 </div>
 
-<h2>Today & Tomorrow</h2>
+<h2>Today’s Arrivals</h2>
 <div class="calendar-grid" id="villaGrid">
-  <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1-today"></ul><ul id="villa1-tomorrow"></ul></div>
-  <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2-today"></ul><ul id="villa2-tomorrow"></ul></div>
-  <div class="calendar-container"><h2>Villa 3</h2><ul id="villa3-today"></ul><ul id="villa3-tomorrow"></ul></div>
-  <div class="calendar-container"><h2>Villa 4</h2><ul id="villa4-today"></ul><ul id="villa4-tomorrow"></ul></div>
+  <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
+  <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
+  <div class="calendar-container"><h2>Villa 3</h2><ul id="villa3"></ul></div>
+  <div class="calendar-container"><h2>Villa 4</h2><ul id="villa4"></ul></div>
 </div>
 
 <div class="debug" id="debug">Loading...</div>
@@ -59,68 +58,57 @@ const villas = {
 
 const proxy = "https://api.allorigins.win/raw?url=";
 
+// Convert ICS date string to JS Date
 function parseICSEvent(block){
-  let startLine = block.match(/DTSTART.*:(.*)/);
-  let endLine = block.match(/DTEND.*:(.*)/);
-  if(!startLine || !endLine) return null;
+  const startLine = block.match(/DTSTART.*:(.*)/);
+  if(!startLine) return null;
+  const summaryLine = block.match(/SUMMARY:(.*)/);
+  if(!summaryLine) return null;
 
-  let summaryLine = block.match(/SUMMARY:(.*)/);
   let startRaw = startLine[1].trim();
-  let endRaw = endLine[1].trim();
-  let summary = summaryLine ? summaryLine[1].trim() : "Booking";
+  let summary = summaryLine[1].trim();
 
-  let start, end;
+  let start;
   if(/^\d{8}$/.test(startRaw)){
     start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
-    end = new Date(`${endRaw.substr(0,4)}-${endRaw.substr(4,2)}-${endRaw.substr(6,2)}T10:00:00`);
   } else {
     start = new Date(startRaw);
-    end = new Date(endRaw);
   }
 
   start = new Date(start.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-  end = new Date(end.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
 
-  return {summary, start, end};
+  return {summary, start};
 }
 
+// Check if two dates are same NZ day
 function isSameDayNZ(d1,d2){
   const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
   return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
 }
 
-function formatNZDate(d){ return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"}); }
-
 async function loadVilla(id,url){
-  const todayList=[], tomorrowList=[];
-  const listToday=document.getElementById(`${id}-today`);
-  const listTomorrow=document.getElementById(`${id}-tomorrow`);
-  listToday.innerHTML="<li>Loading…</li>"; listTomorrow.innerHTML="<li>Loading…</li>";
+  const list=document.getElementById(id);
+  list.innerHTML="<li>Loading…</li>";
   try{
-    const res=await fetch(proxy+encodeURIComponent(url));
+    const res = await fetch(proxy + encodeURIComponent(url));
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const ics=await res.text();
-    const blocks=ics.split("BEGIN:VEVENT").slice(1);
-    listToday.innerHTML=""; listTomorrow.innerHTML="";
-    const today=new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-    const tomorrow=new Date(today.getTime()+24*60*60*1000);
+    const ics = await res.text();
+    const blocks = ics.split("BEGIN:VEVENT").slice(1);
+    const today = new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
+    const arrivals = [];
 
     blocks.forEach(block=>{
       const event=parseICSEvent(block);
       if(!event) return;
-      if(isSameDayNZ(event.start,today)) todayList.push(`<span class="arrival">Arrival 2 pm — ${event.summary}</span>`);
-      else if(isSameDayNZ(event.end,today)) todayList.push(`<span class="departure">Departure 10 am — ${event.summary}</span>`);
-      else if(isSameDayNZ(event.start,tomorrow)) tomorrowList.push(`<span class="arrival">Arrival 2 pm — ${event.summary}</span>`);
-      else if(isSameDayNZ(event.end,tomorrow)) tomorrowList.push(`<span class="departure">Departure 10 am — ${event.summary}</span>`);
+      if(isSameDayNZ(event.start,today)){
+        arrivals.push(`<span class="arrival">${event.summary} — check-in 2 pm</span>`);
+      }
     });
 
-    listToday.innerHTML = todayList.length ? `<li><strong>Today – ${formatNZDate(today)}</strong></li>` + todayList.map(b=>`<li>${b}</li>`).join("") : "<li>No arrivals or departures today</li>";
-    listTomorrow.innerHTML = tomorrowList.length ? `<li><strong>Tomorrow – ${formatNZDate(tomorrow)}</strong></li>` + tomorrowList.map(b=>`<li>${b}</li>`).join("") : "<li>No arrivals or departures tomorrow</li>";
-
+    list.innerHTML = arrivals.length ? arrivals.map(b=>`<li>${b}</li>`).join("") : "<li>No arrivals today</li>";
     return "✔ OK";
   }catch(err){
-    listToday.innerHTML="<li>Feed unavailable</li>";
-    listTomorrow.innerHTML="<li>Feed unavailable</li>";
+    list.innerHTML="<li>Feed unavailable</li>";
     return `✖ ${err.message}`;
   }
 }
@@ -128,12 +116,11 @@ async function loadVilla(id,url){
 async function refreshAll(){
   const statuses=[];
   for(const [id,url] of Object.entries(villas)){
-    const st=await loadVilla(id,url);
+    const st = await loadVilla(id,url);
     statuses.push(`${id}: ${st}`);
   }
-  const now=new Date().toLocaleTimeString("en-NZ");
-  document.getElementById("debug").innerHTML=
-    `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
+  const now = new Date().toLocaleTimeString("en-NZ");
+  document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
 }
 
 document.getElementById("current-date").textContent =
