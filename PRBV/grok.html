@@ -10,23 +10,23 @@
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
     <!-- Load Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Google Fonts: Playfair Display for headings, Inter for body -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap">
+    <!-- Google Fonts: Montserrat for headings, Open Sans for body -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap">
 
     <style>
         :root {
-            --primary-teal: #2dd4bf; /* Coastal teal */
-            --accent-coral: #f472b6; /* Soft coral for highlights */
-            --background-sand: #f5f5f4; /* Warm sand background */
-            --card-bg: #ffffff; /* Crisp white cards */
-            --text-dark: #1f2937; /* Deep charcoal */
-            --success-green: #34d399; /* Emerald for arrivals */
-            --error-red: #f87171; /* Coral red for no arrivals */
+            --primary-aqua: #2b6cb0; /* Deep ocean aqua */
+            --accent-sunset: #ed8936; /* Warm sunset orange */
+            --background-shell: #f7fafc; /* Light seashell background */
+            --card-bg: #ffffff; /* Clean white cards */
+            --text-dark: #1a202c; /* Rich navy text */
+            --success-green: #38a169; /* Vibrant green for arrivals */
+            --error-red: #e53e3e; /* Bright red for no arrivals */
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--background-sand) 0%, #e2e8f0 100%);
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--background-shell) 0%, #e6f0fa 100%);
             color: var(--text-dark);
             min-height: 100vh;
             display: flex;
@@ -36,60 +36,53 @@
 
         .card {
             background: var(--card-bg);
-            border-radius: 1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(45, 212, 191, 0.1);
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 1.5rem;
+            max-height: 200px; /* Compact card height */
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
         }
 
         .villa-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            color: var(--primary-teal);
-            position: relative;
-            padding-bottom: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.25rem; /* Large, bold h1 */
+            font-weight: 700;
+            color: var(--primary-aqua);
+            margin-bottom: 0.5rem;
         }
 
-        .villa-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 3rem;
-            height: 2px;
-            background: var(--accent-coral);
-            transition: width 0.3s ease;
-        }
-
-        .card:hover .villa-title::after {
-            width: 5rem;
+        .villa-subtitle {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1rem;
+            color: #4a5568;
+            margin-bottom: 1rem;
         }
 
         .arrival-info {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.25rem;
         }
 
         .guest-name {
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: var(--success-green);
         }
 
         .date, .check-in {
             font-size: 0.875rem;
-            color: #4b5563;
+            color: #4a5568;
         }
 
         .check-in i {
             margin-right: 0.5rem;
-            color: var(--primary-teal);
+            color: var(--accent-sunset);
         }
 
         .loading-icon {
@@ -104,6 +97,7 @@
             color: var(--error-red);
             font-style: italic;
             font-weight: 400;
+            font-size: 0.875rem;
         }
 
         .status-ok {
@@ -120,37 +114,38 @@
             background: var(--card-bg);
             border-top: 1px solid rgba(0, 0, 0, 0.05);
             font-size: 0.75rem;
-            color: #6b7280;
+            color: #718096;
             border-radius: 0.5rem;
+            padding: 0.75rem;
         }
 
         .welcome-message {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Open Sans', sans-serif;
             color: var(--text-dark);
             text-align: center;
             max-width: 600px;
             margin: 1rem auto;
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .welcome-message a {
-            color: var(--primary-teal);
+            color: var(--primary-aqua);
             text-decoration: underline;
             transition: color 0.2s ease;
         }
 
         .welcome-message a:hover {
-            color: var(--accent-coral);
+            color: var(--accent-sunset);
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-6">
     <div class="max-w-7xl mx-auto flex flex-col min-h-screen">
         <!-- Header -->
-        <header class="mb-8 text-center bg-white p-6 rounded-xl shadow-lg">
-            <h1 class="text-4xl font-bold font-['Playfair_Display'] text-gray-900 tracking-tight">Patons Rock Beach Villas</h1>
-            <p id="current-date" class="text-lg font-medium text-primary-teal mt-2"></p>
+        <header class="mb-6 text-center bg-white p-5 rounded-xl shadow-md">
+            <h1 class="text-3xl font-bold font-['Montserrat'] text-gray-900 tracking-tight">Patons Rock Beach Villas</h1>
+            <p id="current-date" class="text-lg font-medium text-primary-aqua mt-1"></p>
             <p class="welcome-message">
                 We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
                 <a href="tel:0273563551">027 356 3551</a>.
@@ -158,39 +153,43 @@
         </header>
 
         <!-- Villa Cards Grid -->
-        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 flex-1">
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 flex-1">
             <!-- Villa 1 -->
-            <div class="card p-6">
-                <h2 class="villa-title">The Beach House</h2>
-                <ul id="villa1" class="space-y-4">
+            <div class="card">
+                <h1 class="villa-title">Villa 1</h1>
+                <p class="villa-subtitle">The Beach House</p>
+                <ul id="villa1" class="space-y-2">
                     <li class="loading"><i class="fas fa-spinner loading-icon"></i> Initializing...</li>
                 </ul>
             </div>
             <!-- Villa 2 -->
-            <div class="card p-6">
-                <h2 class="villa-title">The Cottage</h2>
-                <ul id="villa2" class="space-y-4">
+            <div class="card">
+                <h1 class="villa-title">Villa 2</h1>
+                <p class="villa-subtitle">The Cottage</p>
+                <ul id="villa2" class="space-y-2">
                     <li class="loading"><i class="fas fa-spinner loading-icon"></i> Initializing...</li>
                 </ul>
             </div>
             <!-- Villa 3 -->
-            <div class="card p-6">
-                <h2 class="villa-title">The Loft</h2>
-                <ul id="villa3" class="space-y-4">
+            <div class="card">
+                <h1 class="villa-title">Villa 3</h1>
+                <p class="villa-subtitle">The Loft</p>
+                <ul id="villa3" class="space-y-2">
                     <li class="loading"><i class="fas fa-spinner loading-icon"></i> Initializing...</li>
                 </ul>
             </div>
             <!-- Villa 4 -->
-            <div class="card p-6">
-                <h2 class="villa-title">The Retreat</h2>
-                <ul id="villa4" class="space-y-4">
+            <div class="card">
+                <h1 class="villa-title">Villa 4</h1>
+                <p class="villa-subtitle">The Retreat</p>
+                <ul id="villa4" class="space-y-2">
                     <li class="loading"><i class="fas fa-spinner loading-icon"></i> Initializing...</li>
                 </ul>
             </div>
         </main>
 
         <!-- Debug/Status Bar -->
-        <footer class="debug-bar mt-auto p-3">
+        <footer class="debug-bar mt-auto">
             <p id="debug">Loading status...</p>
         </footer>
     </div>
@@ -222,52 +221,73 @@
 
         function parseICSEvent(block) {
             const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
+            const endLine = block.match(/DTEND(?:;VALUE=DATE)?:(.*)/);
             const summaryLine = block.match(/SUMMARY:(.*)/);
             if (!startLine || !summaryLine) return null;
 
             const startRaw = startLine[1].trim();
             const summary = summaryLine[1].trim();
-            let arrivalDate;
+            let arrivalDate, endDate;
 
             const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
             if (isDateTime) {
                 arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+                if (endLine) {
+                    endDate = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' }).setZone(targetTimeZone);
+                }
             } else {
                 const year = parseInt(startRaw.substr(0, 4), 10);
                 const month = parseInt(startRaw.substr(4, 2), 10);
                 const day = parseInt(startRaw.substr(6, 2), 10);
                 arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
+                if (endLine) {
+                    const endRaw = endLine[1].trim();
+                    const endYear = parseInt(endRaw.substr(0, 4), 10);
+                    const endMonth = parseInt(endRaw.substr(4, 2), 10);
+                    const endDay = parseInt(endRaw.substr(6, 2), 10);
+                    endDate = DateTime.fromObject({ year: endYear, month: endMonth, day: endDay }, { zone: targetTimeZone });
+                }
             }
-            return { summary, arrivalDate };
+            return { summary, arrivalDate, endDate };
         }
 
         function isSameDayNZ(dt, today) {
             return dt.hasSame(today, 'day');
         }
 
+        function isOngoingStay(startDate, endDate, today) {
+            return startDate <= today && endDate > today;
+        }
+
         function formatNZDate(dt) {
             return dt.toFormat("ccc, dd MMM yyyy");
         }
 
-        async function tryFeed(url) {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const ics = await res.text();
-            const blocks = ics.split("BEGIN:VEVENT").slice(1);
-            const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+        async function tryFeed(url, todayNZ) {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const ics = await res.text();
+                const blocks = ics.split("BEGIN:VEVENT").slice(1);
 
-            for (const block of blocks) {
-                const event = parseICSEvent(block);
-                if (!event) continue;
-                if (isSameDayNZ(event.arrivalDate, todayNZ)) {
-                    return `<span class="arrival-info">
-                        <span class="guest-name">${event.summary}</span>
-                        <span class="date">${formatNZDate(event.arrivalDate)}</span>
-                        <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
-                    </span>`;
+                for (const block of blocks) {
+                    const event = parseICSEvent(block);
+                    if (!event) continue;
+                    if (isSameDayNZ(event.arrivalDate, todayNZ)) {
+                        return { status: 'arrival', html: `<span class="arrival-info">
+                            <span class="guest-name">${event.summary}</span>
+                            <span class="date">${formatNZDate(event.arrivalDate)}</span>
+                            <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
+                        </span>` };
+                    }
+                    if (event.endDate && isOngoingStay(event.arrivalDate, event.endDate, todayNZ)) {
+                        return { status: 'ongoing', html: "<li class='no-arrival'><i class='fas fa-calendar-times'></i> Room Occupied (Ongoing Stay)</li>" };
+                    }
                 }
+                return { status: 'no-booking', html: "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No Arrivals Today</li>" };
+            } catch (e) {
+                return { status: 'error', error: e.message };
             }
-            return null;
         }
 
         async function loadVilla(id, feeds) {
@@ -280,22 +300,27 @@
                 { name: 'Google (Proxy)', url: proxy + encodeURIComponent(feeds.google) }
             ];
 
-            let statusMessage = `<span class="status-error">✖ Failed all feeds</span>`;
+            const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+            let statusMessage = `<span class="status-error">✖ Failed: Data Error</span>`;
 
             for (const attempt of attempts) {
-                try {
-                    const arrival = await tryFeed(attempt.url);
-                    if (arrival) {
-                        list.innerHTML = `<li>${arrival}</li>`;
-                        statusMessage = `<span class="status-ok">✔ OK (${attempt.name})</span>`;
-                        return statusMessage;
-                    }
-                } catch (e) {
-                    console.warn(`${id} - ${attempt.name} failed:`, e.message);
+                const result = await tryFeed(attempt.url, todayNZ);
+                if (result.status === 'arrival') {
+                    list.innerHTML = `<li>${result.html}</li>`;
+                    statusMessage = `<span class="status-ok">✔ OK (${attempt.name})</span>`;
+                    return statusMessage;
+                } else if (result.status === 'ongoing') {
+                    list.innerHTML = result.html;
+                    statusMessage = `<span class="status-error">✖ No New Arrival: Ongoing Stay (${attempt.name})</span>`;
+                    return statusMessage;
+                } else if (result.status === 'no-booking') {
+                    list.innerHTML = result.html;
+                    statusMessage = `<span class="status-error">✖ No New Arrival: No Booking (${attempt.name})</span>`;
+                    return statusMessage;
                 }
             }
 
-            list.innerHTML = "<li class='no-arrival'><i class='fas fa-calendar-times'></i> Room Occupied or No arrivals today</li>";
+            list.innerHTML = "<li class='no-arrival'><i class='fas fa-calendar-times'></i> Room Occupied or No Arrivals Today</li>";
             return statusMessage;
         }
 
@@ -315,7 +340,7 @@
             document.getElementById("current-date").textContent =
                 DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
             refreshAll();
-            setInterval(refAll, 10 * 60 * 1000);
+            setInterval(refreshAll, 10 * 60 * 1000);
         }
     </script>
 </body>
