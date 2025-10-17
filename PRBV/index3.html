@@ -44,7 +44,7 @@
     <div id="current-date"></div>
   </div>
 
-  <h2>Today's Arrivals & Departures (17 Oct 2025)</h2>
+  <h2 id="period-header">Arrivals & Departures</h2>
   <div class="calendar-grid" id="villaGrid">
     <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
     <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
@@ -56,14 +56,29 @@
 
 <script>
 const villas = {
-  villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483",
-  villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484",
-  villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485",
-  villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486"
+  villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
+  villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
+  villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
+  villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8"
 };
 
 // Public proxy (CORS bypass)
 const proxy = "https://api.allorigins.win/raw?url=";
+
+function getNZDateString(offsetDays = 0) {
+  const now = new Date();
+  const date = new Date(now.getTime() + offsetDays * 86400000);
+  return date.toLocaleDateString("en-CA", {timeZone: "Pacific/Auckland"});
+}
+
+function formatDateOnly(dateStr) {
+  if (!dateStr) return "—";
+  const date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString("en-NZ", {
+    timeZone: "Pacific/Auckland",
+    day: "numeric", month: "short"
+  });
+}
 
 function cleanICSDate(dt) {
   // Convert e.g. 20251017T140000Z -> 2025-10-17T14:00:00Z
@@ -79,15 +94,6 @@ function getDatePart(iso) {
   return iso.split('T')[0];
 }
 
-function formatNZDate(iso) {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  return date.toLocaleDateString("en-NZ", {
-    timeZone:"Pacific/Auckland",
-    day:"numeric", month:"short"
-  });
-}
-
 function formatNZTime(iso) {
   if (!iso) return "—";
   const date = new Date(iso);
@@ -101,9 +107,9 @@ function formatNZTime(iso) {
 function extractName(summary, desc) {
   // Try to extract name from SUMMARY or DESCRIPTION; fallback to "Guest"
   let name = summary.trim() || "Guest";
-  if (name === "Booking") {
+  if (name === "Booking" || name === "") {
     // Assume DESCRIPTION has "Name: Guest Name" or similar; simple extract first words
-    name = (desc.match(/^(?:Name:\s*)?([A-Z][a-z]+ [A-Z][a-z]+)/) || [,"Guest"])[1];
+    name = (desc.match(/^(?:Name:\s*)?([A-Z][a-z]+ [A-Z][a-z]+)/i) || [,"Guest"])[1];
   }
   return name;
 }
@@ -118,13 +124,12 @@ async function loadVilla(id, url) {
 
     const blocks = ics.split("BEGIN:VEVENT").slice(1);
     if (blocks.length === 0) {
-      list.innerHTML = "<li>No arrivals or departures today</li>";
+      list.innerHTML = "<li>No upcoming bookings</li>";
       return "✔ No bookings";
     }
 
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD in UTC, but since NZ, adjust if needed
-    // For accuracy, use NZ date
-    const nzToday = new Date().toLocaleDateString("en-CA", {timeZone: "Pacific/Auckland"}); // YYYY-MM-DD
+    const nzToday = getNZDateString(0);
+    const nzTomorrow = getNZDateString(1);
 
     let hasEvents = false;
     list.innerHTML = "";
@@ -138,23 +143,25 @@ async function loadVilla(id, url) {
 
       const start = cleanICSDate(startRaw);
       const end = cleanICSDate(endRaw);
-      const startDate = getDatePart(start);
-      const endDate = getDatePart(end);
+      const startDateStr = getDatePart(start);
+      const endDateStr = getDatePart(end);
 
       const name = extractName(summary, desc);
 
-      if (startDate === nzToday) {
-        list.innerHTML += `<li class="arrivals"><strong>Arrival:</strong> ${name} at ${formatNZTime(start)}<br><small>${desc}</small></li>`;
+      if (startDateStr === nzToday || startDateStr === nzTomorrow) {
+        const dateLabel = formatDateOnly(startDateStr);
+        list.innerHTML += `<li class="arrivals"><strong>Arrival ${dateLabel}:</strong> ${name} at ${formatNZTime(start)}<br><small>${desc}</small></li>`;
         hasEvents = true;
       }
-      if (endDate === nzToday) {
-        list.innerHTML += `<li class="departures"><strong>Departure:</strong> ${name} at ${formatNZTime(end)}<br><small>${desc}</small></li>`;
+      if (endDateStr === nzToday || endDateStr === nzTomorrow) {
+        const dateLabel = formatDateOnly(endDateStr);
+        list.innerHTML += `<li class="departures"><strong>Departure ${dateLabel}:</strong> ${name} at ${formatNZTime(end)}<br><small>${desc}</small></li>`;
         hasEvents = true;
       }
     });
 
     if (!hasEvents) {
-      list.innerHTML = "<li>No arrivals or departures today</li>";
+      list.innerHTML = "<li>No arrivals or departures today or tomorrow</li>";
     }
     return "✔ OK";
   } catch (err) {
@@ -164,6 +171,11 @@ async function loadVilla(id, url) {
 }
 
 async function refreshAll() {
+  const nzToday = getNZDateString(0);
+  const nzTomorrow = getNZDateString(1);
+  document.getElementById("period-header").textContent = 
+    `Arrivals & Departures for ${formatDateOnly(nzToday)} & ${formatDateOnly(nzTomorrow)}`;
+
   const statuses = [];
   for (const [id, url] of Object.entries(villas)) {
     const st = await loadVilla(id, url);
