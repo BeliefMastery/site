@@ -34,25 +34,31 @@
 
         .card {
             background-color: var(--background-card);
-            border-left: 6px solid var(--secondary-orange);
+            border-left: 6px solid #e2e8f0; /* Subtle initial border */
             border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
             padding: 1.5rem;
             max-height: 200px; /* Compact height */
             width: 100%;
             max-width: 300px; /* Consistent width */
         }
 
+        .card-active {
+            transform: scale(1.03) translateY(-8px);
+            border-left: 6px solid var(--secondary-orange);
+            box-shadow: 0 16px 30px rgba(245, 158, 11, 0.4); /* Glowing amber effect */
+        }
+
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.15);
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
         }
 
         .villa-title {
             color: var(--primary-teal);
             font-weight: 800;
-            font-size: 2rem; /* Larger for clarity */
+            font-size: 2.5rem; /* Larger for prominence */
             margin-bottom: 0.25rem;
         }
 
@@ -175,13 +181,6 @@
 </head>
 <body class="p-4 md:p-8">
     <div class="max-w-7xl mx-auto flex flex-col min-h-screen">
-        <div class="welcome-card">
-            <p class="welcome-message">
-                We’re delighted to host you. Enjoy your stay at Patons Rock Beach Villas, and if you need assistance, please call 
-                <a href="tel:0273563551">027 356 3551</a>. 🏖️
-            </p>
-        </div>
-
         <header class="mb-8 text-center bg-white p-6 rounded-xl shadow-lg border-b-4 border-secondary-orange">
             <h1 class="text-5xl font-extrabold text-primary-teal tracking-tight">
                 Patons Rock Beach Villas
@@ -191,32 +190,32 @@
         </header>
 
         <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 flex-1 justify-items-center">
-            <div class="card">
-                <h2 class="villa-title">Villa 1</h2>
+            <div id="villa1-card" class="card">
+                <h1 class="villa-title">Villa 1</h1>
                 <p class="villa-subtitle">The Beach House</p>
                 <ul id="villa1" class="space-y-2">
                     <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <div class="card">
-                <h2 class="villa-title">Villa 2</h2>
+            <div id="villa2-card" class="card">
+                <h1 class="villa-title">Villa 2</h1>
                 <p class="villa-subtitle">The Cottage</p>
                 <ul id="villa2" class="space-y-2">
                     <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
                 </ul>
             </div>
             
-            <div class="card">
-                <h2 class="villa-title">Villa 3</h2>
+            <div id="villa3-card" class="card">
+                <h1 class="villa-title">Villa 3</h1>
                 <p class="villa-subtitle">The Loft</p>
                 <ul id="villa3" class="space-y-2">
                     <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <div class="card">
-                <h2 class="villa-title">Villa 4</h2>
+            <div id="villa4-card" class="card">
+                <h1 class="villa-title">Villa 4</h1>
                 <p class="villa-subtitle">The Retreat</p>
                 <ul id="villa4" class="space-y-2">
                     <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
@@ -224,7 +223,14 @@
             </div>
         </main>
 
-        <footer class="debug-bar mt-auto">
+        <div class="welcome-card">
+            <p class="welcome-message">
+                We’re delighted to host you. Enjoy your stay at Patons Rock Beach Villas, and if you need assistance, please call 
+                <a href="tel:0273563551">027 356 3551</a>. 🏖️
+            </p>
+        </div>
+
+        <footer class="debug-bar mt-4">
             <p id="debug">System initializing...</p>
         </footer>
     </div>
@@ -394,10 +400,31 @@
                 `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
         }
 
+        const cardIds = ['villa1-card', 'villa2-card', 'villa3-card', 'villa4-card'];
+        let currentCardIndex = 0;
+        const cycleInterval = 2000; // 2 seconds per card
+
+        function startCardCycle() {
+            setInterval(() => {
+                const prevCard = document.getElementById(cardIds[currentCardIndex]);
+                if (prevCard) {
+                    prevCard.classList.remove('card-active');
+                }
+
+                currentCardIndex = (currentCardIndex + 1) % cardIds.length;
+
+                const nextCard = document.getElementById(cardIds[currentCardIndex]);
+                if (nextCard) {
+                    nextCard.classList.add('card-active');
+                }
+            }, cycleInterval);
+        }
+
         window.onload = function () {
             document.getElementById("current-date").textContent =
                 DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
             refreshAll();
+            startCardCycle();
             setInterval(refreshAll, 10 * 60 * 1000);
         }
     </script>
