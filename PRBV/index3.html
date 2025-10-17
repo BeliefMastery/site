@@ -152,34 +152,43 @@ li {
     width: 100%;
     text-align: center;
 }
+/* Enhanced style for the arrival box */
 .arrival-info {
     color: #48e4d2;
     font-weight: 600;
     font-size: 1.25em;
     line-height: 1.5;
     display: block;
+    background: rgba(72, 228, 210, 0.1); /* Subtle background highlight */
+    border-radius: 10px;
+    padding: 15px 10px;
+    border: 1px solid #48e4d2;
 }
 .arrival-info .guest-name {
-    font-size: 1.4em;
+    font-size: 1.5em; /* Slightly larger name */
     color: #ffffff;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-weight: 700;
 }
 .arrival-info .date {
     color: #ffc300;
     font-weight: 500;
     margin-bottom: 8px;
+    display: block;
 }
 .arrival-info .check-in {
     color: #00b4d8;
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: 1.2em; /* Slightly larger check-in time */
     display: block;
-    margin-top: 5px;
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(0, 180, 216, 0.3);
 }
 .no-arrival {
     color: #a9bcd0;
     font-style: italic;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 .loading-icon {
     color: #00b4d8;
@@ -235,7 +244,7 @@ li {
 
 <script>
 const { DateTime, Settings } = luxon;
-Settings.defaultLocale = "en-NZ";
+Settings.defaultLocale = "en-NZ"; // Ensure Luxon outputs NZ format
 
 const villas = {
   villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
@@ -247,85 +256,115 @@ const villas = {
 const proxy = "https://api.allorigins.win/raw?url=";
 const targetTimeZone = "Pacific/Auckland";
 
+/**
+ * FIXED LOGIC: Parses an ICS event block using Luxon for reliable time zone handling.
+ * This correctly interprets date-only DTSTART values as the NZ arrival day at 2 PM.
+ */
 function parseICSEvent(block){
-  const startLine = block.match(/DTSTART.*:(.*)/);
-  if(!startLine) return null;
+  const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
   const summaryLine = block.match(/SUMMARY:(.*)/);
-  if(!summaryLine) return null;
+
+  if (!startLine || !summaryLine) return null;
 
   let startRaw = startLine[1].trim();
   let summary = summaryLine[1].trim();
-  let start;
+  let arrivalDate;
 
-  // Convert ICS date to JS Date in NZ time
-  if(/^\d{8}$/.test(startRaw)){
-    // Format YYYYMMDD → YYYY-MM-DD
-    start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
+  // Check if the DTSTART includes a time (T) or is explicitly UTC (Z)
+  const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
+
+  if (isDateTime) {
+    // Full datetime (e.g., 20251017T140000Z): Parse as UTC, then set to NZ time zone
+    arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
   } else {
-    start = new Date(startRaw);
+    // Date-only (e.g., 20251018): Treat this calendar date as the NZ arrival day.
+    const year = startRaw.substr(0, 4);
+    const month = startRaw.substr(4, 2);
+    const day = startRaw.substr(6, 2);
+    
+    // Create DateTime for the fixed check-in time: 2 pm in the target time zone
+    arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
   }
-
-  // Convert to NZ time
-  start = new Date(start.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-
-  return {summary, start};
+  
+  return { summary, arrivalDate };
 }
 
-function isSameDayNZ(d1,d2){
-  const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
-  return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
+/**
+ * FIXED LOGIC: Checks if a Luxon DateTime object is the same calendar day as 'today' in NZT.
+ */
+function isSameDayNZ(dt, today){
+  return dt.hasSame(today, 'day');
 }
 
-function formatNZDate(d){
-  // Converts a Date to NZ local date string
-  return d.toLocaleDateString("en-NZ",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+/**
+ * FIXED LOGIC: Formats a Luxon DateTime object to a readable NZ string.
+ */
+function formatNZDate(dt){
+  // Use Luxon's toFormat for reliable, locale-aware output
+  return dt.toFormat("ccc, dd MMM yyyy");
 }
 
 async function loadVilla(id,url){
   const list=document.getElementById(id);
+  // Use Grok's better loading indicator
   list.innerHTML="<li class='loading'><i class='fas fa-spinner loading-icon'></i> Loading…</li>";
   try{
     const res=await fetch(proxy+encodeURIComponent(url));
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const ics=await res.text();
     const blocks=ics.split("BEGIN:VEVENT").slice(1);
-    const today=new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
+    
+    // FIXED LOGIC: Define 'today' at midnight NZT for accurate day comparison
+    const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
     let arrival=null;
 
     for(const block of blocks){
+      // Get Luxon event data
       const event = parseICSEvent(block);
       if(!event) continue;
-      if(isSameDayNZ(event.start,today)){
+      
+      // Use robust Luxon comparison
+      if(isSameDayNZ(event.arrivalDate, todayNZ)){
+        // Use Grok's enhanced display structure
         arrival = `<span class="arrival-info">
           <span class="guest-name">${event.summary}</span>
-          <span class="date">${formatNZDate(event.start)}</span>
+          <span class="date">${formatNZDate(event.arrivalDate)}</span>
           <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
         </span>`;
         break; // only first arrival
       }
     }
 
-    list.innerHTML = arrival ? `<li>${arrival}</li>` : "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals today</li>";
-    return "✔ OK";
+    list.innerHTML = arrival 
+      ? `<li>${arrival}</li>` 
+      : "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals today</li>";
+    
+    return `<span class="status-ok">✔ OK</span>`; // Use Grok's status classes
   }catch(err){
     list.innerHTML="<li class='no-arrival'><i class='fas fa-exclamation-triangle'></i> Feed unavailable</li>";
-    return `✖ ${err.message}`;
+    return `<span class="status-error">✖ ${err.message}</span>`;
   }
 }
 
 async function refreshAll(){
   const statuses=[];
   for(const [id,url] of Object.entries(villas)){
+    // Capture HTML-formatted status
     const st=await loadVilla(id,url);
-    statuses.push(`${id}: ${st}`);
+    // Grok's debug line was broken by missing a pipe
+    statuses.push(` ${id}: ${st}`); 
   }
-  const now=new Date().toLocaleTimeString("en-NZ");
+    
+  // Use Luxon for accurate NZ time display
+  const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
+
   document.getElementById("debug").innerHTML=
-    `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
+    `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
 }
 
+// Use Luxon for accurate NZ date display
 document.getElementById("current-date").textContent =
-  new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
 
 refreshAll();
 setInterval(refreshAll,10*60*1000);
