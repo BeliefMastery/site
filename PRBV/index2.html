@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Villa Bookings</title>
+  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+    .booking { margin-bottom: .6rem; padding:.4rem .8rem; border-radius:.4rem; background:#f7f7f7; }
+    .villa { font-weight:600; }
+    .time { color:#555; }
+  </style>
+</head>
+<body>
+
+<h2>Upcoming Bookings</h2>
+<div id="bookings"></div>
+
+<script>
+const villaFeeds = {
+  "Villa 1": "villa1.ics",
+  "Villa 2": "villa2.ics",
+  "Villa 3": "villa3.ics",
+  "Villa 4": "villa4.ics"
+};
+const tz = "Pacific/Auckland";
+
+async function loadICS(name, url) {
+  const res = await fetch(url);
+  const text = await res.text();
+  const jcal = ICAL.parse(text);
+  const comp = new ICAL.Component(jcal);
+  const events = comp.getAllSubcomponents("vevent");
+  return events.map(e => {
+    const ev = new ICAL.Event(e);
+    return {
+      villa: name,
+      summary: ev.summary,
+      start: ev.startDate.toJSDate(),
+      end: ev.endDate.toJSDate()
+    };
+  });
+}
+
+(async () => {
+  let all = [];
+  for (const [name, url] of Object.entries(villaFeeds)) {
+    const evs = await loadICS(name, url);
+    all = all.concat(evs);
+  }
+  const now = new Date();
+  all = all.filter(ev => ev.end > now)
+           .sort((a,b) => a.start - b.start);
+  const fmt = new Intl.DateTimeFormat("en-NZ", {weekday:"short", day:"numeric", month:"short", hour:"numeric", minute:"2-digit", timeZone:tz});
+  const div = document.getElementById("bookings");
+  div.innerHTML = all.map(ev =>
+    `<div class="booking">
+       <div class="villa">${ev.villa}</div>
+       <div>${ev.summary}</div>
+       <div class="time">${fmt.format(ev.start)} → ${fmt.format(ev.end)}</div>
+     </div>`).join("");
+})();
+</script>
+</body>
+</html>
