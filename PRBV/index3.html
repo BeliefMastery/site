@@ -5,29 +5,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Patons Rock Villas – Today's Arrivals</title>
 <style>
-body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; text-align:center; }
+body { 
+  background:#000; 
+  color:#fff; 
+  font-family:"Segoe UI",Arial,sans-serif; 
+  margin:0; 
+  text-align:center; 
+}
 .welcome-banner {
   background:linear-gradient(135deg,#004466,#0077b6);
-  padding:20px; border-radius:10px; margin:20px auto;
-  max-width:800px; box-shadow:0 4px 12px rgba(0,0,0,0.5);
+  padding:20px; 
+  border-radius:10px; 
+  margin:20px auto;
+  max-width:800px; 
+  box-shadow:0 4px 12px rgba(0,0,0,0.5);
 }
 .welcome-banner h1 {margin:0 0 8px;font-size:1.8em;text-shadow:0 0 10px #FFD700;}
 #current-date {color:#FFD700;font-size:1.1em;}
 .calendar-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:25px; max-width:1100px; margin:30px auto;
+  display:grid; 
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px; 
+  max-width:1100px; 
+  margin:30px auto;
 }
 .calendar-container {
-  background:#222; border-radius:15px; padding:15px;
+  background:#222; 
+  border-radius:15px; 
+  padding:15px;
   box-shadow:0 6px 14px rgba(0,0,0,0.6);
+  text-align: left;
 }
 .calendar-container h2 {color:#00b4d8;margin-top:0;}
 ul {list-style:none;padding:0;margin:0;}
-li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
-.arrival { color:#00bfff; font-weight:bold; }
+li { 
+  padding:10px; 
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  margin:5px 0;
+  border-radius:5px;
+  background: rgba(255,255,255,0.05);
+}
+.arrival { 
+  color:#00bfff; 
+  font-weight:bold; 
+  font-size:1.1em;
+  background: rgba(0, 191, 255, 0.1);
+  border-left: 4px solid #00bfff;
+}
+.no-arrival {
+  color: #aaa; 
+  font-style: italic;
+  font-size: 1em;
+  text-align: center;
+}
 .debug {
-  background:#111; border-top:1px solid #333; margin-top:30px;
-  padding:10px; font-size:0.9em; color:#aaa;
+  background:#111; 
+  border-top:1px solid #333; 
+  margin-top:30px;
+  padding:10px; 
+  font-size:0.9em; 
+  color:#aaa;
 }
 </style>
 </head>
@@ -88,44 +125,51 @@ function isSameDayNZ(d1,d2){
   return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
 }
 
-function formatNZDate(d){ return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"}); }
+function formatNZDateFull(d){ 
+  return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"}); 
+}
+function formatNZDateShort(d){ 
+  return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short"}); 
+}
 
 async function loadVilla(id,url){
   const list=document.getElementById(id);
-  list.innerHTML="<li>Loading…</li>";
+  list.innerHTML="<li class='no-arrival'>Loading…</li>";
   try{
     const res=await fetch(proxy+encodeURIComponent(url));
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const ics=await res.text();
     const blocks=ics.split("BEGIN:VEVENT").slice(1);
-    list.innerHTML="";
     const today=new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-    const arrivals=[];
+    let arrivals=[];
 
     blocks.forEach(block=>{
       const event=parseICSEvent(block);
       if(!event) return;
       if(isSameDayNZ(event.start,today)) {
         const name = event.summary.trim();
-        arrivals.push(`<li class="arrival">${name} - check-in 2pm</li>`);
+        arrivals.push({name, start: event.start});
       }
     });
 
-    if(arrivals.length===0) {
-      list.innerHTML="<li>No arrivals today</li>";
+    if(arrivals.length > 0) {
+      arrivals.sort((a,b) => a.start.getTime() - b.start.getTime());
+      const first = arrivals[0];
+      const displayDate = formatNZDateShort(today);
+      list.innerHTML=`<li class="arrival">${displayDate} – ${first.name} – check-in 2pm</li>`;
     } else {
-      list.innerHTML = arrivals.join("");
+      list.innerHTML="<li class='no-arrival'>No arrival today</li>";
     }
     return "✔ OK";
   }catch(err){
-    list.innerHTML="<li>Feed unavailable</li>";
+    list.innerHTML="<li class='no-arrival'>Feed unavailable</li>";
     return `✖ ${err.message}`;
   }
 }
 
 async function refreshAll(){
   const today=new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-  document.getElementById("today-header").textContent = `Today's Arrivals – ${formatNZDate(today)}`;
+  document.getElementById("today-header").textContent = `Today's Arrivals – ${formatNZDateFull(today)}`;
   const statuses=[];
   for(const [id,url] of Object.entries(villas)){
     const st=await loadVilla(id,url);
