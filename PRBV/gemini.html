@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600&display=swap">
 
     <style>
-        /* Gemini's Dark Mode Aesthetic */
+        /* Gemini's Dark Mode Aesthetic with Patons Rock Branding */
         :root {
             --primary-navy: #0f172a; /* Slate-900: Dark background */
-            --primary-gold: #fde047; /* Yellow-300: Accent for dates/highlight */
-            --secondary-teal: #2dd4bf; /* Teal-400: Text/Title accent */
+            --primary-blue: #2b6cb0; /* Patons Rock Brand Blue (Links/Accents) */
+            --primary-gold: #fde047; /* Yellow-300: High-contrast accent */
             --background-dark: var(--primary-navy); 
             --background-card: #ffffff; /* White card background */
             --text-light: #f1f5f9; /* Slate-100: Light text for header/debug */
@@ -25,43 +25,51 @@
             --ongoing-stay-text: #475569; /* Slate-600 for subtle card text */
         }
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Open Sans', sans-serif; /* Patons Rock Body Font */
             background-color: var(--background-dark);
-            color: var(--text-light); /* Default body text is light */
+            color: var(--text-light);
             min-height: 100vh;
         }
+
+        /* Header and Titles */
+        header { 
+            background-color: var(--primary-navy); 
+            border-bottom: 4px solid var(--primary-gold);
+            color: var(--text-light);
+        }
+        header h1 {
+            font-family: 'Montserrat', sans-serif; /* Patons Rock Heading Font */
+            color: var(--primary-blue); /* Branded Blue */
+        }
+        #current-date {
+            color: var(--primary-gold); 
+        }
+
+        /* Villa Cards */
         .card {
             background-color: var(--background-card);
-            /* Initial border is white/light for subtlety */
             border-left: 6px solid #e2e8f0; 
             border-radius: 12px;
             box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.3);
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        
-        /* New Active State for Cycling Animation */
         .card-active {
             transform: scale(1.03) translateY(-8px);
             border-left: 6px solid var(--primary-gold);
-            box-shadow: 0 16px 30px -8px rgba(253, 224, 71, 0.4); /* Glowing effect */
+            box-shadow: 0 16px 30px -8px rgba(253, 224, 71, 0.4); 
         }
-
         .villa-title {
-            color: var(--primary-navy); /* Dark title on white card */
+            font-family: 'Montserrat', sans-serif; /* Patons Rock Heading Font */
+            color: var(--primary-navy); 
             font-weight: 800;
             font-size: 1.6rem; 
             margin-bottom: 0.5rem;
         }
         
-        /* Text on Card */
-        .arrival-info { padding: 1rem 0; }
+        /* Card Content */
         .guest-name { color: var(--green-arrival); }
-        .date { color: #64748b; } /* Slate-500 on white card */
+        .date { color: #64748b; } 
         .check-in { color: var(--primary-gold); font-weight: 700; }
-
-        /* Status and indicators */
-        .loading-icon { animation: spin 1.5s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
         .no-arrival {
             color: var(--ongoing-stay-text);
             font-style: italic;
@@ -69,37 +77,27 @@
             display: flex;
             align-items: center;
         }
-        .no-arrival i {
-            color: var(--info-status); /* Blue icon for clarity */
-        }
 
-        /* Header and Footer */
-        header { 
-            background-color: var(--primary-navy); 
-            border-bottom: 4px solid var(--primary-gold);
-            color: var(--text-light);
-        }
-        header h1 {
-            color: var(--secondary-teal); 
-        }
-        #current-date {
-            color: var(--primary-gold); 
-        }
-        .debug-bar {
-            background-color: var(--background-dark);
-            border-top: 2px solid #334155; /* Slate-700 */
-            color: #94a3b8; /* Slate-400 */
-        }
-
-        /* Welcome Card Styling */
+        /* Welcome Card */
         .welcome-card {
             background-color: var(--background-card);
             color: var(--text-dark); /* Black text on white card */
         }
         .welcome-card a {
-            color: var(--primary-navy); 
+            color: var(--primary-blue); /* Branded Blue Link */
             font-weight: 700;
             text-decoration: underline;
+        }
+        
+        /* Debug */
+        .status-ok { color: var(--green-arrival); font-weight: 700; }
+        .status-no-arrival { color: var(--info-status); font-weight: 700; }
+        .status-error { color: var(--red-alert); font-weight: 700; }
+        .debug-bar {
+            background-color: var(--background-dark);
+            border-top: 2px solid #334155; 
+            color: #94a3b8;
+            font-family: 'Open Sans', sans-serif;
         }
     </style>
 </head>
@@ -118,28 +116,28 @@
         <main id="villa-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             
             <div id="villa1-card" class="card p-6">
-                <h1 class="villa-title">Villa 1</h1>
+                <h2 class="villa-title">Villa 1: The Beach House</h2>
                 <ul id="villa1" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
             <div id="villa2-card" class="card p-6">
-                <h1 class="villa-title">Villa 2</h1>
+                <h2 class="villa-title">Villa 2: The Cottage</h2>
                 <ul id="villa2" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
             
             <div id="villa3-card" class="card p-6">
-                <h1 class="villa-title">Villa 3</h1>
+                <h2 class="villa-title">Villa 3: The Loft</h2>
                 <ul id="villa3" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
             <div id="villa4-card" class="card p-6">
-                <h1 class="villa-title">Villa 4</h1>
+                <h2 class="villa-title">Villa 4: The Retreat</h2>
                 <ul id="villa4" class="space-y-4 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
@@ -149,7 +147,7 @@
         <div class="welcome-card p-4 md:p-6 rounded-xl shadow-xl mb-8 text-center">
             <p class="text-lg md:text-xl font-medium">
                 We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
-                <a href="tel:0273563551" class="tracking-wider hover:text-secondary-teal transition duration-300">027 356 3551</a>. 🏡
+                <a href="tel:0273563551" class="tracking-wider hover:text-primary-gold transition duration-300">027 356 3551</a>. 🏡
             </p>
         </div>
 
@@ -201,7 +199,7 @@
         const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
         
         const parseDate = (raw) => {
-             // Date-only format
+             // Date-only format (YYYYMMDD)
             const year = parseInt(raw.substr(0, 4), 10);
             const month = parseInt(raw.substr(4, 2), 10);
             const day = parseInt(raw.substr(6, 2), 10);
@@ -237,7 +235,6 @@
      */
     function isOngoingStay(startDate, endDate, today) {
         const todayStart = today.startOf('day');
-        // Check if today is after the arrival date (or is the arrival date) AND before the departure date (which is exclusive).
         return startDate.startOf('day') <= todayStart && endDate.startOf('day') > todayStart;
     }
 
@@ -273,7 +270,7 @@
                     </span>` };
                 }
 
-                // 2. Check for ONGOING STAY (If no arrival is found, this is the status)
+                // 2. Check for ONGOING STAY
                 if (event.endDate && isOngoingStay(event.arrivalDate, event.endDate, todayNZ)) {
                     ongoingStayFound = { 
                         status: 'ongoing', 
@@ -318,7 +315,6 @@
                 list.innerHTML = `<li>${result.html}</li>`;
                 return `<span class="status-ok">✔ ARRIVAL (${attempt.name})</span>`;
             } else if (result.status === 'ongoing') {
-                // Ongoing is the best non-arrival status, keep it unless an error comes up later
                 if (finalResult.status === 'error' || finalResult.status === 'no-booking') {
                      finalResult = {
                         status: 'ongoing',
@@ -327,7 +323,6 @@
                     };
                 }
             } else if (result.status === 'no-booking') {
-                 // No Booking is the second best non-arrival status, only keep it if no ongoing stay was found
                 if (finalResult.status === 'error') {
                      finalResult = {
                         status: 'no-booking',
@@ -337,11 +332,9 @@
                 }
             } else if (result.status === 'error') {
                 console.warn(`${id} - ${attempt.name} failed:`, result.error);
-                // Keep the error status if nothing better has been found.
             }
         }
         
-        // Final update and return based on the best non-arrival status found
         list.innerHTML = finalResult.html;
         return finalResult.debug;
     }
@@ -367,18 +360,17 @@
     const cycleInterval = 2000; // 2 seconds per card
 
     function startCardCycle() {
-        // Function to run every `cycleInterval`
         setInterval(() => {
-            // 1. Remove active class from the current card
+            // Remove active class from the current card
             const prevCard = document.getElementById(cardIds[currentCardIndex]);
             if (prevCard) {
                 prevCard.classList.remove('card-active');
             }
 
-            // 2. Move to the next index
+            // Move to the next index
             currentCardIndex = (currentCardIndex + 1) % cardIds.length;
 
-            // 3. Add active class to the new current card
+            // Add active class to the new current card
             const nextCard = document.getElementById(cardIds[currentCardIndex]);
             if (nextCard) {
                 nextCard.classList.add('card-active');
@@ -396,10 +388,10 @@
         // Start the background data refresh
         refreshAll();
 
-        // Start the visual cycling animation immediately after the page loads
+        // Start the visual cycling animation
         startCardCycle();
 
-        // Schedule automatic data refresh every 10 minutes (10 * 60 * 1000 milliseconds)
+        // Schedule automatic data refresh every 10 minutes
         setInterval(refreshAll, 10 * 60 * 1000); 
     }
 </script>
