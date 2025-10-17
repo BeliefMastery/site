@@ -3,54 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patons Rock Villas – Today's Arrival</title>
+<title>Patons Rock Villas – Today’s Arrivals</title>
+
+<!-- Luxon for time zone handling -->
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/dist/luxon.min.js"></script>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
 body {
-  background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; padding:0; text-align:center;
+  margin:0; padding:0;
+  font-family: 'Poppins', sans-serif;
+  background:#0d1b2a;
+  color:#e0fbfc;
+  text-align:center;
 }
-.welcome-banner {
-  background:linear-gradient(135deg,#004466,#0077b6);
-  padding:20px; border-radius:10px; margin:20px auto;
-  max-width:900px; box-shadow:0 4px 12px rgba(0,0,0,0.5);
+.header-container {
+  background: #0077b6;
+  padding: 30px 10px;
 }
-.welcome-banner h1 {
-  margin:0 0 8px; font-size:1.8em; text-shadow:0 0 10px #FFD700;
-}
-#welcome-date { color:#FFD700; font-size:1.1em; margin-top:6px; }
+.header-container h1 { margin:0; font-size:2em; }
+.header-container p { margin:5px 0; }
+#current-date { margin-top:5px; color:#ffc300; font-weight:600; }
+
+h2 { color:#ffc300; margin:20px 0; }
+
 .calendar-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:25px; max-width:1100px; margin:30px auto;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:20px;
+  padding:0 10px 40px;
 }
-.calendar-card {
-  background:#222; border-radius:15px; padding:15px;
-  box-shadow:0 6px 14px rgba(0,0,0,0.6);
-  text-align:left;
+.calendar-container {
+  background:#1c2e4a;
+  border-radius:15px;
+  padding:15px;
+  min-width:250px;
+  flex:1 1 200px;
 }
-.calendar-card h2 { color:#00b4d8; margin-top:0; }
+.calendar-container h3 { color:#00b4d8; margin:0 0 10px; font-size:1.5em; }
+
 ul { list-style:none; padding:0; margin:0; }
-li { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
-.arrival { color:#00bfff; font-weight:bold; }
-.debug {
-  background:#111; border-top:1px solid #333; margin-top:30px;
-  padding:10px; font-size:0.9em; color:#aaa;
+li { padding:10px; }
+
+.arrival-info {
+  display:block;
+  background: rgba(72,228,210,0.1);
+  border-radius:8px;
+  padding:10px;
+  border:1px solid #48e4d2;
+}
+.arrival-info .guest-name { font-weight:700; font-size:1.2em; color:#fff; }
+.arrival-info .date { color:#ffc300; margin:5px 0; }
+.arrival-info .check-in { color:#00b4d8; font-weight:700; margin-top:5px; display:block; }
+
+.no-arrival { color:#a9bcd0; font-style:italic; }
+.loading-icon { color:#00b4d8; animation: spin 1s linear infinite; }
+@keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+.debug { font-size:0.9em; color:#a9bcd0; padding:10px; background:#112a46; position:fixed; bottom:0; width:100%; text-align:left; }
+.status-ok { color:#48e4d2; }
+.status-error { color:#ff6b6b; }
+
+@media (max-width:768px){
+  .calendar-container{flex:1 1 100%;}
 }
 </style>
 </head>
+
 <body>
 
-<div class="welcome-banner">
-  <h1>Welcome to Patons Rock Beach Villas</h1>
-  <p>For assistance please call <strong>027 356 3551</strong>.</p>
-  <div id="welcome-date"></div>
+<div class="header-container">
+  <h1><i class="fas fa-home"></i> Patons Rock Beach Villas</h1>
+  <p>For assistance call <strong>027 356 3551</strong></p>
+  <div id="current-date"></div>
 </div>
 
-<h2>Today's Arrivals</h2>
-<div class="calendar-grid" id="villaGrid">
-  <div class="calendar-card"><h2>Villa 1</h2><ul id="villa1"></ul></div>
-  <div class="calendar-card"><h2>Villa 2</h2><ul id="villa2"></ul></div>
-  <div class="calendar-card"><h2>Villa 3</h2><ul id="villa3"></ul></div>
-  <div class="calendar-card"><h2>Villa 4</h2><ul id="villa4"></ul></div>
+<h2>Today’s Arrivals <i class="fas fa-plane-arrival"></i></h2>
+
+<div class="calendar-grid">
+  <div class="calendar-container"><h3>Villa 1</h3><ul id="villa1"><li class="loading"><i class="fas fa-spinner loading-icon"></i> Loading…</li></ul></div>
+  <div class="calendar-container"><h3>Villa 2</h3><ul id="villa2"><li class="loading"><i class="fas fa-spinner loading-icon"></i> Loading…</li></ul></div>
+  <div class="calendar-container"><h3>Villa 3</h3><ul id="villa3"><li class="loading"><i class="fas fa-spinner loading-icon"></i> Loading…</li></ul></div>
+  <div class="calendar-container"><h3>Villa 4</h3><ul id="villa4"><li class="loading"><i class="fas fa-spinner loading-icon"></i> Loading…</li></ul></div>
 </div>
 
 <div class="debug" id="debug">Loading...</div>
@@ -58,88 +94,108 @@ li { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
 <script>
 const { DateTime, Settings } = luxon;
 Settings.defaultLocale = "en-NZ";
+const targetTimeZone = "Pacific/Auckland";
+const proxy = "https://api.allorigins.win/raw?url=";
 
-const villas = {
-  villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
-  villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
-  villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
-  villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8"
+const villaFeeds = {
+  villa1: {
+    beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
+    google: "https://calendar.google.com/calendar/ical/patonsrockbeachvillas.co.nz_5r3b0ovo5vn9l24j5503docbds%40group.calendar.google.com/public/basic.ics"
+  },
+  villa2: {
+    beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
+    google: "https://calendar.google.com/calendar/ical/u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com/public/basic.ics"
+  },
+  villa3: {
+    beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
+    google: "https://calendar.google.com/calendar/ical/ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com/public/basic.ics"
+  },
+  villa4: {
+    beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8",
+    google: "https://calendar.google.com/calendar/ical/sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com/public/basic.ics"
+  }
 };
 
-const proxy = "https://api.allorigins.win/raw?url=";
-const targetTimeZone = "Pacific/Auckland";
-
-function parseICSEvent(block) {
+function parseICSEvent(block){
   const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
   const summaryLine = block.match(/SUMMARY:(.*)/);
   if(!startLine || !summaryLine) return null;
-
   const startRaw = startLine[1].trim();
   const summary = summaryLine[1].trim();
   let arrivalDate;
-
-  if(startRaw.includes('T') || startRaw.includes('Z')) {
+  const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
+  if(isDateTime){
     arrivalDate = DateTime.fromISO(startRaw,{zone:'utc'}).setZone(targetTimeZone);
   } else {
-    const year = parseInt(startRaw.substr(0,4));
-    const month = parseInt(startRaw.substr(4,2));
-    const day = parseInt(startRaw.substr(6,2));
+    const year=parseInt(startRaw.substr(0,4),10);
+    const month=parseInt(startRaw.substr(4,2),10);
+    const day=parseInt(startRaw.substr(6,2),10);
     arrivalDate = DateTime.fromObject({year,month,day,hour:14,minute:0},{zone:targetTimeZone});
   }
-
-  return {summary, arrivalDate};
+  return {summary,arrivalDate};
 }
 
-function isSameDayNZ(dt,today) {
-  return dt.hasSame(today,'day');
-}
+function isSameDayNZ(dt,today){ return dt.hasSame(today,'day'); }
+function formatNZDate(dt){ return dt.toFormat("ccc, dd MMM yyyy"); }
 
-function formatNZDate(dt) {
-  return dt.toFormat("ccc, dd MMM yyyy");
-}
-
-async function loadVilla(id,url){
-  const list=document.getElementById(id);
-  list.innerHTML="<li>Loading…</li>";
-  try{
-    const res = await fetch(proxy + encodeURIComponent(url));
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const ics = await res.text();
-    const blocks = ics.split("BEGIN:VEVENT").slice(1);
-    const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
-    let arrival=null;
-
-    for(const block of blocks){
-      const event=parseICSEvent(block);
-      if(!event) continue;
-      if(isSameDayNZ(event.arrivalDate,todayNZ)){
-        arrival=`<span class="arrival">${formatNZDate(event.arrivalDate)} — ${event.summary} — check-in 2 pm</span>`;
-        break;
-      }
+async function tryFeed(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  const ics = await res.text();
+  const blocks = ics.split("BEGIN:VEVENT").slice(1);
+  const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+  for(const block of blocks){
+    const event=parseICSEvent(block);
+    if(!event) continue;
+    if(isSameDayNZ(event.arrivalDate,todayNZ)){
+      return `<span class="arrival-info">
+        <span class="guest-name">${event.summary}</span>
+        <span class="date">${formatNZDate(event.arrivalDate)}</span>
+        <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
+      </span>`;
     }
-
-    list.innerHTML = arrival ? `<li>${arrival}</li>` : "<li>No arrivals today</li>";
-    return "✔ OK";
-  }catch(err){
-    list.innerHTML="<li>Feed unavailable</li>";
-    return `✖ ${err.message}`;
   }
+  return null;
+}
+
+async function loadVilla(id,feeds){
+  const list=document.getElementById(id);
+  list.innerHTML="<li class='loading'><i class='fas fa-spinner loading-icon'></i> Loading…</li>";
+  const attempts=[
+    {name:'Beds24 (Proxy)',url:proxy+encodeURIComponent(feeds.beds24)},
+    {name:'Google (Direct)',url:feeds.google},
+    {name:'Google (Proxy)',url:proxy+encodeURIComponent(feeds.google)}
+  ];
+  let statusMessage=`<span class="status-error">✖ Failed all feeds</span>`;
+  for(const attempt of attempts){
+    try{
+      const arrival=await tryFeed(attempt.url);
+      if(arrival){
+        list.innerHTML=`<li>${arrival}</li>`;
+        statusMessage=`<span class="status-ok">✔ OK (${attempt.name})</span>`;
+        return statusMessage;
+      }
+    } catch(e){ console.warn(`${id} - ${attempt.name} failed:`,e.message); }
+  }
+  list.innerHTML="<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals today or feeds unavailable</li>";
+  return statusMessage;
 }
 
 async function refreshAll(){
   const statuses=[];
-  for(const [id,url] of Object.entries(villas)){
-    const st = await loadVilla(id,url);
-    statuses.push(`${id}: ${st}`);
+  for(const [id,feeds] of Object.entries(villaFeeds)){
+    const st = await loadVilla(id,feeds);
+    statuses.push(` ${id}: ${st}`);
   }
   const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
-  document.getElementById("debug").innerHTML=`<strong>Last refresh:</strong> ${now}<br>`+statuses.join("<br>");
+  document.getElementById("debug").innerHTML=`<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
 }
 
-document.getElementById("welcome-date").textContent = DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
-
+// Initialize
+document.getElementById("current-date").textContent=DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
 refreshAll();
 setInterval(refreshAll,10*60*1000);
+
 </script>
 </body>
 </html>
