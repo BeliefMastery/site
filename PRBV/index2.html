@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Patons Rock Villas – Live Bookings</title>
+<title>Patons Rock Villas – Live Arrivals & Departures</title>
 <style>
-  body {
-    background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif;
-    margin:0; text-align:center;
-  }
+  body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; text-align:center; }
   .welcome-banner {
     background:linear-gradient(135deg,#004466,#0077b6);
     padding:20px; border-radius:10px; margin:20px auto;
@@ -31,8 +28,6 @@
     background:#111; border-top:1px solid #333; margin-top:30px;
     padding:10px; font-size:0.9em; color:#aaa;
   }
-  .ok {color:#3fa43f;}
-  .fail {color:#ff4444;}
 </style>
 </head>
 <body>
@@ -42,7 +37,7 @@
     <div id="current-date"></div>
   </div>
 
-  <h2>Upcoming Bookings</h2>
+  <h2>Today & Tomorrow</h2>
   <div class="calendar-grid" id="villaGrid">
     <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
     <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
@@ -59,78 +54,91 @@ const villas = {
   villa3: "https://api.beds24.com/ical/bookings.ics?roomid=318485",
   villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486"
 };
-
-// Public proxy (CORS bypass)
 const proxy = "https://api.allorigins.win/raw?url=";
 
-function cleanICSDate(dt) {
-  // Convert e.g. 20251017T140000Z -> 2025-10-17T14:00:00Z
-  if (!dt) return null;
+function cleanICSDate(dt){
+  if(!dt) return null;
   const match = dt.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?/);
-  if (!match) return null;
+  if(!match) return null;
   const [,y,m,d,h,min,s] = match;
-  return `${y}-${m}-${d}T${h}:${min}:${s}Z`;
+  return new Date(`${y}-${m}-${d}T${h}:${min}:${s}Z`);
+}
+function formatNZDate(date){
+  return date.toLocaleDateString("en-NZ",{timeZone:"Pacific/Auckland",day:"numeric",month:"short"});
 }
 
-function formatNZDate(iso) {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  return date.toLocaleDateString("en-NZ", {
-    timeZone:"Pacific/Auckland",
-    day:"numeric", month:"short"
-  });
+function isSameDayNZ(d1,d2){
+  const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
+  const s1=d1.toLocaleDateString("en-NZ",opts);
+  const s2=d2.toLocaleDateString("en-NZ",opts);
+  return s1===s2;
 }
 
-async function loadVilla(id, url) {
-  const list = document.getElementById(id);
-  list.innerHTML = "<li>Loading…</li>";
-  try {
-    const res = await fetch(proxy + encodeURIComponent(url));
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const ics = await res.text();
+async function loadVilla(id,url){
+  const list=document.getElementById(id);
+  list.innerHTML="<li>Loading…</li>";
+  try{
+    const res=await fetch(proxy+encodeURIComponent(url));
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ics=await res.text();
+    const blocks=ics.split("BEGIN:VEVENT").slice(1);
+    list.innerHTML="";
+    const todayNZ=new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"});
+    const today=new Date(todayNZ);
+    const tomorrow=new Date(today.getTime()+24*60*60*1000);
 
-    const blocks = ics.split("BEGIN:VEVENT").slice(1);
-    if (blocks.length === 0) {
-      list.innerHTML = "<li>No upcoming bookings</li>";
-      return "✔ No bookings";
-    }
+    const showBookings=[];
 
-    list.innerHTML = "";
-    blocks.slice(0,6).forEach(block=>{
-      const summary = (block.match(/SUMMARY:(.*)/) || [,"Booking"])[1];
-      const startRaw = (block.match(/DTSTART.*:(.*)/) || [,""])[1];
-      const endRaw = (block.match(/DTEND.*:(.*)/) || [,""])[1];
-      const desc = (block.match(/DESCRIPTION:(.*?)(?:\n[A-Z]|$)/s) || [,""])[1]
-                      .replace(/\\n/g," ").trim();
+    blocks.forEach(block=>{
+      const summary=(block.match(/SUMMARY:(.*)/)||[,"Booking"])[1].trim();
+      const startRaw=(block.match(/DTSTART.*:(.*)/)||[,""])[1];
+      const endRaw=(block.match(/DTEND.*:(.*)/)||[,""])[1];
+      const desc=(block.match(/DESCRIPTION:(.*?)(?:\n[A-Z]|$)/s)||[,""])[1].replace(/\\n/g," ").trim();
+      const start=cleanICSDate(startRaw);
+      const end=cleanICSDate(endRaw);
+      if(!start||!end) return;
 
-      const start = cleanICSDate(startRaw);
-      const end = cleanICSDate(endRaw);
-      list.innerHTML += `<li>${formatNZDate(start)} → ${formatNZDate(end)}<br><small>${summary}<br>${desc}</small></li>`;
+      // convert to NZ-local comparison
+      const startNZ=new Date(start.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
+      const endNZ=new Date(end.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
+
+      if(isSameDayNZ(startNZ,today)){
+        showBookings.push(`Arrival 2 pm — ${summary}<br><small>${formatNZDate(startNZ)}</small>`);
+      } else if(isSameDayNZ(endNZ,today)){
+        showBookings.push(`Departure 10 am — ${summary}<br><small>${formatNZDate(endNZ)}</small>`);
+      } else if(isSameDayNZ(startNZ,tomorrow)){
+        showBookings.push(`Tomorrow Arrival 2 pm — ${summary}<br><small>${formatNZDate(startNZ)}</small>`);
+      } else if(isSameDayNZ(endNZ,tomorrow)){
+        showBookings.push(`Tomorrow Departure 10 am — ${summary}<br><small>${formatNZDate(endNZ)}</small>`);
+      }
     });
+
+    if(showBookings.length===0) list.innerHTML="<li>No arrivals or departures</li>";
+    else list.innerHTML=showBookings.map(b=>`<li>${b}</li>`).join("");
     return "✔ OK";
-  } catch (err) {
-    list.innerHTML = "<li>Feed unavailable</li>";
+  }catch(err){
+    list.innerHTML="<li>Feed unavailable</li>";
     return `✖ ${err.message}`;
   }
 }
 
-async function refreshAll() {
-  const statuses = [];
-  for (const [id, url] of Object.entries(villas)) {
-    const st = await loadVilla(id, url);
+async function refreshAll(){
+  const statuses=[];
+  for(const [id,url] of Object.entries(villas)){
+    const st=await loadVilla(id,url);
     statuses.push(`${id}: ${st}`);
   }
-  const now = new Date().toLocaleTimeString("en-NZ");
-  document.getElementById("debug").innerHTML =
+  const now=new Date().toLocaleTimeString("en-NZ");
+  document.getElementById("debug").innerHTML=
     `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
 }
 
-// show local NZ date
+// show current NZ date
 document.getElementById("current-date").textContent =
-  new Date().toLocaleString("en-NZ", {timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
 
 refreshAll();
-setInterval(refreshAll, 10*60*1000);
+setInterval(refreshAll,10*60*1000);
 </script>
 </body>
 </html>
