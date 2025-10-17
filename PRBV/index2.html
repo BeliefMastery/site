@@ -24,8 +24,8 @@ body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; mar
 .calendar-container h2 {color:#00b4d8;margin-top:0;}
 ul {list-style:none;padding:0;margin:0;}
 li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
-.today {color:#FFD700;}   /* gold for today */
-.tomorrow {color:#aaa;}   /* silver for tomorrow */
+.arrival { color:#00bfff; font-weight:bold; }
+.departure { color:#ff4d4d; font-weight:normal; }
 .debug {
   background:#111; border-top:1px solid #333; margin-top:30px;
   padding:10px; font-size:0.9em; color:#aaa;
@@ -41,10 +41,10 @@ li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
 
 <h2>Today & Tomorrow</h2>
 <div class="calendar-grid" id="villaGrid">
-  <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
-  <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
-  <div class="calendar-container"><h2>Villa 3</h2><ul id="villa3"></ul></div>
-  <div class="calendar-container"><h2>Villa 4</h2><ul id="villa4"></ul></div>
+  <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1-today"></ul><ul id="villa1-tomorrow"></ul></div>
+  <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2-today"></ul><ul id="villa2-tomorrow"></ul></div>
+  <div class="calendar-container"><h2>Villa 3</h2><ul id="villa3-today"></ul><ul id="villa3-tomorrow"></ul></div>
+  <div class="calendar-container"><h2>Villa 4</h2><ul id="villa4-today"></ul><ul id="villa4-tomorrow"></ul></div>
 </div>
 
 <div class="debug" id="debug">Loading...</div>
@@ -57,10 +57,8 @@ const villas = {
   villa4: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8"
 };
 
-// Public proxy for CORS bypass
 const proxy = "https://api.allorigins.win/raw?url=";
 
-// Convert ICS date strings to JS Date (handles DATE-only, DATE-TIME, and Z)
 function parseICSEvent(block){
   let startLine = block.match(/DTSTART.*:(.*)/);
   let endLine = block.match(/DTEND.*:(.*)/);
@@ -72,7 +70,7 @@ function parseICSEvent(block){
   let summary = summaryLine ? summaryLine[1].trim() : "Booking";
 
   let start, end;
-  if(/^\d{8}$/.test(startRaw)){ // DATE only YYYYMMDD
+  if(/^\d{8}$/.test(startRaw)){
     start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
     end = new Date(`${endRaw.substr(0,4)}-${endRaw.substr(4,2)}-${endRaw.substr(6,2)}T10:00:00`);
   } else {
@@ -91,34 +89,38 @@ function isSameDayNZ(d1,d2){
   return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
 }
 
+function formatNZDate(d){ return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"}); }
+
 async function loadVilla(id,url){
-  const list=document.getElementById(id);
-  list.innerHTML="<li>Loading…</li>";
+  const todayList=[], tomorrowList=[];
+  const listToday=document.getElementById(`${id}-today`);
+  const listTomorrow=document.getElementById(`${id}-tomorrow`);
+  listToday.innerHTML="<li>Loading…</li>"; listTomorrow.innerHTML="<li>Loading…</li>";
   try{
     const res=await fetch(proxy+encodeURIComponent(url));
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const ics=await res.text();
     const blocks=ics.split("BEGIN:VEVENT").slice(1);
-    list.innerHTML="";
+    listToday.innerHTML=""; listTomorrow.innerHTML="";
     const today=new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
     const tomorrow=new Date(today.getTime()+24*60*60*1000);
-    const showBookings=[];
 
     blocks.forEach(block=>{
       const event=parseICSEvent(block);
       if(!event) return;
-
-      if(isSameDayNZ(event.start,today)) showBookings.push(`<span class="today">Arrival 2 pm — ${event.summary}</span>`);
-      else if(isSameDayNZ(event.end,today)) showBookings.push(`<span class="today">Departure 10 am — ${event.summary}</span>`);
-      else if(isSameDayNZ(event.start,tomorrow)) showBookings.push(`<span class="tomorrow">Tomorrow Arrival 2 pm — ${event.summary}</span>`);
-      else if(isSameDayNZ(event.end,tomorrow)) showBookings.push(`<span class="tomorrow">Tomorrow Departure 10 am — ${event.summary}</span>`);
+      if(isSameDayNZ(event.start,today)) todayList.push(`<span class="arrival">Arrival 2 pm — ${event.summary}</span>`);
+      else if(isSameDayNZ(event.end,today)) todayList.push(`<span class="departure">Departure 10 am — ${event.summary}</span>`);
+      else if(isSameDayNZ(event.start,tomorrow)) tomorrowList.push(`<span class="arrival">Arrival 2 pm — ${event.summary}</span>`);
+      else if(isSameDayNZ(event.end,tomorrow)) tomorrowList.push(`<span class="departure">Departure 10 am — ${event.summary}</span>`);
     });
 
-    if(showBookings.length===0) list.innerHTML="<li>No arrivals or departures</li>";
-    else list.innerHTML=showBookings.map(b=>`<li>${b}</li>`).join("");
+    listToday.innerHTML = todayList.length ? `<li><strong>Today – ${formatNZDate(today)}</strong></li>` + todayList.map(b=>`<li>${b}</li>`).join("") : "<li>No arrivals or departures today</li>";
+    listTomorrow.innerHTML = tomorrowList.length ? `<li><strong>Tomorrow – ${formatNZDate(tomorrow)}</strong></li>` + tomorrowList.map(b=>`<li>${b}</li>`).join("") : "<li>No arrivals or departures tomorrow</li>";
+
     return "✔ OK";
   }catch(err){
-    list.innerHTML="<li>Feed unavailable</li>";
+    listToday.innerHTML="<li>Feed unavailable</li>";
+    listTomorrow.innerHTML="<li>Feed unavailable</li>";
     return `✖ ${err.message}`;
   }
 }
