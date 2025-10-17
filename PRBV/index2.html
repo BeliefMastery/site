@@ -24,28 +24,21 @@
     padding: 20px;
     border-radius: 10px;
     margin: 0 auto 30px auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     max-width: 800px;
   }
   .welcome-banner h1 {
     margin: 0 0 10px;
     font-size: 1.8em;
-    text-shadow: 0 0 6px rgba(255, 215, 0, 0.6),
-                 0 0 10px rgba(255, 215, 0, 0.4);
+    text-shadow: 0 0 6px rgba(255,215,0,0.6), 0 0 10px rgba(255,215,0,0.4);
   }
-  .welcome-banner p {
-    margin: 0;
-    font-size: 1.1em;
-  }
+  .welcome-banner p { margin: 0; font-size: 1.1em; }
   #current-date {
     margin-top: 10px;
     font-size: 1.2em;
     color: #FFD700;
   }
-  h2 {
-    color: #00b4d8;
-    margin-bottom: 20px;
-  }
+  h2 { color: #00b4d8; margin-bottom: 20px; }
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -55,12 +48,13 @@
   .calendar-container {
     background: #111;
     border-radius: 17px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6),
-                inset 0 0 6px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6), inset 0 0 6px rgba(255,255,255,0.1);
     border: 2px solid #222;
     padding: 18px;
     text-align: center;
+    transition: box-shadow .3s;
   }
+  .calendar-container.updated { box-shadow: 0 0 15px rgba(0,180,216,0.7); }
   .calendar-container h1 {
     margin: 0 0 10px;
     font-size: 1.3em;
@@ -80,6 +74,20 @@
     font-weight: 600;
     margin-top: 4px;
   }
+  #debug-panel {
+    margin-top: 25px;
+    font-size: 0.85em;
+    color: #aaa;
+    background:#111;
+    border-radius:10px;
+    padding:10px;
+    max-width:800px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:left;
+  }
+  #debug-panel .ok { color:#00ff7f; }
+  #debug-panel .fail { color:#ff6666; }
   @media (max-width:700px){
     .calendar-grid { grid-template-columns: 1fr; }
   }
@@ -100,6 +108,11 @@
     <div class="calendar-container" id="villa3"><h1>Villa 3</h1><div class="bookings"></div></div>
     <div class="calendar-container" id="villa4"><h1>Villa 4</h1><div class="bookings"></div></div>
   </div>
+
+  <div id="debug-panel">
+    <strong>Debug Status:</strong><br/>
+    <div id="debug-log">Loading...</div>
+  </div>
 </div>
 
 <script>
@@ -110,9 +123,11 @@ const feeds = {
   "villa4": "villa4.ics"
 };
 const tz = "Pacific/Auckland";
+const refreshInterval = 5 * 60 * 1000; // 5 minutes
 
 async function loadICS(url) {
   const res = await fetch(url);
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
   const jcal = ICAL.parse(text);
   const comp = new ICAL.Component(jcal);
@@ -121,37 +136,55 @@ async function loadICS(url) {
 }
 
 function displayEvent(ev) {
-  const fmt = new Intl.DateTimeFormat("en-NZ", { timeZone: tz, hour: "numeric", minute: "2-digit", weekday:"short", day:"numeric", month:"short"});
+  const fmt = new Intl.DateTimeFormat("en-NZ", {
+    timeZone: tz, hour: "numeric", minute: "2-digit",
+    weekday:"short", day:"numeric", month:"short"
+  });
   const start = fmt.format(ev.startDate.toJSDate());
   const end = fmt.format(ev.endDate.toJSDate());
-  return `<div class="booking">
-            ${ev.summary}
-            <span>${start} → ${end}</span>
-          </div>`;
+  return `<div class="booking">${ev.summary}<span>${start} → ${end}</span></div>`;
 }
 
-(async () => {
+async function refreshData() {
+  const log = [];
   const now = new Date();
   for (const [villaId, ics] of Object.entries(feeds)) {
+    const container = document.getElementById(villaId);
+    container.classList.remove("updated");
     try {
       const evs = await loadICS(ics);
       const future = evs.filter(ev => ev.endDate.toJSDate() > now)
                         .sort((a,b) => a.startDate.toJSDate() - b.startDate.toJSDate());
-      document.querySelector(`#${villaId} .bookings`).innerHTML =
-        future.slice(0,5).map(displayEvent).join("") || "<div class='booking'>No upcoming stays</div>";
+      container.querySelector(".bookings").innerHTML =
+        future.slice(0,5).map(displayEvent).join("") ||
+        "<div class='booking'>No upcoming stays</div>";
+      container.classList.add("updated");
+      log.push(`<span class="ok">✔ ${villaId}</span> (${future.length} events)`);
     } catch (e) {
-      document.querySelector(`#${villaId} .bookings`).innerHTML =
+      container.querySelector(".bookings").innerHTML =
         "<div class='booking'>Feed unavailable</div>";
+      log.push(`<span class="fail">✖ ${villaId}</span> ${e.message}`);
     }
   }
+  const time = new Date().toLocaleTimeString("en-NZ",{timeZone:tz});
+  document.getElementById("debug-log").innerHTML =
+    `Last refresh: ${time}<br>` + log.join("<br>");
+}
 
-  // Update header date
+function updateHeaderDate() {
   const today = new Date();
   const formatted = today.toLocaleString("en-NZ", {
-    timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric"
+    timeZone: tz, weekday: "long", day: "numeric",
+    month: "long", year: "numeric"
   });
-  document.getElementById("current-date").textContent = `Today in New Zealand: ${formatted}`;
-})();
+  document.getElementById("current-date").textContent =
+    `Today in New Zealand: ${formatted}`;
+}
+
+// Initial load and schedule
+updateHeaderDate();
+refreshData();
+setInterval(refreshData, refreshInterval);
 </script>
 </body>
 </html>
