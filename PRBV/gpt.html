@@ -1,207 +1,256 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Villa Arrivals Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Patons Rock Villa Arrivals | NZT</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+
 <style>
 :root {
-  --teal: #00897b;
-  --teal-dark: #00695c;
-  --orange: #ff9800;
-  --grey-bg: #f7f9fb;
-  --grey-border: #e0e7ec;
-  --grey-text: #444;
-  --success: #2e7d32;
-  --error: #d32f2f;
-  --ongoing: #1976d2;
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --sand: #f7f3ef;
+  --linen: #fcfaf8;
+  --warm-gray: #5c5a57;
+  --accent-gold: #d7b463;
+  --accent-teal: #1c8d87;
+  --green-arrival: #2c7a4b;
+  --red-error: #c53030;
+  --blue-info: #2563eb;
+  --gray-muted: #78716c;
 }
-
 body {
-  background: var(--grey-bg);
-  margin: 0;
-  color: var(--grey-text);
+  font-family:'Poppins',sans-serif;
+  background:var(--sand);
+  color:var(--warm-gray);
+  min-height:100vh;
 }
-
-/* Header banner */
-header {
-  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-  color: #fff;
-  text-align: center;
-  padding: 2.5rem 1rem 2rem;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+header{
+  background:var(--linen);
+  border-bottom:3px solid var(--accent-gold);
+  text-align:center;
+  border-radius:1rem;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
-header h1 {
-  margin: 0;
-  font-size: 2.2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+header h1{
+  font-weight:800;
+  font-size:2.25rem;
+  color:var(--accent-teal);
 }
-header p {
-  margin-top: .5rem;
-  font-size: 1.05rem;
-  opacity: 0.9;
+header p{
+  font-weight:400;
+  color:var(--warm-gray);
 }
-
-/* Grid + cards */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-  gap: 1.2rem;
-  padding: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
+#current-date{
+  color:var(--accent-gold);
+  font-weight:700;
 }
-
-.card {
-  background: linear-gradient(to bottom right, #fff, #f9fafb);
-  border-left: 6px solid var(--orange);
-  border-radius: 14px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-  padding: 1.4rem 1.2rem 1.1rem;
-  transition: transform .2s ease, box-shadow .2s ease;
+.card{
+  background:var(--linen);
+  border-left:6px solid #ece7e2;
+  border-radius:1rem;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+  transition:all .4s ease;
 }
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+.card-active{
+  transform:scale(1.04) translateY(-6px);
+  border-left-color:var(--accent-gold);
+  box-shadow:0 10px 24px rgba(215,180,99,.35);
 }
-
-/* Villa title hierarchy */
-.villa-title {
-  font-weight: 900;
-  font-size: 2rem;
-  color: var(--teal-dark);
-  letter-spacing: -0.015em;
-  border-bottom: 3px solid var(--orange);
-  margin-bottom: 1rem;
-  padding-bottom: 0.2rem;
+.villa-title{
+  font-size:1.8rem;
+  font-weight:800;
+  color:var(--accent-teal);
+  margin-bottom:.5rem;
 }
-
-/* Status and info lines */
-.status-line {
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-  margin-top: 0.2rem;
+.arrival-info{padding:1rem 0;}
+.guest-name{color:var(--green-arrival);font-weight:600;}
+.date{color:var(--gray-muted);}
+.check-in{color:var(--accent-gold);font-weight:700;}
+.no-arrival{color:var(--gray-muted);font-style:italic;display:flex;align-items:center;font-weight:500;}
+.no-arrival i{color:var(--blue-info);margin-right:.4rem;}
+.loading-icon{animation:spin 1.5s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.welcome-card{
+  background:var(--linen);
+  color:var(--warm-gray);
+  border-radius:1rem;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
 }
-.status-line i {
-  margin-right: 0.6rem;
+.welcome-card a{color:var(--accent-teal);font-weight:700;text-decoration:underline;}
+.debug-bar{
+  background:var(--linen);
+  color:var(--gray-muted);
+  border-top:2px solid #e7e2dc;
+  font-size:.9rem;
+  border-radius:1rem;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.04);
 }
-
-/* Colour states */
-.arrival { color: var(--success); }
-.ongoing { color: var(--ongoing); }
-.no-arrival { color: var(--grey-text); opacity: 0.75; }
-.error { color: var(--error); }
-
-/* Debug footer */
-.debug-bar {
-  border-top: 1px solid var(--grey-border);
-  background: #eef2f5;
-  font-size: 0.9rem;
-  padding: 0.6rem 1rem;
-  color: #475569;
-}
-.debug-bar strong { color: var(--teal-dark); }
-.debug-entry { margin-right: 1rem; display: inline-block; }
-.status-success { color: var(--success); }
-.status-ongoing { color: var(--ongoing); }
-.status-noarrival { color: #999; }
-.status-error { color: var(--error); }
-
-/* Loading animation */
-.loading-icon {
-  display: inline-block;
-  width: 18px; height: 18px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 1.1s ease-in-out infinite;
-  margin-right: 0.5rem;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+.status-ok{color:var(--green-arrival);font-weight:600;}
+.status-no-arrival{color:var(--blue-info);font-weight:600;}
+.status-error{color:var(--red-error);font-weight:600;}
 </style>
 </head>
 
-<body>
-<header>
-  <div class="loading-icon"></div>
-  <h1>Villa Arrivals Dashboard</h1>
-  <p>Automatic sync — Pacific/Auckland time</p>
-</header>
+<body class="p-6 md:p-10">
+<div class="max-w-7xl mx-auto">
+  <header class="p-6 mb-10">
+    <h1>Patons Rock Beach Villas</h1>
+    <p class="text-xl mt-2">Today's Arrivals Summary (New Zealand Time)</p>
+    <p id="current-date" class="text-2xl mt-3"></p>
+  </header>
 
-<main class="grid" id="villaGrid"></main>
+  <main id="villa-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+    <div id="villa1-card" class="card p-6">
+      <h2 class="villa-title">Villa 1: The Beach House</h2>
+      <ul id="villa1" class="space-y-4 mt-3">
+        <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i>Preparing arrival data…</li>
+      </ul>
+    </div>
 
-<footer class="debug-bar">
-  <div id="debug"></div>
-</footer>
+    <div id="villa2-card" class="card p-6">
+      <h2 class="villa-title">Villa 2: The Cottage</h2>
+      <ul id="villa2" class="space-y-4 mt-3">
+        <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i>Preparing arrival data…</li>
+      </ul>
+    </div>
+
+    <div id="villa3-card" class="card p-6">
+      <h2 class="villa-title">Villa 3: The Loft</h2>
+      <ul id="villa3" class="space-y-4 mt-3">
+        <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i>Preparing arrival data…</li>
+      </ul>
+    </div>
+
+    <div id="villa4-card" class="card p-6">
+      <h2 class="villa-title">Villa 4: The Retreat</h2>
+      <ul id="villa4" class="space-y-4 mt-3">
+        <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i>Preparing arrival data…</li>
+      </ul>
+    </div>
+  </main>
+
+  <div class="welcome-card p-5 text-center mb-8">
+    <p class="text-lg md:text-xl font-medium">
+      We’re delighted to host you. Enjoy your stay — for assistance please call
+      <a href="tel:0273563551">027 356 3551</a> 🏡
+    </p>
+  </div>
+
+  <footer class="debug-bar p-4 mt-auto">
+    <p id="debug">System initializing…</p>
+  </footer>
+</div>
 
 <script>
-const villas = [
-  { id: 'villa1', name: 'Villa 1 · The Bay House' },
-  { id: 'villa2', name: 'Villa 2 · Ocean View' },
-  { id: 'villa3', name: 'Villa 3 · Garden Suite' },
-  { id: 'villa4', name: 'Villa 4 · The Retreat' }
-];
+const { DateTime, Settings } = luxon;
+Settings.defaultLocale = "en-NZ";
+const targetTimeZone = "Pacific/Auckland";
+const proxy = "https://api.allorigins.win/raw?url=";
 
-// Mock async fetch
-function simulateFetch(villa) {
-  const r = Math.random();
-  return new Promise(res => {
-    setTimeout(() => {
-      if (r < 0.2) res({status:'error', reason:'Network unreachable'});
-      else if (r < 0.4) res({status:'noarrival'});
-      else if (r < 0.6) res({status:'ongoing'});
-      else res({status:'success', guest:'Jane Doe', nights:2});
-    }, 400 + Math.random()*800);
-  });
-}
+const villaFeeds = {
+  villa1:{beds24:"https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
+          google:"https://calendar.google.com/calendar/ical/patonsrockbeachvillas.co.nz_5r3b0ovo5vn9l24j5503docbds%40group.calendar.google.com/public/basic.ics"},
+  villa2:{beds24:"https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
+          google:"https://calendar.google.com/calendar/ical/u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com/public/basic.ics"},
+  villa3:{beds24:"https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
+          google:"https://calendar.google.com/calendar/ical/ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com/public/basic.ics"},
+  villa4:{beds24:"https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8",
+          google:"https://calendar.google.com/calendar/ical/sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com/public/basic.ics"}
+};
 
-async function loadAll() {
-  const grid = document.getElementById('villaGrid');
-  const debug = document.getElementById('debug');
-  grid.innerHTML = '';
-  debug.innerHTML = '';
-  const results = [];
-
-  for (const v of villas) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `<div class="villa-title">${v.name}</div>
-      <div class="status-line">Loading...</div>`;
-    grid.appendChild(card);
-
-    const res = await simulateFetch(v);
-    let html='', dbg='';
-    const now = new Date().toLocaleTimeString('en-NZ',{hour12:false});
-    switch(res.status){
-      case 'success':
-        html = `<div class="status-line arrival"><i>✔</i> Arrival Today: ${res.guest} (${res.nights} nights)</div>`;
-        dbg = `<span class='debug-entry status-success'>${v.id}: ✔ Arrival (${now})</span>`;
-        break;
-      case 'ongoing':
-        html = `<div class="status-line ongoing"><i>⟳</i> Room occupied · Ongoing stay</div>`;
-        dbg = `<span class='debug-entry status-ongoing'>${v.id}: ⟳ Ongoing stay (${now})</span>`;
-        break;
-      case 'noarrival':
-        html = `<div class="status-line no-arrival"><i>–</i> No arrivals today</div>`;
-        dbg = `<span class='debug-entry status-noarrival'>${v.id}: – No arrivals (${now})</span>`;
-        break;
-      case 'error':
-        html = `<div class="status-line error"><i>✖</i> Data fetch error: ${res.reason}</div>`;
-        dbg = `<span class='debug-entry status-error'>${v.id}: ✖ Fetch fail (${res.reason})</span>`;
-        break;
-    }
-    card.querySelector('.status-line').outerHTML = html;
-    results.push(dbg);
+function parseICSEvent(block){
+  const start=block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
+  const end=block.match(/DTEND(?:;VALUE=DATE)?:(.*)/);
+  const summary=block.match(/SUMMARY:(.*)/);
+  if(!start||!summary)return null;
+  const raw=start[1].trim(), isDT=raw.includes("T")||raw.includes("Z");
+  const parseDate=r=>DateTime.fromObject({year:+r.substr(0,4),month:+r.substr(4,2),day:+r.substr(6,2)},{zone:targetTimeZone});
+  let arrival,endDate;
+  if(isDT){
+    arrival=DateTime.fromISO(raw,{zone:"utc"}).setZone(targetTimeZone);
+    if(end)endDate=DateTime.fromISO(end[1].trim(),{zone:"utc"}).setZone(targetTimeZone);
+  }else{
+    arrival=parseDate(raw).set({hour:14});
+    if(end)endDate=parseDate(end[1].trim());
   }
-  const now = new Date().toLocaleTimeString('en-NZ',{hour12:false});
-  debug.innerHTML = `<strong>Last refresh:</strong> ${now} | ${results.join(' ')}`;
+  return{summary:summary[1].trim(),arrivalDate:arrival,endDate};
+}
+function isSameDayNZ(dt,today){return dt.hasSame(today,"day");}
+function isOngoingStay(s,e,t){const ts=t.startOf("day");return s.startOf("day")<=ts&&e.startOf("day")>ts;}
+function formatNZDate(dt){return dt.toFormat("ccc, dd MMM yyyy");}
+
+async function tryFeed(url,todayNZ){
+  try{
+    const res=await fetch(url);
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const ics=await res.text();
+    const blocks=ics.split("BEGIN:VEVENT").slice(1);
+    let ongoing=null;
+    for(const block of blocks){
+      const ev=parseICSEvent(block);
+      if(!ev)continue;
+      if(isSameDayNZ(ev.arrivalDate,todayNZ))
+        return{status:"arrival",html:`<span class='arrival-info'><span class='guest-name'><i class='fas fa-user-circle mr-2'></i>${ev.summary}</span><span class='date'><i class='fas fa-calendar-alt mr-2'></i>${formatNZDate(ev.arrivalDate)}</span><span class='check-in'><i class='fas fa-door-open mr-2'></i>Check-in 2 PM</span></span>`};
+      if(ev.endDate&&isOngoingStay(ev.arrivalDate,ev.endDate,todayNZ))
+        ongoing={status:"ongoing",html:`<li class='no-arrival'><i class='fas fa-house-user'></i> Room Occupied (Ongoing Stay)</li>`};
+    }
+    if(ongoing)return ongoing;
+    return{status:"no-booking",html:"<li class='no-arrival'><i class='fas fa-calendar-times'></i> No new check-ins today.</li>"};
+  }catch(e){return{status:"error",error:e.message};}
 }
 
-loadAll();
-setInterval(loadAll, 120000); // refresh every 2 mins
+async function loadVilla(id,feeds){
+  const list=document.getElementById(id);
+  list.innerHTML=`<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i>Loading data…</li>`;
+  const attempts=[
+    {name:"Beds24 (Proxy)",url:proxy+encodeURIComponent(feeds.beds24)},
+    {name:"Google (Direct)",url:feeds.google},
+    {name:"Google (Proxy)",url:proxy+encodeURIComponent(feeds.google)}
+  ];
+  const today=DateTime.now().setZone(targetTimeZone);
+  let final={status:"error",html:"<li class='no-arrival'><i class='fas fa-exclamation-triangle'></i> Failed to load.</li>",debug:"<span class='status-error'>✖ All Feeds Failed</span>"};
+  for(const attempt of attempts){
+    const r=await tryFeed(attempt.url,today);
+    if(r.status==="arrival"){list.innerHTML=`<li>${r.html}</li>`;return`<span class='status-ok'>✔ Arrival (${attempt.name})</span>`;}
+    else if(r.status==="ongoing"&&(final.status==="error"||final.status==="no-booking"))
+      final={status:"ongoing",html:r.html,debug:`<span class='status-no-arrival'>ℹ Ongoing Stay (${attempt.name})</span>`};
+    else if(r.status==="no-booking"&&final.status==="error")
+      final={status:"no-booking",html:r.html,debug:`<span class='status-no-arrival'>○ No Booking (${attempt.name})</span>`};
+    else if(r.status==="error")console.warn(`${id} ${attempt.name} →`,r.error);
+  }
+  list.innerHTML=final.html;
+  return final.debug;
+}
+
+async function refreshAll(){
+  const statuses=[];
+  for(const [id,feeds] of Object.entries(villaFeeds)){
+    const st=await loadVilla(id,feeds);
+    statuses.push(`${id.replace('villa','V')}: ${st}`);
+  }
+  const now=DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
+  document.getElementById("debug").innerHTML=`<strong>Last refresh:</strong> ${now} NZT | ${statuses.join(' | ')}`;
+}
+
+const cards=['villa1-card','villa2-card','villa3-card','villa4-card'];
+let idx=0;
+function startCardCycle(){
+  setInterval(()=>{
+    document.getElementById(cards[idx])?.classList.remove('card-active');
+    idx=(idx+1)%cards.length;
+    document.getElementById(cards[idx])?.classList.add('card-active');
+  },2000);
+}
+
+window.onload=()=>{
+  document.getElementById("current-date").textContent=DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
+  refreshAll();
+  startCardCycle();
+  setInterval(refreshAll,10*60*1000);
+};
 </script>
 </body>
 </html>
