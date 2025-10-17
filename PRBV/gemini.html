@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NZ Villa Arrivals Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Luxon for date/time handling -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+    <!-- Load Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        /* Custom styles for clean aesthetics and readability */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --primary-blue: #1d4ed8; /* blue-700 */
+            --background-light: #f9fafb; /* gray-50 */
+            --background-dark: #ffffff;
+            --text-dark: #1f2937; /* gray-800 */
+            --green-arrival: #10b981; /* emerald-500 */
+            --red-no-arrival: #ef4444; /* red-500 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        .card {
+            background-color: var(--background-dark);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+        .villa-title {
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        /* Style for arrival information */
+        .arrival-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .guest-name {
+            font-weight: 700;
+            font-size: 1.25rem; /* text-xl */
+            color: var(--green-arrival);
+        }
+        .date {
+            font-size: 1rem; /* text-base */
+            color: #4b5563; /* gray-600 */
+            margin-top: 0.25rem;
+        }
+        .check-in {
+            font-size: 0.875rem; /* text-sm */
+            color: var(--primary-blue);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Status and loading indicators */
+        .loading-icon {
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .no-arrival {
+            color: var(--red-no-arrival);
+            font-style: italic;
+            font-weight: 500;
+        }
+        .status-ok {
+            color: var(--green-arrival);
+            font-weight: 600;
+        }
+        .status-error {
+            color: var(--red-no-arrival);
+            font-weight: 600;
+        }
+        .debug-bar {
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header with Date -->
+        <header class="mb-8 text-center bg-white p-6 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Villa Arrival Summary (NZT)</h1>
+            <p id="current-date" class="text-xl font-medium text-primary-blue mt-2"></p>
+        </header>
+
+        <!-- --- TODAY'S ARRIVALS GRID --- -->
+        <h2 class="text-2xl font-bold text-gray-700 mb-4 ml-2">Today's Arrivals</h2>
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            
+            <!-- Villa 1 Card (Today) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 1: The Beach House</h2>
+                <ul id="villa1" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+
+            <!-- Villa 2 Card (Today) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 2: The Cottage</h2>
+                <ul id="villa2" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+            
+            <!-- Villa 3 Card (Today) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 3: The Loft</h2>
+                <ul id="villa3" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+
+            <!-- Villa 4 Card (Today) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 4: The Retreat</h2>
+                <ul id="villa4" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+        </main>
+
+        <hr class="my-10 border-gray-300">
+
+        <!-- --- TOMORROW'S ARRIVALS GRID --- -->
+        <h2 class="text-2xl font-bold text-gray-700 mb-4 ml-2">Tomorrow's Arrivals</h2>
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            
+            <!-- Villa 1 Card (Tomorrow) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 1: The Beach House</h2>
+                <ul id="villa1_tomorrow" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+
+            <!-- Villa 2 Card (Tomorrow) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 2: The Cottage</h2>
+                <ul id="villa2_tomorrow" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+            
+            <!-- Villa 3 Card (Tomorrow) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 3: The Loft</h2>
+                <ul id="villa3_tomorrow" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+
+            <!-- Villa 4 Card (Tomorrow) -->
+            <div class="card p-6 rounded-xl">
+                <h2 class="villa-title text-xl">Villa 4: The Retreat</h2>
+                <ul id="villa4_tomorrow" class="space-y-4 text-gray-500">
+                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                </ul>
+            </div>
+        </main>
+
+        <!-- Debug/Status Bar -->
+        <footer class="debug-bar mt-auto p-3 bg-white rounded-xl shadow">
+            <p id="debug">Loading status...</p>
+        </footer>
+    </div>
+
+<script>
+    const { DateTime, Settings } = luxon;
+    Settings.defaultLocale = "en-NZ";
+    const targetTimeZone = "Pacific/Auckland";
+    const proxy = "https://api.allorigins.win/raw?url=";
+
+    // --- Feeds Configuration (Raw URLs) ---
+    // Note: URLs are defined without the proxy wrapper here.
+    const villaFeeds = {
+        villa1: {
+            beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
+            google: "https://calendar.google.com/calendar/ical/patonsrockbeachvillas.co.nz_5r3b0ovo5vn9l24j5503docbds%40group.calendar.google.com/public/basic.ics"
+        },
+        villa2: {
+            beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
+            google: "https://calendar.google.com/calendar/ical/u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com/public/basic.ics"
+        },
+        villa3: {
+            beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
+            google: "https://calendar.google.com/calendar/ical/ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com/public/basic.ics"
+        },
+        villa4: {
+            beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8",
+            google: "https://calendar.google.com/calendar/ical/sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com/public/basic.ics"
+        }
+    };
+
+    /**
+     * Parses an ICS event block using Luxon for reliable time zone handling.
+     */
+    function parseICSEvent(block){
+        const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
+        const summaryLine = block.match(/SUMMARY:(.*)/);
+
+        if (!startLine || !summaryLine) return null;
+
+        const startRaw = startLine[1].trim();
+        const summary = summaryLine[1].trim();
+        let arrivalDate;
+
+        // Check if the DTSTART includes a time (T) or is explicitly UTC (Z)
+        const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
+
+        if (isDateTime) {
+            // Full datetime: Parse as UTC, then convert to NZ time zone
+            arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+        } else {
+            // Date-only (YYYYMMDD): Treat this calendar date as the NZ arrival day (set to 2 PM check-in time)
+            const year = parseInt(startRaw.substr(0,4),10);
+            const month = parseInt(startRaw.substr(4,2),10);
+            const day = parseInt(startRaw.substr(6,2),10);
+            arrivalDate = DateTime.fromObject({ year, month, day, hour: 14, minute: 0 }, { zone: targetTimeZone });
+        }
+        return { summary, arrivalDate };
+    }
+
+    /**
+     * Checks if a Luxon DateTime object is the same calendar day as 'targetDay' in NZT.
+     */
+    function isSameDayNZ(dt, targetDay){
+        return dt.hasSame(targetDay, 'day');
+    }
+
+    /**
+     * Formats a Luxon DateTime object to a readable NZ string.
+     */
+    function formatNZDate(dt){
+        return dt.toFormat("ccc, dd MMM yyyy");
+    }
+
+
+    /**
+     * Load one feed, return arrival HTML if successful for the specified targetDay.
+     */
+    async function tryFeed(url, targetDay){
+        const res = await fetch(url);
+        // Throwing an error here ensures the 'catch' block in loadArrivals is executed
+        if(!res.ok) throw new Error(`HTTP ${res.status}`); 
+        const ics = await res.text();
+        const blocks = ics.split("BEGIN:VEVENT").slice(1);
+        
+        // targetDay is already set to the start of the day in NZT by the caller
+
+        for(const block of blocks){
+            const event = parseICSEvent(block);
+            if(!event) continue;
+            // Check against the passed targetDay
+            if(isSameDayNZ(event.arrivalDate, targetDay)){
+                return `<span class="arrival-info">
+                    <span class="guest-name">${event.summary}</span>
+                    <span class="date">${formatNZDate(event.arrivalDate)}</span>
+                    <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
+                </span>`;
+            }
+        }
+        return null; // No arrival found for the target day in this specific feed
+    }
+
+    /**
+     * Tries a series of feeds in order until an arrival is found or all fail for a specific list ID.
+     */
+    async function loadArrivals(listId, feeds, targetDay, dayLabel){
+        const list = document.getElementById(listId);
+        list.innerHTML="<li class='loading'><i class='fas fa-spinner loading-icon'></i> Loading…</li>";
+      
+      // Define the fetch attempts in priority order:
+      const attempts = [
+        // 1. Primary: Beds24 via Proxy (Necessary due to CORS)
+        { 
+          name: 'Beds24 (Proxy)',
+          url: proxy + encodeURIComponent(feeds.beds24)
+        },
+        // 2. Fallback 1: Google Calendar Direct (Attempts to bypass proxy, may succeed)
+        { 
+          name: 'Google (Direct)',
+          url: feeds.google
+        },
+        // 3. Fallback 2: Google Calendar via Proxy (If Direct failed due to CORS)
+        {
+          name: 'Google (Proxy)',
+          url: proxy + encodeURIComponent(feeds.google)
+        }
+      ];
+
+      // Use the dayLabel in the error message for better debugging
+      let statusMessage = `<span class="status-error">✖ Failed all (${dayLabel})</span>`;
+
+        for(const attempt of attempts){
+            try {
+                // Pass the targetDay to tryFeed
+                const arrival = await tryFeed(attempt.url, targetDay);
+                if(arrival){
+                    list.innerHTML = `<li>${arrival}</li>`;
+                    // Success: report which feed succeeded
+                    statusMessage = `<span class="status-ok">✔ OK (${attempt.name})</span>`;
+                    return statusMessage;
+                }
+            } catch(e){
+                console.warn(`${listId} - ${attempt.name} failed:`, e.message);
+            }
+        }
+
+        // If loop finishes without returning (no arrival found across all feeds)
+        list.innerHTML = "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals</li>";
+        return statusMessage; // Returns the final status (Failed all feeds)
+    }
+
+    /**
+     * The main function to run the refresh process for all villas for both today and tomorrow.
+     */
+    async function refreshAll(){
+        const statuses = [];
+        const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+        // Calculate tomorrow's date
+        const tomorrowNZ = todayNZ.plus({ days: 1 });
+
+        // --- Load Today's Arrivals ---
+        for(const [id, feeds] of Object.entries(villaFeeds)){
+            const statusToday = await loadArrivals(id, feeds, todayNZ, 'Today');
+            statuses.push(` ${id} (T): ${statusToday}`);
+        }
+
+        // --- Load Tomorrow's Arrivals ---
+        for(const [id, feeds] of Object.entries(villaFeeds)){
+            const tomorrowId = `${id}_tomorrow`;
+            const statusTomorrow = await loadArrivals(tomorrowId, feeds, tomorrowNZ, 'Tomorrow');
+            statuses.push(` ${id} (M): ${statusTomorrow}`);
+        }
+        
+        // Update the debug status message
+        const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
+        document.getElementById("debug").innerHTML = 
+            `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
+    }
+
+    // -----------------------------------------------------------------
+
+    // --- Initialization and Scheduling ---
+
+    window.onload = function() {
+        // Display NZ date immediately
+        document.getElementById("current-date").textContent =
+            DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
+
+        // Run the initial load
+        refreshAll();
+
+        // Schedule automatic refresh every 10 minutes (10 * 60 * 1000 milliseconds)
+        setInterval(refreshAll, 10 * 60 * 1000);
+    }
+</script>
+</body>
+</html>
