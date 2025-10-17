@@ -11,13 +11,13 @@
     <!-- Load Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <!-- Google Fonts: Montserrat for headings, Open Sans for body -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap">
 
     <style>
         :root {
             --primary-aqua: #2b6cb0; /* Deep ocean aqua */
             --accent-sunset: #ed8936; /* Warm sunset orange */
-            --background-shell: #f7fafc; /* Light seashell background */
+            --background-shell: #2d3748; /* Darker coastal slate */
             --card-bg: #ffffff; /* Clean white cards */
             --text-dark: #1a202c; /* Rich navy text */
             --success-green: #38a169; /* Vibrant green for arrivals */
@@ -26,7 +26,7 @@
 
         body {
             font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, var(--background-shell) 0%, #e6f0fa 100%);
+            background: linear-gradient(135deg, var(--background-shell) 0%, #1a202c 100%);
             color: var(--text-dark);
             min-height: 100vh;
             display: flex;
@@ -36,29 +36,32 @@
 
         .card {
             background: var(--card-bg);
-            border-radius: 0.75rem;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            padding: 1.5rem;
-            max-height: 200px; /* Compact card height */
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.1);
+            transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 2rem;
+            width: 100%;
+            max-width: 320px; /* Larger cards */
+            min-height: 240px; /* Slightly taller for 3D effect */
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.15);
         }
 
         .villa-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.25rem; /* Large, bold h1 */
-            font-weight: 700;
+            font-size: 3rem; /* Even larger h1 */
+            font-weight: 900;
             color: var(--primary-aqua);
             margin-bottom: 0.5rem;
         }
 
         .villa-subtitle {
             font-family: 'Open Sans', sans-serif;
-            font-size: 1rem;
+            font-size: 1.125rem;
             color: #4a5568;
             margin-bottom: 1rem;
         }
@@ -119,12 +122,32 @@
             padding: 0.75rem;
         }
 
-        .welcome-message {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--text-dark);
+        .welcome-card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
             text-align: center;
             max-width: 600px;
             margin: 1rem auto;
+            border: 1px solid var(--primary-aqua);
+            position: relative;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-aqua), var(--accent-sunset));
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .welcome-message {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--text-dark);
             font-size: 1rem;
             line-height: 1.5;
         }
@@ -144,12 +167,14 @@
     <div class="max-w-7xl mx-auto flex flex-col min-h-screen">
         <!-- Header -->
         <header class="mb-6 text-center bg-white p-5 rounded-xl shadow-md">
-            <h1 class="text-3xl font-bold font-['Montserrat'] text-gray-900 tracking-tight">Patons Rock Beach Villas</h1>
+            <h1 class="text-5xl font-extrabold font-['Montserrat'] text-gray-900 tracking-tight">Patons Rock Beach Villas</h1>
             <p id="current-date" class="text-lg font-medium text-primary-aqua mt-1"></p>
-            <p class="welcome-message">
-                We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
-                <a href="tel:0273563551">027 356 3551</a>.
-            </p>
+            <div class="welcome-card">
+                <p class="welcome-message">
+                    We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
+                    <a href="tel:0273563551">027 356 3551</a>.
+                </p>
+            </div>
         </header>
 
         <!-- Villa Cards Grid -->
