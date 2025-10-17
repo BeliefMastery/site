@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Patons Rock Villas – Today’s Arrival</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patons Rock Villas – Today's Arrival</title>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/dist/luxon.min.js"></script>
 <style>
-body { background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; text-align:center; }
+body {
+  background:#000; color:#fff; font-family:"Segoe UI",Arial,sans-serif; margin:0; padding:0; text-align:center;
+}
 .welcome-banner {
   background:linear-gradient(135deg,#004466,#0077b6);
   padding:20px; border-radius:10px; margin:20px auto;
-  max-width:800px; box-shadow:0 4px 12px rgba(0,0,0,0.5);
+  max-width:900px; box-shadow:0 4px 12px rgba(0,0,0,0.5);
 }
-.welcome-banner h1 {margin:0 0 8px;font-size:1.8em;text-shadow:0 0 10px #FFD700;}
-#current-date {color:#FFD700;font-size:1.1em;}
+.welcome-banner h1 {
+  margin:0 0 8px; font-size:1.8em; text-shadow:0 0 10px #FFD700;
+}
+#welcome-date { color:#FFD700; font-size:1.1em; margin-top:6px; }
 .calendar-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
   gap:25px; max-width:1100px; margin:30px auto;
 }
-.calendar-container {
+.calendar-card {
   background:#222; border-radius:15px; padding:15px;
   box-shadow:0 6px 14px rgba(0,0,0,0.6);
+  text-align:left;
 }
-.calendar-container h2 {color:#00b4d8;margin-top:0;}
-ul {list-style:none;padding:0;margin:0;}
-li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
+.calendar-card h2 { color:#00b4d8; margin-top:0; }
+ul { list-style:none; padding:0; margin:0; }
+li { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
 .arrival { color:#00bfff; font-weight:bold; }
 .debug {
   background:#111; border-top:1px solid #333; margin-top:30px;
@@ -32,23 +38,27 @@ li {padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
 </style>
 </head>
 <body>
+
 <div class="welcome-banner">
   <h1>Welcome to Patons Rock Beach Villas</h1>
   <p>For assistance please call <strong>027 356 3551</strong>.</p>
-  <div id="current-date"></div>
+  <div id="welcome-date"></div>
 </div>
 
-<h2>Today’s First Arrival</h2>
+<h2>Today's Arrivals</h2>
 <div class="calendar-grid" id="villaGrid">
-  <div class="calendar-container"><h2>Villa 1</h2><ul id="villa1"></ul></div>
-  <div class="calendar-container"><h2>Villa 2</h2><ul id="villa2"></ul></div>
-  <div class="calendar-container"><h2>Villa 3</h2><ul id="villa3"></ul></div>
-  <div class="calendar-container"><h2>Villa 4</h2><ul id="villa4"></ul></div>
+  <div class="calendar-card"><h2>Villa 1</h2><ul id="villa1"></ul></div>
+  <div class="calendar-card"><h2>Villa 2</h2><ul id="villa2"></ul></div>
+  <div class="calendar-card"><h2>Villa 3</h2><ul id="villa3"></ul></div>
+  <div class="calendar-card"><h2>Villa 4</h2><ul id="villa4"></ul></div>
 </div>
 
 <div class="debug" id="debug">Loading...</div>
 
 <script>
+const { DateTime, Settings } = luxon;
+Settings.defaultLocale = "en-NZ";
+
 const villas = {
   villa1: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
   villa2: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
@@ -57,39 +67,35 @@ const villas = {
 };
 
 const proxy = "https://api.allorigins.win/raw?url=";
+const targetTimeZone = "Pacific/Auckland";
 
-// Parse ICS event block and convert date to NZ
-function parseICSEvent(block){
-  const startLine = block.match(/DTSTART.*:(.*)/);
+function parseICSEvent(block) {
+  const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
   const summaryLine = block.match(/SUMMARY:(.*)/);
   if(!startLine || !summaryLine) return null;
 
-  let startRaw = startLine[1].trim();
-  let summary = summaryLine[1].trim();
-  let start;
+  const startRaw = startLine[1].trim();
+  const summary = summaryLine[1].trim();
+  let arrivalDate;
 
-  // Handle YYYYMMDD or full datetime formats
-  if(/^\d{8}$/.test(startRaw)){
-    start = new Date(`${startRaw.substr(0,4)}-${startRaw.substr(4,2)}-${startRaw.substr(6,2)}T14:00:00`);
+  if(startRaw.includes('T') || startRaw.includes('Z')) {
+    arrivalDate = DateTime.fromISO(startRaw,{zone:'utc'}).setZone(targetTimeZone);
   } else {
-    start = new Date(startRaw);
+    const year = parseInt(startRaw.substr(0,4));
+    const month = parseInt(startRaw.substr(4,2));
+    const day = parseInt(startRaw.substr(6,2));
+    arrivalDate = DateTime.fromObject({year,month,day,hour:14,minute:0},{zone:targetTimeZone});
   }
 
-  // Convert to NZ time
-  start = new Date(start.toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-
-  return {summary, start};
+  return {summary, arrivalDate};
 }
 
-// Check if two dates are the same NZ day
-function isSameDayNZ(d1,d2){
-  const opts={timeZone:"Pacific/Auckland",year:"numeric",month:"numeric",day:"numeric"};
-  return d1.toLocaleDateString("en-NZ",opts) === d2.toLocaleDateString("en-NZ",opts);
+function isSameDayNZ(dt,today) {
+  return dt.hasSame(today,'day');
 }
 
-// Format a Date object to NZ string
-function formatNZDate(d){
-  return d.toLocaleDateString("en-NZ",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+function formatNZDate(dt) {
+  return dt.toFormat("ccc, dd MMM yyyy");
 }
 
 async function loadVilla(id,url){
@@ -100,15 +106,15 @@ async function loadVilla(id,url){
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const ics = await res.text();
     const blocks = ics.split("BEGIN:VEVENT").slice(1);
-    const today = new Date(new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland"}));
-    let arrival = null;
+    const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
+    let arrival=null;
 
     for(const block of blocks){
-      const event = parseICSEvent(block);
+      const event=parseICSEvent(block);
       if(!event) continue;
-      if(isSameDayNZ(event.start,today)){
-        arrival = `<span class="arrival">${formatNZDate(event.start)} — ${event.summary} — check-in 2 pm</span>`;
-        break; // only first arrival
+      if(isSameDayNZ(event.arrivalDate,todayNZ)){
+        arrival=`<span class="arrival">${formatNZDate(event.arrivalDate)} — ${event.summary} — check-in 2 pm</span>`;
+        break;
       }
     }
 
@@ -126,13 +132,11 @@ async function refreshAll(){
     const st = await loadVilla(id,url);
     statuses.push(`${id}: ${st}`);
   }
-  const now = new Date().toLocaleTimeString("en-NZ");
-  document.getElementById("debug").innerHTML = `<strong>Last refresh:</strong> ${now}<br>` + statuses.join("<br>");
+  const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
+  document.getElementById("debug").innerHTML=`<strong>Last refresh:</strong> ${now}<br>`+statuses.join("<br>");
 }
 
-// Show current NZ date at top
-document.getElementById("current-date").textContent =
-  new Date().toLocaleString("en-NZ",{timeZone:"Pacific/Auckland",weekday:"long",day:"numeric",month:"long",year:"numeric"});
+document.getElementById("welcome-date").textContent = DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
 
 refreshAll();
 setInterval(refreshAll,10*60*1000);
