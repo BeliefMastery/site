@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NZ Villa Arrivals Dashboard</title>
-    <!-- Load Tailwind CSS -->
+    <title>Patons Rock Villa Arrivals | NZT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Luxon for date/time handling -->
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-    <!-- Load Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* Custom styles for clean aesthetics and readability */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        /* Custom styles for a Coastal Minimalist look */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
         :root {
-            --primary-blue: #1d4ed8; /* blue-700 */
-            --background-light: #f9fafb; /* gray-50 */
-            --background-dark: #ffffff;
-            --text-dark: #1f2937; /* gray-800 */
-            --green-arrival: #10b981; /* emerald-500 */
-            --red-no-arrival: #ef4444; /* red-500 */
+            /* Coastal Palette */
+            --primary-aqua: #06b6d4; /* cyan-500 for main accents */
+            --primary-dark: #0e7490; /* cyan-700 for strong text */
+            --background-light: #f0fdfa; /* light cyan-50, soft off-white */
+            --background-card: #ffffff;
+            --text-dark: #1e293b; /* slate-800, soft black */
+            --green-arrival: #10b981; /* emerald-500, unchanged as it represents 'Go' */
+            --red-alert: #ef4444; /* red-500 */
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--background-light);
             color: var(--text-dark);
             min-height: 100vh;
         }
         .card {
-            background-color: var(--background-dark);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s;
+            background-color: var(--background-card);
+            border-left: 5px solid var(--primary-aqua); /* Coastal feature accent */
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
         }
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15);
         }
         .villa-title {
-            border-bottom: 2px solid var(--primary-blue);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
+            color: var(--primary-dark);
             font-weight: 700;
+            font-size: 1.5rem; /* text-2xl */
         }
-        /* Style for arrival information */
+        /* Arrival information styling */
         .arrival-info {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            padding: 1rem 0;
+            border-top: 1px dashed #e2e8f0; /* Soft divider */
         }
         .guest-name {
             font-weight: 700;
-            font-size: 1.25rem; /* text-xl */
+            font-size: 1.4rem; /* Prominent name */
             color: var(--green-arrival);
+            margin-bottom: 0.25rem;
         }
         .date {
-            font-size: 1rem; /* text-base */
-            color: #4b5563; /* gray-600 */
-            margin-top: 0.25rem;
+            font-size: 1rem;
+            color: #64748b; /* slate-500 */
+            font-weight: 400;
         }
         .check-in {
-            font-size: 0.875rem; /* text-sm */
-            color: var(--primary-blue);
-            font-weight: 500;
+            font-size: 0.95rem; 
+            color: var(--primary-aqua);
+            font-weight: 600;
             margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
         }
 
         /* Status and loading indicators */
@@ -74,113 +79,79 @@
             to { transform: rotate(360deg); }
         }
         .no-arrival {
-            color: var(--red-no-arrival);
+            color: #475569; /* slate-600 */
             font-style: italic;
             font-weight: 500;
+            display: flex;
+            align-items: center;
         }
         .status-ok {
             color: var(--green-arrival);
             font-weight: 600;
         }
         .status-error {
-            color: var(--red-no-arrival);
+            color: var(--red-alert);
             font-weight: 600;
         }
         .debug-bar {
             border-top: 1px solid #e5e7eb;
-            font-size: 0.75rem;
-            color: #6b7280;
+            font-size: 0.85rem;
+            color: #64748b;
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-6 md:p-10">
 
     <div class="max-w-7xl mx-auto">
-        <!-- Header with Date -->
-        <header class="mb-8 text-center bg-white p-6 rounded-xl shadow-lg">
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Villa Arrival Summary (NZT)</h1>
-            <p id="current-date" class="text-xl font-medium text-primary-blue mt-2"></p>
+        
+        <div class="bg-primary-dark text-white p-4 md:p-6 rounded-xl shadow-lg mb-8 text-center">
+            <p class="text-lg md:text-xl font-medium">
+                We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
+                <a href="tel:0273563551" class="font-bold underline tracking-wider">027 356 3551</a>. 🏡
+            </p>
+        </div>
+
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-primary-dark tracking-wide">
+                Patons Rock Beach Villas
+            </h1>
+            <p class="text-xl font-light text-gray-500 mt-2">Arrivals Summary (New Zealand Time)</p>
+            <p id="current-date" class="text-2xl font-semibold text-primary-aqua mt-4 bg-white p-3 inline-block rounded-lg shadow-md"></p>
         </header>
 
-        <!-- --- TODAY'S ARRIVALS GRID --- -->
-        <h2 class="text-2xl font-bold text-gray-700 mb-4 ml-2">Today's Arrivals</h2>
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             
-            <!-- Villa 1 Card (Today) -->
             <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 1: The Beach House</h2>
-                <ul id="villa1" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                <h2 class="villa-title">Villa 1: The Beach House</h2>
+                <ul id="villa1" class="space-y-4 text-gray-500 mt-3">
+                    <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <!-- Villa 2 Card (Today) -->
             <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 2: The Cottage</h2>
-                <ul id="villa2" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                <h2 class="villa-title">Villa 2: The Cottage</h2>
+                <ul id="villa2" class="space-y-4 text-gray-500 mt-3">
+                    <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
             
-            <!-- Villa 3 Card (Today) -->
             <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 3: The Loft</h2>
-                <ul id="villa3" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                <h2 class="villa-title">Villa 3: The Loft</h2>
+                <ul id="villa3" class="space-y-4 text-gray-500 mt-3">
+                    <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <!-- Villa 4 Card (Today) -->
             <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 4: The Retreat</h2>
-                <ul id="villa4" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
+                <h2 class="villa-title">Villa 4: The Retreat</h2>
+                <ul id="villa4" class="space-y-4 text-gray-500 mt-3">
+                    <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
         </main>
 
-        <hr class="my-10 border-gray-300">
-
-        <!-- --- TOMORROW'S ARRIVALS GRID --- -->
-        <h2 class="text-2xl font-bold text-gray-700 mb-4 ml-2">Tomorrow's Arrivals</h2>
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            
-            <!-- Villa 1 Card (Tomorrow) -->
-            <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 1: The Beach House</h2>
-                <ul id="villa1_tomorrow" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
-                </ul>
-            </div>
-
-            <!-- Villa 2 Card (Tomorrow) -->
-            <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 2: The Cottage</h2>
-                <ul id="villa2_tomorrow" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
-                </ul>
-            </div>
-            
-            <!-- Villa 3 Card (Tomorrow) -->
-            <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 3: The Loft</h2>
-                <ul id="villa3_tomorrow" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
-                </ul>
-            </div>
-
-            <!-- Villa 4 Card (Tomorrow) -->
-            <div class="card p-6 rounded-xl">
-                <h2 class="villa-title text-xl">Villa 4: The Retreat</h2>
-                <ul id="villa4_tomorrow" class="space-y-4 text-gray-500">
-                    <li class='loading'><i class='fas fa-spinner loading-icon'></i> Initializing...</li>
-                </ul>
-            </div>
-        </main>
-
-        <!-- Debug/Status Bar -->
-        <footer class="debug-bar mt-auto p-3 bg-white rounded-xl shadow">
-            <p id="debug">Loading status...</p>
+        <footer class="debug-bar mt-auto p-4 bg-white rounded-xl shadow-inner">
+            <p id="debug">System initializing...</p>
         </footer>
     </div>
 
@@ -191,7 +162,6 @@
     const proxy = "https://api.allorigins.win/raw?url=";
 
     // --- Feeds Configuration (Raw URLs) ---
-    // Note: URLs are defined without the proxy wrapper here.
     const villaFeeds = {
         villa1: {
             beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
@@ -241,10 +211,10 @@
     }
 
     /**
-     * Checks if a Luxon DateTime object is the same calendar day as 'targetDay' in NZT.
+     * Checks if a Luxon DateTime object is the same calendar day as 'today' in NZT.
      */
-    function isSameDayNZ(dt, targetDay){
-        return dt.hasSame(targetDay, 'day');
+    function isSameDayNZ(dt, today){
+        return dt.hasSame(today, 'day');
     }
 
     /**
@@ -255,39 +225,35 @@
     }
 
 
-    /**
-     * Load one feed, return arrival HTML if successful for the specified targetDay.
-     */
-    async function tryFeed(url, targetDay){
+    // Load one feed, return arrival HTML if successful
+    async function tryFeed(url){
         const res = await fetch(url);
-        // Throwing an error here ensures the 'catch' block in loadArrivals is executed
+        // Throwing an error here ensures the 'catch' block in loadVilla is executed
         if(!res.ok) throw new Error(`HTTP ${res.status}`); 
         const ics = await res.text();
         const blocks = ics.split("BEGIN:VEVENT").slice(1);
-        
-        // targetDay is already set to the start of the day in NZT by the caller
+        const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
 
         for(const block of blocks){
             const event = parseICSEvent(block);
             if(!event) continue;
-            // Check against the passed targetDay
-            if(isSameDayNZ(event.arrivalDate, targetDay)){
+            if(isSameDayNZ(event.arrivalDate, todayNZ)){
                 return `<span class="arrival-info">
-                    <span class="guest-name">${event.summary}</span>
-                    <span class="date">${formatNZDate(event.arrivalDate)}</span>
-                    <span class="check-in"><i class="fas fa-clock"></i> Check-in: 2:00 PM</span>
+                    <span class="guest-name"><i class="fas fa-user-circle mr-2"></i> ${event.summary}</span>
+                    <span class="date"><i class="fas fa-calendar-alt mr-2"></i> ${formatNZDate(event.arrivalDate)}</span>
+                    <span class="check-in"><i class="fas fa-door-open mr-2"></i> Check-in: 2:00 PM</span>
                 </span>`;
             }
         }
-        return null; // No arrival found for the target day in this specific feed
+        return null; // No arrival today found in this specific feed
     }
 
     /**
-     * Tries a series of feeds in order until an arrival is found or all fail for a specific list ID.
+     * Tries a series of feeds in order until an arrival is found or all fail.
      */
-    async function loadArrivals(listId, feeds, targetDay, dayLabel){
-        const list = document.getElementById(listId);
-        list.innerHTML="<li class='loading'><i class='fas fa-spinner loading-icon'></i> Loading…</li>";
+    async function loadVilla(id, feeds){
+        const list = document.getElementById(id);
+        list.innerHTML=`<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Loading data...</li>`;
       
       // Define the fetch attempts in priority order:
       const attempts = [
@@ -308,13 +274,11 @@
         }
       ];
 
-      // Use the dayLabel in the error message for better debugging
-      let statusMessage = `<span class="status-error">✖ Failed all (${dayLabel})</span>`;
+      let statusMessage = `<span class="status-error">✖ Failed all feeds</span>`;
 
         for(const attempt of attempts){
             try {
-                // Pass the targetDay to tryFeed
-                const arrival = await tryFeed(attempt.url, targetDay);
+                const arrival = await tryFeed(attempt.url);
                 if(arrival){
                     list.innerHTML = `<li>${arrival}</li>`;
                     // Success: report which feed succeeded
@@ -322,35 +286,24 @@
                     return statusMessage;
                 }
             } catch(e){
-                console.warn(`${listId} - ${attempt.name} failed:`, e.message);
+                console.warn(`${id} - ${attempt.name} failed:`, e.message);
             }
         }
 
         // If loop finishes without returning (no arrival found across all feeds)
-        list.innerHTML = "<li class='no-arrival'><i class='fas fa-calendar-times'></i> No arrivals</li>";
+        list.innerHTML = "<li class='no-arrival'><i class='fas fa-bed mr-2'></i> Room Occupied or No arrivals today</li>";
         return statusMessage; // Returns the final status (Failed all feeds)
     }
 
     /**
-     * The main function to run the refresh process for all villas for both today and tomorrow.
+     * The main function to run the refresh process for all villas.
      */
     async function refreshAll(){
         const statuses = [];
-        const todayNZ = DateTime.now().setZone(targetTimeZone).startOf('day');
-        // Calculate tomorrow's date
-        const tomorrowNZ = todayNZ.plus({ days: 1 });
-
-        // --- Load Today's Arrivals ---
+        // Iterate through the villaFeeds object
         for(const [id, feeds] of Object.entries(villaFeeds)){
-            const statusToday = await loadArrivals(id, feeds, todayNZ, 'Today');
-            statuses.push(` ${id} (T): ${statusToday}`);
-        }
-
-        // --- Load Tomorrow's Arrivals ---
-        for(const [id, feeds] of Object.entries(villaFeeds)){
-            const tomorrowId = `${id}_tomorrow`;
-            const statusTomorrow = await loadArrivals(tomorrowId, feeds, tomorrowNZ, 'Tomorrow');
-            statuses.push(` ${id} (M): ${statusTomorrow}`);
+            const st = await loadVilla(id, feeds);
+            statuses.push(` ${id}: ${st}`);
         }
         
         // Update the debug status message
