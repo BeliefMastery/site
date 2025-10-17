@@ -9,18 +9,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* Custom styles for a Coastal Minimalist look */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        /* Custom styles for a Golden Bay Sunset look */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
         
         :root {
-            /* Coastal Palette */
-            --primary-aqua: #06b6d4; /* cyan-500 for main accents */
-            --primary-dark: #0e7490; /* cyan-700 for strong text */
-            --background-light: #f0fdfa; /* light cyan-50, soft off-white */
+            /* Golden Bay Sunset Palette */
+            --primary-teal: #0f766e; /* teal-700 for main accents/dark text */
+            --secondary-orange: #f59e0b; /* amber-500 for date/time accents */
+            --background-light: #f9f9f9; /* soft off-white background */
             --background-card: #ffffff;
-            --text-dark: #1e293b; /* slate-800, soft black */
-            --green-arrival: #10b981; /* emerald-500, unchanged as it represents 'Go' */
-            --red-alert: #ef4444; /* red-500 */
+            --text-dark: #1f2937; /* gray-800 */
+            --green-arrival: #10b981; /* emerald-500 for success */
+            --red-alert: #ef4444; /* red-500 for failure */
+            --info-status: #6b7280; /* gray-500 for 'no arrival' status */
         }
         body {
             font-family: 'Poppins', sans-serif;
@@ -30,41 +31,42 @@
         }
         .card {
             background-color: var(--background-card);
-            border-left: 5px solid var(--primary-aqua); /* Coastal feature accent */
-            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
+            /* Stronger visual accent line */
+            border-left: 6px solid var(--secondary-orange); 
+            border-radius: 12px;
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 16px 30px -8px rgba(0, 0, 0, 0.15);
         }
         .villa-title {
-            color: var(--primary-dark);
-            font-weight: 700;
-            font-size: 1.5rem; /* text-2xl */
+            color: var(--primary-teal);
+            font-weight: 800; /* Extra bold */
+            font-size: 1.6rem; 
+            margin-bottom: 0.5rem;
         }
         /* Arrival information styling */
         .arrival-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
             padding: 1rem 0;
-            border-top: 1px dashed #e2e8f0; /* Soft divider */
         }
         .guest-name {
             font-weight: 700;
-            font-size: 1.4rem; /* Prominent name */
+            font-size: 1.5rem; 
             color: var(--green-arrival);
             margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
         }
         .date {
             font-size: 1rem;
-            color: #64748b; /* slate-500 */
+            color: #4b5563; /* gray-600 */
             font-weight: 400;
         }
         .check-in {
-            font-size: 0.95rem; 
-            color: var(--primary-aqua);
+            font-size: 1rem; 
+            color: var(--secondary-orange);
             font-weight: 600;
             margin-top: 0.5rem;
             display: flex;
@@ -79,24 +81,29 @@
             to { transform: rotate(360deg); }
         }
         .no-arrival {
-            color: #475569; /* slate-600 */
+            color: var(--info-status); 
             font-style: italic;
             font-weight: 500;
             display: flex;
             align-items: center;
         }
+        /* New Status Styles for Debug Bar */
         .status-ok {
             color: var(--green-arrival);
-            font-weight: 600;
+            font-weight: 700;
+        }
+        .status-no-arrival {
+            color: var(--secondary-orange);
+            font-weight: 700;
         }
         .status-error {
             color: var(--red-alert);
-            font-weight: 600;
+            font-weight: 700;
         }
         .debug-bar {
-            border-top: 1px solid #e5e7eb;
-            font-size: 0.85rem;
-            color: #64748b;
+            border-top: 2px solid #e5e7eb;
+            font-size: 0.8rem;
+            color: #6b7280;
         }
     </style>
 </head>
@@ -104,45 +111,45 @@
 
     <div class="max-w-7xl mx-auto">
         
-        <div class="bg-primary-dark text-white p-4 md:p-6 rounded-xl shadow-lg mb-8 text-center">
+        <div class="bg-primary-teal text-white p-4 md:p-6 rounded-xl shadow-xl mb-8 text-center">
             <p class="text-lg md:text-xl font-medium">
                 We’re delighted to host you. Enjoy your stay, and if you need assistance please call 
-                <a href="tel:0273563551" class="font-bold underline tracking-wider">027 356 3551</a>. 🏡
+                <a href="tel:0273563551" class="font-bold tracking-wider underline hover:text-secondary-orange transition duration-300">027 356 3551</a>. 🏡
             </p>
         </div>
 
-        <header class="mb-10 text-center">
-            <h1 class="text-4xl font-bold text-primary-dark tracking-wide">
+        <header class="mb-10 text-center bg-white p-6 rounded-xl shadow-lg border-b-4 border-secondary-orange">
+            <h1 class="text-4xl font-extrabold text-primary-teal tracking-tight">
                 Patons Rock Beach Villas
             </h1>
-            <p class="text-xl font-light text-gray-500 mt-2">Arrivals Summary (New Zealand Time)</p>
-            <p id="current-date" class="text-2xl font-semibold text-primary-aqua mt-4 bg-white p-3 inline-block rounded-lg shadow-md"></p>
+            <p class="text-xl font-light text-gray-500 mt-2">Today's Arrivals Summary (New Zealand Time)</p>
+            <p id="current-date" class="text-2xl font-bold text-secondary-orange mt-4"></p>
         </header>
 
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             
-            <div class="card p-6 rounded-xl">
+            <div class="card p-6">
                 <h2 class="villa-title">Villa 1: The Beach House</h2>
                 <ul id="villa1" class="space-y-4 text-gray-500 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <div class="card p-6 rounded-xl">
+            <div class="card p-6">
                 <h2 class="villa-title">Villa 2: The Cottage</h2>
                 <ul id="villa2" class="space-y-4 text-gray-500 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
             
-            <div class="card p-6 rounded-xl">
+            <div class="card p-6">
                 <h2 class="villa-title">Villa 3: The Loft</h2>
                 <ul id="villa3" class="space-y-4 text-gray-500 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
                 </ul>
             </div>
 
-            <div class="card p-6 rounded-xl">
+            <div class="card p-6">
                 <h2 class="villa-title">Villa 4: The Retreat</h2>
                 <ul id="villa4" class="space-y-4 text-gray-500 mt-3">
                     <li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Preparing arrival data...</li>
@@ -237,6 +244,7 @@
         for(const block of blocks){
             const event = parseICSEvent(block);
             if(!event) continue;
+            // The core logic remains: look for an event that starts today in NZT
             if(isSameDayNZ(event.arrivalDate, todayNZ)){
                 return `<span class="arrival-info">
                     <span class="guest-name"><i class="fas fa-user-circle mr-2"></i> ${event.summary}</span>
@@ -255,44 +263,42 @@
         const list = document.getElementById(id);
         list.innerHTML=`<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Loading data...</li>`;
       
-      // Define the fetch attempts in priority order:
       const attempts = [
-        // 1. Primary: Beds24 via Proxy (Necessary due to CORS)
-        { 
-          name: 'Beds24 (Proxy)',
-          url: proxy + encodeURIComponent(feeds.beds24)
-        },
-        // 2. Fallback 1: Google Calendar Direct (Attempts to bypass proxy, may succeed)
-        { 
-          name: 'Google (Direct)',
-          url: feeds.google
-        },
-        // 3. Fallback 2: Google Calendar via Proxy (If Direct failed due to CORS)
-        {
-          name: 'Google (Proxy)',
-          url: proxy + encodeURIComponent(feeds.google)
-        }
+        { name: 'Beds24 (Proxy)', url: proxy + encodeURIComponent(feeds.beds24) },
+        { name: 'Google (Direct)', url: feeds.google },
+        { name: 'Google (Proxy)', url: proxy + encodeURIComponent(feeds.google) }
       ];
 
-      let statusMessage = `<span class="status-error">✖ Failed all feeds</span>`;
+      let statusMessage = `<span class="status-error">✖ Failed All Feeds</span>`;
+      let arrivalFound = false;
 
         for(const attempt of attempts){
             try {
                 const arrival = await tryFeed(attempt.url);
                 if(arrival){
                     list.innerHTML = `<li>${arrival}</li>`;
-                    // Success: report which feed succeeded
                     statusMessage = `<span class="status-ok">✔ OK (${attempt.name})</span>`;
+                    arrivalFound = true;
                     return statusMessage;
                 }
+                // If tryFeed returns null, the feed worked but found no arrival today.
+                if(!arrivalFound) { 
+                    statusMessage = `<span class="status-no-arrival">✔ No Arrival Found</span>`;
+                }
+
             } catch(e){
                 console.warn(`${id} - ${attempt.name} failed:`, e.message);
+                // If it fails, keep the default statusMessage of 'Failed All Feeds' 
+                // unless a successful 'No Arrival Found' was already set from a previous attempt.
             }
         }
 
-        // If loop finishes without returning (no arrival found across all feeds)
-        list.innerHTML = "<li class='no-arrival'><i class='fas fa-bed mr-2'></i> Room Occupied or No arrivals today</li>";
-        return statusMessage; // Returns the final status (Failed all feeds)
+        // If loop finishes without an arrival:
+        if (!arrivalFound) {
+            list.innerHTML = "<li class='no-arrival'><i class='fas fa-bed mr-2'></i> No new check-ins scheduled for today.</li>";
+        }
+        
+        return statusMessage;
     }
 
     /**
@@ -300,7 +306,6 @@
      */
     async function refreshAll(){
         const statuses = [];
-        // Iterate through the villaFeeds object
         for(const [id, feeds] of Object.entries(villaFeeds)){
             const st = await loadVilla(id, feeds);
             statuses.push(` ${id}: ${st}`);
