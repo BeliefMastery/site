@@ -76,7 +76,7 @@
   </script>
 
   <style>
-    /* ---------- Variables & Reset ---------- */
+    /* ---------- Variables & Reset (UPDATED with new thematic colors) ---------- */
     :root{
       --brand:#111;
       --muted:#5a5a5a;
@@ -87,8 +87,9 @@
       --radius:12px;
       --transition: all .22s cubic-bezier(.4,0,.2,1);
       /* New: Dual-book theme colors */
-      --bm-color: #0077b6; /* A deep blue for Belief Mastery */
-      --som-color: #fca311; /* A rich orange for Sovereign of Mind */
+      --bm-color: #0077b6; /* Deep structural blue */
+      --som-color: #fca311; /* Rich perceptual orange */
+      --codex-color: #38a700; /* Diagnostic green */
     }
     *, *::before, *::after{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%;font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--brand);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
@@ -111,14 +112,14 @@
     .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
     .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
 
-    /* ---------- Header / nav ---------- */
+    /* ---------- Header / nav (Slightly reduced size for more viewport space) ---------- */
     header.site-header{
       position:fixed;
       top:0;
       left:0;
       width:100%;
       z-index:1000;
-      height:68px;
+      height:60px; /* Reduced from 68px */
       display:flex;
       align-items:center;
       justify-content:center;
@@ -146,7 +147,7 @@
       transition:var(--transition);
     }
     .nav-list a{
-      padding:.55rem 1rem;
+      padding:.4rem .9rem; /* Reduced padding */
       border-radius:.45rem;
       font-weight:600;
       position:relative;
@@ -215,159 +216,175 @@
       }
     }
 
-    /* New: Sticky Sovereign Tenet Callout */
-    .sovereign-tenet {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 999; /* Below header, above main content */
-        background: var(--brand);
-        color: var(--bg);
-        text-align: center;
-        padding: 0.75rem 1rem;
-        font-size: 1.1rem;
-        font-weight: 700;
-        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(4px);
-        transition: all 0.3s ease-in-out;
-        cursor: pointer;
-    }
-    .sovereign-tenet:hover {
-        background: var(--bm-color); /* Darker on hover for attention */
-        color: white;
-    }
-    .sovereign-tenet span {
-        font-weight: 400;
-        color: var(--accent);
-    }
-
-
-    /* ---------- Container & sections ---------- */
+    /* ---------- Container & sections (Adjusted margin for smaller header) ---------- */
     .container{
       max-width:1180px;
-      margin:calc(68px + 60px) auto 80px;
+      margin:calc(60px + 60px) auto 100px; /* Increased bottom margin for sticky CTA bar */
       padding:0 1rem;
-      overflow: visible; /* Allow extensions to flow freely */
+      overflow: visible; 
     }
     section{background:var(--glass);border-radius:var(--radius);padding:28px;margin:32px 0;box-shadow:var(--shadow);position:relative;overflow:visible;transition:var(--transition)}
     section:hover{box-shadow:0 12px 40px rgba(0,0,0,0.1)}
     .section-inner{max-width:980px;margin:0 auto}
 
-    /* ---------- Hero (Modified for Split-Book Layout) ---------- */
+    /* ---------- Hero (New, simplified Hero) ---------- */
     .hero{display:flex;flex-direction:column;align-items:center;gap:.9rem;text-align:center;padding:1rem 0 2rem}
-    .hero h1{font-size:2.2rem;margin:0;line-height:1.1;font-weight:700;margin-bottom:.6rem}
-    .hero p{max-width:70ch;margin:0 auto 1.2rem;color:var(--muted);font-size:1rem}
-
-    /* New: Book-Split Hero Layout */
-    .book-split {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        width: 100%;
-        margin-top: 2rem;
-        text-align: center;
-    }
-    .book-split .book-module {
-        background: #fff;
-        padding: 2rem;
-        border-radius: var(--radius);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .book-split .book-module:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.1);
-    }
-    .book-split .book-module h2 {
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-    }
-    .book-split .book-module.bm h2 { color: var(--bm-color); }
-    .book-split .book-module.som h2 { color: var(--som-color); }
-    .book-split .book-module img {
-        max-width: 180px;
-        margin: 0.5rem auto 1rem;
-        border-radius: 4px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    .book-split .book-module p {
-        color: var(--muted);
-        margin-bottom: 1.5rem;
-        line-height: 1.5;
-        max-width: none;
-    }
-
-    .cta{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center; margin-top: 1.5rem;}
+    .hero h1{font-size:2.4rem;margin:0;line-height:1.1;font-weight:700;margin-bottom:.6rem;color:var(--brand);}
+    .hero h1 span {color: var(--accent);}
+    .hero p{max-width:75ch;margin:0 auto 2rem;color:var(--muted);font-size:1.1rem;line-height:1.6;}
+    .cta{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
     .btn{display:inline-block;padding:.9rem 1.5rem;border-radius:10px;border:0;font-weight:700;cursor:pointer;font-size:1rem;box-shadow:0 8px 22px rgba(0,0,0,0.1);transition:var(--transition)}
     .btn-primary{background:linear-gradient(135deg,#ffe000,#ffb800);color:#000}
     .btn-primary:hover{transform:translateY(-1px) scale(1.02)}
-    /* New: Themed buttons for clarity */
-    .btn-bm { background-color: var(--bm-color); color: white; }
-    .btn-som { background-color: var(--som-color); color: var(--brand); }
-    .btn-bm:hover { background-color: #005a8f; transform:translateY(-1px) }
-    .btn-som:hover { background-color: #e59100; transform:translateY(-1px) }
-
-
     .btn-outline{background:transparent;border:2px solid rgba(0,0,0,0.08);color:var(--brand)}
     .btn-outline:hover{background:rgba(255,184,0,0.08)}
 
-    /* Removed original portal-grid and image-row from hero as they are replaced by book-split */
-    /* Original portal-grid and image-row styles are kept below for subsequent sections if they are still used. */
+    /* New: The Sovereign Acquisition Bar (Sticky Footer) */
+    .acquisition-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        display: flex;
+        justify-content: space-between;
+        background: var(--brand);
+        padding: 0;
+        box-shadow: 0 -8px 20px rgba(0,0,0,0.2);
+    }
+    .acquisition-bar a {
+        flex: 1 1 50%;
+        text-align: center;
+        padding: 1.1rem 1rem;
+        font-weight: 700;
+        font-size: 1.05rem;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        text-decoration: none;
+        color: white; /* Default text color */
+    }
+    .acquisition-bar .bm-acquire {
+        background: var(--bm-color);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .acquisition-bar .som-acquire {
+        background: var(--som-color);
+        color: var(--brand); /* Text color for contrast */
+    }
+    .acquisition-bar .bm-acquire:hover {
+        background: #005a8f;
+        transform: translateY(-2px);
+    }
+    .acquisition-bar .som-acquire:hover {
+        background: #e59100;
+        transform: translateY(-2px);
+        color: var(--brand);
+    }
 
-    /* ---------- Dual Portal Cards ---------- */
-    .portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;margin:2rem 0;align-items:start}
-    .portal-card{background:#fff;padding:2rem;border-radius:var(--radius);box-shadow:0 10px 28px rgba(0,0,0,0.06);text-align:center;transition:var(--transition);position:relative;overflow:hidden;cursor:pointer}
-    .portal-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),transparent)}
-    .portal-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08)}
-    .portal-card blockquote{font-style:italic;font-size:1.1rem;color:var(--brand);margin:0 0 1rem;line-height:1.4}
-    .portal-card p{color:var(--muted);line-height:1.55;margin-bottom:1rem;max-width:60ch;margin-left:auto;margin-right:auto}
-    .portal-card .btn{font-size:.95rem;padding:.7rem 1.2rem;margin-top:.5rem}
+    /* ---------- Thematic Feature Grid (The most innovative change) ---------- */
+    .thematic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem 4rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+    .grid-image {
+      max-width: 100%;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: block;
+      transition: transform .3s ease;
+    }
+    .grid-image:hover {
+        transform: scale(1.03);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+    }
 
-    /* ---------- Feature List ---------- */
-    .feature-list{list-style:disc;padding-left:1.5rem;max-width:72ch;margin:1rem auto;color:var(--muted);line-height:1.55}
-    .feature-list li{margin-bottom:.5rem}
+    .grid-content {
+      padding: 1.5rem;
+      border-radius: var(--radius);
+    }
+    .grid-content h3 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    .grid-content p {
+      margin-bottom: 1rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .grid-content ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+    .grid-content ul li {
+        margin-bottom: 0.75rem;
+        padding-left: 1.5rem;
+        position: relative;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+    .grid-content ul li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
 
-    /* ---------- Image row (Now used for Codex for clarity) ---------- */
-    .image-row{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem}
-    .image-card{flex:1 1 210px;max-width:270px;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:flex;flex-direction:column;transition:var(--transition)}
-    .image-card:hover{transform:translateY(-2px)}
-    .image-card a {display:block;flex:1;overflow:hidden;}
-    .image-card img{width:100%;height:100%;object-fit:cover;object-position:center;clip-path: inset(5% 0 5% 0);display:block;transition:transform .4s ease}
-    .image-card:hover img{transform:scale(1.04)}
-    .image-card figcaption{padding:.6rem .8rem;font-weight:600;text-align:center;flex:0 0 auto;}
+    /* Styling the two distinct themes */
+    .bm-block .grid-content h3 { color: var(--bm-color); }
+    .bm-block .grid-content ul li::before { color: var(--bm-color); }
+    .som-block .grid-content h3 { color: var(--som-color); }
+    .som-block .grid-content ul li::before { content: '⚡'; color: var(--som-color); } /* Different icon for contrast */
 
-    /* ---------- Grid + cards ---------- */
+    /* Reversing the grid for alternating pattern */
+    .som-block {
+        grid-template-areas: "content image";
+    }
+    .som-block .grid-content { grid-area: content; }
+    .som-block .grid-image-wrapper { grid-area: image; }
+
+
+    /* ---------- Grid + cards (Adjusted for better visual flow) ---------- */
     .grid { position: relative; overflow: visible; z-index: auto; display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem;margin-top:1rem }
     .card { position: relative; z-index: 1; isolation: isolate; background:#fff;padding:1.1rem;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.06);min-height:130px;display:flex;flex-direction:column;gap:.6rem;transition:var(--transition)}
     .card:hover{transform:translateY(-2px);z-index: 1000; /* Set a high z-index on the container card itself */}
     .card .extended{position:fixed;top:auto;left:auto;right:auto;bottom:auto;background:var(--glass);padding:.9rem;border-radius:8px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s ease .3s, transform .3s ease .3s;width:300px;z-index:10000;transform:translateY(-6px)}
     .card:hover .extended{opacity:1;pointer-events:auto;transform:translateY(0)}
 
-    /* ---------- Forms ---------- */
-    form#subscribe-form{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
-    input[type="email"]{padding:.85rem 1rem;border-radius:8px;border:2px solid rgba(0,0,0,0.06);min-width:220px;font-size:1rem;transition:var(--transition)}
-    input[type="email"]:focus{outline:none;border-color:var(--accent)}
+    /* ---------- Footer (Adjusted bottom margin) ---------- */
+    footer{margin:2rem 0 6rem; /* Ensures footer content is above the sticky bar */
+      text-align:center;color:var(--muted);font-size:.95rem}
 
-    /* ---------- Footer ---------- */
-    footer{margin:2rem 0 4rem;text-align:center;color:var(--muted);font-size:.95rem; /* Increased margin to accommodate sticky bar */}
-
-    /* ---------- Responsive (Adjusted for Book-Split) ---------- */
-    @media (max-width:820px){
-      .hero h1{font-size:1.7rem}
-      .card .extended{width:90%;left:1rem;right:1rem;top:100%;transform:none}
-      .image-card{max-width:100%}
-      .portal-grid{grid-template-columns:1fr;gap:1.5rem}
-      /* New: Stack the book split on small screens */
-      .book-split {
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-      }
-      .sovereign-tenet {
-          font-size: 0.95rem;
-          padding: 0.6rem 1rem;
-      }
+    /* ---------- Responsive (Handling the Thematic Grid Stack) ---------- */
+    @media (max-width:1024px){
+        .thematic-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .som-block { /* Disable the grid reversal on mobile */
+            grid-template-areas: none;
+        }
+        .som-block .grid-content, .som-block .grid-image-wrapper {
+            grid-area: auto;
+        }
+    }
+    @media (max-width:768px){
+        .hero h1{font-size:1.8rem}
+        .hero p{font-size:1rem}
+        .acquisition-bar a {
+            padding: 0.8rem 0.5rem;
+            font-size: 0.9rem;
+        }
+        .container{
+            margin-top:calc(60px + 30px);
+            margin-bottom: 70px; /* Smaller sticky bar height */
+        }
+        footer{margin-bottom: 4rem;}
     }
   </style>
 </head>
@@ -382,9 +399,9 @@
       <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="#home" data-target="home" class="active">Home</a></li>
-        <li role="none"><a role="menuitem" href="#belief-mastery" data-target="belief-mastery">Belief Mastery</a></li>
-        <li role="none"><a role="menuitem" href="#sovereign-of-mind" data-target="sovereign-of-mind">Sovereign of Mind</a></li>
-        <li role="none"><a role="menuitem" href="#distortion-codex" data-target="distortion-codex">Codex</a></li> <li role="none"><a role="menuitem" href="#purchase" data-target="purchase">Acquire</a></li> </ul>
+        <li role="none"><a role="menuitem" href="#belief-mastery" data-target="belief-mastery">Internal Work</a></li> <li role="none"><a role="menuitem" href="#sovereign-of-mind" data-target="sovereign-of-mind">External Defense</a></li> <li role="none"><a role="menuitem" href="#distortion-codex" data-target="distortion-codex">Codex</a></li>
+        <li role="none"><a role="menuitem" href="#purchase" data-target="purchase">Acquire</a></li>
+      </ul>
     </nav>
   </header>
 
@@ -393,44 +410,25 @@
     <section id="home" data-bg="./images/index-background.JPG" aria-labelledby="home-title">
       <div class="section-inner">
         <div class="hero" aria-hidden="false">
-          <h1 id="home-title">The Architecture of Mental Sovereignty</h1>
+          <h1 id="home-title">Structure Your Mind. <span>Author Your Life.</span></h1>
           <p>
-            Your path to **Structural Freedom**: Rewire your subconscious rules, fortify your perception, and reclaim conscious authorship of your life.
+            You are suffering from borrowed scaffolding: subconscious rules, external programming, and ideological capture. This is the unified suite for **full-spectrum mental sovereignty**, giving you the tools to excavate your inner architecture and fortify your outer perception.
           </p>
 
-          <div class="book-split">
-            <article class="book-module bm">
-              <h2>Belief Mastery</h2>
-              <a href="#belief-mastery"><img src="./images/BM-cover.JPG" alt="Belief Mastery cover" loading="lazy"></a>
-              <p>
-                **Internal Sovereignty:** Trace recurring problems to their root beliefs. A 12-step method for dismantling hidden, limiting subconscious rules that cause dependency and perpetual emotional loops.
-              </p>
-              <a class="btn btn-bm" href="#belief-mastery">Explore Inner Architecture &rarr;</a>
-            </article>
-            <article class="book-module som">
-              <h2>Sovereign of Mind</h2>
-              <a href="#sovereign-of-mind"><img src="./images/SoM-cover.JPG" alt="Sovereign of Mind cover" loading="lazy"></a>
-              <p>
-                **External Sovereignty:** Forge a cognitive defense system. A structural antidote to manipulation, borrowed ideology, and systemic persuasion to secure conscious authorship in a complex world.
-              </p>
-              <a class="btn btn-som" href="#sovereign-of-mind">Fortify Perception &rarr;</a>
-            </article>
-          </div>
-
           <div class="cta">
-            <a class="btn btn-outline" href="#distortion-codex">The Sovereignty-Distortion Codex</a>
             <a class="btn btn-primary" href="#purchase">Acquire the Full Suite</a>
+            <a class="btn btn-outline" href="#distortion-codex">View the Diagnostic Layer</a>
           </div>
         </div>
 
-        <section>
-          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.55;">
-            <h2 id="orientation-title" style="text-align:center;margin-bottom:.5rem">A Coherent Suite for Full-Spectrum Agency</h2>
+        <section style="margin-top: 3.5rem;">
+          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.65;">
+            <h2 id="orientation-title" style="text-align:center;margin-bottom:.5rem;font-size:1.6rem;">A Unified Structural Path</h2>
             <p>
-              These works operate as a coherent suite. **Belief Mastery** excavates the subconscious logic that shapes choices and reorders behavior through a disciplined inference and dismantling process. **Sovereign of Mind** fortifies perception and supplies tools for resisting cognitive hijack. The **Codex** exposes recurring structural deformations so readers can recognize systemic pressure early and respond with clarity and agency.
+              The journey to sovereignty is two-fold: **internal repair** and **external defense**. Belief Mastery rewrites the hidden subconscious logic that drives unwanted behavior. Sovereign of Mind fortifies the perception engine against persuasion and dependency. The Codex provides the taxonomy for early recognition of structural distortions.
             </p>
             <p>
-              The site follows a simple path: discover internal drivers, build durable perception, and apply diagnostic recognitions in daily life. The following sections provide depth at each stage and practical steps to move from insight to durable change.
+              The content below breaks this work into distinct, actionable phases.
             </p>
           </div>
         </section>
@@ -438,166 +436,105 @@
     </section>
 
     <section id="belief-mastery" data-bg="./images/BM-background.JPG" aria-labelledby="bm-title">
-      <div class="section-inner">
-        <h2 id="bm-title" style="text-align:center;margin:0 0 .4rem 0">Belief Mastery</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">A Structural Method for Rewriting Your Hidden Rules</p>
+      <div class="section-inner bm-block">
+        <h2 id="bm-title" style="text-align:center;color:var(--bm-color);margin-bottom:2rem;">Phase I: Internal Sovereignty</h2>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/BM-cover.JPG" alt="Belief Mastery cover" style="max-width:440px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
-            Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops. **Belief Mastery** rewrites those buried rules through a precise step-by-step inference and transformation process.
-          </p>
-          <a class="btn btn-bm" href="#purchase">Acquire Belief Mastery</a>
+        <div class="thematic-grid">
+            <div class="grid-content">
+                <h3>Belief Mastery: The Inference Process</h3>
+                <p>
+                    Subconscious beliefs form to protect the child but limit the adult, causing endless dependency and emotional repetition. This work is a surgical, 12-step process to infer, expose, and structurally transform these hidden rules.
+                </p>
+                <ul>
+                    <li>Trace problems to their root **need** and **vice**.</li>
+                    <li>Expose the belief holding the emotional pattern in place.</li>
+                    <li>Navigate a precise 12-step inference and transformation process.</li>
+                    <li>Master pattern tracing through detailed case studies.</li>
+                    <li>Re-parent and integrate exiled parts of the self.</li>
+                </ul>
+                <a class="btn" style="background-color: var(--bm-color); color: white; margin-top: 1rem;" href="#purchase">Start the Internal Work &rarr;</a>
+            </div>
+            <div class="grid-image-wrapper">
+                <a href="#purchase"><img src="./images/BM-cover.JPG" alt="Belief Mastery cover" class="grid-image"></a>
+            </div>
         </div>
 
-        <ul class="feature-list">
-          <li>Trace recurring problems to their root need.</li>
-          <li>Expose the belief holding each pattern in place.</li>
-          <li>Navigate a 12-step inference process to transform it.</li>
-          <li>Re-parent the parts that once had no choice.</li>
-          <li>Master pattern tracing through detailed case studies.</li>
-        </ul>
-
-        <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;margin:1rem auto 0;font-style:italic;">
-          Blending right-brain visualization (*The Journey Home*) with left-brain logic (*The Belief Inference Process*), this book delivers surgeon-level clarity with witness-level compassion.
-        </p>
-
-        <section style="margin-top:1.25rem;">
-          <h3 id="bm-chapters">Expanded chapter guide</h3>
+        <section style="margin-top:4rem; background: rgba(0, 119, 182, 0.05); border: 1px solid rgba(0, 119, 182, 0.1);">
+          <h3 id="bm-chapters" style="text-align:center; color:var(--bm-color)">Expanded Chapter Guide: The Blueprint</h3>
           <div class="grid">
             <div class="card">
-              <strong>Chapter 1 – Belief Mastery: Foundations</strong>
-              <p style="margin:0;color:var(--muted)">Engagement criteria, core principles, and readiness reflection for subconscious liberation.</p>
-              <div class="extended">Outlines purpose, disclaimers, and prerequisites like emotional ownership. Bridges to archetypal work, framing belief mastery as accelerating authorship over inherited patterns.</div>
-            </div>
-            <div class="card">
-              <strong>Chapter 2 – Archetypal Imprints</strong>
-              <p style="margin:0;color:var(--muted)">Masculine/feminine halves and visualization's role in imprint transformation.</p>
-              <div class="extended">Defines imprints as blueprints of experience, emphasizing right-brain visualization to rewire subconscious relational dynamics and unlock structural change.</div>
-            </div>
-            <div class="card">
-              <strong>Chapter 3 – The Journey Home</strong>
-              <p style="margin:0;color:var(--muted)">Guided narrative to reveal primary imprints and developmental roots.</p>
-              <div class="extended">Seven-page immersive walk surfaces Main Character view, boundary/authority (Father), family positioning (Hallway), and nurturance (Mother). Analyzes interactions for subconscious patterning origins.</div>
-            </div>
-            <div class="card">
-              <strong>Chapter 4 – The Return</strong>
-              <p style="margin:0;color:var(--muted)">Second journey for repair, self-parenting, and archetype integration.</p>
-              <div class="extended">Reforms imprints via visualization, embodying internal Mother/Father for stability/acceptance. Includes real-time engagement, practical applications, and self-parenting guide to end external dependency.</div>
-            </div>
-            <div class="card">
               <strong>Chapter 5 – Needs and Beliefs</strong>
-              <p style="margin:0;color:var(--muted)">Needs/vice vocabularies, dependency loops, and core-limiting beliefs.</p>
+              <p style="margin:0;color:var(--muted)">Maps 18+ loops (JOY, SPACE, SECURITY) linking unmet needs to vices and core limiting beliefs. Explores outsourcing costs and sovereign resourcing.</p>
               <div class="extended">Maps 18+ loops (e.g., SPACE, JOY, SECURITY) and chains, linking unmet needs to vices/beliefs. Explores outsourcing costs, sovereign resourcing, and barriers from outdated protective structures.</div>
             </div>
             <div class="card">
               <strong>Chapter 6 – Belief Inference</strong>
-              <p style="margin:0;color:var(--muted)">12-step process to trace, confirm, and prepare beliefs for dismantling.</p>
+              <p style="margin:0;color:var(--muted)">The 12-step process to trace, confirm, and prepare beliefs for final dismantling.</p>
               <div class="extended">From dissatisfactory analysis/vice identification to exiled emotions/origin needs, inference, loop/resistance validation, denied expression, and sensitivity prep. Builds precision for root-level diagnosis.</div>
             </div>
             <div class="card">
               <strong>Chapter 7 – Dismantling Beliefs</strong>
-              <p style="margin:0;color:var(--muted)">Strategic contradiction, cathartic release, and integration channels.</p>
+              <p style="margin:0;color:var(--muted)">Strategic contradiction, cathartic release, and integration channels for permanent change.</p>
               <div class="extended">Harnesses fury for relevance testing, habit transitions, and second-order suffering navigation. Details "bucket and hose" catharsis, unfurling denied expressions, disclosure power, and dynamic flow markers for completion.</div>
             </div>
             <div class="card">
-              <strong>Appendices 1-5: Patterns, References, Cases, Methodology, & Tributaries</strong>
-              <p style="margin:0;color:var(--muted)">Coping compendium, taxonomies/tables, case studies, kinesiology/epistemics, and references.</p>
-              <div class="extended">Appendix 1: Insecurity strategies, attachments, pre-verbal traumas. Appendix 2: Needs/vice glossaries, quick tables for patterns/compulsions. Appendix 3: Six real-world cases with integrations. Appendix 4: Kinesiology application, scope/boundaries. Appendix 5: Methodological tributaries and influences.</div>
+              <strong>Chapter 3 & 4 – Archetypal Integration</strong>
+              <p style="margin:0;color:var(--muted)">Guided journeys to reveal primary imprints, repair family dynamics, and achieve self-parenting.</p>
+              <div class="extended">Seven-page immersive walk surfaces imprints. Repairs via visualization, embodying internal Mother/Father for stability/acceptance. Self-parenting guide ends external dependency.</div>
             </div>
           </div>
         </section>
 
-        <section style="margin-top:18px;">
-          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.6">
-            <h3 style="text-align:center;margin-bottom:.4rem">How authorship moves into perception</h3>
-            <p>
-              Working at belief-level creates a stable interior. That stability allows perception to be sharpened without collapse. The material in the next section supplies the tools and diagnostics that secure perception so internal shifts translate into outer competence.
-            </p>
-          </div>
-        </section>
       </div>
     </section>
 
     <section id="sovereign-of-mind" data-bg="./images/SoM-background.JPG" aria-labelledby="som-title">
-      <div class="section-inner">
-        <h2 id="som-title" style="text-align:center;margin:0 0 .4rem 0">Sovereign of Mind</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">Cognitive Sovereignty in a Manipulated World</p>
+      <div class="section-inner som-block">
+        <h2 id="som-title" style="text-align:center;color:var(--som-color);margin-bottom:2rem;">Phase II: External Defense</h2>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/SoM-cover.JPG" alt="Sovereign of Mind cover" style="max-width:420px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
-            Your thoughts may not always be your own. In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. **Sovereign of Mind** is the structural antidote.
-          </p>
-          <a class="btn btn-som" href="#purchase">Acquire Sovereign of Mind</a>
+        <div class="thematic-grid">
+            <div class="grid-image-wrapper">
+                <a href="#purchase"><img src="./images/SoM-cover.JPG" alt="Sovereign of Mind cover" class="grid-image"></a>
+            </div>
+            <div class="grid-content">
+                <h3>Sovereign of Mind: Fortify Perception</h3>
+                <p>
+                    In a world engineered for persuasion and dependency, most minds operate on borrowed ideology. This book is the structural antidote and field manual to secure your cognitive infrastructure and guarantee authorship.
+                </p>
+                <ul>
+                    <li>Secure conscious **authorship** of thought and will.</li>
+                    <li>Refine discernment through **truth frameworks**.</li>
+                    <li>Recognize and **neutralize eight manipulation vectors**.</li>
+                    <li>Build resilience through **ego mastery** and paradigm recovery.</li>
+                    <li>Master relational dynamics without surrendering sovereignty.</li>
+                </ul>
+                <a class="btn" style="background-color: var(--som-color); color: var(--brand); margin-top: 1rem;" href="#purchase">Secure Your Cognitive Borders &rarr;</a>
+            </div>
         </div>
 
-        <ul class="feature-list">
-          <li>Secure conscious authorship of thought and will.</li>
-          <li>Expand perception and discernment.</li>
-          <li>Build your paradigm deliberately upon frameworks that can withstand contradiction.</li>
-          <li>Recognize and neutralize manipulation vectors.</li>
-          <li>Master relational dynamics without surrendering sovereignty.</li>
-          <li>Map internal architecture to restore coherence and integrity.</li>
-        </ul>
-
-        <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;margin:1rem auto 0;font-style:italic;">
-          Sovereign of Mind forges cognitive infrastructure—the sword and sheath for those who choose to think, live, and act by structures of their own design.
-        </p>
-
-        <section style="margin-top:1rem;">
-          <h3 id="som-highlights">Highlights & Instruments</h3>
-          <p style="max-width:72ch; text-align:center; color:var(--muted); margin-bottom:1rem;">Apply these tools to everyday pressures for resilient agency.</p>
+        <section style="margin-top:4rem; background: rgba(252, 163, 17, 0.05); border: 1px solid rgba(252, 163, 17, 0.1);">
+          <h3 id="som-highlights" style="text-align:center; color:var(--som-color)">Expanded Chapter Guide: The Field Manual</h3>
           <div class="grid">
             <div class="card">
-              <strong>Chapter 1 – Foundations of Mental Sovereignty</strong>
-              <p style="margin:0;color:var(--muted)">Self-reviews for obstacles and satisfaction, defining sovereignty as self-governance.</p>
-              <div class="extended">Introduces 15-question sovereignty diagnostics and 10-domain satisfaction evaluations. Frames mental sovereignty as the core architecture against vulnerability, emphasizing perceptual integrity and the "last defensible border" in a world of systemic pressures.</div>
-            </div>
-            <div class="card">
-              <strong>Chapter 2 – Applied Sovereignty</strong>
-              <p style="margin:0;color:var(--muted)">Building coherent reality maps and aligning intention with action.</p>
-              <div class="extended">Explores projections, agency, and the balance of discipline versus self-attunement. Introduces personalism vs. impersonalism, four modes of the good life, and yoking for iterative coherence, ensuring clarity in meaning and direction.</div>
-            </div>
-            <div class="card">
               <strong>Chapter 3 – Perception</strong>
-              <p style="margin:0;color:var(--muted)">Refining discernment through truth frameworks and thought experiments.</p>
+              <p style="margin:0;color:var(--muted)">Refining discernment through truth frameworks (literal, symbolic, esoteric) and thought experiments for complex realities.</p>
               <div class="extended">Details four dimensions of truth (literal, symbolic, esoteric, mystical) and the true-false-meaningless triage. Includes the Law of Fives and faith acknowledgment to navigate complex realities with an open mind.</div>
             </div>
             <div class="card">
               <strong>Chapter 4 – Unbreakable by Design</strong>
-              <p style="margin:0;color:var(--muted)">Building resilience through ego mastery and paradigm recovery.</p>
+              <p style="margin:0;color:var(--muted)">Building resilience through ego mastery, ownership, and a five-phase paradigm collapse model.</p>
               <div class="extended">Covers harnessing ego for growth, extreme ownership, projection audits, and a five-phase paradigm collapse model (Trigger, Collapse, Defensive Response, Manipulation Risk, Recovery) to rebuild sovereignty under pressure.</div>
             </div>
             <div class="card">
               <strong>Chapter 5 – Manipulation</strong>
-              <p style="margin:0;color:var(--muted)">Exposing exploitation vectors and healing strategies.</p>
+              <p style="margin:0;color:var(--muted)">Exposing eight exploitation vectors (fear, dependency, deception, obsession, etc.) and systemic suppression patterns.</p>
               <div class="extended">Maps eight avenues of manipulation (fear, dependency, deception, obsession, adoration, sex, domination, intellectual) and the Dark Tetrad traits. Offers healing pathways for victims and perpetrators, addressing systemic suppression patterns.</div>
             </div>
             <div class="card">
-              <strong>Chapter 6 – Optimal Relationship Dynamics</strong>
-              <p style="margin:0;color:var(--muted)">Mastering relationships through trust, conflict resolution, and clarity.</p>
+              <strong>Chapter 6 – Relationship Dynamics</strong>
+              <p style="margin:0;color:var(--muted)">Mastering relationships through five principles, conflict resolution, and six-phase trust rebuilding without surrendering sovereignty.</p>
               <div class="extended">Outlines five principles for healthy relationships, eight for conflict management, and 20 compatibility factors. Includes resentment resolution, six-phase trust rebuilding, and peer counseling frameworks for sovereign relating.</div>
             </div>
-            <div class="card">
-              <strong>Chapter 7 – Timeless Archetypes</strong>
-              <p style="margin:0;color:var(--muted)">Understanding masculine and feminine archetypes in identity and relationships.</p>
-              <div class="extended">Explores biological essentialism, archetypal imprints, and hormonal influences. Covers masculine/feminine sensitivities, polarity dynamics, and traditional wisdom to balance archetypes for connection and compatibility.</div>
-            </div>
-            <div class="card">
-              <strong>Chapter 8 – Expanded Awareness and Subtle Perception</strong>
-              <p style="margin:0;color:var(--muted)">Non-ordinary states, subtle perception, and boundary maintenance.</p>
-              <div class="extended">Discusses subtle energy, boundary integrity (emotional, energetic), and non-ordinary states (e.g., plant medicine, meditation) in a sovereign context. Emphasizes discernment and self-regulation without reliance on external validation.</div>
-            </div>
-          </div>
-        </section>
-
-        <section style="margin-top:18px;">
-          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.6">
-            <h3 style="text-align:center;margin-bottom:.4rem">The Diagnostic Layer</h3>
-            <p>
-              With internal belief-structures refined and perception fortified, the final layer is proactive diagnostics. The Sovereignty-Distortion Codex provides the taxonomy to recognize and halt structural erosion before it claims authorship.
-            </p>
           </div>
         </section>
       </div>
@@ -605,47 +542,31 @@
 
     <section id="distortion-codex" data-bg="./images/SDC-background.JPG" aria-labelledby="codex-title">
       <div class="section-inner">
-        <h2 id="codex-title" style="text-align:center;margin:0 0 .4rem 0">The Sovereignty-Distortion Codex</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">Mapping Structural Erodes of Will and Coherence</p>
+        <h2 id="codex-title" style="text-align:center;color:var(--codex-color);margin:0 0 .4rem 0">The Sovereignty-Distortion Codex</h2>
+        <p style="text-align:center;color:var(--muted);margin-top:0">The Diagnostic Layer for Early Intervention</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/SDC-cover.JPG" alt="Sovereignty-Distortion Codex cover" style="max-width:400px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1.5rem;">
+          <img src="./images/SDC-cover.JPG" alt="Sovereignty-Distortion Codex cover" style="max-width:300px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
           <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
-            The Codex is the diagnostic manual: a taxonomy of the recurrent structural deformations—from ideological capture to subtle psychological loops—that erode personal sovereignty. Use it for early intervention and repair of your mental infrastructure.
+            The Codex is the taxonomy: a structural map of the recurrent deformations—from ideological capture to subtle psychological loops—that erode personal sovereignty. Use it for **diagnosing and repairing** your mental infrastructure before pressure escalates.
           </p>
-          <a class="btn btn-outline" href="#purchase">Acquire the Codex</a>
+          <a class="btn" style="background-color: var(--codex-color); color: white;" href="#purchase">Acquire the Codex &rarr;</a>
         </div>
-
-        <ul class="feature-list">
-          <li>Identify 20+ Structural Distortions (e.g., The Mimicry Loop, The Authority Transfer).</li>
-          <li>Learn the early warning signs of ideological and emotional capture.</li>
-          <li>Apply diagnostic clarity to prevent loss of agency and will.</li>
-          <li>Access a practical tool for systemic repair and pattern interruption.</li>
-        </ul>
       </div>
     </section>
 
     <section id="purchase" aria-labelledby="purchase-title">
       <div class="section-inner" style="text-align:center">
         <h2 id="purchase-title" style="margin-bottom:1rem">Acquire Your Structural Freedom</h2>
-        <p style="max-width:72ch;margin:0 auto 2rem;color:var(--muted)">Begin the work of rewriting your rules and securing your mind's borders. All books are available on Amazon. *The full suite is recommended for a unified path to total sovereignty.*</p>
+        <p style="max-width:72ch;margin:0 auto 2rem;color:var(--muted)">The full suite provides the internal repair, external defense, and diagnostic tools for a unified path to total sovereignty.</p>
 
-        <div class="image-row" style="margin-bottom: 2rem;">
-            <figure class="image-card">
-              <a href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P" target="_blank"><img src="./images/BM-cover.JPG" alt="Belief Mastery cover" loading="lazy"></a>
-              <figcaption>Belief Mastery</figcaption>
-            </figure>
-            <figure class="image-card">
-              <a href="https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911" target="_blank"><img src="./images/SoM-cover.JPG" alt="Sovereign of Mind cover" loading="lazy"></a>
-              <figcaption>Sovereign of Mind</figcaption>
-            </figure>
-            <figure class="image-card">
-              <a href="https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794" target="_blank"><img src="./images/SDC-cover.JPG" alt="Sovereignty-Distortion Codex cover" loading="lazy"></a>
-              <figcaption>Distortion Codex</figcaption>
-            </figure>
-          </div>
+        <div class="cta" style="margin-top:1.5rem;">
+            <a class="btn" style="background-color: var(--bm-color); color: white;" href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P" target="_blank">Belief Mastery (Internal)</a>
+            <a class="btn" style="background-color: var(--som-color); color: var(--brand);" href="https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911" target="_blank">Sovereign of Mind (External)</a>
+            <a class="btn" style="background-color: var(--codex-color); color: white;" href="https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794" target="_blank">The Codex (Diagnostic)</a>
+        </div>
+        <a class="btn btn-primary" style="margin-top: 2rem; font-size: 1.2rem; padding: 1rem 2rem;" href="https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794" target="_blank">View All on Amazon</a>
 
-        <a class="btn btn-primary" href="https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794">View All on Amazon &rarr;</a>
 
         <h3 style="margin-top:3rem;margin-bottom:1rem">Join the Sovereign List</h3>
         <p style="max-width:72ch;margin:0 auto 1.5rem;color:var(--muted)">Receive updates on new structural models, writing, and exclusive resources for mental agency.</p>
@@ -656,8 +577,13 @@
       </div>
     </section>
 
-    <div class="sovereign-tenet" role="alert" aria-live="polite" onclick="window.location.href='#home'">
-        The highest form of freedom is **Structural Freedom**. &mdash; <span style="font-style: italic;">Rewrite the Rules. Reclaim your Mind.</span>
+    <div class="acquisition-bar" role="navigation" aria-label="Quick Acquisition Links">
+        <a class="bm-acquire" href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P" target="_blank">
+            **Internal Work:** Acquire Belief Mastery
+        </a>
+        <a class="som-acquire" href="https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911" target="_blank">
+            **External Defense:** Acquire Sovereign of Mind
+        </a>
     </div>
 
   </main>
@@ -676,7 +602,6 @@
         hamburger.setAttribute('aria-expanded', !isExpanded);
         navList.classList.toggle('open');
       });
-      // Close mobile nav on link click
       navList.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
           navList.classList.remove('open');
@@ -684,7 +609,7 @@
         });
       });
 
-      // 2. Background Crossfade and Active Nav state (Modified to only use two BGs)
+      // 2. Background Crossfade and Active Nav state
       const sections = document.querySelectorAll('section');
       const navLinks = document.querySelectorAll('.nav-list a');
       const bgA = document.getElementById('bgA');
