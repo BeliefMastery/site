@@ -1,188 +1,176 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Belief Mastery & Sovereign of Mind — The Architecture of Freedom</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belief Mastery & Sovereign of Mind</title>
 
 <style>
-:root{
-  --bg:#f8f8f5;
-  --brand:#111;
-  --accent:#d9a300;
-  --muted:#5f5f5f;
-  --glass:rgba(255,255,255,0.92);
-  --radius:14px;
-  --shadow:0 10px 40px rgba(0,0,0,0.08);
-  --transition:all .4s cubic-bezier(.4,0,.2,1);
+/* Layout */
+body {
+  font-family: system-ui, sans-serif;
+  background:#f5f7fa;
+  margin:0;
+  padding:2rem;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Inter',system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--brand);
-  scroll-behavior:smooth;
-  overflow-x:hidden;
-}
-h1,h2{font-family:'Playfair Display',serif;letter-spacing:-.3px}
-a{text-decoration:none;color:inherit;transition:var(--transition)}
-a:hover{color:var(--accent)}
-section{position:relative;min-height:100vh;padding:90px 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
-section::before{
-  content:"";position:absolute;inset:0;background-size:cover;background-position:center;z-index:0;opacity:.25;transition:opacity .9s ease;
-}
-section>div{position:relative;z-index:1;max-width:72ch}
-header{
-  position:fixed;top:0;left:0;width:100%;height:70px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.7));
-  backdrop-filter:blur(10px);
-  box-shadow:0 4px 20px rgba(0,0,0,0.05);
-  z-index:1000;
-}
-nav ul{display:flex;gap:1rem;list-style:none}
-nav a{padding:.55rem 1rem;border-radius:8px;font-weight:600}
-nav a:hover,nav a.active{background:rgba(217,163,0,0.12)}
-.hero h1{font-size:2.8rem;margin-bottom:1rem}
-.hero p{color:var(--muted);max-width:64ch;margin:0 auto 1.8rem}
-.btn{display:inline-block;padding:.9rem 1.6rem;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.08);transition:var(--transition)}
-.btn-primary{background:linear-gradient(135deg,#ffea80,#ffb800);color:#000}
-.btn-outline{border:2px solid rgba(0,0,0,0.1)}
-.btn-outline:hover{background:rgba(255,184,0,0.08)}
-.portal{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:2.5rem
-}
-.portal article{
-  background:#fff;border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);transition:var(--transition)
-}
-.portal article:hover{transform:translateY(-4px);box-shadow:0 16px 44px rgba(0,0,0,0.1)}
-.portal blockquote{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1rem;color:#000}
-footer{text-align:center;color:var(--muted);padding:2rem 1rem 3rem}
 
-/* ---------- Modal Navigation ---------- */
-#readpath{
-  position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:2000;
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1.2rem;
 }
-#readpath.open{display:flex;animation:fadeIn .4s ease forwards}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{
-  background:var(--glass);backdrop-filter:blur(12px);
-  padding:2rem;border-radius:var(--radius);max-width:600px;text-align:center;
-  box-shadow:var(--shadow);animation:rise .5s ease forwards
-}
-@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal h3{font-family:'Playfair Display',serif;margin-bottom:1rem}
-.modal a{display:block;margin:.6rem 0;padding:.8rem 1rem;border-radius:8px;background:rgba(255,255,255,0.7)}
-.modal a:hover{background:linear-gradient(90deg,#ffda66,#ffb800);color:#000}
 
-/* ---------- Fade reveal ---------- */
-.fade{opacity:0;transform:translateY(30px);transition:var(--transition)}
-.fade.visible{opacity:1;transform:translateY(0)}
+/* Cards */
+.card {
+  position:relative;
+  background:#fff;
+  padding:1rem;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  cursor:pointer;
+  transition:transform 0.2s ease;
+}
+.card:hover { transform:translateY(-4px); }
+
+.card img {
+  width:100%;
+  border-radius:10px;
+  object-fit:cover;
+  max-height:220px;
+}
+
+.card h3 {
+  margin:0.8rem 0 0.3rem;
+  font-size:1.1rem;
+  font-weight:600;
+}
+.card p {
+  font-size:0.9rem;
+  opacity:0.8;
+}
+
+/* Popup */
+.popup {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%) scale(0.95);
+  background:#ffffff;
+  padding:2rem;
+  width:min(90%, 420px);
+  border-radius:14px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.2);
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:all 0.25s ease;
+}
+
+.popup.active {
+  opacity:1;
+  pointer-events:auto;
+  transform:translate(-50%, -50%) scale(1);
+}
+
+.popup h4 {
+  margin:0;
+  font-size:1.2rem;
+}
+.popup p {
+  margin:0.8rem 0 1.2rem;
+  line-height:1.4;
+}
+.popup button, .close-popup {
+  background:#000;
+  color:#fff;
+  border:none;
+  padding:0.6rem 1rem;
+  border-radius:6px;
+  cursor:pointer;
+}
+.close-popup {
+  position:absolute;
+  top:10px;
+  right:10px;
+  padding:0.3rem 0.6rem;
+  font-size:0.8rem;
+}
+
+.overlay {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.45);
+  backdrop-filter:blur(2px);
+  z-index:9998;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.25s ease;
+}
+
+.overlay.active {
+  opacity:1;
+  pointer-events:auto;
+}
 </style>
 </head>
+
 <body>
 
-<header>
-  <nav>
-    <ul>
-      <li><a href="#home" class="active">Home</a></li>
-      <li><a href="#belief">Belief Mastery</a></li>
-      <li><a href="#som">Sovereign of Mind</a></li>
-      <li><a href="#codex">Distortion Codex</a></li>
-      <li><a href="#purchase">Acquire</a></li>
-    </ul>
-  </nav>
-</header>
-
-<!-- HOME -->
-<section id="home" style="--img:url('./images/index-background.JPG')" data-bg="./images/index-background.JPG">
-  <div class="hero fade">
-    <h1>Enter the Architecture of Freedom</h1>
-    <p>Three volumes. One initiation.  
-    <em>Excavate belief, fortify perception, restore authorship.</em></p>
-    <a class="btn btn-primary" id="openPath">Begin Reading Path</a>
+<div class="grid" id="bookGrid">
+  <!-- Example Card 1 -->
+  <div class="card" data-title="Belief Mastery" data-desc="Begin reading Belief Mastery — start with the Foreword or Chapter One.">
+    <img src="assets/belief-mastery-cover.jpg" alt="Belief Mastery"> <!-- Replace path -->
+    <h3>Belief Mastery</h3>
+    <p>A structural method for rewriting your hidden rules.</p>
   </div>
-</section>
 
-<!-- BELIEF MASTERY -->
-<section id="belief" style="--img:url('./images/BM-background.JPG')">
-  <div class="fade">
-    <h2>Belief Mastery</h2>
-    <p style="color:var(--muted)">Rewrite the subconscious rules that shaped your behavior.</p>
-    <div class="portal">
-      <article>
-        <blockquote>“The reason you are absent of joy is that the subconscious is wired for survival, not fulfilment.”</blockquote>
-        <p>Belief Mastery exposes the logic beneath your reactions. Through a precise inferential method, it transforms protective distortions into coherent choice. The process returns authorship to its rightful owner.</p>
-        <a class="btn btn-outline" href="#purchase">Acquire</a>
-      </article>
-    </div>
+  <!-- Example Card 2 -->
+  <div class="card" data-title="Sovereign of Mind" data-desc="Enter the core framework of sovereignty, awareness, and will.">
+    <img src="assets/sovereign-of-mind-cover.jpg" alt="Sovereign of Mind"> <!-- Replace path -->
+    <h3>Sovereign of Mind</h3>
+    <p>The architecture of self-governance and psychic clarity.</p>
   </div>
-</section>
 
-<!-- SOVEREIGN OF MIND -->
-<section id="som" style="--img:url('./images/SoM-background.JPG')">
-  <div class="fade">
-    <h2>Sovereign of Mind</h2>
-    <p style="color:var(--muted)">Cognitive defense in a world of mimicry and manipulation.</p>
-    <div class="portal">
-      <article>
-        <blockquote>“Your thoughts travel through architecture not entirely your own.”</blockquote>
-        <p>Sovereign of Mind strengthens perception against persuasion and dependency. It trains mental structure to detect intrusion and preserve clarity amidst cultural hypnosis.</p>
-        <a class="btn btn-outline" href="#purchase">Acquire</a>
-      </article>
-    </div>
-  </div>
-</section>
+  <!-- Add more cards below using same structure -->
+</div>
 
-<!-- DISTORTION CODEX -->
-<section id="codex" style="--img:url('./images/SDC-background.JPG')">
-  <div class="fade">
-    <h2>The Sovereignty-Distortion Codex</h2>
-    <p style="color:var(--muted)">Recognize structural deformation before it erodes will.</p>
-    <div class="portal">
-      <article>
-        <blockquote>“Distortion enters when the vessel forgets its origin.”</blockquote>
-        <p>The Codex names and maps sovereignty anomalies—recurring misalignments that fragment coherence. Recognition precedes repair; repair restores integration.</p>
-        <a class="btn btn-outline" href="#purchase">Acquire</a>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- PURCHASE -->
-<section id="purchase" style="--img:url('./images/index-background.JPG')">
-  <div class="fade">
-    <h2>Acquire the Works</h2>
-    <p style="color:var(--muted)">Each title stands alone yet completes the triad.  
-      Available in print and digital formats.</p>
-    <a class="btn btn-primary" href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P">View on Amazon</a>
-  </div>
-</section>
-
-<footer>© Warwick Marshall — Belief Mastery / Sovereign of Mind</footer>
-
-<!-- Modal -->
-<div id="readpath">
-  <div class="modal">
-    <h3>Choose Your Point of Entry</h3>
-    <a href="#belief">Belief Mastery — Internal Excavation</a>
-    <a href="#som">Sovereign of Mind — Cognitive Fortification</a>
-    <a href="#codex">Distortion Codex — Structural Recognition</a>
-    <a href="#" id="closePath" style="margin-top:1rem;font-weight:600;color:var(--muted)">Cancel</a>
-  </div>
+<!-- Popup / Modal -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup">
+  <button class="close-popup" id="closeBtn">×</button>
+  <h4 id="popupTitle"></h4>
+  <p id="popupDesc"></p>
+  <button id="startReadingBtn">Start Reading</button>
 </div>
 
 <script>
-const fadeEls=document.querySelectorAll('.fade');
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})
-},{threshold:.3});
-fadeEls.forEach(el=>io.observe(el));
+const cards = document.querySelectorAll('.card');
+const popup = document.getElementById('popup');
+const overlay = document.getElementById('overlay');
+const titleEl = document.getElementById('popupTitle');
+const descEl = document.getElementById('popupDesc');
+const closeBtn = document.getElementById('closeBtn');
 
-const modal=document.getElementById('readpath');
-document.getElementById('openPath').onclick=()=>modal.classList.add('open');
-document.getElementById('closePath').onclick=(e)=>{e.preventDefault();modal.classList.remove('open');}
+// Open popup
+cards.forEach(card => {
+  card.addEventListener('click', () => {
+    titleEl.textContent = card.dataset.title;
+    descEl.textContent = card.dataset.desc;
+    popup.classList.add('active');
+    overlay.classList.add('active');
+  });
+});
+
+// Close popup
+function closePopup() {
+  popup.classList.remove('active');
+  overlay.classList.remove('active');
+}
+
+overlay.addEventListener('click', closePopup);
+closeBtn.addEventListener('click', closePopup);
 </script>
+
 </body>
 </html>
