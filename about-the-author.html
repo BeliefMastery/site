@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About the Author - Warwick Marshall</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    section {
+      background-color: rgba(255, 255, 255, 0.88);
+      border-radius: 0.75rem;
+      padding: 3rem 1.5rem;
+      margin: 2rem auto;
+      max-width: 80rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 600;
+      color: #5a5a5a;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      max-width: 72ch;
+      margin: 0 auto 2rem;
+      font-size: 1.125rem;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin: 2.5rem 0;
+    }
+
+    .card {
+      position: relative;
+      background: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+      padding: 2.25rem 1.5rem;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #0a0a0a;
+    }
+
+    .card p {
+      color: #5a5a5a;
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .card strong {
+      color: #0a0a0a;
+      font-weight: 600;
+    }
+
+    .content-section {
+      max-width: 72ch;
+      margin: 0 auto;
+    }
+
+    .content-section p {
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .content-section a {
+      color: #ffb800;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .content-section a:hover {
+      color: #ffc800;
+      text-decoration: underline;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+
+    .tag {
+      background: rgba(255, 184, 0, 0.1);
+      color: #0a0a0a;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 184, 0, 0.3);
+    }
+
+    .btn {
+      padding: 0.9rem 1.75rem;
+      border: none;
+      border-radius: 0.85rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background-size: 300% 300%;
+      transition: all 0.35s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      transform: perspective(1px) translateZ(0);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.25);
+      transform: skewX(-25deg);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 130%;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ffe000, #ffc800, #ffb800);
+      background-size: 200% 200%;
+      color: #000;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #ffdd33, #ffbb00);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #000;
+      border: 2px solid #000;
+    }
+
+    .btn-outline:hover {
+      background-color: #fffbe6;
+      border-color: #ffcc00;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+      transform: scale(1.05);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .cta {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    blockquote {
+      font-style: italic;
+      border-left: 4px solid #ffb800;
+      padding-left: 1.5rem;
+      margin: 2rem 0;
+      color: #5a5a5a;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    /* Fixed Header Styles */
+    header.site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+      backdrop-filter: blur(12px) saturate(1.1);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      padding: 0 1rem;
+    }
+
+    .nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .nav-list {
+      display: flex;
+      gap: 0.6rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    .nav-list a {
+      padding: 0.55rem 1rem;
+      border-radius: 0.45rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: #0a0a0a;
+      transition: all 0.25s ease;
+    }
+
+    .nav-list a:hover {
+      background: rgba(255,184,0,0.12);
+      transform: translateY(-1px);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+      color: #0a0a0a;
+    }
+
+    main {
+      padding-top: 88px; /* Account for fixed header */
+    }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <nav class="nav">
+    <a href="/" class="brand">BM & SoM</a>
+
+    <ul class="nav-list">
+      <li><a href="/belief-mastery.html">Belief Mastery</a></li>
+      <li><a href="/sovereign-of-mind.html">Sovereign of Mind</a></li>
+      <li><a href="/distortion-codex.html">Sovereignty‑Distortion Codex</a></li>
+      <li><a href="/purchase.html">Learn More</a></li>
+      <li><a href="/about-the-author.html">About the Author</a></li>
+    </ul>
+  </nav>
+</header>
+    
+  <main>
+    <section class="hero">
+      <h1>About the Author</h1>
+      <h2>Warwick Marshall</h2>
+      <p>
+        Warwick Marshall is a thinker, practitioner, and architect of mind authorship — dedicated to helping individuals excavate hidden cognitive structures and reclaim agency over their own inner world.
+      </p>
+    </section>
+
+    <section>
+      <div class="content-section">
+        <p>
+          As the author of <strong>Belief Mastery: Clear the Patterns That Run Your Life</strong> and <strong>Sovereign of Mind</strong>, Warwick stands at the intersection of rigorous logic, psychological precision, and transformative self-authorship. His work is grounded in the conviction that beliefs are not just thoughts to be reshaped, but architectural rules that silently govern perception, drive behavior, and define lived experience.
+        </p>
+        <p>
+          Warwick's approach deconstructs the habitual loops that keep people locked in recurring emotional cycles. He has developed structured processes for tracing patterns back to unmet needs, exposing the belief mechanics at their root, and re-weaving internal logic so that insight leads to genuine change. This work synthesizes disciplined inference with embodied clarity — offering practitioners and readers a precise method to transform subconscious drivers into conscious agency.
+        </p>
+        <p>
+          In <strong>Sovereign of Mind</strong>, Warwick extends this work into the realm of cognitive defence and perception engineering. Here, he equips readers with frameworks to recognize manipulation, resist ideological capture, and deliberately structure thought so it withstands contradiction and external pressure. The goal is durable self-governance: a mind fortified not by dogma but by clarity of structure and reasoned coherence.
+        </p>
+        <p>
+          Beyond authorship, Warwick offers peer-counselling facilitation, and his thinking influences coaching and therapeutic conversations that value structural self-understanding over surface-level change. His work invites readers to stop being mastered by their beliefs and to author their life with clarity, coherence, and sovereign direction.
+        </p>
+        <p>
+          Connect with Warwick and explore his frameworks, tools, and publications at <a href="https://beliefmastery.github.io" target="_blank">beliefmastery.github.io</a>, on <a href="https://instagram.com/belief.mastery" target="_blank">@belief.mastery</a>, or <a href="https://www.facebook.com/war.mars.9" target="_blank">Facebook</a>.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="text-align: center; margin-bottom: 2rem;">The Architect of Belief</h2>
+      <div class="content-section">
+        <p>
+          Warwick Marshall is a structuralist in the field of personal transformation. Rather than focusing on surface-level mindset "hacks" or temporary motivational boosts, Warwick approaches the human psyche with the precision of a surgeon and the clarity of a witness.
+        </p>
+        <p>
+          His work is centered on the <strong>Belief Inference Process</strong>—a systematic, repeatable method designed to identify and dismantle the subconscious structures that govern our lives. Warwick believes that most people aren't held back by a lack of will, but by "protective beliefs" formed during moments of emotional overwhelm. These beliefs, while once serving as survival strategies, eventually become the invisible cages that limit our freedom, relationships, and self-authorship.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="text-align: center; margin-bottom: 2rem;">A Mission of Sovereignty</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Structural Precision</h3>
+          <p>Utilizing "left-brain" diagnostic tools to map the archetypal imprints and self-reinforcing loops of behavior.</p>
+        </div>
+        <div class="card">
+          <h3>Compassionate Inquiry</h3>
+          <p>Approaching deep-seated trauma and "vices" with a non-judgmental clarity that allows for genuine resolution rather than mere symptom management.</p>
+        </div>
+        <div class="card">
+          <h3>Root-Level Resolution</h3>
+          <p>Moving beyond "positive thinking" to use contradiction and clarity to collapse belief structures at their foundation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="text-align: center; margin-bottom: 2rem;">Author of Belief Mastery</h2>
+      <div class="content-section">
+        <p>
+          In his definitive work, <strong>Belief Mastery: A Structural, Surgically Precise Method for Identifying and Dismantling the Subconscious Beliefs That Lock You Into Cycles of Dissatisfaction</strong>, Warwick provides a comprehensive vocabulary for needs, vices, and coping patterns. His 12-step process has become a roadmap for trauma-bond recovery, identity reconstruction, and sovereignty practitioners worldwide.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="text-align: center; margin-bottom: 2rem;">Philosophy</h2>
+      <div class="content-section">
+        <blockquote>
+          Truth is the ultimate solvent. By tracing emotional reactivity back to its origin and exposing the unmet needs at the core, anyone can break the cycles of frustration and quiet despair.
+        </blockquote>
+        <p>
+          Warwick operates on the principle that truth is the ultimate solvent. By tracing emotional reactivity back to its origin and exposing the unmet needs at the core, he teaches that anyone can break the cycles of frustration and quiet despair. He advocates for "sovereign self-parenting" and the restoration of individual agency, helping people align their internal world with their external aspirations.
+        </p>
+        <p>
+          Whether through his writing, facilitation tools, or the resources hosted at Belief Mastery, Warwick Marshall remains dedicated to the art of structural liberation.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="cta">
+        <a class="btn btn-primary" href="/purchase.html">Explore the Books</a>
+        <a class="btn btn-outline" href="https://instagram.com/belief.mastery" target="_blank">Connect on Instagram</a>
+      </div>
+      <div class="tags">
+        <span class="tag">Self-Authorship</span>
+        <span class="tag">Subconscious Reprogramming</span>
+        <span class="tag">Structural Inquiry</span>
+        <span class="tag">Trauma Recovery</span>
+        <span class="tag">Personal Sovereignty</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
+  </footer>
+</body>
+</html>
+

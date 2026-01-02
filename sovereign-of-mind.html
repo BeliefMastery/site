@@ -156,6 +156,66 @@
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Fixed Header Styles */
+header.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+  backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  padding: 0 1rem;
+}
+
+.nav {
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.nav-list {
+  display: flex;
+  gap: 0.6rem;
+  list-style: none;
+  padding: 0;
+}
+
+.nav-list a {
+  padding: 0.55rem 1rem;
+  border-radius: 0.45rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #0a0a0a;
+  transition: all 0.25s ease;
+}
+
+.nav-list a:hover {
+  background: rgba(255,184,0,0.12);
+  transform: translateY(-1px);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: #0a0a0a;
+}
+
+main {
+  padding-top: 88px; /* Account for fixed header */
 }  
   </style>
 </head>
@@ -169,6 +229,8 @@
       <li><a href="/sovereign-of-mind.html">Sovereign of Mind</a></li>
       <li><a href="/distortion-codex.html">Sovereignty‑Distortion Codex</a></li>
       <li><a href="/purchase.html">Learn More</a></li>
+      <li><a href="/about-the-author.html">About the Author</a></li>
+
     </ul>
   </nav>
 </header>
@@ -254,8 +316,11 @@
   </main>
 
   <footer>
-    <p>&copy; 2025 Belief Mastery & Sovereign of Mind. All rights reserved.</p>
-    <p><a href="https://instagram.com/belief.mastery" target="_blank">@belief.mastery</a> on Instagram</p>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
   </footer>
 </body>
 </html>
