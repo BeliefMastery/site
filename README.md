@@ -13,6 +13,33 @@ A single-page application website (`index.html`) with an accompanying author pag
 - Author biography and credentials
 - Contact and purchase links
 
+## Target Audience & Positioning
+
+### Primary Audience
+Warwick Marshall's **Belief Mastery** and **Sovereign of Mind** are written for individuals who already function at a high level, yet recognize that performance alone does not equal sovereignty. The work serves:
+
+- **Thinkers, leaders, and professionals** who sense that unseen internal architectures—not lack of intelligence, effort, or opportunity—are shaping their outcomes
+- **Elite operators** including CEOs, high-performance athletes, and high-net-worth individuals (HNWIs) operating in high-pressure environments where decision-making is non-negotiable
+- **Self-directed individuals** who have already outgrown conventional self-help, therapy loops, and ideological identity scaffolds
+- **Technical and organizational leaders** operating in complex systems where clarity and internal authorship are non-negotiable
+
+### Methodological Approach
+Rather than offering motivational strategies or mindset reframing, Marshall's work addresses the **structural mechanics** of:
+- Belief formation and subconscious architecture
+- Perception engineering and cognitive capture
+- Manipulation recognition and resistance
+- Psychological and ideological hijacking prevention
+- Coherence maintenance in adversarial informational environments
+
+### Prerequisites & Assumptions
+The methodologies assume a reader capable of:
+- Sustained self-observation
+- Contradiction tolerance
+- Personal responsibility
+- Structural thinking over surface-level solutions
+
+The books are most effective for those seeking not improvement, but **authorship**: a deliberate, self-governing relationship with one's own mind.
+
 ## Project Structure
 
 ### Primary Files
@@ -40,15 +67,24 @@ A single-page application website (`index.html`) with an accompanying author pag
 ## Key Concepts and Frameworks
 
 ### Belief Inference Process
-A systematic, repeatable method for identifying and dismantling subconscious structures that govern perception, behavior, and identity. The process traces emotional reactivity to unmet needs and resolves them at the root through disciplined logic and embodied insight.
+A systematic, repeatable method for identifying and dismantling subconscious structures that govern perception, behavior, and identity. The process traces emotional reactivity to unmet needs and resolves them at the root through disciplined logic and embodied insight. Designed for individuals who require absolute mental autonomy to maintain competitive edge and reclaim total authorship of personal and professional legacies.
 
 ### Structural Sovereignty
-The capacity to author one's inner world, map causality, and assert will. Sovereignty is restored through identifying distortion patterns, withdrawing consent from them, and re-establishing personal authorship.
+The capacity to author one's inner world, map causality, and assert will. Sovereignty is restored through identifying distortion patterns, withdrawing consent from them, and re-establishing personal authorship. Moving beyond standard mindset coaching, this provides a structural framework for dismantling deep-seated subconscious barriers and resisting cognitive hijacking.
 
 ### Core Principles
-- **Structural Precision**: I.T.-honed diagnostics to map self-reinforcing belief loops
-- **Root-Level Resolution**: Using clarity and contradiction to dismantle foundations
-- **Sovereign Self-Parenting**: Restoring agency and internal alignment
+- **Structural Precision**: I.T.-honed diagnostics to map self-reinforcing belief loops and behaviors
+- **Root-Level Resolution**: Using clarity and contradiction to dismantle foundations—beyond "positive thinking"
+- **Sovereign Self-Parenting**: Restoring agency and internal alignment, drawing from fatherhood and health practice
+
+### Cognitive Defense & High-Pressure Applications
+**Sovereign of Mind** extends beyond personal development into cognitive defense, equipping readers to:
+- Recognize manipulation and psychological hijacking
+- Resist ideological capture and maintain coherence
+- Operate effectively in high-pressure, adversarial informational environments
+- Maintain structural stability: holding contradictions without collapse
+
+Together, **Belief Mastery** and **Sovereign of Mind** form a cohesive framework for those seeking not improvement, but **authorship**: a deliberate, self-governing relationship with one's own mind.
 
 ## Technical Implementation
 
@@ -105,11 +141,13 @@ This README provides the executive summary. For detailed content:
 
 ## Key Themes and Keywords
 
-**Primary Themes**: Belief mastery, cognitive sovereignty, structural self-authorship, subconscious deconditioning, perception engineering, distortion mapping, peer counseling, devotional metaphysics
+**Primary Themes**: Belief mastery, cognitive sovereignty, structural self-authorship, subconscious deconditioning, perception engineering, distortion mapping, peer counseling, devotional metaphysics, cognitive defense, manipulation resistance, elite performance, mental autonomy
 
-**Key Terms**: Belief Inference Process, sovereignty, coherence, distortion, archetypal patterns, root-level resolution, sovereign self-parenting, structural precision, truth as solvent
+**Key Terms**: Belief Inference Process, sovereignty, coherence, distortion, archetypal patterns, root-level resolution, sovereign self-parenting, structural precision, truth as solvent, cognitive hijacking, ideological capture, contradiction tolerance, structural mechanics
 
-**Disciplines**: Psychology, philosophy, cognitive science, self-help, alternative health, peer counseling, structural inquiry, trauma recovery, personal sovereignty
+**Target Demographics**: High-functioning individuals, elite operators, CEOs, high-performance athletes, HNWIs, technical leaders, organizational leaders, self-directed professionals, complex systems operators
+
+**Disciplines**: Psychology, philosophy, cognitive science, self-help, alternative health, peer counseling, structural inquiry, trauma recovery, personal sovereignty, cognitive defense, perception engineering
 
 ## Repository Status
 
