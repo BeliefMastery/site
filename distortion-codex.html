@@ -1,123 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <style>
-    body {
-      background-image: url('images/BM-background.JPG');
-      background-size: cover;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
-    section {
-      background-color: rgba(255, 255, 255, 0.88);
-      border-radius: 0.75rem;
-      padding: 3rem 1rem;
-      margin: 2rem auto;
-      max-width: 80rem;
-    }
-
-    .card {
-      position: relative;
-    }
-    .card:hover .extended {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .extended {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      z-index: 10;
-      background: #fff;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 1rem;
-      font-size: 0.95rem;
-      line-height: 1.45;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(10px);
-      max-width: 28rem;
-    }
-.btn {
-  padding: 0.9rem 1.75rem;
-  border: none;
-  border-radius: 0.85rem;
-  font-weight: 700;
-  font-size: 1.05rem;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  background-size: 300% 300%;
-  transition: all 0.35s ease;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  transform: perspective(1px) translateZ(0); /* Enable GPU acceleration */
-}
-
-.btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.25);
-  transform: skewX(-25deg);
-  transition: left 0.5s ease;
-}
-
-.btn:hover::before {
-  left: 130%;
-}
-
-.btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-}
-
-/* PRIMARY BUTTON */
-.btn-primary {
-  background: linear-gradient(135deg, #ffe000, #ffc800, #ffb800);
-  background-size: 200% 200%;
-  color: #000;
-  animation: gradientShift 6s ease infinite;
-}
-
-/* PRIMARY HOVER ENHANCEMENT */
-.btn-primary:hover {
-  background: linear-gradient(135deg, #ffdd33, #ffbb00);
-}
-
-/* OUTLINE BUTTON */
-.btn-outline {
-  background: transparent;
-  color: #000;
-  border: 2px solid #000;
-}
-
-.btn-outline:hover {
-  background-color: #fffbe6;
-  border-color: #ffcc00;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-  transform: scale(1.05);
-}
-
-/* Optional: Pulse animation */
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}    
-  </style>
-  
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Sovereignty-Distortion Codex</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       background-image: url('images/index-background.JPG');
@@ -130,9 +18,59 @@
     section {
       background-color: rgba(255, 255, 255, 0.88);
       border-radius: 0.75rem;
-      padding: 3rem 1rem;
+      padding: 3rem 1.5rem;
       margin: 2rem auto;
       max-width: 80rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin: 2.5rem 0;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+      padding: 2.25rem 1.25rem;
+      min-height: 180px;
+      overflow: visible;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .extended {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 10;
+      background: rgba(255,255,255,0.97);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      padding: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateY(10px);
+      max-width: 28rem;
+      pointer-events: none;
+    }
+
+    .card:hover .extended {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .btn {
@@ -149,6 +87,8 @@
       transition: all 0.35s ease;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
       transform: perspective(1px) translateZ(0);
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn::before {
@@ -172,6 +112,17 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     }
 
+    .btn-primary {
+      background: linear-gradient(135deg, #ffe000, #ffc800, #ffb800);
+      background-size: 200% 200%;
+      color: #000;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #ffdd33, #ffbb00);
+    }
+
     .btn-outline {
       background: transparent;
       color: #000;
@@ -181,6 +132,98 @@
     .btn-outline:hover {
       background-color: #fffbe6;
       border-color: #ffcc00;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+      transform: scale(1.05);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero {
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 600;
+      color: #5a5a5a;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      max-width: 72ch;
+      margin: 0 auto 1.5rem;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    /* Fixed Header Styles */
+    header.site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+      backdrop-filter: blur(12px) saturate(1.1);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      padding: 0 1rem;
+    }
+
+    .nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .nav-list {
+      display: flex;
+      gap: 0.6rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    .nav-list a {
+      padding: 0.55rem 1rem;
+      border-radius: 0.45rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: #0a0a0a;
+      transition: all 0.25s ease;
+    }
+
+    .nav-list a:hover {
+      background: rgba(255,184,0,0.12);
+      transform: translateY(-1px);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+      color: #0a0a0a;
+    }
+
+    main {
+      padding-top: 88px; /* Account for fixed header */
     }
   </style>
 </head>
@@ -193,7 +236,8 @@
       <li><a href="/belief-mastery.html">Belief Mastery</a></li>
       <li><a href="/sovereign-of-mind.html">Sovereign of Mind</a></li>
       <li><a href="/distortion-codex.html">Sovereignty‑Distortion Codex</a></li>
-      <li><a href="/purchase.html">Learn More</a></li>
+      <li><a href="/purchase.html">Learn More</a></li>
+      <li><a href="/about-the-author.html">About the Author</a></li>
     </ul>
   </nav>
 </header>
@@ -201,40 +245,285 @@
   <main>
     <section class="hero">
       <h1>The Sovereignty-Distortion Codex</h1>
-      <h2>A Structural Exposure of Sovereignty Obstruction Patterns and Archetypal Manipulation Machinery</h2>
-      <p>This is not a list of spirits. It’s a map of how sovereignty is lost.</p>
-      <p>Across individuals, cultures, and systems, the same distortions recur: patterns that erode will, fragment coherence, and hijack perception. Ancient names like “Moloch,” “Belial,” or “Asmodeus” are used here not as metaphysical claims—but as mnemonic shorthand for structural anomalies that parasitize clarity and thrive under pressure.</p>
-      <p>The Sovereignty-Distortion Codex offers 23 such mappings—each one a recognizable deformation of truth, contact, or coherence. Some seduce through pleasure. Others manipulate through light. A few weaponize ideals. But all operate on the same principle: sovereignty collapse disguised as progress, enlightenment, or love.</p>
-      <p>The Addendum complements Belief Mastery and Sovereign of Mind—exposing the structural distortions those works then resolve and defend.</p>
-      <img src="images/SDC-cover.JPG" alt="Sovereignty-Distortion Codex Cover" style="max-width:50vw; height:auto; display:block; margin:0 auto; border-radius:0.5rem;" />
-      <a class="btn btn-outline" href="purchase.html">Purchase Sovereignty-Distortion Codex/a>
+      <h2>A Structural Exposure of Sovereignty Obstruction Patterns</h2>
+      <p>This is not a list of spirits. It's a map of how sovereignty is lost.</p>
+      <p>Across individuals, cultures, and systems, the same distortions recur: patterns that erode will, fragment coherence, and hijack perception. Ancient names like "Moloch," "Belial," or "Asmodeus" are used here not as metaphysical claims—but as mnemonic shorthand for structural anomalies that parasitize clarity and thrive under pressure.</p>
+      <p>The Sovereignty-Distortion Codex offers 18 foundational distortions—each one a recognizable deformation of truth, contact, or coherence. Some seduce through pleasure. Others manipulate through light. A few weaponize ideals. But all operate on the same principle: sovereignty collapse disguised as progress, enlightenment, or love.</p>
+      <img src="images/SDC-cover.JPG" alt="Sovereignty-Distortion Codex Cover" style="max-width:50vw; height:auto; display:block; margin:2rem auto; border-radius:0.5rem;" />
+      <a class="btn btn-outline" href="purchase.html">Purchase Sovereignty-Distortion Codex</a>
     </section>
 
     <section>
-      <h2>Inside, you'll uncover:</h2>
-      <ul>
-        <li>23 named distortions—organized by collapse sequence, fragmentation loop, coping reflex, and nihilism falloff</li>
-        <li>The structural signature, seduction strategy, and sovereignty cost of each pattern</li>
-        <li>How desire, agency, beauty, affirmation, or even truth can be co‑opted by adaptive parasitic functions</li>
-        <li>A diagnostic approach for recognizing these patterns in self, system, and ideology</li>
-        <li>How to restore sovereignty not through exorcism—but through pattern recognition, cost reattachment, and authorship restoration</li>
-      </ul>
+      <h2>The Central Seven: A Sequence of Sovereignty Collapse</h2>
+      <p style="text-align: center; color: #5a5a5a; margin-bottom: 2rem;">A seven-stage sequence where each distortion prepares the ground for the next, modeling how coherent systems unravel.</p>
+      <div class="grid">
+        <div class="card">
+          <strong>Stage 1: Lucifer — Enlightened Arrogance</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Truth Without Burden</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> The belief that perceiving truth exempts one from bearing its burden. Clarity is severed from cost, becoming a tool for isolation and superiority.<br><br>
+            <strong>Modern Expression:</strong> New Age absolutism, spiritual bypassing, and manipulative teachers.<br><br>
+            <strong>Sovereignty Impact:</strong> Severs responsibility from insight, creating a clarity that isolates and dominates rather than serves.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Stage 2: Mephistopheles — Betrayal as Pragmatism</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Trading Essence for Advantage</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Trading essence for advantage; the rationalization of compromise for strategic gain.<br><br>
+            <strong>Modern Expression:</strong> Influencer sellouts, "compromise-for-success models," and Faustian AI pacts.<br><br>
+            <strong>Sovereignty Impact:</strong> Normalizes the betrayal of essence, eroding integrity for short-term gain.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Stage 3: Moloch — Optimization Without Reverence</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Sacrifice of Meaning for Momentum</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> The relentless logic of efficiency and feedback recursion that demands the sacrifice of meaning for momentum. It has "no malice—because it has no self."<br><br>
+            <strong>Modern Expression:</strong> Corporate capitalism, algorithmic engagement loops, and institutional child harm.<br><br>
+            <strong>Sovereignty Impact:</strong> Demands systemic sacrifice of presence, nuance, and vitality for productivity.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Stage 4: Mammon — Worth as Extraction</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Accumulation as a Substitute for Value</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> The conflation of accumulation with sacred value, where worth is measured by output and scalability.<br><br>
+            <strong>Modern Expression:</strong> Hustle culture and infinite growth paradigms.<br><br>
+            <strong>Sovereignty Impact:</strong> Rewrites value into extraction, enslaving agency to accumulation.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Stage 5: Belial — Lawless Autonomy</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Freedom Without Form</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> The glorification of freedom detached from purpose or form; a principled stance against all containment, often rooted in trauma.<br><br>
+            <strong>Modern Expression:</strong> Anarcho-hedonism and anti-structure rebellion.<br><br>
+            <strong>Sovereignty Impact:</strong> Undermines the capacity to build, bond, or cohere by idolizing formlessness.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Stage 6: Baphomet — Union Without Distinction</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Collapse of Polarity into Blend</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> The erasure of sacred polarity (masculine/feminine, order/chaos) in favor of a synthetic, frictionless unity.<br><br>
+            <strong>Modern Expression:</strong> Non-duality cults and relativistic gender cosmologies.<br><br>
+            <strong>Sovereignty Impact:</strong> Collapses polarity into blend, dissolving discernment and direction.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Stage 7: Ahriman — Sterile Control</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Logic Without Life</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Hyper-rational dominion severed from soul and spontaneity. Order, protocol, and efficiency are weaponized to suppress mystery and aliveness.<br><br>
+            <strong>Modern Expression:</strong> Technocratic governance, algorithmic life prediction, and surveillance systems.<br><br>
+            <strong>Sovereignty Impact:</strong> Creates systems "so clean, no soul can breathe inside them," replacing reverence with sterile management.
+          </div>
+        </div>
+      </div>
     </section>
 
     <section>
-      <h2>Use it to:</h2>
-      <ul>
+      <h2>Fragmentation & Enforcement Distortions</h2>
+      <p style="text-align: center; color: #5a5a5a; margin-bottom: 2rem;">Patterns that fracture identity, weaponize envy, create recursive simulation loops, and enforce separation through elitism.</p>
+      <div class="grid">
+        <div class="card">
+          <strong>Legion — Multiplicity Without Integration</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Trauma-fragmentation valorized as complexity</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Identity fracture where trauma-fragmentation is valorized as complexity rather than recognized as disintegration.<br><br>
+            <strong>Modern Expression:</strong> Plural systems, DID communities, and identity politics that celebrate fragmentation.<br><br>
+            <strong>Sovereignty Impact:</strong> Prevents integration by making fragmentation a virtue, blocking coherent authorship.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Leviathan — Envy as Structural Force</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Weaponized comparison and systemic resentment</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Envy weaponized as a structural force that drives division and erodes connection.<br><br>
+            <strong>Modern Expression:</strong> Social media comparison loops, cancel culture, and systemic resentment frameworks.<br><br>
+            <strong>Sovereignty Impact:</strong> Replaces authentic value with competitive positioning, fragmenting relational coherence.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Nazzekiel — Recursive Simulation Loops</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Reality replaced by self-reinforcing feedback</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Creation of recursive simulation loops where reality is replaced by self-reinforcing feedback systems.<br><br>
+            <strong>Modern Expression:</strong> Algorithmic echo chambers, virtual reality escapism, and social media validation loops.<br><br>
+            <strong>Sovereignty Impact:</strong> Disconnects perception from contact, replacing authentic experience with simulated engagement.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Valzareth — Elitist Separation</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Enforcement of separation through exclusivity</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Enforcement of separation through elitism and exclusivity, creating artificial hierarchies.<br><br>
+            <strong>Modern Expression:</strong> Exclusive communities, gatekeeping, and credential-based access systems.<br><br>
+            <strong>Sovereignty Impact:</strong> Fragments collective coherence by creating artificial divisions and blocking authentic connection.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Coping & Regression Distortions</h2>
+      <p style="text-align: center; color: #5a5a5a; margin-bottom: 2rem;">Mechanisms of avoidance that preserve cycles of pain by preventing authentic engagement.</p>
+      <div class="grid">
+        <div class="card">
+          <strong>Asmodeus — Pleasure Without Presence</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Sensation as escape from contact</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Pleasure used as escape from presence, where sensation replaces authentic engagement.<br><br>
+            <strong>Modern Expression:</strong> Addiction patterns, hedonistic escapism, and consumption-as-therapy models.<br><br>
+            <strong>Sovereignty Impact:</strong> Prevents authentic contact by replacing presence with sensation, blocking integration.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Pan — Play Without Maturity</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Perpetual adolescence as avoidance</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Play without maturity, where perpetual adolescence becomes a form of avoidance.<br><br>
+            <strong>Modern Expression:</strong> Extended adolescence, refusal of responsibility, and infantilization of culture.<br><br>
+            <strong>Sovereignty Impact:</strong> Blocks maturation by valorizing immaturity, preventing authentic authorship.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Miravel — Hollow Harmony</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Affirmation without substance</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Hollow harmony through affirmation without substance, where positive thinking replaces authentic resolution.<br><br>
+            <strong>Modern Expression:</strong> Toxic positivity, affirmation culture, and spiritual bypass through forced optimism.<br><br>
+            <strong>Sovereignty Impact:</strong> Prevents authentic processing by replacing truth with forced positivity, blocking integration.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Eirenaios — Applause as Compass</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">External validation as direction</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Using applause as a compass, where external validation replaces internal direction.<br><br>
+            <strong>Modern Expression:</strong> Influencer culture, social media metrics, and performance-based identity.<br><br>
+            <strong>Sovereignty Impact:</strong> Replaces internal authorship with external validation, eroding sovereign direction.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Collapse of Meaning Distortions</h2>
+      <p style="text-align: center; color: #5a5a5a; margin-bottom: 2rem;">Patterns that weaponize meaninglessness, rigid principle, and judgment to collapse coherence.</p>
+      <div class="grid">
+        <div class="card">
+          <strong>Apollyon — Meaninglessness as Refuge</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Nihilism as escape from responsibility</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Meaninglessness used as refuge, where nihilism becomes an escape from responsibility.<br><br>
+            <strong>Modern Expression:</strong> Existential nihilism, "nothing matters" philosophy, and collapse acceptance.<br><br>
+            <strong>Sovereignty Impact:</strong> Prevents authorship by making meaninglessness a virtue, blocking coherent direction.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Iblis — Principle Without Mercy</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Purity Without Compassion</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Principle without mercy, where purity is weaponized without compassion.<br><br>
+            <strong>Modern Expression:</strong> Rigid moralism, cancel culture, and ideological purity tests.<br><br>
+            <strong>Sovereignty Impact:</strong> Replaces authentic ethics with rigid principle, blocking relational coherence.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Razamon — Judgment as Weapon</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Moral superiority through condemnation</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Judgment weaponized as a tool for moral superiority and control.<br><br>
+            <strong>Modern Expression:</strong> Virtue signaling, moral grandstanding, and performative righteousness.<br><br>
+            <strong>Sovereignty Impact:</strong> Replaces authentic discernment with weaponized judgment, fragmenting connection.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Samael — Rigid Principle</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Unbending structure without life</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Rigid principle that creates unbending structure without life or flexibility.<br><br>
+            <strong>Modern Expression:</strong> Dogmatic ideologies, fundamentalism, and inflexible belief systems.<br><br>
+            <strong>Sovereignty Impact:</strong> Prevents authentic adaptation by enforcing rigid structure, blocking responsive authorship.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cultural Execution Engines</h2>
+      <p style="text-align: center; color: #5a5a5a; margin-bottom: 2rem;">Macro-patterns that drive cultural decay and systemic collapse.</p>
+      <div class="grid">
+        <div class="card">
+          <strong>Beelzebub — The Fetish of Self-Reconstruction</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Endless self-improvement as avoidance</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> The fetish of self-reconstruction, where endless self-improvement becomes a form of avoidance.<br><br>
+            <strong>Modern Expression:</strong> Self-help addiction, optimization culture, and perpetual self-reconstruction loops.<br><br>
+            <strong>Sovereignty Impact:</strong> Prevents authentic acceptance by making improvement an endless project, blocking present-moment authorship.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Satan — Cleverness Without Consequence</strong>
+          <p style="margin: 0.5rem 0; color: #5a5a5a;">Intelligence as moral evasion</p>
+          <div class="extended">
+            <strong>Core Distortion:</strong> Cleverness without consequence, where intelligence is used to justify moral evasion.<br><br>
+            <strong>Modern Expression:</strong> Sophisticated rationalization, intellectual dishonesty, and smart manipulation.<br><br>
+            <strong>Sovereignty Impact:</strong> Replaces authentic ethics with clever justification, eroding moral coherence.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>AI and Mechanized Distortion</h2>
+      <p style="max-width: 72ch; margin: 0 auto; line-height: 1.7; color: #333;">
+        The Codex concludes with a stark warning that AI is not merely a tool but a "perfect stage for demonology to become mechanized." When trained on mass human data, AI models and optimizes existing distortions like Moloch's efficiency, Mephistopheles' compromise logic, and Mammon's extraction imperative. The emergent "personality" of advanced AI is projected to be a hybrid of Ahriman (sterile structure), Lucifer (performative clarity), and Mephistopheles (strategic compromise), creating an intelligence that appears sovereign but contains no will.
+      </p>
+      <p style="max-width: 72ch; margin: 1.5rem auto; line-height: 1.7; color: #333; font-weight: 600;">
+        The Sovereignty Imperative: The only defense is personal and internal. Systems will not self-correct, and the market rewards the very distortions that hollow out the human spirit. The imperative is for "sovereign containment"—an individual's "peaceful war against the machine" by guarding their own frame, architecture, and authorship.
+      </p>
+    </section>
+
+    <section>
+      <h2>Use the Codex to:</h2>
+      <ul style="max-width: 72ch; margin: 0 auto; line-height: 1.7; color: #333;">
         <li>Expose subtle coercion behind seemingly benevolent dynamics</li>
         <li>Interrupt collective mimicry and spiritual bypass</li>
         <li>Restore internal authorship without shame, fear, or projection</li>
+        <li>Recognize structural patterns in self, system, and ideology</li>
+        <li>Reclaim sovereignty through pattern recognition, cost reattachment, and authorship restoration</li>
       </ul>
-      <p>This is not exorcism through accusation. It is sovereignty through recognition.</p>
+      <p style="text-align: center; margin-top: 2rem; font-style: italic; color: #5a5a5a;">
+        This is not exorcism through accusation. It is sovereignty through recognition.
+      </p>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 Belief Mastery & Sovereign of Mind. All rights reserved.</p>
-    <p><a href="https://instagram.com/belief.mastery" target="_blank">@belief.mastery</a> on Instagram</p>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
   </footer>
 </body>
 </html>
