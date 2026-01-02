@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Storage Backend Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .login-form { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        input { margin: 5px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Local Storage Backend Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Backend Status</h3>
+        <button onclick="testBackendStatus()">Test Backend Status</button>
+        <div id="backend-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Test Login</h3>
+        <div class="login-form">
+            <input type="email" id="test-email" placeholder="Email" value="mediator@test.com">
+            <input type="password" id="test-password" placeholder="Password" value="password123">
+            <button onclick="testLogin()">Test Login</button>
+        </div>
+        <div id="login-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test Case Creation</h3>
+        <button onclick="testCaseCreation()">Create Test Case</button>
+        <div id="case-creation-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Test Case List</h3>
+        <button onclick="testCaseList()">Load Cases</button>
+        <div id="case-list-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>5. Test CSV Export</h3>
+        <button onclick="testCSVExport()">Test Export</button>
+        <div id="export-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>6. Data Management</h3>
+        <button onclick="clearAllData()">Clear All Data</button>
+        <button onclick="exportAllData()">Export All Data</button>
+        <div id="data-management-result"></div>
+    </div>
+
+    <script src="local_storage_backend.js"></script>
+    <script>
+        let testUser = null;
+        
+        function testBackendStatus() {
+            const resultDiv = document.getElementById('backend-status');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const backend = window.LSBackend;
+                if (backend) {
+                    const users = backend.get('users');
+                    const cases = backend.get('cases');
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Backend Loaded Successfully</h4>
+                            <p>Users: ${users ? users.length : 0}</p>
+                            <p>Cases: ${cases ? cases.length : 0}</p>
+                            <p>Storage prefix: ${backend.storagePrefix}</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Backend not loaded');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Backend Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testLogin() {
+            const resultDiv = document.getElementById('login-test-result');
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const result = window.LSBackend.authenticateUser(email, password);
+                
+                if (result.success) {
+                    testUser = result.user;
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Login Successful</h4>
+                            <pre>${JSON.stringify(result.user, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Login Failed</h4>
+                            <p>Error: ${result.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Login Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testCaseCreation() {
+            const resultDiv = document.getElementById('case-creation-result');
+            resultDiv.innerHTML = 'Creating test case...';
+            
+            try {
+                if (!testUser) {
+                    throw new Error('Please login first');
+                }
+                
+                const result = window.LSBackend.createCase({
+                    title: 'Test Property Dispute',
+                    description: 'A test case for property boundary issues',
+                    category: 'property',
+                    priority: 'high',
+                    assigned_mediator_id: testUser.user_id,
+                    created_by: testUser.user_id,
+                    case_details: {
+                        property_address: '123 Test Street',
+                        dispute_type: 'boundary'
+                    }
+                });
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Case Created Successfully</h4>
+                            <p>Case ID: ${result.case_id}</p>
+                            <p>Case Number: ${result.case_number}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Case Creation Failed</h4>
+                            <p>Error: ${result.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Case Creation Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testCaseList() {
+            const resultDiv = document.getElementById('case-list-result');
+            resultDiv.innerHTML = 'Loading cases...';
+            
+            try {
+                if (!testUser) {
+                    throw new Error('Please login first');
+                }
+                
+                const cases = window.LSBackend.getCasesForUser(testUser.user_id, testUser.role);
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Cases Loaded</h4>
+                        <p>Found ${cases.length} cases</p>
+                        <pre>${JSON.stringify(cases, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Case List Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testCSVExport() {
+            const resultDiv = document.getElementById('export-result');
+            resultDiv.innerHTML = 'Testing CSV export...';
+            
+            try {
+                if (!testUser) {
+                    throw new Error('Please login first');
+                }
+                
+                const cases = window.LSBackend.getCasesForUser(testUser.user_id, testUser.role);
+                if (cases.length === 0) {
+                    throw new Error('No cases to export');
+                }
+                
+                const caseId = cases[0].case_id;
+                const result = window.LSBackend.exportCaseDataToCSV(caseId, {
+                    'case-details': true,
+                    'client-info': true,
+                    'case-logs': true
+                });
+                
+                if (result.success) {
+                    // Create download link
+                    const blob = new Blob([result.csv_data], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `test-export-${Date.now()}.csv`;
+                    a.textContent = 'Download Test CSV';
+                    a.style.display = 'block';
+                    a.style.margin = '10px 0';
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ CSV Export Successful</h4>
+                            <p>CSV data generated for case: ${caseId}</p>
+                        </div>
+                    `;
+                    
+                    resultDiv.appendChild(a);
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ CSV Export Failed</h4>
+                            <p>Error: ${result.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ CSV Export Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function clearAllData() {
+            const resultDiv = document.getElementById('data-management-result');
+            resultDiv.innerHTML = 'Clearing data...';
+            
+            try {
+                window.LSBackend.clearAllData();
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ All Data Cleared</h4>
+                        <p>Local storage has been reset to default state.</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Clear Data Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function exportAllData() {
+            const resultDiv = document.getElementById('data-management-result');
+            resultDiv.innerHTML = 'Exporting all data...';
+            
+            try {
+                const data = window.LSBackend.exportAllData();
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mediation-platform-backup-${Date.now()}.json`;
+                a.textContent = 'Download Full Backup';
+                a.style.display = 'block';
+                a.style.margin = '10px 0';
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Data Export Ready</h4>
+                        <p>Full backup generated successfully.</p>
+                    </div>
+                `;
+                
+                resultDiv.appendChild(a);
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Export Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            console.log('Local Storage Backend Test Page Loaded');
+            testBackendStatus();
+        });
+    </script>
+</body>
+</html>

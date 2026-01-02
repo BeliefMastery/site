@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 API Connection Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Test API Server Health</h3>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <div id="health-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Test Login (Mediator)</h3>
+        <button onclick="testLogin('mediator@test.com', 'password123')">Test Mediator Login</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test Login (Client)</h3>
+        <button onclick="testLogin('client1@test.com', 'password123')">Test Client Login</button>
+        <div id="client-login-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Test Cases Endpoint</h3>
+        <button onclick="testCases()">Test Get Cases</button>
+        <div id="cases-result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        
+        async function testHealth() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Health Check Passed</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Health Check Failed</h4>
+                        <p>Error: ${error.message}</p>
+                        <p>Make sure the API server is running at ${API_BASE_URL}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testLogin(email, password) {
+            const resultDiv = email.includes('client') ? 
+                document.getElementById('client-login-result') : 
+                document.getElementById('login-result');
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Login Successful</h4>
+                            <pre>${JSON.stringify(data.user, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Login Failed</h4>
+                            <p>Error: ${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Login Error</h4>
+                        <p>Error: ${error.message}</p>
+                        <p>Make sure the API server is running at ${API_BASE_URL}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testCases() {
+            const resultDiv = document.getElementById('cases-result');
+            resultDiv.innerHTML = 'Testing cases endpoint...';
+            
+            try {
+                // First login to get a user ID
+                const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: 'mediator@test.com', password: 'password123' })
+                });
+                
+                const loginData = await loginResponse.json();
+                
+                if (!loginData.success) {
+                    throw new Error('Login failed');
+                }
+                
+                // Now test cases endpoint
+                const response = await fetch(`${API_BASE_URL}/cases?user_id=${loginData.user.user_id}&role=${loginData.user.role}`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Cases Endpoint Working</h4>
+                        <p>Found ${data.cases ? data.cases.length : 0} cases</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Cases Test Failed</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            console.log('Testing API connection...');
+            testHealth();
+        });
+    </script>
+</body>
+</html>
