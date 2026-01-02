@@ -9,11 +9,38 @@
   <style>
     /* ---------- Page-specific styles for about-the-author.html ---------- */
     body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    /* Fixed background layer */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background-image: url('images/index-background.JPG');
       background-size: cover;
       background-attachment: fixed;
       background-repeat: no-repeat;
       background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Overlay for background */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
     }
 
     section {
@@ -24,6 +51,8 @@
       max-width: 80rem;
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 2;
     }
 
     .hero {
@@ -179,7 +208,7 @@
     </section>
   </main>
 
-  <footer>
+  <footer style="position: relative; z-index: 2;">
     <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
     <p>
       <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
