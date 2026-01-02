@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ---------- Page-specific styles for about-the-author.html ---------- */
     body {
       background-image: url('images/index-background.JPG');
       background-size: cover;
@@ -51,28 +52,8 @@
       color: #333;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin: 2.5rem 0;
-    }
-
     .card {
-      position: relative;
-      background: #fff;
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.09);
-      padding: 2.25rem 1.5rem;
       min-height: 200px;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     }
 
     .card h3 {
@@ -92,205 +73,19 @@
       color: #0a0a0a;
       font-weight: 600;
     }
-
-    .content-section {
-      max-width: 72ch;
-      margin: 0 auto;
-    }
-
-    .content-section p {
-      margin-bottom: 1.5rem;
-      line-height: 1.7;
-      color: #333;
-    }
-
-    .content-section a {
-      color: #ffb800;
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
-    }
-
-    .content-section a:hover {
-      color: #ffc800;
-      text-decoration: underline;
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 2rem;
-      justify-content: center;
-    }
-
-    .tag {
-      background: rgba(255, 184, 0, 0.1);
-      color: #0a0a0a;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border: 1px solid rgba(255, 184, 0, 0.3);
-    }
-
-    .btn {
-      padding: 0.9rem 1.75rem;
-      border: none;
-      border-radius: 0.85rem;
-      font-weight: 700;
-      font-size: 1.05rem;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      background-size: 300% 300%;
-      transition: all 0.35s ease;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-      transform: perspective(1px) translateZ(0);
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -75%;
-      width: 50%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.25);
-      transform: skewX(-25deg);
-      transition: left 0.5s ease;
-    }
-
-    .btn:hover::before {
-      left: 130%;
-    }
-
-    .btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #ffe000, #ffc800, #ffb800);
-      background-size: 200% 200%;
-      color: #000;
-      animation: gradientShift 6s ease infinite;
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #ffdd33, #ffbb00);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: #000;
-      border: 2px solid #000;
-    }
-
-    .btn-outline:hover {
-      background-color: #fffbe6;
-      border-color: #ffcc00;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-      transform: scale(1.05);
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .cta {
-      text-align: center;
-      margin-top: 2rem;
-    }
-
-    blockquote {
-      font-style: italic;
-      border-left: 4px solid #ffb800;
-      padding-left: 1.5rem;
-      margin: 2rem 0;
-      color: #5a5a5a;
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    /* Fixed Header Styles */
-    header.site-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
-      backdrop-filter: blur(12px) saturate(1.1);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      padding: 0 1rem;
-    }
-
-    .nav {
-      max-width: 1180px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .nav-list {
-      display: flex;
-      gap: 0.6rem;
-      list-style: none;
-      padding: 0;
-    }
-
-    .nav-list a {
-      padding: 0.55rem 1rem;
-      border-radius: 0.45rem;
-      font-weight: 600;
-      text-decoration: none;
-      color: #0a0a0a;
-      transition: all 0.25s ease;
-    }
-
-    .nav-list a:hover {
-      background: rgba(255,184,0,0.12);
-      transform: translateY(-1px);
-    }
-
-    .brand {
-      font-weight: 700;
-      font-size: 1.1rem;
-      text-decoration: none;
-      color: #0a0a0a;
-    }
-
-    main {
-      padding-top: 88px; /* Account for fixed header */
-    }
   </style>
 </head>
 <body>
-<header class="site-header">
-  <nav class="nav">
-    <a href="index.html" class="brand">BM & SoM</a>
-
-    <ul class="nav-list">
-      <li><a href="index.html#home">Home</a></li>
-      <li><a href="index.html#belief-mastery">Belief Mastery</a></li>
-      <li><a href="index.html#sovereign-of-mind">Sovereign of Mind</a></li>
-      <li><a href="index.html#distortion-codex">Distortion Codex</a></li>
-      <li><a href="index.html#purchase">Learn / Purchase</a></li>
-      <li><a href="about-the-author.html">About the Author</a></li>
+<header class="site-header" role="banner">
+  <nav class="nav" aria-label="Primary navigation">
+    <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+    <ul class="nav-list" id="top-nav" role="menubar">
+      <li role="none"><a role="menuitem" href="index.html#home">Home</a></li>
+      <li role="none"><a role="menuitem" href="index.html#belief-mastery">Belief Mastery</a></li>
+      <li role="none"><a role="menuitem" href="index.html#sovereign-of-mind">Sovereign of Mind</a></li>
+      <li role="none"><a role="menuitem" href="index.html#distortion-codex">Distortion Codex</a></li>
+      <li role="none"><a role="menuitem" href="index.html#purchase">Learn / Purchase</a></li>
+      <li role="none"><a role="menuitem" href="about-the-author.html" class="active">About the Author</a></li>
     </ul>
   </nav>
 </header>
@@ -380,7 +175,7 @@
 
     <section>
       <div class="cta">
-        <a class="btn btn-primary" href="purchase.html">Explore the Books</a>
+        <a class="btn btn-primary" href="index.html#purchase">Explore the Books</a>
         <a class="btn btn-outline" href="https://instagram.com/belief.mastery" target="_blank">Connect on Instagram</a>
       </div>
       <div class="tags">
@@ -400,6 +195,28 @@
       <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
     </p>
   </footer>
+
+  <!-- Hamburger menu toggle -->
+  <script>
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const navList = document.querySelector('.nav-list');
+      if(!hamburger || !navList) return;
+      hamburger.addEventListener('click', () => {
+        const isOpen = navList.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+        hamburger.textContent = isOpen ? '✕' : '☰';
+      });
+      // Close menu when a link is clicked
+      navList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navList.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.textContent = '☰';
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
 
