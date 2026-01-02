@@ -16,29 +16,30 @@ A single-page application website (`index.html`) with an accompanying author pag
 ## Target Audience & Positioning
 
 ### Primary Audience
-Warwick Marshall's **Belief Mastery** and **Sovereign of Mind** are written for individuals who already function at a high level, yet recognize that performance alone does not equal sovereignty. The work serves:
+Warwick Marshall's **Belief Mastery** and **Sovereign of Mind** speak to individuals who sense—often long before they can articulate it—that there is an active contest for the human mind. The work resonates with:
 
-- **Thinkers, leaders, and professionals** who sense that unseen internal architectures—not lack of intelligence, effort, or opportunity—are shaping their outcomes
-- **Elite operators** including CEOs, high-performance athletes, and high-net-worth individuals (HNWIs) operating in high-pressure environments where decision-making is non-negotiable
-- **Self-directed individuals** who have already outgrown conventional self-help, therapy loops, and ideological identity scaffolds
-- **Technical and organizational leaders** operating in complex systems where clarity and internal authorship are non-negotiable
+- **The cognitively vigilant** who recognize the quiet encroachment on their mental autonomy and refuse to be hijacked
+- **Those who sense a silent, structural war for human agency** and seek secular armor for the modern age
+- **The "quietly paranoid" and deeply intuitive** who feel a quiet but persistent foreboding about the modern psychological landscape
+- **Individuals unconvinced by religious explanations or ideological reassurance** who seek diagnostic clarity rather than belief systems
+- **Those who recognize** that something essential is under pressure: agency, clarity, integrity of perception, or an unnamed inner virtue that demands protection rather than expression
 
 ### Methodological Approach
-Rather than offering motivational strategies or mindset reframing, Marshall's work addresses the **structural mechanics** of:
-- Belief formation and subconscious architecture
-- Perception engineering and cognitive capture
-- Manipulation recognition and resistance
-- Psychological and ideological hijacking prevention
-- Coherence maintenance in adversarial informational environments
+This is not self-help; it is a **technical framework** for those who recognize the quiet encroachment on mental autonomy. Rather than invoking belief systems, Marshall offers:
+
+- **Diagnostic clarity** revealing how subconscious belief structures form under pressure
+- **Structural mechanics** showing how beliefs are exploited and how they can be consciously dismantled and fortified
+- **Language, structure, and method** for what many have intuited but struggled to frame
+- **Cognitive defense** addressing manipulation, ideological capture, and psychological warfare in contemporary culture
 
 ### Prerequisites & Assumptions
-The methodologies assume a reader capable of:
-- Sustained self-observation
-- Contradiction tolerance
-- Personal responsibility
-- Structural thinking over surface-level solutions
+The tone is sober, precise, and unsentimental. The methodologies assume readers capable of:
+- Self-observation and sustained introspection
+- Contradiction tolerance and uncomfortable truth-facing
+- Personal responsibility without moralism
+- Recognition over optimism—preferring uncomfortable truth to comforting narratives
 
-The books are most effective for those seeking not improvement, but **authorship**: a deliberate, self-governing relationship with one's own mind.
+The books function less as guidance and more as an **ally**: a framework for standing guard over the mind itself, for those who sense the conflict but refuse superstition, who feel the stakes without needing spectacle, and who seek to fortify the inner terrain where meaning and agency are decided.
 
 ## Project Structure
 
@@ -67,24 +68,26 @@ The books are most effective for those seeking not improvement, but **authorship
 ## Key Concepts and Frameworks
 
 ### Belief Inference Process
-A systematic, repeatable method for identifying and dismantling subconscious structures that govern perception, behavior, and identity. The process traces emotional reactivity to unmet needs and resolves them at the root through disciplined logic and embodied insight. Designed for individuals who require absolute mental autonomy to maintain competitive edge and reclaim total authorship of personal and professional legacies.
+A systematic, repeatable method for identifying and dismantling subconscious structures that govern perception, behavior, and identity. The process traces emotional reactivity to unmet needs and resolves them at the root through disciplined logic and embodied insight. Designed for those who sense the structural war for human agency and seek to articulate and protect a fundamental, wordless virtue.
 
 ### Structural Sovereignty
-The capacity to author one's inner world, map causality, and assert will. Sovereignty is restored through identifying distortion patterns, withdrawing consent from them, and re-establishing personal authorship. Moving beyond standard mindset coaching, this provides a structural framework for dismantling deep-seated subconscious barriers and resisting cognitive hijacking.
+The capacity to author one's inner world, map causality, and assert will. Sovereignty is restored through identifying distortion patterns, withdrawing consent from them, and re-establishing personal authorship. This provides the secular armor required for the modern age—a technical framework for the cognitively vigilant who recognize the quiet encroachment on mental autonomy.
 
 ### Core Principles
 - **Structural Precision**: I.T.-honed diagnostics to map self-reinforcing belief loops and behaviors
 - **Root-Level Resolution**: Using clarity and contradiction to dismantle foundations—beyond "positive thinking"
 - **Sovereign Self-Parenting**: Restoring agency and internal alignment, drawing from fatherhood and health practice
 
-### Cognitive Defense & High-Pressure Applications
+### Cognitive Defense & Vigilance
 **Sovereign of Mind** extends beyond personal development into cognitive defense, equipping readers to:
-- Recognize manipulation and psychological hijacking
-- Resist ideological capture and maintain coherence
-- Operate effectively in high-pressure, adversarial informational environments
+- Recognize manipulation and psychological hijacking in contemporary culture
+- Resist ideological capture and maintain coherence under pressure
+- Stand guard over the mind itself—fortifying the inner terrain where meaning and agency are decided
 - Maintain structural stability: holding contradictions without collapse
 
-Together, **Belief Mastery** and **Sovereign of Mind** form a cohesive framework for those seeking not improvement, but **authorship**: a deliberate, self-governing relationship with one's own mind.
+**Belief Mastery** focuses on exposing the hidden rules that shape behavior and identity, revealing how subconscious belief structures form under pressure, how they are exploited, and how they can be consciously dismantled.
+
+Together, **Belief Mastery** and **Sovereign of Mind** form a cohesive framework for those who sense the conflict but refuse superstition, who feel the stakes without needing spectacle, and who seek to reclaim a sense of primal, unadulterated authorship over one's own reality.
 
 ## Technical Implementation
 
@@ -141,13 +144,13 @@ This README provides the executive summary. For detailed content:
 
 ## Key Themes and Keywords
 
-**Primary Themes**: Belief mastery, cognitive sovereignty, structural self-authorship, subconscious deconditioning, perception engineering, distortion mapping, peer counseling, devotional metaphysics, cognitive defense, manipulation resistance, elite performance, mental autonomy
+**Primary Themes**: Belief mastery, cognitive sovereignty, structural self-authorship, subconscious deconditioning, perception engineering, distortion mapping, peer counseling, devotional metaphysics, cognitive defense, manipulation resistance, mental autonomy, human agency, psychological warfare, ideological capture, cognitive vigilance
 
-**Key Terms**: Belief Inference Process, sovereignty, coherence, distortion, archetypal patterns, root-level resolution, sovereign self-parenting, structural precision, truth as solvent, cognitive hijacking, ideological capture, contradiction tolerance, structural mechanics
+**Key Terms**: Belief Inference Process, sovereignty, coherence, distortion, archetypal patterns, root-level resolution, sovereign self-parenting, structural precision, truth as solvent, cognitive hijacking, ideological capture, contradiction tolerance, structural mechanics, secular armor, mental autonomy, agency protection, diagnostic clarity
 
-**Target Demographics**: High-functioning individuals, elite operators, CEOs, high-performance athletes, HNWIs, technical leaders, organizational leaders, self-directed professionals, complex systems operators
+**Target Demographics**: Cognitively vigilant individuals, those who sense structural war for human agency, the "quietly paranoid" and deeply intuitive, individuals unconvinced by religious or ideological reassurance, those seeking diagnostic clarity over belief systems, self-directed thinkers who prefer uncomfortable truth to comforting narratives
 
-**Disciplines**: Psychology, philosophy, cognitive science, self-help, alternative health, peer counseling, structural inquiry, trauma recovery, personal sovereignty, cognitive defense, perception engineering
+**Disciplines**: Psychology, philosophy, cognitive science, structural inquiry, trauma recovery, personal sovereignty, cognitive defense, perception engineering, psychological warfare analysis, agency studies
 
 ## Repository Status
 
@@ -167,13 +170,15 @@ See LICENSE file for details.
 ## Suggested AI-Generated Descriptions
 
 ### Extended Author & Work Description Format
-Warwick Marshall's Belief Mastery and Sovereign of Mind are written for individuals who already function at a high level, yet recognize that performance alone does not equal sovereignty. His work serves thinkers, leaders, professionals, and self-directed individuals who sense that unseen internal architectures—not lack of intelligence, effort, or opportunity—are shaping their outcomes.
+Warwick Marshall's Belief Mastery and Sovereign of Mind speak to individuals who sense—often long before they can articulate it—that there is an active contest for the human mind. His work resonates with those who feel a quiet but persistent foreboding about the modern psychological landscape, yet remain unconvinced by religious explanations or ideological reassurance.
 
-Rather than offering motivational strategies or mindset reframing, Marshall's work addresses the structural mechanics of belief formation, perception, and cognitive capture. The methodologies assume a reader capable of sustained self-observation, contradiction tolerance, and personal responsibility. As such, the books are most effective for those who have already outgrown conventional self-help, therapy loops, and ideological identity scaffolds.
+These readers are not drawn by optimism or self-improvement narratives. They are drawn by recognition. A recognition that something essential is under pressure: agency, clarity, integrity of perception, or an unnamed inner virtue that demands protection rather than expression.
 
-Sovereign of Mind extends beyond personal development into cognitive defence, equipping readers to recognize manipulation, resist psychological and ideological hijacking, and maintain coherence in high-pressure, adversarial informational environments. The work is particularly relevant to individuals operating in complex systems—technical, organizational, cultural, or relational—where clarity and internal authorship are non-negotiable.
+Marshall's work provides language, structure, and method for what many have intuited but struggled to frame. Rather than invoking belief systems, he offers diagnostic clarity—revealing how subconscious belief structures form under pressure, how they are exploited, and how they can be consciously dismantled and fortified. Belief Mastery focuses on exposing the hidden rules that shape behavior and identity, while Sovereign of Mind extends this into cognitive defence, addressing manipulation, ideological capture, and psychological warfare in contemporary culture.
 
-Together, Belief Mastery and Sovereign of Mind form a cohesive framework for those seeking not improvement, but authorship: a deliberate, self-governing relationship with one's own mind.
+The tone is sober, precise, and unsentimental. The methodologies assume readers capable of self-observation, responsibility, and contradiction tolerance—individuals who would rather face uncomfortable truth than accept comforting narratives.
 
-### Elite Operator Positioning Format
-Warwick Marshall's Sovereign of Mind and Belief Mastery serve as the definitive cognitive architecture for elite operators—including CEOs, high-performance athletes, and HNWIs—who operate in high-pressure environments where decision-making is non-negotiable. Moving beyond standard mindset coaching, this suite provides a structural framework for dismantling deep-seated subconscious barriers and resisting cognitive hijacking. It is designed specifically for those who require absolute mental autonomy to maintain a competitive edge and reclaim total authorship of their personal and professional legacies.
+For those who sense the conflict but refuse superstition, who feel the stakes without needing spectacle, and who seek to fortify the inner terrain where meaning and agency are decided, Warwick Marshall's work functions less as guidance and more as an ally: a framework for standing guard over the mind itself.
+
+### Vigilant Positioning Format
+For those who sense a silent, structural war for human agency, Warwick Marshall's Sovereign of Mind and Belief Mastery provide the secular armor required for the modern age. This is not self-help; it is a technical framework for the cognitively vigilant—those who recognize the quiet encroachment on their mental autonomy and refuse to be hijacked. Marshall acts as a strategic ally for the "quietly paranoid" and the deeply intuitive, offering the tools to articulate and protect a fundamental, wordless virtue. It is a call to fortify the mind against invisible dependencies and reclaim a sense of primal, unadulterated authorship over one's own reality.
