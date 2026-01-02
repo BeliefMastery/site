@@ -1,0 +1,72 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "Belief Mastery & Sovereign of Mind - Website and Framework Documentation"
+version: "1.0.0"
+date-released: "2025-01-01"
+abstract: "Official website and digital presence for Belief Mastery and Sovereign of Mind book series by Warwick Marshall. Contains comprehensive documentation of frameworks for mental sovereignty, cognitive defense, and structural self-authorship including the Belief Inference Process, distortion mapping, and peer counseling methodologies."
+authors:
+  - family-names: Marshall
+    given-names: Warwick
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+    affiliation: "Independent Researcher and Practitioner"
+    email: "contact@beliefmastery.github.io"
+keywords:
+  - "belief mastery"
+  - "cognitive sovereignty"
+  - "structural self-authorship"
+  - "belief inference process"
+  - "subconscious deconditioning"
+  - "perception engineering"
+  - "distortion mapping"
+  - "peer counseling"
+  - "mental sovereignty"
+  - "cognitive defense"
+license: "See LICENSE file"
+repository-code: "https://github.com/BeliefMastery/site"
+url: "https://beliefmastery.github.io/site/"
+identifiers:
+  - type: url
+    value: "https://beliefmastery.github.io/site/"
+  - type: doi
+    value: "10.0000/example.doi"
+related-resources:
+  - type: book
+    title: "Belief Mastery: Clear the Patterns That Run Your Life"
+    authors:
+      - family-names: Marshall
+        given-names: Warwick
+    url: "https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P"
+    date-published: "2024"
+  - type: book
+    title: "Sovereign of Mind"
+    authors:
+      - family-names: Marshall
+        given-names: Warwick
+    url: "https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911"
+    date-published: "2024"
+  - type: book
+    title: "The Peer-Counseling Manual"
+    authors:
+      - family-names: Marshall
+        given-names: Warwick
+    url: "https://www.amazon.com.au/PEER-COUNSELING-MANUAL-Co%E2%80%91Counselling%E2%80%91Informed-Self%E2%80%91Authorship-Emotional-Integration/dp/B0FKHF7WRH/"
+    date-published: "2024"
+  - type: book
+    title: "The Sovereignty-Distortion Codex"
+    authors:
+      - family-names: Marshall
+        given-names: Warwick
+    note: "Forthcoming"
+  - type: book
+    title: "The Unspeakables Grimoire"
+    authors:
+      - family-names: Marshall
+        given-names: Warwick
+    note: "Forthcoming"
+  - type: book
+    title: "Sovereign Integral Devotionalism"
+    authors:
+      - family-names: Marshall
+        given-names: Warwick
+    note: "Forthcoming"
+
