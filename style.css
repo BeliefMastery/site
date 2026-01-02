@@ -521,6 +521,8 @@ input[type="email"]:focus{
 
 /* ---------- Footer ---------- */
 footer{
+  position:relative;
+  z-index:2;
   margin:2rem 0 4rem;
   text-align:center;
   color:var(--muted);
