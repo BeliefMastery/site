@@ -395,12 +395,18 @@
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
         </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span id="questionCount" style="color: var(--muted); font-size: 0.9rem;"></span>
+        </div>
         <div id="questionContainer">
           <!-- Questions will be populated by JavaScript -->
         </div>
         <div class="navigation-buttons">
           <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
           <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); text-align: center;">
+          <button class="btn btn-secondary" id="abandonAssessment" style="background: transparent; color: var(--muted); border: 1px solid var(--muted);">Abandon / Restart</button>
         </div>
       </section>
 

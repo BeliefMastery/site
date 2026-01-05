@@ -3,6 +3,7 @@
 
 import { SOVEREIGNTY_OBSTACLES } from './coaching-data/sovereignty-obstacles.js';
 import { SATISFACTION_DOMAINS } from './coaching-data/satisfaction-domains.js';
+import { SATISFACTION_DOMAIN_EXAMPLES } from './coaching-data/satisfaction-domain-examples.js';
 import { QUESTION_WEIGHTINGS } from './coaching-data/question-weightings.js';
 import { COACHING_PROMPTS } from './coaching-data/coaching-prompts.js';
 import { DEEPER_INQUIRY, ACTION_PLANNING } from './coaching-data/deeper-inquiry.js';
@@ -112,6 +113,15 @@ class CoachingEngine {
     if (clearCacheBtn) {
       clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
     }
+    
+    const abandonBtn = document.getElementById('abandonAssessment');
+    if (abandonBtn) {
+      abandonBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+          this.resetAssessment();
+        }
+      });
+    }
   }
 
   startAssessment() {
@@ -203,10 +213,20 @@ class CoachingEngine {
       description = `Part of: ${question.name}`;
     }
     
+    // Get example for domain aspect questions
+    let example = '';
+    if (isDomainAspect && question.domain && question.aspect) {
+      const domainExamples = SATISFACTION_DOMAIN_EXAMPLES[question.domain];
+      if (domainExamples && domainExamples[question.aspect]) {
+        example = domainExamples[question.aspect];
+      }
+    }
+    
     container.innerHTML = `
       <div class="question-block">
         <h3>${questionText}</h3>
         ${description ? `<p class="description">${description}</p>` : ''}
+        ${example ? `<p style="font-style: italic; color: var(--muted); margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">${example}</p>` : ''}
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" 
@@ -260,6 +280,13 @@ class CoachingEngine {
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
       progressFill.style.width = `${progress}%`;
+    }
+    
+    // Update question count display
+    const questionCount = document.getElementById('questionCount');
+    if (questionCount) {
+      const remaining = this.questionSequence.length - this.currentQuestionIndex;
+      questionCount.textContent = `${remaining} question${remaining !== 1 ? 's' : ''} remaining`;
     }
   }
 
@@ -474,25 +501,36 @@ class CoachingEngine {
       });
     }
     
-    // Priorities
+    // Priorities - clearly outlined at top
+    html += '</div>'; // Close profile-summary
+    
+    // Key Priorities Section - Highlighted prominently
     if (this.profileData.priorities.topObstacles.length > 0 || this.profileData.priorities.topImprovementAreas.length > 0) {
-      html += '<h4 style="margin-top: 1.5rem; color: var(--brand);">Key Priorities</h4>';
+      html += '<div style="background: rgba(255, 184, 0, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-top: 2rem; margin-bottom: 2rem;">';
+      html += '<h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.4rem;">🎯 Areas of Greatest Impact</h3>';
+      html += '<p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6;">These are the areas that will provide the greatest positive impact when addressed:</p>';
       
       if (this.profileData.priorities.topObstacles.length > 0) {
-        html += '<p style="font-weight: 600; margin-top: 1rem;">Top Obstacles to Address:</p><ul>';
-        this.profileData.priorities.topObstacles.forEach(obs => {
-          html += `<li>${obs.name} (${obs.rawScore}/10)</li>`;
+        html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid #dc3545;">';
+        html += '<h4 style="color: #dc3545; margin-bottom: 1rem; font-size: 1.1rem;">🔥 Top Obstacles to Address (Highest Priority)</h4>';
+        html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+        this.profileData.priorities.topObstacles.forEach((obs, index) => {
+          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${obs.name}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)})</li>`;
         });
-        html += '</ul>';
+        html += '</ul></div>';
       }
       
       if (this.profileData.priorities.topImprovementAreas.length > 0) {
-        html += '<p style="font-weight: 600; margin-top: 1rem;">Areas for Improvement:</p><ul>';
-        this.profileData.priorities.topImprovementAreas.forEach(domain => {
-          html += `<li>${domain.name} (${domain.combinedScore.toFixed(1)}/10)</li>`;
+        html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); border-left: 4px solid #28a745;">';
+        html += '<h4 style="color: #28a745; margin-bottom: 1rem; font-size: 1.1rem;">✨ Top Areas for Improvement (Lowest Satisfaction)</h4>';
+        html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+        this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
+          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${domain.name}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})</li>`;
         });
-        html += '</ul>';
+        html += '</ul></div>';
       }
+      
+      html += '</div>';
     }
     
     html += '</div>';
