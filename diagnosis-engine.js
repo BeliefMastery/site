@@ -333,6 +333,17 @@ class DiagnosisEngine {
     if (clearCacheBtn) {
       clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
     }
+
+    const abandonBtn = document.getElementById('abandonAssessment');
+    if (abandonBtn) {
+      abandonBtn.addEventListener('click', () => this.abandonAssessment());
+    }
+  }
+
+  abandonAssessment() {
+    if (confirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
+      this.resetAssessment();
+    }
   }
 
   startAssessment() {
