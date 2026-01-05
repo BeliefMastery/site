@@ -646,10 +646,10 @@ figure.image-card{
 figure.image-card::before{
   content:'';
   position:absolute;
-  top:-4px;
-  left:-4px;
-  right:-4px;
-  bottom:-4px;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
   border-radius:16px;
   background:#ffb800;
   z-index:0;
@@ -660,6 +660,7 @@ figure.image-card::before{
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite:exclude;
   padding:4px;
+  margin:0;
 }
 
 /* Moving sheen effect within the static border bounds */
@@ -667,10 +668,10 @@ figure.image-card::before{
 figure.image-card a::before{
   content:'';
   position:absolute;
-  top:-4px;
-  left:-4px;
-  right:-4px;
-  bottom:-4px;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
   border-radius:16px;
   background:linear-gradient(135deg, transparent 20%, rgba(255, 215, 0, 0.9) 40%, rgba(255, 237, 78, 1) 50%, rgba(255, 215, 0, 0.9) 60%, transparent 80%);
   background-size:300% 300%;
@@ -683,6 +684,7 @@ figure.image-card a::before{
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite:exclude;
   padding:4px;
+  margin:0;
 }
 
 .image-card:hover a::before,
