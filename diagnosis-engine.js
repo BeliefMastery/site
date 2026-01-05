@@ -1,5 +1,6 @@
 // Diagnosis Engine - Main questionnaire logic and calculation system
 import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS } from './dsm5-data.js';
+import { TREATMENT_DATABASE } from './treatment-database.js';
 
 class DiagnosisEngine {
   constructor() {
@@ -438,10 +439,12 @@ class DiagnosisEngine {
   renderResults() {
     const container = document.getElementById('resultsContainer');
     const vector = this.analysisData.conclusionVector;
+    const primaryDiagnosis = vector.primaryDiagnosis;
+    const treatmentData = TREATMENT_DATABASE[primaryDiagnosis] || null;
     
     let html = `
       <div class="diagnosis-result">
-        <h3>Primary Assessment: ${vector.primaryDiagnosis || 'No clear diagnosis'}</h3>
+        <h3>Primary Assessment: ${primaryDiagnosis || 'No clear diagnosis'}</h3>
         <div class="probability-bar">
           <div class="probability-fill" style="width: ${vector.primaryProbability * 100}%">
             ${Math.round(vector.primaryProbability * 100)}%
@@ -451,6 +454,11 @@ class DiagnosisEngine {
         <p style="margin-top: 1rem;"><strong>Recommendation:</strong> ${vector.recommendation}</p>
       </div>
     `;
+    
+    // Display comprehensive treatment and theory information for primary diagnosis
+    if (treatmentData && primaryDiagnosis) {
+      html += this.renderTreatmentInformation(primaryDiagnosis, treatmentData);
+    }
     
     if (vector.secondaryDiagnoses.length > 0) {
       html += '<h3 style="margin-top: 2rem;">Secondary Considerations</h3>';
@@ -495,6 +503,135 @@ class DiagnosisEngine {
     `;
     
     container.innerHTML = html;
+  }
+
+  renderTreatmentInformation(disorderName, treatmentData) {
+    let html = `<div class="treatment-section" style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.9); border-radius: var(--radius); box-shadow: var(--shadow);">`;
+    html += `<h2 style="margin-bottom: 2rem; color: var(--brand);">Comprehensive Information: ${disorderName}</h2>`;
+    
+    // Treatments
+    if (treatmentData.treatments) {
+      html += `<div class="treatment-category"><h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">Treatment Options</h3>`;
+      
+      if (treatmentData.treatments.behavioral?.length > 0) {
+        html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Behavioral Treatments</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.treatments.behavioral.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.treatments.dietary?.length > 0) {
+        html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Dietary Interventions</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.treatments.dietary.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.treatments.pharmacological?.length > 0) {
+        html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Pharmacological Treatments</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.treatments.pharmacological.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.treatments.alternativeHealth?.length > 0) {
+        html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Alternative Health Approaches</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.treatments.alternativeHealth.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.treatments.westernMedicine?.length > 0) {
+        html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Western Medical Interventions</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.treatments.westernMedicine.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.treatments.easternMedicine?.length > 0) {
+        html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Eastern Medicine Approaches</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.treatments.easternMedicine.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      html += `</div>`;
+    }
+    
+    // Theoretical Frameworks
+    if (treatmentData.theories) {
+      html += `<div class="theory-category"><h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--brand);">Theoretical Frameworks</h3>`;
+      
+      if (treatmentData.theories.biophysical?.length > 0) {
+        html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Biophysical Perspectives</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.theories.biophysical.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.theories.metaphysical?.length > 0) {
+        html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Metaphysical Perspectives</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.theories.metaphysical.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.theories.biochemical?.length > 0) {
+        html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Biochemical Factors</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.theories.biochemical.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      if (treatmentData.theories.mythopoetical?.length > 0) {
+        html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Mythopoetical Perspectives</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+        treatmentData.theories.mythopoetical.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+      
+      html += `</div>`;
+    }
+    
+    // Management Strategies
+    if (treatmentData.managementStrategies?.length > 0) {
+      html += `<div class="management-category"><h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--brand);">Management Strategies</h3><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+      treatmentData.managementStrategies.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+    
+    // Potential Causes
+    if (treatmentData.potentialCauses?.length > 0) {
+      html += `<div class="causes-category"><h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--brand);">Potential Causes</h3><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+      treatmentData.potentialCauses.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+    
+    // Environmental Factors
+    if (treatmentData.environmentalFactors?.length > 0) {
+      html += `<div class="environment-category"><h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--brand);">Environmental Factors</h3><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
+      treatmentData.environmentalFactors.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+    
+    html += `</div>`;
+    return html;
   }
 
   saveProgress() {
