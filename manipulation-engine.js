@@ -7,6 +7,7 @@ import { SYMPTOM_QUESTIONS } from './manipulation-data/symptom-questions.js';
 import { EFFECT_QUESTIONS } from './manipulation-data/effect-questions.js';
 import { CONSEQUENCE_QUESTIONS } from './manipulation-data/consequence-questions.js';
 import { VECTOR_MAPPING } from './manipulation-data/vector-mapping.js';
+import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class ManipulationEngine {
   constructor() {
@@ -81,9 +82,14 @@ class ManipulationEngine {
       prevBtn.addEventListener('click', () => this.prevQuestion());
     }
     
-    const exportBtn = document.getElementById('exportAnalysis');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => this.exportAnalysis());
+    const exportBtnJson = document.getElementById('exportAnalysisJson');
+    if (exportBtnJson) {
+      exportBtnJson.addEventListener('click', () => this.exportAnalysis('json'));
+    }
+    
+    const exportBtnCsv = document.getElementById('exportAnalysisCsv');
+    if (exportBtnCsv) {
+      exportBtnCsv.addEventListener('click', () => this.exportAnalysis('csv'));
     }
     
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -379,15 +385,14 @@ class ManipulationEngine {
     container.innerHTML = html;
   }
 
-  exportAnalysis() {
-    const dataStr = JSON.stringify(this.analysisData, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `manipulation-analysis-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  exportAnalysis(format = 'json') {
+    if (format === 'csv') {
+      const csv = exportForAIAgent(this.analysisData, 'manipulation', 'Manipulation Vector Identification');
+      downloadFile(csv, `manipulation-analysis-${Date.now()}.csv`, 'text/csv');
+    } else {
+      const json = exportJSON(this.analysisData, 'manipulation', 'Manipulation Vector Identification');
+      downloadFile(json, `manipulation-analysis-${Date.now()}.json`, 'application/json');
+    }
   }
 
   saveProgress() {

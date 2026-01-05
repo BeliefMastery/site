@@ -6,6 +6,7 @@ import { CHANNELS } from './channel-data/channels.js';
 import { CHANNEL_SYMPTOMS } from './channel-data/channel-symptoms.js';
 import { REMEDIATION_STRATEGIES } from './channel-data/remediation-strategies.js';
 import { CHANNEL_MAPPING } from './channel-data/channel-mapping.js';
+import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class ChannelsEngine {
   constructor() {
@@ -55,9 +56,14 @@ class ChannelsEngine {
       prevBtn.addEventListener('click', () => this.prevQuestion());
     }
     
-    const exportBtn = document.getElementById('exportAnalysis');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => this.exportAnalysis());
+    const exportBtnJson = document.getElementById('exportAnalysisJson');
+    if (exportBtnJson) {
+      exportBtnJson.addEventListener('click', () => this.exportAnalysis('json'));
+    }
+    
+    const exportBtnCsv = document.getElementById('exportAnalysisCsv');
+    if (exportBtnCsv) {
+      exportBtnCsv.addEventListener('click', () => this.exportAnalysis('csv'));
     }
     
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -344,15 +350,14 @@ class ChannelsEngine {
     container.innerHTML = html;
   }
 
-  exportAnalysis() {
-    const dataStr = JSON.stringify(this.analysisData, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `channel-analysis-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  exportAnalysis(format = 'json') {
+    if (format === 'csv') {
+      const csv = exportForAIAgent(this.analysisData, 'channels', 'Channel Taxonomy Analysis');
+      downloadFile(csv, `channel-analysis-${Date.now()}.csv`, 'text/csv');
+    } else {
+      const json = exportJSON(this.analysisData, 'channels', 'Channel Taxonomy Analysis');
+      downloadFile(json, `channel-analysis-${Date.now()}.json`, 'application/json');
+    }
   }
 
   saveProgress() {

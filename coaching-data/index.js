@@ -6,4 +6,5 @@ export { SOVEREIGNTY_OBSTACLES } from './sovereignty-obstacles.js';
 export { SATISFACTION_DOMAINS } from './satisfaction-domains.js';
 export { QUESTION_WEIGHTINGS } from './question-weightings.js';
 export { COACHING_PROMPTS } from './coaching-prompts.js';
+export { DEEPER_INQUIRY, ACTION_PLANNING } from './deeper-inquiry.js';
 

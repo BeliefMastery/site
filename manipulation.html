@@ -21,7 +21,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url('images/index-background.JPG');
+      background-image: url('images/silence.png');
       background-size: cover;
       background-attachment: fixed;
       background-repeat: no-repeat;
@@ -263,10 +263,18 @@
           </ul>
         </li>
         <li role="none"><a role="menuitem" href="index.html#purchase" data-target="purchase">Learn / Purchase</a></li>
-        <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
-        <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
-        <li role="none"><a role="menuitem" href="manipulation.html" class="active">Manipulation Analysis</a></li>
-        <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#tools" data-target="tools">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html" class="active">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+          </ul>
+        </li>
         <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
       </ul>
     </nav>
@@ -332,7 +340,8 @@
         <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0, 0, 0, 0.1);">
           <h3>Export Your Analysis</h3>
           <p style="color: var(--muted); margin-bottom: 1rem;">Export your analysis for reference or professional consultation.</p>
-          <button class="btn btn-primary" id="exportAnalysis">📥 Export Analysis</button>
+          <button class="btn btn-primary" id="exportAnalysisJson">📥 Export Analysis (JSON)</button>
+          <button class="btn btn-primary" id="exportAnalysisCsv" style="margin-left: 1rem;">📥 Export Analysis (CSV)</button>
           <button class="btn btn-secondary" id="newAssessment" style="margin-left: 1rem;">Start New Assessment</button>
         </div>
       </section>
@@ -372,6 +381,70 @@
           }
         });
       }
+    });
+  </script>
+
+  <!-- Debug Panel -->
+  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)">🐛</button>
+  <div class="debug-panel" id="debugPanel">
+    <div class="debug-header">
+      <h3>Debug Log</h3>
+      <div>
+        <button class="debug-toggle" id="debugClear">Clear</button>
+        <button class="debug-toggle" id="debugClose">✕</button>
+      </div>
+    </div>
+    <div class="debug-log" id="debugLog">
+      <!-- Debug entries will be populated here -->
+    </div>
+    <div class="debug-footer">
+      Press Ctrl+D (Cmd+D on Mac) to toggle debug mode
+    </div>
+  </div>
+
+  <script>
+    // Debug panel toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const debugToggle = document.getElementById('debugToggle');
+      const debugPanel = document.getElementById('debugPanel');
+      const debugClose = document.getElementById('debugClose');
+      const debugClear = document.getElementById('debugClear');
+      const debugLog = document.getElementById('debugLog');
+      
+      if (debugToggle && debugPanel) {
+        debugToggle.addEventListener('click', function() {
+          debugPanel.classList.toggle('active');
+        });
+        
+        if (debugClose) {
+          debugClose.addEventListener('click', function() {
+            debugPanel.classList.remove('active');
+          });
+        }
+        
+        if (debugClear && debugLog) {
+          debugClear.addEventListener('click', function() {
+            debugLog.innerHTML = '';
+            if (window.manipulationEngine) {
+              window.manipulationEngine.debugLog = [];
+            }
+          });
+        }
+      }
+      
+      // Enable debug mode with keyboard shortcut (Ctrl+D or Cmd+D)
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+          e.preventDefault();
+          if (window.manipulationEngine) {
+            window.manipulationEngine.debugMode = !window.manipulationEngine.debugMode;
+            console.log('Debug mode:', window.manipulationEngine.debugMode ? 'ENABLED' : 'DISABLED');
+            if (window.manipulationEngine.debugMode) {
+              debugPanel.classList.add('active');
+            }
+          }
+        }
+      });
     });
   </script>
 </body>

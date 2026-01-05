@@ -21,7 +21,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url('images/index-background.JPG');
+      background-image: url('images/split-sky.png');
       background-size: cover;
       background-attachment: fixed;
       background-repeat: no-repeat;
@@ -325,8 +325,18 @@
           </ul>
         </li>
         <li role="none"><a role="menuitem" href="index.html#purchase" data-target="purchase">Learn / Purchase</a></li>
-        <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
-        <li role="none"><a role="menuitem" href="coaching.html" class="active">Coaching Agent</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#tools" data-target="tools">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html" class="active">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+          </ul>
+        </li>
         <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
       </ul>
     </nav>
@@ -399,13 +409,34 @@
         <div id="profileResults">
           <!-- Results will be populated by JavaScript -->
         </div>
-        <div class="export-section">
+        <div class="export-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--accent);">
+          <div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid var(--brand);">
+            <h3 style="color: var(--brand); margin-bottom: 0.75rem;">🔍 Deepen Your Analysis</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem; line-height: 1.6;">
+              The initial analysis identifies your most impactful avenues for action. To make the greatest positive impact, consider deepening your understanding of your top priorities through targeted follow-up questions and strategic action planning.
+            </p>
+            <button class="btn btn-primary" id="deepenAnalysis" style="width: 100%;">Continue to Deeper Inquiry</button>
+          </div>
           <h3>Export Your Coaching Profile</h3>
           <p style="color: var(--muted); margin-bottom: 1rem;">Export your profile in your preferred format. JSON is ideal for programmatic import, while CSV includes detailed explanations for how your AI agent should interpret, value, and prioritize the content.</p>
           <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             <button class="btn btn-primary" id="exportProfileJSON">📥 Export JSON</button>
             <button class="btn btn-primary" id="exportProfileCSV">📊 Export CSV (with AI Instructions)</button>
             <button class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="deeper-inquiry-section" id="deeperInquirySection" style="display: none;">
+        <h2>Deeper Inquiry & Strategic Planning</h2>
+        <div id="deeperInquiryResults">
+          <!-- Deeper inquiry content will be populated by JavaScript -->
+        </div>
+        <div class="export-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--accent);">
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+            <button class="btn btn-secondary" id="backToResults">← Back to Initial Results</button>
+            <button class="btn btn-primary" id="exportDeepProfileJSON">📥 Export Complete Profile (JSON)</button>
+            <button class="btn btn-primary" id="exportDeepProfileCSV">📊 Export Complete Profile (CSV)</button>
           </div>
         </div>
       </section>
@@ -445,6 +476,70 @@
           }
         });
       }
+    });
+  </script>
+
+  <!-- Debug Panel -->
+  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)">🐛</button>
+  <div class="debug-panel" id="debugPanel">
+    <div class="debug-header">
+      <h3>Debug Log</h3>
+      <div>
+        <button class="debug-toggle" id="debugClear">Clear</button>
+        <button class="debug-toggle" id="debugClose">✕</button>
+      </div>
+    </div>
+    <div class="debug-log" id="debugLog">
+      <!-- Debug entries will be populated here -->
+    </div>
+    <div class="debug-footer">
+      Press Ctrl+D (Cmd+D on Mac) to toggle debug mode
+    </div>
+  </div>
+
+  <script>
+    // Debug panel toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const debugToggle = document.getElementById('debugToggle');
+      const debugPanel = document.getElementById('debugPanel');
+      const debugClose = document.getElementById('debugClose');
+      const debugClear = document.getElementById('debugClear');
+      const debugLog = document.getElementById('debugLog');
+      
+      if (debugToggle && debugPanel) {
+        debugToggle.addEventListener('click', function() {
+          debugPanel.classList.toggle('active');
+        });
+        
+        if (debugClose) {
+          debugClose.addEventListener('click', function() {
+            debugPanel.classList.remove('active');
+          });
+        }
+        
+        if (debugClear && debugLog) {
+          debugClear.addEventListener('click', function() {
+            debugLog.innerHTML = '';
+            if (window.coachingEngine) {
+              window.coachingEngine.debugLog = [];
+            }
+          });
+        }
+      }
+      
+      // Enable debug mode with keyboard shortcut (Ctrl+D or Cmd+D)
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+          e.preventDefault();
+          if (window.coachingEngine) {
+            window.coachingEngine.debugMode = !window.coachingEngine.debugMode;
+            console.log('Debug mode:', window.coachingEngine.debugMode ? 'ENABLED' : 'DISABLED');
+            if (window.coachingEngine.debugMode) {
+              debugPanel.classList.add('active');
+            }
+          }
+        }
+      });
     });
   </script>
 </body>

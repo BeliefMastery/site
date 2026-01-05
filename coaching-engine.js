@@ -5,6 +5,8 @@ import { SOVEREIGNTY_OBSTACLES } from './coaching-data/sovereignty-obstacles.js'
 import { SATISFACTION_DOMAINS } from './coaching-data/satisfaction-domains.js';
 import { QUESTION_WEIGHTINGS } from './coaching-data/question-weightings.js';
 import { COACHING_PROMPTS } from './coaching-data/coaching-prompts.js';
+import { DEEPER_INQUIRY, ACTION_PLANNING } from './coaching-data/deeper-inquiry.js';
+import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class CoachingEngine {
   constructor() {
@@ -487,7 +489,128 @@ class CoachingEngine {
     container.innerHTML = html;
   }
 
-  exportProfile(format = 'json') {
+  startDeeperInquiry() {
+    // Hide initial results, show deeper inquiry section
+    const resultsSection = document.getElementById('resultsSection');
+    const deeperSection = document.getElementById('deeperInquirySection');
+    
+    if (resultsSection) resultsSection.style.display = 'none';
+    if (deeperSection) {
+      deeperSection.style.display = 'block';
+      this.renderDeeperInquiry();
+    }
+  }
+
+  backToInitialResults() {
+    const resultsSection = document.getElementById('resultsSection');
+    const deeperSection = document.getElementById('deeperInquirySection');
+    
+    if (deeperSection) deeperSection.style.display = 'none';
+    if (resultsSection) resultsSection.style.display = 'block';
+  }
+
+  renderDeeperInquiry() {
+    const container = document.getElementById('deeperInquiryResults');
+    if (!container) return;
+
+    let html = '<div class="deeper-inquiry-content">';
+    html += '<p style="margin-bottom: 2rem; color: var(--muted); line-height: 1.7;">';
+    html += 'The following deeper inquiry questions are designed to help you explore your top priorities more thoroughly. ';
+    html += 'These questions will help clarify specific actions, identify support needs, and create strategic action plans.';
+    html += '</p>';
+
+    // Top Obstacles - Deeper Inquiry
+    if (this.profileData.priorities.topObstacles.length > 0) {
+      html += '<h3 style="color: var(--brand); margin-top: 2rem; margin-bottom: 1rem;">Deeper Inquiry: Top Obstacles</h3>';
+      
+      this.profileData.priorities.topObstacles.forEach((obstacle, index) => {
+        const inquiry = DEEPER_INQUIRY.obstacles[obstacle.key];
+        if (inquiry) {
+          html += `<div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">`;
+          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${obstacle.name}</h4>`;
+          html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">${obstacle.description}</p>`;
+          
+          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Reflection Questions:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          inquiry.questions.forEach(q => {
+            html += `<li style="margin-bottom: 0.75rem; line-height: 1.6;">${q}</li>`;
+          });
+          html += '</ul></div>';
+
+          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Key Action Areas:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          inquiry.actionAreas.forEach(area => {
+            html += `<li style="margin-bottom: 0.5rem; line-height: 1.5;">${area}</li>`;
+          });
+          html += '</ul></div>';
+
+          html += '</div>';
+        }
+      });
+    }
+
+    // Top Improvement Areas - Deeper Inquiry
+    if (this.profileData.priorities.topImprovementAreas.length > 0) {
+      html += '<h3 style="color: var(--brand); margin-top: 2rem; margin-bottom: 1rem;">Deeper Inquiry: Areas for Improvement</h3>';
+      
+      this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
+        const inquiry = DEEPER_INQUIRY.domains[domain.key];
+        if (inquiry) {
+          html += `<div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--accent);">`;
+          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${domain.name}</h4>`;
+          html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">Current Satisfaction: ${domain.combinedScore.toFixed(1)}/10</p>`;
+          
+          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Reflection Questions:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          inquiry.questions.forEach(q => {
+            html += `<li style="margin-bottom: 0.75rem; line-height: 1.6;">${q}</li>`;
+          });
+          html += '</ul></div>';
+
+          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Key Action Areas:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          inquiry.actionAreas.forEach(area => {
+            html += `<li style="margin-bottom: 0.5rem; line-height: 1.5;">${area}</li>`;
+          });
+          html += '</ul></div>';
+
+          html += '</div>';
+        }
+      });
+    }
+
+    // Strategic Action Planning
+    html += '<h3 style="color: var(--brand); margin-top: 3rem; margin-bottom: 1.5rem;">Strategic Action Planning</h3>';
+    html += '<p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.7;">';
+    html += 'Based on your priorities, consider these timeframes for action. Start with immediate actions to build momentum, ';
+    html += 'then progressively work toward longer-term transformation.';
+    html += '</p>';
+
+    Object.entries(ACTION_PLANNING).forEach(([key, plan]) => {
+      html += `<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 2px solid var(--accent);">`;
+      html += `<h4 style="color: var(--brand); margin-bottom: 0.5rem;">${plan.timeframe}</h4>`;
+      html += `<p style="color: var(--muted); margin-bottom: 1rem; font-weight: 600;">${plan.focus}</p>`;
+      html += '<ul style="margin-left: 1.5rem;">';
+      plan.examples.forEach(example => {
+        html += `<li style="margin-bottom: 0.5rem; line-height: 1.6;">${example}</li>`;
+      });
+      html += '</ul></div>';
+    });
+
+    html += '<div style="background: rgba(255, 184, 0, 0.15); padding: 1.5rem; border-radius: var(--radius); margin-top: 2rem; border-left: 4px solid var(--brand);">';
+    html += '<h4 style="color: var(--brand); margin-bottom: 0.75rem;">Next Steps</h4>';
+    html += '<p style="line-height: 1.7; margin-bottom: 0.75rem;">';
+    html += 'Use the reflection questions above to clarify your specific actions. Consider:';
+    html += '</p>';
+    html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+    html += '<li>What is one specific action you can take this week in your top priority area?</li>';
+    html += '<li>What support or resources do you need to take this action?</li>';
+    html += '<li>What would success look like in 30 days? 90 days? 6 months?</li>';
+    html += '<li>How will you track your progress and adjust your approach?</li>';
+    html += '</ul>';
+    html += '</div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  exportProfile(format = 'json', includeDeeper = false) {
     if (format === 'csv') {
       this.exportCSV();
     } else {
@@ -496,17 +619,18 @@ class CoachingEngine {
   }
 
   exportJSON() {
-    const dataStr = JSON.stringify(this.profileData.coachingProfile, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `coaching-profile-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const json = exportJSON(this.profileData, 'coaching', 'Personal Coaching Agent Builder');
+    downloadFile(json, `coaching-profile-${Date.now()}.json`, 'application/json');
   }
 
   exportCSV() {
+    // Use shared export utility for consistency, but keep existing detailed CSV format
+    const csv = exportForAIAgent(this.profileData, 'coaching', 'Personal Coaching Agent Builder');
+    downloadFile(csv, `coaching-profile-${Date.now()}.csv`, 'text/csv');
+  }
+
+  exportCSV_legacy() {
+    // Legacy detailed CSV export - keeping for reference but using shared utility above
     // Build CSV with comprehensive explanations
     let csv = 'Personal Coaching Agent Profile\n';
     csv += 'Generated: ' + new Date().toISOString() + '\n';

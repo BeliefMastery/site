@@ -9,6 +9,12 @@ Allow: /diagnosis.html
 Allow: /coaching.html
 Allow: /manipulation.html
 Allow: /channels.html
+Allow: /paradigm.html
+Allow: /paradigm-engine.js
+Allow: /paradigm-data/
+Allow: /relationship.html
+Allow: /relationship-engine.js
+Allow: /relationship-data/
 Allow: /style.css
 Allow: /images/
 Allow: /diagnosis-engine.js

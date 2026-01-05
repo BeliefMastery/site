@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relationship Optimization - Weakest Link Analysis - Belief Mastery</title>
+  <meta name="description" content="Identify the weakest links in your relationship across 20 compatibility points. Receive targeted action strategies based on archetypal insights and biological essentialism.">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Page-specific styles for relationship.html */
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/relationship.png');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .relationship-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+    }
+
+    .intro-section h2 {
+      color: var(--brand);
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .questionnaire-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .questionnaire-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .question-block {
+      margin-bottom: 2rem;
+    }
+
+    .question-block h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      font-size: 1.25rem;
+    }
+
+    .question-block .description {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .scale-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .scale-input {
+      flex: 1;
+    }
+
+    .scale-input input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .scale-input input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+    }
+
+    .scale-input input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+      border: none;
+    }
+
+    .scale-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--brand);
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .results-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .results-section h2 {
+      color: var(--brand);
+      margin-bottom: 1.5rem;
+    }
+
+    .weakest-link-item {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+      border-left: 4px solid var(--accent);
+    }
+
+    .weakest-link-item.critical {
+      border-left-color: #dc3545;
+      background: rgba(220, 53, 69, 0.1);
+    }
+
+    .weakest-link-item h3 {
+      color: var(--brand);
+      margin-bottom: 1rem;
+    }
+
+    .action-strategies {
+      margin-top: 1.5rem;
+    }
+
+    .action-strategies h4 {
+      color: var(--brand);
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .action-strategies ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .action-strategies li {
+      margin-bottom: 0.5rem;
+      color: var(--muted);
+    }
+
+    .export-section {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .instructions-panel {
+      background: rgba(255, 184, 0, 0.1);
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instructions-panel h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .relationship-container {
+        padding: 1rem;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner" style="position: relative; z-index: 10;">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html#home" data-target="home">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Works <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#belief-mastery" data-target="belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereign-of-mind" data-target="sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="index.html#distortion-codex" data-target="distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="index.html#unspeakables-grimoire" data-target="unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereign-integral-devotionalism" data-target="sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="index.html#peer-counseling-manual" data-target="peer-counseling-manual">Peer-Counseling Manual</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereignty-simulacrum" data-target="sovereignty-simulacrum">Sovereignty Simulacrum</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="index.html#purchase" data-target="purchase">Learn / Purchase</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#tools" data-target="tools">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html" class="active">Relationship Optimization</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 2;">
+    <div class="relationship-container">
+      <section class="intro-section">
+        <h2>🔗 Relationship Optimization - Weakest Link Analysis</h2>
+        <p><strong>Identify the weakest links in your relationship and receive targeted action strategies.</strong></p>
+        <p>This system evaluates your relationship across 20 compatibility points, drawing insights from optimal relationship dynamics, biological essentialism, polarity, and the STATUS/SELECTION/ATTRACTION reference map. Your responses generate a comprehensive analysis identifying the weakest links and providing actionable strategies for improvement.</p>
+        <p style="margin-top: 1rem; font-weight: 600;">The assessment includes:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <li><strong>20 Compatibility Points:</strong> Evaluated across Very High, High, Moderate-High, and Moderate impact tiers.</li>
+          <li><strong>Weakest Link Identification:</strong> Pinpoints the areas requiring immediate attention based on weighted scoring.</li>
+          <li><strong>Targeted Action Strategies:</strong> Immediate, structural, and archetypal insights for each weakest link.</li>
+          <li><strong>Archetypal Insights:</strong> Integration of vulnerability patterns, biological essentialism, polarity dynamics, and evolutionary clusters.</li>
+        </ul>
+        <p style="margin-top: 1rem; font-style: italic; color: var(--muted);"><strong>Note:</strong> This tool is designed for relationship optimization and structural clarity. Use this assessment to identify areas for growth and receive evidence-based strategies for improvement.</p>
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="instructions-panel">
+          <h3>📋 Assessment Instructions</h3>
+          <p><strong>Scale Guide:</strong> Use the 0-10 scale to rate your relationship experience for each compatibility point.</p>
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li><strong>0-2 (Very Weak):</strong> Significant problems, frequent conflict, or major misalignment in this area.</li>
+            <li><strong>3-4 (Weak):</strong> Notable issues, occasional conflict, or clear areas for improvement.</li>
+            <li><strong>5-6 (Moderate):</strong> Some challenges, but generally functional with room for growth.</li>
+            <li><strong>7-8 (Strong):</strong> Generally good alignment with minor areas for improvement.</li>
+            <li><strong>9-10 (Very Strong):</strong> Excellent alignment, strong compatibility, minimal issues.</li>
+          </ul>
+          <p style="margin-top: 1rem;"><strong>Be honest:</strong> Accurate assessment leads to more effective strategies. Consider both your experience and your partner's perspective when possible.</p>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBarFill"></div>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions will be populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsSection">
+        <h2>Relationship Analysis Results</h2>
+        <div id="resultsContainer">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+        <div class="export-section" style="text-align: center;">
+          <h3>Export Your Relationship Analysis</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Download your detailed analysis for integration with your personal AI coaching agent.</p>
+          <button class="btn btn-primary" id="exportAnalysisJSON">Export as JSON</button>
+          <button class="btn btn-secondary" id="exportAnalysisCSV">Export as CSV (for AI Agent)</button>
+          <p style="font-size: 0.85rem; color: var(--muted); margin-top: 1rem;">The CSV format includes specific instructions for AI interpretation.</p>
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn btn-primary" id="newAssessment">Start New Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🗑️ Clear Cached Data</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer style="position: relative; z-index: 2;">
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
+  </footer>
+
+  <script src="shared/header-footer.js"></script>
+  <script type="module" src="relationship-engine.js"></script>
+
+  <!-- Debug Panel -->
+  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)">🐛</button>
+  <div class="debug-panel" id="debugPanel">
+    <div class="debug-header">
+      <h3>Debug Log</h3>
+      <div>
+        <button class="debug-toggle" id="debugClear">Clear</button>
+        <button class="debug-toggle" id="debugClose">✕</button>
+      </div>
+    </div>
+    <div class="debug-log" id="debugLog">
+      <!-- Debug entries will be populated here -->
+    </div>
+    <div class="debug-footer">
+      Press Ctrl+D (Cmd+D on Mac) to toggle debug mode
+    </div>
+  </div>
+
+  <script>
+    // Debug panel toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const debugToggle = document.getElementById('debugToggle');
+      const debugPanel = document.getElementById('debugPanel');
+      const debugClose = document.getElementById('debugClose');
+      const debugClear = document.getElementById('debugClear');
+      const debugLog = document.getElementById('debugLog');
+      
+      if (debugToggle && debugPanel) {
+        debugToggle.addEventListener('click', function() {
+          debugPanel.classList.toggle('active');
+        });
+        
+        if (debugClose) {
+          debugClose.addEventListener('click', function() {
+            debugPanel.classList.remove('active');
+          });
+        }
+        
+        if (debugClear && debugLog) {
+          debugClear.addEventListener('click', function() {
+            debugLog.innerHTML = '';
+            if (window.relationshipEngine) {
+              window.relationshipEngine.debugLog = [];
+            }
+          });
+        }
+      }
+      
+      // Enable debug mode with keyboard shortcut (Ctrl+D or Cmd+D)
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+          e.preventDefault();
+          if (window.relationshipEngine) {
+            window.relationshipEngine.debugMode = !window.relationshipEngine.debugMode;
+            console.log('Debug mode:', window.relationshipEngine.debugMode ? 'ENABLED' : 'DISABLED');
+            if (window.relationshipEngine.debugMode) {
+              debugPanel.classList.add('active');
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

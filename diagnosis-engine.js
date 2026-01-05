@@ -10,6 +10,7 @@
 import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS, MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS } from './dsm5-data/index.js';
 import { CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS } from './dsm5-data/category-guide.js';
 import { TREATMENT_DATABASE } from './treatment-database.js';
+import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class DiagnosisEngine {
   constructor() {
@@ -1207,15 +1208,14 @@ class DiagnosisEngine {
     sessionStorage.removeItem('diagnosisProgress');
   }
 
-  viewAnalysisData() {
-    const dataStr = JSON.stringify(this.analysisData, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `diagnosis-analysis-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  viewAnalysisData(format = 'json') {
+    if (format === 'csv') {
+      const csv = exportForAIAgent(this.analysisData, 'diagnosis', 'DSM-5 Diagnostic Assessment');
+      downloadFile(csv, `diagnosis-analysis-${Date.now()}.csv`, 'text/csv');
+    } else {
+      const json = exportJSON(this.analysisData, 'diagnosis', 'DSM-5 Diagnostic Assessment');
+      downloadFile(json, `diagnosis-analysis-${Date.now()}.json`, 'application/json');
+    }
   }
 
   resetAssessment() {

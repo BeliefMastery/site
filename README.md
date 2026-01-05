@@ -54,12 +54,18 @@ The books function less as guidance and more as an **ally**: a framework for sta
 - **`manipulation-engine.js`** - Manipulation analysis and vector identification engine
 - **`channels.html`** - Channel Taxonomy Analysis System (based on Channel Taxonomy)
 - **`channels-engine.js`** - Channel blockage identification and remediation engine
+- **`paradigm.html`** - Paradigm Clarification System (based on Dimensions-of-Truth Exercises)
+- **`paradigm-engine.js`** - Paradigm identification and worldview structure analysis engine
+- **`relationship.html`** - Relationship Optimization - Weakest Link Analysis (based on Optimal Relationship Dynamics)
+- **`relationship-engine.js`** - Relationship compatibility analysis and weakest link identification engine
 - **`style.css`** - Shared stylesheet for consistent design across pages
 - **`dsm5-data/`** - Modular DSM-5 diagnostic data (100+ disorders, 13+ categories)
 - **`treatment-database.js`** - Comprehensive treatment information database
 - **`coaching-data/`** - Coaching system data (15 obstacles, 10 satisfaction domains, prompts, weightings)
 - **`manipulation-data/`** - Manipulation system data (6 vectors, 63 tactics, symptoms, effects, consequences)
 - **`channel-data/`** - Channel system data (7 nodes, 42 channels, symptoms, remediation strategies)
+- **`paradigm-data/`** - Paradigm system data (Good Life paradigms, God perspectives, dimensions of truth)
+- **`relationship-data/`** - Relationship system data (20 compatibility points, action strategies, archetypal insights)
 
 ### Content Sections (index.html)
 1. **Belief Mastery** - Subconscious belief deconstruction and the Belief Inference Process
@@ -73,6 +79,8 @@ The books function less as guidance and more as an **ally**: a framework for sta
 9. **Coaching Agent Builder** - Personal AI coaching agent configuration system based on Sovereign of Mind
 10. **Manipulation Vector Identification** - System for identifying manipulation tactics and vectors through symptom/effect/consequence analysis
 11. **Channel Taxonomy Analysis** - System for identifying channel blockages and providing strategic remediation strategies
+12. **Paradigm Clarification System** - Maps "The Good Life" and "God" across four dimensions of truth (Literal, Symbolic, Esoteric, Mystical) to clarify worldview structure and primary paradigm alignments
+13. **Relationship Optimization - Weakest Link Analysis** - Evaluates relationships across 20 compatibility points organized by impact tier, identifies weakest links, and provides targeted action strategies integrating insights from optimal relationship dynamics, biological essentialism, polarity, and the STATUS/SELECTION/ATTRACTION reference map
 
 ### Available Publications
 - **Belief Mastery** - Available on Amazon
@@ -167,6 +175,8 @@ This system is for **educational and informational purposes only**. It is not a 
 - Coaching Agent Builder: https://beliefmastery.github.io/site/coaching.html
 - Manipulation Analysis: https://beliefmastery.github.io/site/manipulation.html
 - Channel Analysis: https://beliefmastery.github.io/site/channels.html
+- Paradigm Clarification: https://beliefmastery.github.io/site/paradigm.html
+- Relationship Optimization: https://beliefmastery.github.io/site/relationship.html
 - Instagram: @belief.mastery
 - Facebook: https://www.facebook.com/war.mars.9
 
@@ -208,6 +218,8 @@ This README provides the executive summary. For detailed content:
 ✅ **Coaching Agent Builder** - Personal AI coaching agent configuration system
 ✅ **Manipulation Analysis** - Vector identification system with 63 tactics across 6 vectors
 ✅ **Channel Analysis** - Channel blockage identification with 42 channels and remediation strategies
+✅ **Paradigm Clarification** - Worldview structure mapping across four dimensions of truth
+✅ **Relationship Optimization** - Weakest link analysis across 20 compatibility points with targeted action strategies
 ✅ **SEO Optimized** - Structured data and meta tags implemented
 ✅ **Mobile Responsive** - Hamburger menu and responsive design complete
 
