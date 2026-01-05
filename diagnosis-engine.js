@@ -1,4 +1,12 @@
 // Diagnosis Engine - Main questionnaire logic and calculation system
+// 
+// FUTURE FIREBASE INTEGRATION NOTES:
+// - Currently uses LocalStorage/SessionStorage (public access, no auth)
+// - Planned: Firebase Anonymous Auth for guest usage
+// - Planned: Custom login system for professional licensing
+// - Architecture prepared for storage abstraction layer (see docs/FIREBASE_INTEGRATION_PLAN.md)
+// - Current implementation remains insecure/public - suitable for educational/demo purposes
+//
 import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS, MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS } from './dsm5-data/index.js';
 import { CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS } from './dsm5-data/category-guide.js';
 import { TREATMENT_DATABASE } from './treatment-database.js';
@@ -272,11 +280,35 @@ class DiagnosisEngine {
   }
 
   attachEventListeners() {
-    document.getElementById('startAssessment').addEventListener('click', () => this.startAssessment());
-    document.getElementById('nextQuestion').addEventListener('click', () => this.nextQuestion());
-    document.getElementById('prevQuestion').addEventListener('click', () => this.prevQuestion());
-    document.getElementById('newAssessment').addEventListener('click', () => this.resetAssessment());
-    document.getElementById('viewData').addEventListener('click', () => this.viewAnalysisData());
+    const startAssessmentBtn = document.getElementById('startAssessment');
+    if (startAssessmentBtn) {
+      startAssessmentBtn.addEventListener('click', () => this.startAssessment());
+    }
+    
+    const startHereGuideBtn = document.getElementById('startHereGuide');
+    if (startHereGuideBtn) {
+      startHereGuideBtn.addEventListener('click', () => this.startGuide());
+    }
+    
+    const nextQuestionBtn = document.getElementById('nextQuestion');
+    if (nextQuestionBtn) {
+      nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
+    }
+    
+    const prevQuestionBtn = document.getElementById('prevQuestion');
+    if (prevQuestionBtn) {
+      prevQuestionBtn.addEventListener('click', () => this.prevQuestion());
+    }
+    
+    const newAssessmentBtn = document.getElementById('newAssessment');
+    if (newAssessmentBtn) {
+      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
+    }
+    
+    const viewDataBtn = document.getElementById('viewData');
+    if (viewDataBtn) {
+      viewDataBtn.addEventListener('click', () => this.viewAnalysisData());
+    }
   }
 
   startAssessment() {
