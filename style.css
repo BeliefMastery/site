@@ -697,12 +697,6 @@ figure.image-card a{
   z-index:2;
 }
 
-.image-card:hover::before,
-figure.image-card:hover::before{
-  opacity:1;
-  animation:sheenMove 2s linear infinite, sparkle 1.8s ease-in-out infinite;
-  filter:drop-shadow(0 0 12px rgba(255, 184, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 184, 0, 0.4));
-}
 
 @keyframes sheenMove{
   0%{background-position:0% 0%;}
