@@ -6,3 +6,4 @@ export { INTIMATE_DYNAMICS } from './intimate-dynamics.js';
 export { ATTRACTION_RESPONSIVENESS } from './attraction-responsiveness.js';
 export { TEMPERAMENT_SCORING } from './temperament-scoring.js';
 
+
