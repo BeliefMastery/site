@@ -235,11 +235,14 @@ class DiagnosisEngine {
     
     this.currentStage = 'questionnaire';
     document.getElementById('categorySelection').style.display = 'none';
+    const disclaimerSection = document.getElementById('disclaimerSection');
+    if (disclaimerSection) disclaimerSection.style.display = 'none';
     document.getElementById('questionnaireSection').classList.add('active');
     
     this.buildQuestionSequence();
     this.renderCurrentQuestion();
     this.updateProgress();
+    this.logDebug('Assessment started', { categories: this.selectedCategories, questionCount: this.questionSequence.length });
   }
 
   buildQuestionSequence() {
@@ -446,28 +449,34 @@ class DiagnosisEngine {
   prevQuestion() {
     if (this.currentQuestionIndex > 0) {
       const totalMainQuestions = this.questionSequence.length;
-      const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
+      const isInRefinement = this.refinementRequested && this.refinedQuestionSequence && this.refinedQuestionSequence.length > 0;
       
-      let currentQuestion;
-      if (this.currentQuestionIndex <= totalMainQuestions) {
-        currentQuestion = this.questionSequence[this.currentQuestionIndex - 1];
-      } else if (isInRefinement) {
-        currentQuestion = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions - 1];
-      }
-      
+      // Save current answer before going back
       const slider = document.getElementById('questionInput');
-      if (slider && currentQuestion) {
-        const answerKey = isInRefinement && this.currentQuestionIndex > totalMainQuestions
-          ? 'refinedAnswers'
-          : 'answers';
-        if (!this.analysisData[answerKey]) this.analysisData[answerKey] = {};
-        this.analysisData[answerKey][currentQuestion.id] = parseInt(slider.value);
-        this.answers[currentQuestion.id] = parseInt(slider.value);
+      if (slider) {
+        let currentQuestion;
+        if (this.currentQuestionIndex < totalMainQuestions) {
+          currentQuestion = this.questionSequence[this.currentQuestionIndex];
+        } else if (isInRefinement) {
+          currentQuestion = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions];
+        }
+        
+        if (currentQuestion) {
+          const answerKey = isInRefinement && this.currentQuestionIndex >= totalMainQuestions
+            ? 'refinedAnswers'
+            : 'answers';
+          if (!this.analysisData[answerKey]) this.analysisData[answerKey] = {};
+          const answerValue = parseInt(slider.value);
+          this.analysisData[answerKey][currentQuestion.id] = answerValue;
+          this.answers[currentQuestion.id] = answerValue;
+          this.logDebug('Saved answer before prev', { questionId: currentQuestion.id, answer: answerValue });
+        }
       }
       
       this.currentQuestionIndex--;
       this.updateProgress();
       this.renderCurrentQuestion();
+      this.logDebug('Moved to previous question', { newIndex: this.currentQuestionIndex });
     }
   }
 

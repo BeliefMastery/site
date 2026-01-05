@@ -60,6 +60,10 @@
       border-left: 4px solid #d32f2f;
     }
 
+    .disclaimer-section.hidden {
+      display: none;
+    }
+
     .disclaimer-section h2 {
       color: #d32f2f;
       font-size: 1.5rem;
@@ -410,7 +414,7 @@
 
   <main style="position: relative; z-index: 2;">
     <div class="diagnosis-container">
-      <section class="disclaimer-section">
+      <section class="disclaimer-section" id="disclaimerSection">
         <h2>⚠️ Important Disclaimers</h2>
         <p><strong>This diagnostic assessment system is for informational and educational purposes only.</strong></p>
         <ul>
@@ -507,6 +511,67 @@
           }
         });
       }
+    });
+  </script>
+
+  <!-- Debug Panel -->
+  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)">🐛</button>
+  <div class="debug-panel" id="debugPanel">
+    <div class="debug-panel-header">
+      <h3>Debug Log</h3>
+      <div>
+        <button id="debugClear">Clear</button>
+        <button id="debugClose">✕</button>
+      </div>
+    </div>
+    <div class="debug-log" id="debugLog">
+      <!-- Debug entries will be populated here -->
+    </div>
+  </div>
+
+  <script>
+    // Debug panel toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const debugToggle = document.getElementById('debugToggle');
+      const debugPanel = document.getElementById('debugPanel');
+      const debugClose = document.getElementById('debugClose');
+      const debugClear = document.getElementById('debugClear');
+      const debugLog = document.getElementById('debugLog');
+      
+      if (debugToggle && debugPanel) {
+        debugToggle.addEventListener('click', function() {
+          debugPanel.classList.toggle('active');
+        });
+        
+        if (debugClose) {
+          debugClose.addEventListener('click', function() {
+            debugPanel.classList.remove('active');
+          });
+        }
+        
+        if (debugClear && debugLog) {
+          debugClear.addEventListener('click', function() {
+            debugLog.innerHTML = '';
+            if (window.diagnosisEngine) {
+              window.diagnosisEngine.debugLog = [];
+            }
+          });
+        }
+      }
+      
+      // Enable debug mode with keyboard shortcut (Ctrl+D or Cmd+D)
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+          e.preventDefault();
+          if (window.diagnosisEngine) {
+            window.diagnosisEngine.debugMode = !window.diagnosisEngine.debugMode;
+            console.log('Debug mode:', window.diagnosisEngine.debugMode ? 'ENABLED' : 'DISABLED');
+            if (window.diagnosisEngine.debugMode) {
+              debugPanel.classList.add('active');
+            }
+          }
+        }
+      });
     });
   </script>
 
