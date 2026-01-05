@@ -1,5 +1,5 @@
 // Diagnosis Engine - Main questionnaire logic and calculation system
-import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS } from './dsm5-data/index.js';
+import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS, MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS } from './dsm5-data/index.js';
 import { TREATMENT_DATABASE } from './treatment-database.js';
 
 class DiagnosisEngine {
@@ -193,6 +193,9 @@ class DiagnosisEngine {
           <span>Extremely / Always</span>
         </div>
         ${question.type === 'validation' ? '<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);"><em>This question helps validate consistency in your responses.</em></p>' : ''}
+        ${question.type === 'comorbidity_refinement' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent); font-weight: 600;"><em>Refinement Question (${question.groupName})</em></p>` : ''}
+        ${question.type === 'refinement' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent);"><em>Additional detail for ${question.disorder}</em></p>` : ''}
+        ${question.type === 'differential' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent);"><em>Differential diagnosis question</em></p>` : ''}
       </div>
     `;
     
@@ -260,11 +263,84 @@ class DiagnosisEngine {
   }
 
   completeAssessment() {
+    this.calculateResults();
+    
+    // Check for comorbidity and multi-branching
+    const comorbidityGroups = this.detectComorbidity();
+    const hasRefinedQuestions = this.buildRefinedQuestionSequence(comorbidityGroups);
+    
+    // If comorbidity detected and refined questions available, offer refinement
+    if (this.multiBranchingDetected && hasRefinedQuestions && !this.refinementRequested) {
+      this.offerRefinement(comorbidityGroups);
+      return;
+    }
+    
+    // Otherwise, proceed to results
+    this.showResults();
+  }
+
+  offerRefinement(comorbidityGroups) {
+    const container = document.getElementById('questionContainer');
+    let html = `
+      <div class="comorbidity-notice" style="padding: 2rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--brand);">🔗 Multi-Branching Assessment Detected</h3>
+        <p style="margin-bottom: 1rem; line-height: 1.6;">
+          The assessment detected potential <strong>comorbidity</strong> (multiple disorders that commonly co-occur):
+        </p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; line-height: 1.8;">
+    `;
+    
+    comorbidityGroups.forEach(group => {
+      html += `
+        <li style="margin-bottom: 0.5rem;">
+          <strong>${group.name}:</strong> ${group.disorders.join(', ')}<br>
+          <em style="font-size: 0.9rem; color: var(--muted);">${group.message}</em>
+        </li>
+      `;
+    });
+    
+    html += `
+        </ul>
+        <p style="margin-bottom: 1.5rem; line-height: 1.6;">
+          <strong>Additional refined questions are available</strong> to help differentiate between these conditions and improve diagnostic accuracy.
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; background: rgba(255,255,255,0.7); border-radius: var(--radius); flex: 1; min-width: 200px;">
+            <input type="checkbox" id="requestRefinement" ${this.refinementRequested ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
+            <span style="font-weight: 600;">Complete refined assessment</span>
+          </label>
+          <button class="btn btn-primary" id="proceedToRefinement" style="flex: 1; min-width: 200px;">Continue with Refined Questions</button>
+          <button class="btn btn-secondary" id="skipToResults" style="flex: 1; min-width: 200px;">Skip to Results</button>
+        </div>
+      </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    document.getElementById('requestRefinement').addEventListener('change', (e) => {
+      this.refinementRequested = e.target.checked;
+    });
+    
+    document.getElementById('proceedToRefinement').addEventListener('click', () => {
+      this.refinementRequested = true;
+      this.startRefinementQuestions();
+    });
+    
+    document.getElementById('skipToResults').addEventListener('click', () => {
+      this.showResults();
+    });
+  }
+
+  startRefinementQuestions() {
+    this.currentQuestionIndex = 0;
+    this.renderCurrentQuestion();
+  }
+
+  showResults() {
     this.currentStage = 'results';
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.add('active');
     
-    this.calculateResults();
     this.renderResults();
     this.saveResults();
   }
@@ -382,12 +458,104 @@ class DiagnosisEngine {
     return Math.max(0.5, adjustment); // Minimum 50% adjustment
   }
 
+  detectComorbidity() {
+    const detectedGroups = [];
+    const disorders = Object.keys(this.analysisData.probabilities).filter(
+      d => this.analysisData.probabilities[d] >= MULTI_BRANCHING_THRESHOLDS.moderate_comorbidity
+    );
+    
+    Object.keys(COMORBIDITY_GROUPS).forEach(groupKey => {
+      const group = COMORBIDITY_GROUPS[groupKey];
+      const matchingDisorders = disorders.filter(d => group.disorders.includes(d));
+      
+      if (matchingDisorders.length >= 2) {
+        // Check if threshold is met
+        const maxProb = Math.max(...matchingDisorders.map(d => this.analysisData.probabilities[d]));
+        if (maxProb >= group.triggers.threshold) {
+          detectedGroups.push({
+            group: groupKey,
+            name: group.name,
+            disorders: matchingDisorders,
+            message: group.triggers.message,
+            refinementQuestions: COMORBIDITY_REFINEMENT_QUESTIONS[groupKey] || []
+          });
+        }
+      }
+    });
+    
+    this.detectedComorbidity = detectedGroups;
+    this.multiBranchingDetected = detectedGroups.length > 0;
+    
+    return detectedGroups;
+  }
+
+  buildRefinedQuestionSequence(comorbidityGroups) {
+    this.refinedQuestionSequence = [];
+    
+    comorbidityGroups.forEach(group => {
+      // Add comorbidity-specific refinement questions
+      if (group.refinementQuestions && group.refinementQuestions.length > 0) {
+        group.refinementQuestions.forEach((question, index) => {
+          this.refinedQuestionSequence.push({
+            id: `comorbidity_${group.group}_${index}`,
+            type: 'comorbidity_refinement',
+            group: group.group,
+            groupName: group.name,
+            questionText: question,
+            weight: 0.9
+          });
+        });
+      }
+    });
+    
+    // Add refined questions for primary diagnosis if available
+    const vector = this.analysisData.conclusionVector;
+    if (vector.primaryDiagnosis && REFINED_QUESTIONS[vector.primaryDiagnosis]) {
+      const refined = REFINED_QUESTIONS[vector.primaryDiagnosis];
+      
+      Object.keys(refined).forEach(category => {
+        refined[category].forEach((question, index) => {
+          this.refinedQuestionSequence.push({
+            id: `refined_${vector.primaryDiagnosis}_${category}_${index}`,
+            type: 'refinement',
+            disorder: vector.primaryDiagnosis,
+            category: category,
+            questionText: question,
+            weight: 0.8
+          });
+        });
+      });
+    }
+    
+    // Add differential questions for secondary diagnoses
+    const secondaryDisorders = vector.secondaryDiagnoses.map(s => s.disorder);
+    secondaryDisorders.forEach(disorder => {
+      // Check for differential questions
+      Object.keys(DIFFERENTIAL_QUESTIONS).forEach(key => {
+        if (key.includes(disorder) || key.includes(vector.primaryDiagnosis)) {
+          const diffQuestions = DIFFERENTIAL_QUESTIONS[key];
+          diffQuestions.forEach((question, index) => {
+            this.refinedQuestionSequence.push({
+              id: `differential_${key}_${index}`,
+              type: 'differential',
+              questionText: question,
+              weight: 0.85
+            });
+          });
+        }
+      });
+    });
+    
+    return this.refinedQuestionSequence.length > 0;
+  }
+
   buildConclusionVector() {
     const vector = {
       primaryDiagnosis: null,
       primaryProbability: 0,
       secondaryDiagnoses: [],
       requiresSubInquiry: [],
+      comorbidity: [],
       overallSeverity: 'low',
       recommendation: ''
     };
@@ -421,6 +589,10 @@ class DiagnosisEngine {
       }
     });
     
+    // Detect comorbidity
+    const comorbidityGroups = this.detectComorbidity();
+    vector.comorbidity = comorbidityGroups;
+    
     // Determine overall severity
     if (vector.primaryProbability >= SCORING_THRESHOLDS.high_probability) {
       vector.overallSeverity = 'high';
@@ -431,6 +603,11 @@ class DiagnosisEngine {
     } else {
       vector.overallSeverity = 'low';
       vector.recommendation = 'Limited indicators. Continue self-monitoring.';
+    }
+    
+    // Add comorbidity note to recommendation
+    if (vector.comorbidity.length > 0) {
+      vector.recommendation += ' Multiple disorders detected - differential diagnosis recommended.';
     }
     
     this.analysisData.conclusionVector = vector;
@@ -475,6 +652,26 @@ class DiagnosisEngine {
           </div>
         `;
       });
+    }
+    
+    // Display comorbidity information
+    if (vector.comorbidity && vector.comorbidity.length > 0) {
+      html += `
+        <div class="comorbidity-section" style="margin-top: 2rem; padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius);">
+          <h4 style="margin-bottom: 1rem; color: var(--brand);">🔗 Multi-Branching / Comorbidity Detected</h4>
+          <p style="margin-bottom: 1rem; line-height: 1.6;">
+            The assessment detected potential <strong>comorbidity</strong> (multiple disorders that commonly co-occur). This requires careful differential diagnosis.
+          </p>
+          ${vector.comorbidity.map(group => `
+            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.7); border-radius: var(--radius);">
+              <strong style="display: block; margin-bottom: 0.5rem;">${group.name}</strong>
+              <div style="margin-bottom: 0.5rem;">Related disorders: ${group.disorders.join(', ')}</div>
+              <em style="font-size: 0.9rem; color: var(--muted);">${group.message}</em>
+            </div>
+          `).join('')}
+          <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Note:</strong> Professional evaluation is essential for accurate differential diagnosis when multiple disorders are suspected.</p>
+        </div>
+      `;
     }
     
     if (vector.requiresSubInquiry.length > 0) {
