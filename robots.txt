@@ -5,8 +5,12 @@ User-agent: *
 Allow: /
 Allow: /index.html
 Allow: /about-the-author.html
+Allow: /diagnosis.html
 Allow: /style.css
 Allow: /images/
+Allow: /diagnosis-engine.js
+Allow: /treatment-database.js
+Allow: /dsm5-data/
 
 # Allow all major AI crawlers
 User-agent: GPTBot

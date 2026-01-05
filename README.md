@@ -46,7 +46,11 @@ The books function less as guidance and more as an **ally**: a framework for sta
 ### Primary Files
 - **`index.html`** - Main single-page application with all book sections, navigation, and purchase information
 - **`about-the-author.html`** - Author biography and professional background
+- **`diagnosis.html`** - DSM-5 self-reporting diagnostic assessment system (educational tool)
+- **`diagnosis-engine.js`** - Main assessment engine and questionnaire logic
 - **`style.css`** - Shared stylesheet for consistent design across pages
+- **`dsm5-data/`** - Modular DSM-5 diagnostic data (100+ disorders, 13+ categories)
+- **`treatment-database.js`** - Comprehensive treatment information database
 
 ### Content Sections (index.html)
 1. **Belief Mastery** - Subconscious belief deconstruction and the Belief Inference Process
@@ -56,6 +60,7 @@ The books function less as guidance and more as an **ally**: a framework for sta
 5. **Sovereign Integral Devotionalism** - Post-doctrinal spiritual framework based on structural coherence
 6. **The Peer-Counseling Manual** - Decentralized framework for self-authorship and emotional integration
 7. **Sovereignty Simulacrum** - AI agent interface for cognitive sovereignty
+8. **Diagnosis System** - Comprehensive DSM-5 self-reporting assessment tool (see `docs/DIAGNOSIS_SYSTEM_README.md`)
 
 ### Available Publications
 - **Belief Mastery** - Available on Amazon
@@ -109,17 +114,44 @@ Together, **Belief Mastery** and **Sovereign of Mind** form a cohesive framework
 - Semantic HTML with proper ARIA labels
 - Descriptive alt text for images
 
+## Diagnosis System
+
+### Overview
+The site includes a comprehensive **DSM-5 Self-Reporting Diagnostic Assessment System** (`diagnosis.html`) - an advanced educational tool for exploring mental health diagnostic categories through structured self-reporting questionnaires.
+
+### Key Features
+- **100+ Disorders** across 13+ major diagnostic categories
+- **Category Selection Guide** - Intelligent questionnaire to identify relevant areas
+- **Comorbidity Detection** - Automatic identification of co-occurring conditions
+- **Refined Assessment Questions** - Detailed symptom clarification for accurate assessment
+- **Comprehensive Treatment Database** - Extensive treatment information across multiple modalities
+- **Multi-Branching Logic** - Differential diagnosis support for complex cases
+- **Data Export** - JSON export for professional consultation
+
+### Important Note
+This system is for **educational and informational purposes only**. It is not a substitute for professional mental health evaluation. See `docs/DIAGNOSIS_SYSTEM_README.md` for comprehensive documentation.
+
+### Technical Details
+- Pure JavaScript implementation (no frameworks)
+- Modular data structure (100+ disorders organized by category)
+- Client-side storage (LocalStorage/SessionStorage)
+- Architecture prepared for future Firebase integration
+- Debug features for development and testing
+
 ## Author Information
 
 **Warwick Marshall** (born 1984, southern New Zealand)
 - Father, entrepreneur, I.T. professional
-- Alternative health practitioner
-- Thought leader in belief mastery and cognitive sovereignty
+- Alternative health practitioner and belief-resolution specialist
+- Thought leader in mental sovereignty, cognitive defense, and structural self-authorship
+- Developer of comprehensive diagnostic assessment systems
 - Trained through necessity rather than institutions
 - Facilitates peer-counseling groups
+- Creator of multiple frameworks for mental sovereignty and cognitive vigilance
 
 **Contact**
 - Website: https://beliefmastery.github.io/site/
+- Diagnosis System: https://beliefmastery.github.io/site/diagnosis.html
 - Instagram: @belief.mastery
 - Facebook: https://www.facebook.com/war.mars.9
 
@@ -140,6 +172,7 @@ This README provides the executive summary. For detailed content:
 ### For Researchers
 - See `CITATION.cff` for proper academic citation format
 - Books contain structured frameworks suitable for academic analysis
+- Diagnosis System provides comprehensive DSM-5 data structure for research
 - Author available for academic collaboration
 
 ## Key Themes and Keywords
@@ -156,6 +189,7 @@ This README provides the executive summary. For detailed content:
 
 ✅ **Production Ready** - Fully functional website deployed to GitHub Pages
 ✅ **Content Complete** - All book sections populated with summaries and briefing cards
+✅ **Diagnosis System** - Comprehensive DSM-5 assessment tool with 100+ disorders
 ✅ **SEO Optimized** - Structured data and meta tags implemented
 ✅ **Mobile Responsive** - Hamburger menu and responsive design complete
 
