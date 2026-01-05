@@ -620,15 +620,16 @@ figure.image-card img{
   object-position:center;
   display:block;
   border-radius:12px !important;
-  box-shadow:0 8px 24px rgba(0,0,0,0.12) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,0.15) !important, 0 4px 12px rgba(0,0,0,0.1) !important;
   transition:transform .4s ease, box-shadow .4s ease;
   position:relative;
+  z-index:3;
 }
 
 .image-card:hover img,
 figure.image-card:hover img{
   transform:scale(1.06);
-  box-shadow:0 16px 40px rgba(0,0,0,0.2) !important;
+  box-shadow:0 16px 40px rgba(0,0,0,0.25) !important, 0 8px 20px rgba(0,0,0,0.15) !important;
 }
 
 /* Animated Golden Sheen Border */
@@ -650,18 +651,71 @@ figure.image-card::before{
   right:-4px;
   bottom:-4px;
   border-radius:16px;
-  background:linear-gradient(135deg, #ffb800, #ffd700, #ffed4e, #ffb800);
-  background-size:200% 200%;
+  background:#ffb800;
   z-index:0;
   pointer-events:none;
-  opacity:0.85;
-  animation:sheenMove 3s linear infinite, sparkle 2.5s ease-in-out infinite;
-  filter:drop-shadow(0 0 8px rgba(255, 184, 0, 0.5));
+  opacity:0.9;
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite:exclude;
   padding:4px;
+}
+
+/* Moving sheen effect within the static border */
+.image-card::before::after,
+figure.image-card::before::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  border-radius:16px;
+  background:linear-gradient(135deg, transparent 0%, rgba(255, 215, 0, 0.8) 25%, rgba(255, 237, 78, 1) 50%, rgba(255, 215, 0, 0.8) 75%, transparent 100%);
+  background-size:200% 200%;
+  animation:sheenMove 3s linear infinite;
+  pointer-events:none;
+}
+
+/* Alternative approach: use a pseudo-element on the card itself for the sheen */
+.image-card,
+figure.image-card{
+  position:relative;
+}
+
+.image-card::after,
+figure.image-card::after{
+  /* Note: This conflicts with tool-card summaries, so we'll use a wrapper approach */
+}
+
+/* Create sheen effect using a separate element approach */
+.image-card a::before,
+figure.image-card a::before{
+  content:'';
+  position:absolute;
+  top:-4px;
+  left:-4px;
+  right:-4px;
+  bottom:-4px;
+  border-radius:16px;
+  background:linear-gradient(135deg, transparent 30%, rgba(255, 215, 0, 0.9) 50%, transparent 70%);
+  background-size:200% 200%;
+  z-index:1;
+  pointer-events:none;
+  opacity:0;
+  animation:sheenMove 3s linear infinite, sparkle 2.5s ease-in-out infinite;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  padding:4px;
+}
+
+.image-card:hover a::before,
+figure.image-card:hover a::before{
+  opacity:0.8;
+  animation:sheenMove 2s linear infinite, sparkle 1.8s ease-in-out infinite;
 }
 
 /* Note: ::after is used for tool-card summaries, so we use a different approach for the border mask */
