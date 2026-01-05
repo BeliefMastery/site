@@ -556,7 +556,7 @@ figure.image-card{
   flex-direction:column;
   transition:var(--transition);
   position:relative;
-  padding:4px;
+  padding:0;
   margin:0;
 }
 
@@ -628,6 +628,7 @@ figure.image-card a{
   background:transparent;
   position:relative;
   z-index:2;
+  padding:4px;
 }
 
 .image-card img,
@@ -672,13 +673,14 @@ figure.image-card::before{
   background:#ffb800;
   z-index:0;
   pointer-events:none;
-  opacity:0.9;
+  opacity:1;
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite:exclude;
   padding:4px;
   margin:0;
+  box-shadow:0 0 8px rgba(255, 184, 0, 0.6), 0 0 16px rgba(255, 184, 0, 0.3);
 }
 
 /* Moving sheen effect within the static border bounds */
@@ -691,24 +693,26 @@ figure.image-card a::before{
   right:0;
   bottom:0;
   border-radius:16px;
-  background:linear-gradient(135deg, transparent 20%, rgba(255, 215, 0, 0.9) 40%, rgba(255, 237, 78, 1) 50%, rgba(255, 215, 0, 0.9) 60%, transparent 80%);
-  background-size:300% 300%;
+  background:linear-gradient(135deg, transparent 10%, rgba(255, 200, 0, 0.4) 25%, rgba(255, 237, 78, 1) 35%, rgba(255, 255, 200, 1) 40%, rgba(255, 237, 78, 1) 45%, rgba(255, 200, 0, 0.4) 55%, transparent 70%);
+  background-size:400% 400%;
   z-index:1;
   pointer-events:none;
-  opacity:0;
-  animation:sheenMove 3s linear infinite;
+  opacity:1;
+  animation:sheenMove 2.5s linear infinite;
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite:exclude;
   padding:4px;
   margin:0;
+  filter:drop-shadow(0 0 4px rgba(255, 237, 78, 0.8)) drop-shadow(0 0 8px rgba(255, 200, 0, 0.6));
 }
 
 .image-card:hover a::before,
 figure.image-card:hover a::before{
-  opacity:0.9;
-  animation:sheenMove 2s linear infinite;
+  opacity:1;
+  animation:sheenMove 1.5s linear infinite;
+  filter:drop-shadow(0 0 6px rgba(255, 237, 78, 1)) drop-shadow(0 0 12px rgba(255, 200, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 184, 0, 0.4));
 }
 
 .image-card a,
