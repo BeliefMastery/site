@@ -246,6 +246,17 @@ class ManipulationEngine {
     // Find relevant tactics
     this.identifyTactics();
     
+    // Include all raw answers and question sequence for AI agent export
+    this.analysisData.allAnswers = { ...this.answers };
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question || q.text,
+      category: q.category,
+      subcategory: q.subcategory,
+      type: q.type,
+      weight: q.weight
+    }));
+    
     // Hide questionnaire, show results
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.add('active');

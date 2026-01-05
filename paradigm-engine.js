@@ -258,6 +258,19 @@ class ParadigmEngine {
     // Identify primary paradigms
     this.analysisData.identifiedParadigms = this.identifyParadigms();
     
+    // Include all raw answers and question sequence
+    this.analysisData.allAnswers = { ...this.answers };
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question,
+      category: q.category,
+      paradigm: q.paradigm,
+      perspective: q.perspective,
+      dimension: q.dimension,
+      name: q.name,
+      description: q.description
+    }));
+    
     this.renderResults();
     this.saveProgress();
   }

@@ -59,6 +59,17 @@ export function exportForAIAgent(assessmentData, systemType, systemName) {
 function generateCoachingExport(data) {
   let csv = '=== COACHING PROFILE DATA ===\n';
   
+  // Include all raw answers
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS ===\n';
+    csv += 'Question ID,Answer (0-10)\n';
+    Object.entries(data.allAnswers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+      const questionText = question ? question.question : id;
+      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer}\n`;
+    });
+  }
+  
   if (data.obstacles && Object.keys(data.obstacles).length > 0) {
     csv += '\n=== OBSTACLES TO SOVEREIGNTY ===\n';
     csv += 'Name,Description,Raw Score,Weight,Weighted Score,Priority Level,Severity,Coaching Focus\n';
@@ -123,6 +134,19 @@ function generateCoachingExport(data) {
 function generateManipulationExport(data) {
   let csv = '=== MANIPULATION ANALYSIS DATA ===\n';
   
+  // Include all raw answers
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS ===\n';
+    csv += 'Question ID,Question,Answer (0-10),Category,Subcategory\n';
+    Object.entries(data.allAnswers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+      const questionText = question ? question.question : id;
+      const category = question ? question.category : '';
+      const subcategory = question ? question.subcategory : '';
+      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${category}","${subcategory}"\n`;
+    });
+  }
+  
   if (data.identifiedVectors && data.identifiedVectors.length > 0) {
     csv += '\n=== IDENTIFIED MANIPULATION VECTORS ===\n';
     csv += 'Vector,Description,Raw Score,Weighted Score,Priority Level,Severity,Focus\n';
@@ -153,6 +177,20 @@ function generateManipulationExport(data) {
 
 function generateChannelsExport(data) {
   let csv = '=== CHANNEL ANALYSIS DATA ===\n';
+  
+  // Include all raw answers
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS ===\n';
+    csv += 'Question ID,Question,Answer (0-10),Category,Node,Channel\n';
+    Object.entries(data.allAnswers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+      const questionText = question ? question.question : id;
+      const category = question ? question.category : '';
+      const node = question ? question.node : '';
+      const channel = question ? question.channel : '';
+      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${category}","${node}","${channel}"\n`;
+    });
+  }
   
   if (data.identifiedChannels && data.identifiedChannels.length > 0) {
     csv += '\n=== IDENTIFIED CHANNEL BLOCKAGES ===\n';
@@ -187,6 +225,20 @@ function generateChannelsExport(data) {
 function generateParadigmExport(data) {
   let csv = '=== PARADIGM CLARIFICATION DATA ===\n';
   
+  // Include all raw answers
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS ===\n';
+    csv += 'Question ID,Question,Answer (0-10),Category,Paradigm/Perspective,Dimension\n';
+    Object.entries(data.allAnswers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+      const questionText = question ? question.question : id;
+      const category = question ? question.category : '';
+      const paradigm = question ? (question.paradigm || question.perspective || '') : '';
+      const dimension = question ? question.dimension : '';
+      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${category}","${paradigm}","${dimension}"\n`;
+    });
+  }
+  
   if (data.identifiedParadigms && data.identifiedParadigms.length > 0) {
     csv += '\n=== IDENTIFIED PARADIGMS ===\n';
     csv += 'Paradigm,Dimension,Score,Priority Level,Clarity Level,Focus\n';
@@ -210,6 +262,30 @@ function generateParadigmExport(data) {
 function generateDiagnosisExport(data) {
   let csv = '=== DIAGNOSTIC ASSESSMENT DATA ===\n';
   
+  // Include all raw answers
+  if (data.answers && Object.keys(data.answers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS ===\n';
+    csv += 'Question ID,Answer (0-10),Category,Disorder,Criterion\n';
+    Object.entries(data.answers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+      const category = question ? question.category : '';
+      const disorder = question ? question.disorder : '';
+      const criterion = question ? question.criterion : '';
+      csv += `"${id}",${answer},"${category}","${disorder}","${criterion}"\n`;
+    });
+  }
+  
+  if (data.refinedAnswers && Object.keys(data.refinedAnswers).length > 0) {
+    csv += '\n=== REFINED ANSWERS ===\n';
+    csv += 'Question ID,Answer (0-10),Disorder,Category\n';
+    Object.entries(data.refinedAnswers).forEach(([id, answer]) => {
+      const question = data.refinedQuestionSequence ? data.refinedQuestionSequence.find(q => q.id === id) : null;
+      const disorder = question ? question.disorder : '';
+      const category = question ? question.category : '';
+      csv += `"${id}",${answer},"${disorder}","${category}"\n`;
+    });
+  }
+  
   if (data.primaryDiagnosis) {
     csv += '\n=== PRIMARY DIAGNOSIS ===\n';
     csv += `Diagnosis: ${data.primaryDiagnosis.name}\n`;
@@ -230,6 +306,19 @@ function generateDiagnosisExport(data) {
 
 function generateRelationshipExport(data) {
   let csv = '=== RELATIONSHIP OPTIMIZATION DATA ===\n';
+  
+  // Include all raw answers
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS ===\n';
+    csv += 'Question ID,Question,Answer (0-10),Compatibility Point,Name\n';
+    Object.entries(data.allAnswers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+      const questionText = question ? question.question : id;
+      const point = question ? question.point : id;
+      const name = question ? question.name : '';
+      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${point}","${name.replace(/"/g, '""')}"\n`;
+    });
+  }
   
   if (data.weakestLinks && data.weakestLinks.length > 0) {
     csv += '\n=== WEAKEST LINKS (Priority Areas) ===\n';

@@ -230,6 +230,17 @@ class RelationshipEngine {
 
     // Generate archetypal insights for weakest links
     this.analysisData.archetypalInsights = this.generateArchetypalInsights();
+    
+    // Include all raw answers and question sequence for AI agent export
+    this.analysisData.allAnswers = { ...this.answers };
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question,
+      name: q.name,
+      description: q.description,
+      type: q.type,
+      point: q.point
+    }));
   }
 
   getPriorityLevel(rawScore, weightedScore) {

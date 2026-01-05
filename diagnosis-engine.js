@@ -747,7 +747,21 @@ class DiagnosisEngine {
     this.analysisData.scores = scores;
     this.analysisData.probabilities = probabilities;
     this.analysisData.answers = { ...this.answers };
+    this.analysisData.refinedAnswers = this.refinedAnswers ? { ...this.refinedAnswers } : {};
     this.analysisData.categories = [...this.selectedCategories];
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question,
+      category: q.category,
+      disorder: q.disorder,
+      criterion: q.criterion
+    }));
+    this.analysisData.refinedQuestionSequence = this.refinedQuestionSequence.map(q => ({
+      id: q.id,
+      question: q.question,
+      disorder: q.disorder,
+      category: q.category
+    }));
     
     // Build conclusion vector
     this.buildConclusionVector();

@@ -381,6 +381,16 @@ class CoachingEngine {
     
     // Generate coaching profile
     this.generateCoachingProfile();
+    
+    // Include all raw answers in profile data
+    this.profileData.allAnswers = { ...this.answers };
+    this.profileData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question || q.questionText,
+      category: q.category || (q.obstacle ? 'obstacle' : q.domain ? 'domain' : null),
+      name: q.name,
+      section: q.section
+    }));
   }
 
   calculatePriorities() {

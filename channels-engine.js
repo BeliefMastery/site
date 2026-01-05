@@ -213,6 +213,17 @@ class ChannelsEngine {
     // Get remediation strategies
     this.getRemediationStrategies();
     
+    // Include all raw answers and question sequence for AI agent export
+    this.analysisData.allAnswers = { ...this.answers };
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question || q.text,
+      category: q.category,
+      weight: q.weight,
+      node: q.node,
+      channel: q.channel
+    }));
+    
     // Hide questionnaire, show results
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.add('active');
