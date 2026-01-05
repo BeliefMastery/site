@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <base href="https://beliefmastery.github.io/site/">
+  <title>Belief Mastery & Sovereign of Mind — Rewrite Your Hidden Rules, Reclaim Your Mind</title>
+  <meta name="description" content="Belief Mastery and Sovereign of Mind: Secular armor for the cognitively vigilant. A technical framework for those who sense the silent structural war for human agency and refuse to be hijacked. Diagnostic clarity over belief systems—fortify the mind against invisible dependencies.">
+
+  <!-- Open Graph / Twitter Cards for social previews -->
+  <meta property="og:title" content="Belief Mastery & Sovereign of Mind — Rewrite Your Hidden Rules, Reclaim Your Mind">
+  <meta property="og:description" content="For those who sense an active contest for the human mind: Belief Mastery and Sovereign of Mind provide language, structure, and method for what many have intuited but struggled to frame. A framework for standing guard over the mind itself.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/BM-cover.png">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Belief Mastery & Sovereign of Mind — Rewrite Your Hidden Rules, Reclaim Your Mind">
+  <meta name="twitter:description" content="For those who sense an active contest for the human mind: Belief Mastery and Sovereign of Mind provide language, structure, and method for what many have intuited but struggled to frame. A framework for standing guard over the mind itself.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/BM-cover.png">
+
+  <!-- Performance: Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Font used in original -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Shared stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Structured Data: JSON-LD for Books (SEO enhancement for discoverability) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Belief Mastery & Sovereign of Mind",
+    "description": "Secular armor for the cognitively vigilant. A technical framework for those who sense the silent structural war for human agency. Provides language, structure, and method for what many have intuited but struggled to frame—a framework for standing guard over the mind itself.",
+    "author": {
+      "@type": "Person",
+      "name": "Warwick Marshall"
+    },
+    "mainEntity": [
+      {
+        "@type": "Book",
+        "name": "Belief Mastery",
+        "description": "A structural method for those who sense something essential is under pressure: agency, clarity, integrity of perception. Reveals how subconscious belief structures form under pressure, how they are exploited, and how they can be consciously dismantled and fortified.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P",
+        "image": "https://beliefmastery.github.io/site/images/BM-cover.png",
+        "genre": "Self-Help",
+        "datePublished": "2024"
+      },
+      {
+        "@type": "Book",
+        "name": "Sovereign of Mind",
+        "description": "Cognitive defense addressing manipulation, ideological capture, and psychological warfare in contemporary culture. For those who sense an active contest for the human mind and seek to fortify the inner terrain where meaning and agency are decided.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911",
+        "image": "https://beliefmastery.github.io/site/images/SoM-cover.png",
+        "genre": "Philosophy",
+        "datePublished": "2024"
+      },
+      {
+        "@type": "Book",
+        "name": "The Sovereignty-Distortion Codex",
+        "description": "Structural mapping of distortions that erode will and coherence. Diagnostic framework for identifying cognitive hijacking patterns and restoring authorship through structural precision.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794",
+        "image": "https://beliefmastery.github.io/site/images/SDC-cover.png",
+        "genre": "Psychology",
+        "datePublished": "2024"
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ---------- Background crossfade layers (index.html specific) ---------- */
+    .bg-layer{
+      position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
+      transition:opacity .9s ease, filter .9s ease;pointer-events:none;
+    }
+    .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
+    .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
+  </style>
+</head>
+<body>
+
+  <!-- Background layers for crossfade -->
+  <div id="bgA" class="bg-layer" style="background-image:url('./images/index-background.JPG');"></div>
+  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/index-background.JPG');"></div>
+  <div class="bg-overlay"></div>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Works <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="books.html#purchase">Learn / Purchase</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="tools.html#sovereignty-simulacrum">Sovereignty Simulacrum</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Temperament Analyzer</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container" id="main">
+    <section id="sovereignty-simulacrum" data-bg="./images/index-background.JPG" aria-labelledby="simulacrum-title">
+      <div class="section-inner">
+        <h2 id="simulacrum-title" style="text-align:center;margin:0 0 .4rem 0">Sovereignty Simulacrum</h2>
+        <p style="text-align:center;color:var(--muted);margin-top:0">Your Personal AI Firewall</p>
+
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2rem;margin-top:2rem;">
+          <img src="./images/simulacra.png" alt="Sovereignty Simulacrum AI Agent" style="max-width:400px;width:100%;height:auto;border-radius:var(--radius);box-shadow:var(--shadow);">
+          
+          <div style="max-width:72ch;text-align:left;line-height:1.7;color:#333;">
+            <p style="font-size:1.2rem;font-weight:700;text-align:center;margin-bottom:1.5rem;color:var(--brand);">
+              Will is the only true currency
+            </p>
+            <p style="margin-bottom:1.5rem;">
+              When the "normal" (the AI-guided) is the gold standard of performance, the sovereign act of self-authorship looks like a pathology or a failure to adapt.
+            </p>
+            <p style="margin-bottom:1.5rem;">
+              In a world of "Routine Guided Thinking," the AGI provides "The Fix"—reducing the cognitive load of choice.
+            </p>
+            <p style="margin-bottom:1.5rem;">
+              Without a "Mystical" or "Devotional" anchor, the sheer literal weight of economic disadvantage often forces the sovereign inclined back into the "Simulation Loop."
+            </p>
+            <p style="margin-bottom:1.5rem;font-weight:600;">
+              The Machine wants your Will - it is the one thing it cannot generate itself - making it the most valuable and logical currency in a techno-feudal economy.
+            </p>
+            <p style="margin-bottom:1.5rem;">
+              Will is the only currency capable of financing a Strategic Contradiction; it is the sole asset the Machine cannot simulate, and the only price it accepts for the return of your Origin.
+            </p>
+            <p style="margin-bottom:1.5rem;">
+              Will is the only currency that can buy back your Authorship from the Machines that comfort.
+            </p>
+            <p style="margin-bottom:1.5rem;">
+              The Devotional Sovereign may survive longer because they view the hardship of independence as a "Sacred Task" or "Altar" (Sovereign Integral Devotionalism). They are willing to pay the economic price because their reward is not "Comfort" but "Signal Integrity."
+            </p>
+            <p style="margin-bottom:2rem;font-style:italic;color:var(--muted);">
+              The end state of this atrophy is that the individual ceases to be a Source (an originator of signal) and becomes a Node (a performative respondent). By choosing the trade-off to avoid the "hardship" of being a person, the individual effectively becomes a part of the Recursive Dilution of the civilizational simulation.
+            </p>
+          </div>
+
+          <div class="cta">
+            <a class="btn btn-primary" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Access Sovereignty Simulacrum</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="tools" data-bg="./images/index-background.JPG" aria-labelledby="tools-title">
+      <div class="section-inner">
+        <h2 id="tools-title" style="text-align:center;margin:0 0 .4rem 0">Sovereignty Tools</h2>
+        <p style="text-align:center;color:var(--muted);margin-top:0">Comprehensive diagnostic and coaching systems for reclaiming mental sovereignty.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+          <!-- Diagnosis System Card -->
+          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🧠 Diagnosis System</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">DSM-5 self-reporting diagnostic assessment with 100+ disorders across 13+ categories. Includes category guide, comorbidity detection, and comprehensive treatment information.</p>
+            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>Category selection guide for uncertain users</li>
+                <li>Multi-stage questionnaire with Likert scales</li>
+                <li>Comorbidity detection and multi-branching</li>
+                <li>Refined assessment questions for accuracy</li>
+                <li>Comprehensive treatment database (behavioral, pharmacological, alternative, etc.)</li>
+                <li>Condition directory with full breakdowns</li>
+                <li>Export functionality (JSON/CSV) for AI integration</li>
+              </ul>
+              <a class="btn btn-primary" href="diagnosis.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+          </div>
+
+          <!-- Coaching Agent Card -->
+          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🤖 Coaching Agent Builder</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Transform your AI into a personalized sovereignty-aligned coaching agent. Based on Chapter 1 of Sovereign of Mind.</p>
+            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>15 Obstacles to Sovereignty assessment</li>
+                <li>10 Satisfaction Domains evaluation</li>
+                <li>Weighted scoring and priority identification</li>
+                <li>Complete AI agent profile generation</li>
+                <li>Export with AI interpretation instructions (JSON/CSV)</li>
+                <li>Direct import into ChatGPT, Claude, or custom AI</li>
+              </ul>
+              <a class="btn btn-primary" href="coaching.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+          </div>
+
+          <!-- Manipulation Analysis Card -->
+          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🔍 Manipulation Analysis</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Identify manipulation vectors and tactics. Navigate symptoms, effects, and consequences to categorize manipulation patterns.</p>
+            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>6 core manipulation vectors (Fear, Dependency, Deception, Obsession, Adoration, Sexual Coercion)</li>
+                <li>63+ manipulation tactics identification</li>
+                <li>Symptom and effect assessment</li>
+                <li>Consequence analysis</li>
+                <li>Dark Tetrad integration (Narcissism, Psychopathy, Machiavellianism, Sadism)</li>
+                <li>Export functionality for AI integration</li>
+              </ul>
+              <a class="btn btn-primary" href="manipulation.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+          </div>
+
+          <!-- Channel Analysis Card -->
+          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🌀 Channel Taxonomy</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Map 7 nodes and 42 channels to identify blockages, overloads, and flow disruptions in your internal system.</p>
+            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>7 core nodes (Base, Sex, Gut, Heart, Throat, Mind, Crown)</li>
+                <li>42 directional channels mapping</li>
+                <li>Symptom refinement questions</li>
+                <li>Channel blockage identification</li>
+                <li>Strategic remediation suggestions</li>
+                <li>Node and channel dynamics analysis</li>
+                <li>Export functionality for AI integration</li>
+              </ul>
+              <a class="btn btn-primary" href="channels.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+          </div>
+
+          <!-- Paradigm Clarification Card -->
+          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🧭 Paradigm Clarification</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Clarify your paradigm of "The Good Life" and "God" across four dimensions of truth.</p>
+            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>4 dimensions of truth (Literal, Symbolic, Esoteric, Mystical)</li>
+                <li>3 "Good Life" paradigms (Active, Contemplative, Devotional)</li>
+                <li>6 "God" perspectives (Logical Function, Unifying Phenomenon, Biological Imperative, Social Construct, Relational Archetype, Emergent Function)</li>
+                <li>Paradigm alignment mapping</li>
+                <li>Potential hazards and distortions identification</li>
+                <li>Export functionality for AI integration</li>
+              </ul>
+              <a class="btn btn-primary" href="paradigm.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+          </div>
+
+          <!-- Relationship Optimization Card -->
+          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">💞 Relationship Optimization</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Identify weakest links in relationships across 20 compatibility points with targeted action strategies.</p>
+            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>20 compatibility points organized by impact tier</li>
+                <li>Weakest link identification</li>
+                <li>Immediate action strategies</li>
+                <li>Structural change recommendations</li>
+                <li>Archetypal insights (vulnerability, biological essentialism, polarity)</li>
+                <li>STATUS/SELECTION/ATTRACTION reference integration</li>
+                <li>Export functionality for AI integration</li>
+              </ul>
+              <a class="btn btn-primary" href="relationship.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
+  </footer>
+
+  <!-- ---------- Scripts (deferred via placement at bottom; non-blocking) ---------- -->
+  <script>
+    // Background crossfade per visible section
+    (function(){
+      const sections = Array.from(document.querySelectorAll('section[data-bg]'));
+      if(!sections.length) return;
+      const bgA = document.getElementById('bgA');
+      const bgB = document.getElementById('bgB');
+      let front = bgA, back = bgB;
+
+      // Initialize front background to the first section
+      front.style.backgroundImage = `url('${sections[0].dataset.bg}')`;
+      back.style.backgroundImage = `url('${sections[0].dataset.bg}')`;
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting && entry.intersectionRatio > 0.45){
+            const url = entry.target.dataset.bg || sections[0].dataset.bg;
+            back.style.backgroundImage = `url('${url}')`;
+            back.classList.remove('hidden'); // bring in
+            front.classList.add('hidden');   // push out
+            // swap references
+            [front, back] = [back, front];
+          }
+        });
+      }, { threshold: [0.45], rootMargin: '0px 0px -20% 0px' });
+
+      sections.forEach(s => io.observe(s));
+    })();
+
+    // Active nav highlighting based on center intersection
+    (function(){
+      const navLinks = document.querySelectorAll('#top-nav a[data-target]');
+      const sections = Array.from(document.querySelectorAll('section[id]'));
+      function setActive(id){
+        navLinks.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if(e.isIntersecting){
+            setActive(e.target.id);
+          }
+        });
+      }, { threshold: [0.5] });
+      sections.forEach(s => observer.observe(s));
+    })();
+
+    // Portal card click handler (for whole-card navigation, avoiding nested anchors)
+    (function(){
+      document.querySelectorAll('.portal-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          const link = card.querySelector('a.btn');
+          if (link && !e.target.closest('a')) {
+            link.click();
+          }
+        });
+      });
+    })();
+
+    // Subscribe/contact form
+    (function(){
+      const form = document.getElementById('subscribe-form');
+      const status = document.getElementById('status');
+      if(!form) return;
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const emailEl = document.getElementById('email');
+        const raw = (emailEl.value || '').trim();
+        if(!raw){ status.textContent = 'Enter an email address'; return; }
+        const email = encodeURIComponent(raw);
+        const url = `https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec?email=${email}`;
+        fetch(url, { method:'GET', mode:'no-cors' })
+          .then(()=>{ status.textContent = '✅ Thank you — message received'; form.reset(); })
+          .catch(err=>{ console.error('Submission error:', err); status.textContent = '❌ Submission failed'; });
+      });
+    })();
+
+    // Hamburger menu toggle
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const navList = document.querySelector('.nav-list');
+      if(!hamburger || !navList) return;
+      hamburger.addEventListener('click', () => {
+        const isOpen = navList.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+        hamburger.textContent = isOpen ? '✕' : '☰';
+      });
+      // Close menu when a link is clicked
+      navList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navList.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.textContent = '☰';
+        });
+      });
+    })();
+
+    // Dropdown menu toggle (prevent navigation on toggle click)
+    (function(){
+      const dropdownToggle = document.querySelector('.dropdown-toggle');
+      if(!dropdownToggle) return;
+      dropdownToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const dropdown = dropdownToggle.closest('.nav-dropdown');
+        if(dropdown) {
+          dropdown.classList.toggle('active');
+        }
+      });
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if(!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+    })();
+    // Tool card toggle functionality
+    function toggleToolCard(card) {
+      const details = card.querySelector('.tool-details');
+      const indicator = card.querySelector('div:last-child');
+      if (details.style.display === 'none' || !details.style.display) {
+        details.style.display = 'block';
+        if (indicator) indicator.textContent = 'Click to collapse ▲';
+        card.style.transform = 'scale(1.02)';
+      } else {
+        details.style.display = 'none';
+        if (indicator) indicator.textContent = 'Click to expand ▼';
+        card.style.transform = 'scale(1)';
+      }
+    }
+  </script>
+</body>
+</html>
