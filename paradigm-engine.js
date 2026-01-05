@@ -63,6 +63,15 @@ class ParadigmEngine {
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
     }
+
+    const abandonBtn = document.getElementById('abandonAssessment');
+    if (abandonBtn) {
+      abandonBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+          this.resetAssessment();
+        }
+      });
+    }
   }
 
   toggleCategory(categoryId) {
