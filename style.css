@@ -650,11 +650,12 @@ figure.image-card::before{
   right:-4px;
   bottom:-4px;
   border-radius:16px;
-  background:conic-gradient(from 0deg, #ffb800, #ffd700, #ffed4e, #ffb800, #ffd700, #ffb800);
+  background:linear-gradient(135deg, #ffb800, #ffd700, #ffed4e, #ffb800);
+  background-size:200% 200%;
   z-index:0;
   pointer-events:none;
   opacity:0.85;
-  animation:goldenRotate 4s linear infinite, sparkle 2.5s ease-in-out infinite;
+  animation:sheenMove 3s linear infinite, sparkle 2.5s ease-in-out infinite;
   filter:drop-shadow(0 0 8px rgba(255, 184, 0, 0.5));
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
@@ -674,13 +675,16 @@ figure.image-card a{
 .image-card:hover::before,
 figure.image-card:hover::before{
   opacity:1;
-  animation:goldenRotate 2.5s linear infinite, sparkle 1.8s ease-in-out infinite;
+  animation:sheenMove 2s linear infinite, sparkle 1.8s ease-in-out infinite;
   filter:drop-shadow(0 0 12px rgba(255, 184, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 184, 0, 0.4));
 }
 
-@keyframes goldenRotate{
-  0%{transform:rotate(0deg);}
-  100%{transform:rotate(360deg);}
+@keyframes sheenMove{
+  0%{background-position:0% 0%;}
+  25%{background-position:100% 0%;}
+  50%{background-position:100% 100%;}
+  75%{background-position:0% 100%;}
+  100%{background-position:0% 0%;}
 }
 
 @keyframes sparkle{
