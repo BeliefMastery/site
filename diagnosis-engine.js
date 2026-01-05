@@ -486,9 +486,9 @@ class DiagnosisEngine {
           <div class="scale-value" id="scaleValue">${this.answers[question.id] || 5}</div>
         </div>
         <div class="scale-labels">
-          <span>Not at all / Never (0-2)</span>
-          <span>Moderately / Sometimes (5-6)</span>
-          <span>Extremely / Always (9-10)</span>
+          <span>Very Low / Minimal / Weak / Rare / Never (0-2)</span>
+          <span>Moderate / Somewhat / Average / Sometimes (5-6)</span>
+          <span>Very High / Strong / Potent / Frequent / Always (9-10)</span>
         </div>
         <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
           <strong>Tip:</strong> 0-2 = Not applicable / Rare | 3-4 = Minimal impact | 5-6 = Moderate impact | 7-8 = Significant impact | 9-10 = Extreme impact / Constant

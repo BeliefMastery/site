@@ -166,9 +166,9 @@ class TemperamentEngine {
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider" step="1">
             <div class="scale-labels">
-              <span>Not at all / Never (0-2)</span>
-              <span>Moderately / Sometimes (5-6)</span>
-              <span>Extremely / Always (9-10)</span>
+              <span>Very Low / Minimal / Weak / Rare / Never (0-2)</span>
+              <span>Moderate / Somewhat / Average / Sometimes (5-6)</span>
+              <span>Very High / Strong / Potent / Frequent / Always (9-10)</span>
             </div>
           </div>
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>

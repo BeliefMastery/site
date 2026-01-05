@@ -258,9 +258,9 @@ class RelationshipEngine {
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider">
             <div class="scale-labels">
-              <span>Very Weak (0-2)</span>
-              <span>Moderate (5)</span>
-              <span>Very Strong (8-10)</span>
+              <span>Very Low / Minimal / Weak / Poor / Rare / Never (0-2)</span>
+              <span>Moderate / Somewhat / Average / Moderate / Sometimes (5-6)</span>
+              <span>Very High / Strong / Potent / Excellent / Frequent / Always (9-10)</span>
             </div>
           </div>
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>

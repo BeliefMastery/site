@@ -188,7 +188,7 @@ class ParadigmEngine {
           <div class="scale-value" id="scaleValue">${currentAnswer}</div>
         </div>
         <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius);">
-          <strong>Quick Reference:</strong> 0-2 = Not at all / Never, 3-4 = Rarely / Slightly, 5-6 = Sometimes / Moderately, 7-8 = Often / Strongly, 9-10 = Always / Completely
+          <strong>Quick Reference:</strong> 0-2 = Very Low / Minimal / Weak / Poor / Rare / Never, 3-4 = Low / Slightly / Somewhat, 5-6 = Moderate / Moderate / Average / Sometimes, 7-8 = High / Strong / Significant / Often, 9-10 = Very High / Strong / Potent / Excellent / Frequent / Always
         </div>
       </div>
     `;
