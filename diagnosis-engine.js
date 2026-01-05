@@ -327,6 +327,11 @@ class DiagnosisEngine {
     if (conditionSearch) {
       conditionSearch.addEventListener('input', (e) => this.filterConditions(e.target.value));
     }
+    
+    const clearCacheBtn = document.getElementById('clearCacheBtn');
+    if (clearCacheBtn) {
+      clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
+    }
   }
 
   startAssessment() {
@@ -469,9 +474,12 @@ class DiagnosisEngine {
           <div class="scale-value" id="scaleValue">${this.answers[question.id] || 5}</div>
         </div>
         <div class="scale-labels">
-          <span>Not at all / Never</span>
-          <span>Moderately / Sometimes</span>
-          <span>Extremely / Always</span>
+          <span>Not at all / Never (0-2)</span>
+          <span>Moderately / Sometimes (5-6)</span>
+          <span>Extremely / Always (9-10)</span>
+        </div>
+        <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
+          <strong>Tip:</strong> 0-2 = Not applicable / Rare | 3-4 = Minimal impact | 5-6 = Moderate impact | 7-8 = Significant impact | 9-10 = Extreme impact / Constant
         </div>
         ${question.type === 'validation' ? '<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);"><em>This question helps validate consistency in your responses.</em></p>' : ''}
         ${question.type === 'comorbidity_refinement' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent); font-weight: 600;"><em>Refinement Question (${question.groupName})</em></p>` : ''}

@@ -449,9 +449,38 @@
             <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
             <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
           </div>
-          <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
-            🧭 Start Here - Not Sure?
-          </button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
+              🧭 Start Here - Not Sure?
+            </button>
+            <button class="btn btn-secondary" id="clearCacheBtn" style="white-space: nowrap; font-size: 0.9rem;">
+              🗑️ Clear Cached Data
+            </button>
+          </div>
+        </div>
+
+        <div class="instructions-panel" style="background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--brand); display: flex; align-items: center; gap: 0.5rem;">
+            <span>📋</span> How to Use This Assessment
+          </h3>
+          <div style="line-height: 1.7;">
+            <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+              <li><strong>0-2 (Not at all / Never):</strong> The symptom or experience does not apply to you at all, or occurs extremely rarely.</li>
+              <li><strong>3-4 (Minimal / Rarely):</strong> The symptom occurs occasionally but has minimal impact on your life.</li>
+              <li><strong>5-6 (Moderate / Sometimes):</strong> The symptom is present with moderate frequency or intensity, and has some noticeable impact.</li>
+              <li><strong>7-8 (Significant / Often):</strong> The symptom occurs frequently or with significant intensity, and has a noticeable impact on daily functioning.</li>
+              <li><strong>9-10 (Extreme / Always):</strong> The symptom is nearly constant or extremely intense, and significantly impairs daily functioning.</li>
+            </ul>
+            <p style="margin-bottom: 0.5rem;"><strong>Guidelines for Accurate Assessment:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 0;">
+              <li>Answer based on your experiences over the <strong>past 2-4 weeks</strong>, unless the question specifies otherwise.</li>
+              <li>Be honest with yourself - there are no "wrong" answers.</li>
+              <li>Consider how the symptom affects your daily life, relationships, and functioning.</li>
+              <li>If unsure, choose the middle range (4-6) and proceed - the system will refine based on your responses.</li>
+              <li>You can go back and change answers using the "Previous" button.</li>
+            </ul>
+          </div>
         </div>
         <div class="category-grid" id="categoryGrid">
           <!-- Categories will be populated by JavaScript -->
