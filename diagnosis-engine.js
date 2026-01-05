@@ -1097,7 +1097,13 @@ class DiagnosisEngine {
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
+    this.refinedQuestionSequence = [];
     this.currentStage = 'selection';
+    this.guideMode = false;
+    this.guideAnswers = {};
+    this.currentGuideQuestion = 0;
+    this.suggestedCategories = [];
+    this.refinementRequested = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       categories: [],
@@ -1109,11 +1115,30 @@ class DiagnosisEngine {
     
     sessionStorage.removeItem('diagnosisProgress');
     
-    document.getElementById('categorySelection').style.display = 'block';
+    // Reset UI
+    const categorySelection = document.getElementById('categorySelection');
+    categorySelection.style.display = 'block';
+    categorySelection.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
+          <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+        </div>
+        <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
+          🧭 Start Here - Not Sure?
+        </button>
+      </div>
+      <div class="category-grid" id="categoryGrid"></div>
+      <div style="text-align: center; margin-top: 2rem;">
+        <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
+      </div>
+    `;
+    
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
     
     this.renderCategorySelection();
+    this.attachEventListeners();
     document.getElementById('startAssessment').disabled = true;
   }
 }
