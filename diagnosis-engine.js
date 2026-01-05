@@ -164,12 +164,28 @@ class DiagnosisEngine {
   }
 
   renderCurrentQuestion() {
-    if (this.currentQuestionIndex >= this.questionSequence.length) {
+    // Determine which sequence we're using
+    const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
+    const totalMainQuestions = this.questionSequence.length;
+    const totalRefinedQuestions = this.refinedQuestionSequence.length;
+    const totalQuestions = totalMainQuestions + (isInRefinement ? totalRefinedQuestions : 0);
+    
+    // Check if we've completed all questions
+    if (this.currentQuestionIndex >= totalQuestions) {
       this.completeAssessment();
       return;
     }
     
-    const question = this.questionSequence[this.currentQuestionIndex];
+    // Get the appropriate question
+    let question;
+    if (this.currentQuestionIndex < totalMainQuestions) {
+      question = this.questionSequence[this.currentQuestionIndex];
+    } else if (isInRefinement) {
+      question = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions];
+    } else {
+      this.completeAssessment();
+      return;
+    }
     const container = document.getElementById('questionContainer');
     
     container.innerHTML = `
@@ -219,7 +235,9 @@ class DiagnosisEngine {
   }
 
   updateProgress() {
-    const progress = ((this.currentQuestionIndex + 1) / this.questionSequence.length) * 100;
+    const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
+    const totalQuestions = this.questionSequence.length + (isInRefinement ? this.refinedQuestionSequence.length : 0);
+    const progress = totalQuestions > 0 ? ((this.currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
     document.getElementById('progressFill').style.width = `${progress}%`;
   }
 
