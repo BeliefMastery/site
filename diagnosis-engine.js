@@ -128,47 +128,61 @@ class DiagnosisEngine {
 
   renderGuideQuestion() {
     const container = document.getElementById('categorySelection');
-    if (!container) return;
+    if (!container) {
+      this.logDebug('ERROR: categorySelection container not found in renderGuideQuestion');
+      return;
+    }
     
     const question = CATEGORY_GUIDE_QUESTIONS[this.currentGuideQuestion];
+    if (!question) {
+      this.logDebug('ERROR: Guide question not found at index', this.currentGuideQuestion);
+      this.completeGuide();
+      return;
+    }
+    
     const isLast = this.currentGuideQuestion === CATEGORY_GUIDE_QUESTIONS.length - 1;
     
+    container.style.display = 'block';
     container.innerHTML = `
       <div class="guide-container" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); backdrop-filter: blur(8px);">
-        <h2 style="margin-bottom: 1rem;">Category Selection Guide</h2>
+        <h2 style="margin-bottom: 1rem;">🧭 Category Selection Guide</h2>
         <p style="margin-bottom: 2rem; color: var(--muted);">Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
         
         <div class="guide-question" style="margin-bottom: 2rem;">
-          <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">${question.question}</h3>
+          <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem; line-height: 1.5;">${question.question}</h3>
           ${question.warning ? `<div style="padding: 1rem; background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); margin-bottom: 1.5rem;"><strong>⚠️ Important:</strong> ${question.warning}</div>` : ''}
           
           <div class="guide-options" style="display: flex; flex-direction: column; gap: 1rem;">
             <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideYes">
-              Yes
+              ✓ Yes
             </button>
             <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideNo">
-              No
+              ✗ No
             </button>
             <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideUnsure">
-              Not Sure / Sometimes
+              ? Not Sure / Sometimes
             </button>
           </div>
         </div>
         
         <div style="display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
-          <button class="btn btn-secondary" id="guideBack" ${this.currentGuideQuestion === 0 ? 'disabled' : ''}>Previous</button>
+          <button class="btn btn-secondary" id="guideBack" ${this.currentGuideQuestion === 0 ? 'disabled' : ''}>← Previous</button>
           <div style="font-size: 0.9rem; color: var(--muted); align-self: center;">
             Question ${this.currentGuideQuestion + 1} of ${CATEGORY_GUIDE_QUESTIONS.length}
           </div>
-          ${isLast ? '<button class="btn btn-primary" id="guideComplete">See Suggested Categories</button>' : '<button class="btn btn-secondary" id="guideSkip">Skip to Categories</button>'}
+          ${isLast ? '<button class="btn btn-primary" id="guideComplete">See Recommended Categories →</button>' : '<button class="btn btn-secondary" id="guideSkip">Skip to Categories →</button>'}
         </div>
       </div>
     `;
     
-    // Attach event listeners
-    document.getElementById('guideYes').addEventListener('click', () => this.answerGuide(true));
-    document.getElementById('guideNo').addEventListener('click', () => this.answerGuide(false));
-    document.getElementById('guideUnsure').addEventListener('click', () => this.answerGuide('unsure'));
+    // Attach event listeners with error handling
+    const yesBtn = document.getElementById('guideYes');
+    const noBtn = document.getElementById('guideNo');
+    const unsureBtn = document.getElementById('guideUnsure');
+    
+    if (yesBtn) yesBtn.addEventListener('click', () => this.answerGuide(true));
+    if (noBtn) noBtn.addEventListener('click', () => this.answerGuide(false));
+    if (unsureBtn) unsureBtn.addEventListener('click', () => this.answerGuide('unsure'));
     
     const backBtn = document.getElementById('guideBack');
     if (backBtn && !backBtn.disabled) {
@@ -176,9 +190,11 @@ class DiagnosisEngine {
     }
     
     if (isLast) {
-      document.getElementById('guideComplete').addEventListener('click', () => this.completeGuide());
+      const completeBtn = document.getElementById('guideComplete');
+      if (completeBtn) completeBtn.addEventListener('click', () => this.completeGuide());
     } else {
-      document.getElementById('guideSkip').addEventListener('click', () => this.skipGuide());
+      const skipBtn = document.getElementById('guideSkip');
+      if (skipBtn) skipBtn.addEventListener('click', () => this.skipGuide());
     }
   }
 
@@ -220,7 +236,18 @@ class DiagnosisEngine {
     
     // Show category selection with suggestions highlighted
     const container = document.getElementById('categorySelection');
+    if (!container) {
+      this.logDebug('ERROR: categorySelection container not found in completeGuide');
+      return;
+    }
+    
     container.style.display = 'block';
+    
+    // Generate recommendation summary
+    const recommendationText = this.suggestedCategories.length > 0 
+      ? this.generateRecommendationSummary()
+      : 'Based on your answers, we recommend exploring categories that match your concerns.';
+    
     container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
@@ -233,15 +260,26 @@ class DiagnosisEngine {
       </div>
       ${this.suggestedCategories.length > 0 ? `
         <div style="padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; color: var(--brand);">💡 Based on your answers, these categories may be relevant:</h3>
+          <h3 style="margin-bottom: 0.5rem; color: var(--brand);">💡 Recommended Categories Based on Your Answers:</h3>
           <p style="margin-bottom: 1rem; line-height: 1.6;">
-            We've highlighted categories below that may be most relevant to your concerns. You can select these or any other categories you'd like to explore.
+            ${recommendationText}
           </p>
-          <p style="font-size: 0.9rem; color: var(--muted);">
-            <strong>Note:</strong> Suggested categories are pre-selected for you, but you can change your selection.
+          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 184, 0, 0.3);">
+            <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">
+              <strong>Recommended categories:</strong> ${this.suggestedCategories.map(cat => CATEGORY_DESCRIPTIONS[cat]?.name || cat).join(', ')}
+            </p>
+            <p style="font-size: 0.85rem; color: var(--muted); font-style: italic;">
+              These categories are pre-selected for you, but you can change your selection or add others.
+            </p>
+          </div>
+        </div>
+      ` : `
+        <div style="padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius); margin-bottom: 1.5rem;">
+          <p style="color: var(--muted); line-height: 1.6;">
+            ${recommendationText} Review the categories below and select those that seem most relevant to your concerns.
           </p>
         </div>
-      ` : ''}
+      `}
       <div class="category-grid" id="categoryGrid"></div>
       <div style="text-align: center; margin-top: 2rem;">
         <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
@@ -259,12 +297,34 @@ class DiagnosisEngine {
       const card = document.querySelector(`[data-category="${categoryKey}"]`);
       if (card) {
         card.classList.add('selected');
+        card.classList.add('suggested');
       }
     });
     
     if (this.selectedCategories.length > 0) {
-      document.getElementById('startAssessment').disabled = false;
+      const startBtn = document.getElementById('startAssessment');
+      if (startBtn) startBtn.disabled = false;
     }
+  }
+
+  generateRecommendationSummary() {
+    if (this.suggestedCategories.length === 0) {
+      return 'Based on your answers, we recommend exploring categories that match your concerns.';
+    }
+    
+    const categoryNames = this.suggestedCategories.map(cat => CATEGORY_DESCRIPTIONS[cat]?.name || cat);
+    const descriptions = this.suggestedCategories.map(cat => CATEGORY_DESCRIPTIONS[cat]?.description || '').filter(d => d);
+    
+    let summary = `Based on your responses, we recommend exploring ${categoryNames.length === 1 ? 'this category' : 'these categories'}: `;
+    summary += categoryNames.join(', ') + '. ';
+    
+    if (descriptions.length > 0) {
+      summary += 'These categories address concerns you indicated in the guide questions. ';
+    }
+    
+    summary += 'You can proceed with these recommendations or select additional categories that interest you.';
+    
+    return summary;
   }
 
   toggleCategory(categoryKey, cardElement) {
@@ -283,12 +343,21 @@ class DiagnosisEngine {
   attachEventListeners() {
     const startAssessmentBtn = document.getElementById('startAssessment');
     if (startAssessmentBtn) {
-      startAssessmentBtn.addEventListener('click', () => this.startAssessment());
+      // Remove existing listener if any, then add new one
+      startAssessmentBtn.replaceWith(startAssessmentBtn.cloneNode(true));
+      document.getElementById('startAssessment').addEventListener('click', () => this.startAssessment());
     }
     
     const startHereGuideBtn = document.getElementById('startHereGuide');
     if (startHereGuideBtn) {
-      startHereGuideBtn.addEventListener('click', () => this.startGuide());
+      // Remove existing listener if any, then add new one
+      startHereGuideBtn.replaceWith(startHereGuideBtn.cloneNode(true));
+      document.getElementById('startHereGuide').addEventListener('click', () => {
+        this.logDebug('Start Here Guide button clicked');
+        this.startGuide();
+      });
+    } else {
+      this.logDebug('WARNING: startHereGuide button not found');
     }
     
     const nextQuestionBtn = document.getElementById('nextQuestion');
@@ -425,16 +494,130 @@ class DiagnosisEngine {
     this.shuffleQuestions();
   }
 
+  // Reframe questions to avoid double negatives and use positive "degree of presence" language
+  reframeQuestion(text) {
+    if (!text) return text;
+    
+    // Common double negative patterns to reframe
+    const reframes = [
+      // "not not" patterns
+      { pattern: /don't not|do not not/gi, replacement: 'do' },
+      { pattern: /doesn't not|does not not/gi, replacement: 'does' },
+      { pattern: /cannot not|can not not/gi, replacement: 'can' },
+      { pattern: /never not/gi, replacement: 'always' },
+      
+      // "not" + negative verb patterns - convert to positive
+      { pattern: /not (?:feel|experience|have) (?:fear|anxiety|worry|stress|panic|depression|sadness|anger|irritability|tension|restlessness)/gi, 
+        replacement: (match) => {
+          const emotion = match.match(/(?:fear|anxiety|worry|stress|panic|depression|sadness|anger|irritability|tension|restlessness)/i)?.[0] || 'this';
+          return `experience ${emotion}`;
+        }},
+      
+      // "not markedly impaired" -> "functioning well"
+      { pattern: /not markedly impaired/gi, replacement: 'functioning well' },
+      { pattern: /not better explained/gi, replacement: 'best explained' },
+      { pattern: /does not meet criteria/gi, replacement: 'meets different criteria' },
+      
+      // "lack of" -> "presence of" (inverted)
+      { pattern: /lack of ([\w\s]+)/gi, replacement: 'absence of $1' },
+      
+      // "absence of" -> "presence of" (inverted for positive framing)
+      { pattern: /absence of ([\w\s]+)/gi, replacement: 'presence of $1' },
+    ];
+    
+    let reframed = text;
+    reframes.forEach(({ pattern, replacement }) => {
+      if (typeof replacement === 'function') {
+        reframed = reframed.replace(pattern, replacement);
+      } else {
+        reframed = reframed.replace(pattern, replacement);
+      }
+    });
+    
+    // Convert negative questions to positive "degree of presence" format
+    const lowerText = reframed.toLowerCase();
+    
+    // Pattern: "do not feel fear" -> "degree to which fear is present"
+    if (lowerText.includes('not') && (lowerText.includes('feel') || lowerText.includes('experience') || lowerText.includes('have'))) {
+      const emotionPattern = /(?:not|don't|doesn't|do not|does not)\s+(?:feel|experience|have)\s+(fear|anxiety|worry|stress|panic|depression|sadness|anger|irritability|tension|restlessness|fatigue|energy|interest|pleasure|hope|joy|satisfaction|confidence|calm|peace)/i;
+      const emotionMatch = reframed.match(emotionPattern);
+      if (emotionMatch && emotionMatch[1]) {
+        return `To what degree is ${emotionMatch[1]} present in your life?`;
+      }
+    }
+    
+    // Pattern: "lack of X" -> "degree to which X is present" (inverted)
+    const lackPattern = /lack\s+of\s+([\w\s]+)/i;
+    const lackMatch = reframed.match(lackPattern);
+    if (lackMatch && lackMatch[1]) {
+      return `To what degree is ${lackMatch[1].trim()} present in your experience?`;
+    }
+    
+    // Pattern: "absence of X" -> "degree to which X is present" (inverted)
+    const absencePattern = /absence\s+of\s+([\w\s]+)/i;
+    const absenceMatch = reframed.match(absencePattern);
+    if (absenceMatch && absenceMatch[1]) {
+      return `To what degree is ${absenceMatch[1].trim()} present in your experience?`;
+    }
+    
+    // Pattern: "diminished X" -> "degree to which X is present"
+    const diminishedPattern = /diminished\s+([\w\s]+)/i;
+    const diminishedMatch = reframed.match(diminishedPattern);
+    if (diminishedMatch && diminishedMatch[1]) {
+      return `To what degree is ${diminishedMatch[1].trim()} present in your experience?`;
+    }
+    
+    // Pattern: "loss of X" -> "degree to which X is present" (inverted)
+    const lossPattern = /loss\s+of\s+([\w\s]+)/i;
+    const lossMatch = reframed.match(lossPattern);
+    if (lossMatch && lossMatch[1]) {
+      return `To what degree is ${lossMatch[1].trim()} present in your experience?`;
+    }
+    
+    // If question already uses positive framing, ensure it uses "degree of presence" language
+    if (!lowerText.includes('to what') && !lowerText.includes('how much') && 
+        !lowerText.includes('how often') && !lowerText.includes('degree') && 
+        !lowerText.includes('extent')) {
+      // Convert simple yes/no questions to degree questions
+      if (reframed.match(/^(you|do you|have you|are you|did you)/i)) {
+        // Extract the core concept
+        const coreText = reframed
+          .replace(/^(you|do you|have you|are you|did you)\s+/i, '')
+          .replace(/\?$/, '')
+          .trim();
+        
+        // If it mentions a symptom or experience, reframe as degree
+        const symptomWords = ['worry', 'anxiety', 'fear', 'stress', 'panic', 'depression', 'sadness', 'anger', 'irritability', 'tension', 'restlessness', 'fatigue', 'energy', 'interest', 'pleasure', 'sleep', 'appetite', 'concentration', 'memory', 'thoughts', 'feelings', 'emotions', 'mood', 'behavior'];
+        const hasSymptom = symptomWords.some(word => coreText.toLowerCase().includes(word));
+        
+        if (hasSymptom) {
+          return `To what degree is this present in your experience: ${coreText}?`;
+        }
+      }
+    }
+    
+    return reframed;
+  }
+
   generateQuestionText(symptom, categoryKey) {
     const templates = QUESTION_TEMPLATES[categoryKey];
+    let questionText;
+    
     if (templates && templates[symptom.id]) {
-      return templates[symptom.id][0] || symptom.text;
+      questionText = templates[symptom.id][0] || symptom.text;
+    } else {
+      questionText = symptom.text || `To what extent do you experience: ${symptom.id}?`;
     }
-    return symptom.text || `To what extent do you experience: ${symptom.id}?`;
+    
+    // Reframe to avoid double negatives and use positive language
+    return this.reframeQuestion(questionText);
   }
 
   generateCriterionQuestion(criterion, disorderName) {
-    return criterion.text || `Regarding ${disorderName}: ${criterion.text}`;
+    let questionText = criterion.text || `Regarding ${disorderName}: ${criterion.text}`;
+    
+    // Reframe to avoid double negatives and use positive language
+    return this.reframeQuestion(questionText);
   }
 
   shuffleQuestions() {

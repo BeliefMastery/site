@@ -42,6 +42,14 @@ img{
   display:block;
   max-width:100%;
   height:auto;
+  border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.12);
+  transition:box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+img:hover{
+  box-shadow:0 12px 32px rgba(0,0,0,0.18);
+  transform:translateY(-2px);
 }
 
 main{
@@ -490,43 +498,51 @@ section:hover{
 /* ---------- Image row ---------- */
 .image-row{
   display:flex;
-  gap:0.5rem;
+  gap:0.75rem;
   justify-content:center;
   flex-wrap:wrap;
   margin-top:.8rem;
+  overflow:visible;
 }
 
 /* Books grid: 3 per row */
 .image-row.books-grid{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
-  gap:1rem;
+  gap:2.5rem;
   max-width:1200px;
   margin-left:auto;
   margin-right:auto;
+  overflow:visible;
+  padding:1rem 0;
 }
 
 /* Tools grid: 4 per row */
 .image-row.tools-grid{
   display:grid;
   grid-template-columns:repeat(4, 1fr);
-  gap:1rem;
+  gap:2.5rem;
   max-width:1400px;
   margin-left:auto;
   margin-right:auto;
+  overflow:visible;
+  padding:1rem 0;
 }
 
-.image-card{
+.image-card,
+figure.image-card{
   flex:1 1 210px;
   max-width:270px;
   border-radius:8px;
-  overflow:visible;
+  overflow:visible !important;
   background:transparent;
   box-shadow:0 10px 30px rgba(0,0,0,0.08);
   display:flex;
   flex-direction:column;
   transition:var(--transition);
   position:relative;
+  padding:0;
+  margin:0;
 }
 
 /* Override max-width for grid layouts */
@@ -584,28 +600,168 @@ section:hover{
   opacity:1;
 }
 
-.image-card a{
+.image-card a,
+figure.image-card a{
   display:block;
   width:100%;
-  overflow:visible;
-  border-radius:8px;
+  overflow:visible !important;
+  border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   background:transparent;
 }
 
-.image-card img{
+.image-card img,
+figure.image-card img{
   width:100%;
   height:auto;
   object-fit:contain;
   object-position:center;
   display:block;
-  transition:transform .4s ease;
+  border-radius:12px !important;
+  box-shadow:0 8px 24px rgba(0,0,0,0.12) !important;
+  transition:transform .4s ease, box-shadow .4s ease;
+  position:relative;
 }
 
-.image-card:hover img{
+.image-card:hover img,
+figure.image-card:hover img{
   transform:scale(1.06);
+  box-shadow:0 16px 40px rgba(0,0,0,0.2) !important;
+}
+
+/* Animated Golden Sheen Border */
+.image-card,
+figure.image-card{
+  position:relative;
+  padding:0;
+  background:transparent;
+  border-radius:16px;
+  overflow:visible !important;
+}
+
+.image-card::before,
+figure.image-card::before{
+  content:'';
+  position:absolute;
+  top:-4px;
+  left:-4px;
+  right:-4px;
+  bottom:-4px;
+  border-radius:16px;
+  background:conic-gradient(from 0deg, #ffb800, #ffd700, #ffed4e, #ffb800, #ffd700, #ffb800);
+  z-index:0;
+  pointer-events:none;
+  opacity:0.85;
+  animation:goldenRotate 4s linear infinite, sparkle 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(255, 184, 0, 0.5));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  padding:4px;
+}
+
+/* Note: ::after is used for tool-card summaries, so we use a different approach for the border mask */
+
+.image-card a,
+figure.image-card a{
+  position:relative;
+  z-index:2;
+}
+
+.image-card:hover::before,
+figure.image-card:hover::before{
+  opacity:1;
+  animation:goldenRotate 2.5s linear infinite, sparkle 1.8s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(255, 184, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 184, 0, 0.4));
+}
+
+@keyframes goldenRotate{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+@keyframes sparkle{
+  0%, 100%{
+    filter:drop-shadow(0 0 8px rgba(255, 184, 0, 0.6)) brightness(1);
+  }
+  25%{
+    filter:drop-shadow(0 0 12px rgba(255, 184, 0, 0.9)) brightness(1.2);
+  }
+  50%{
+    filter:drop-shadow(0 0 16px rgba(255, 184, 0, 1)) brightness(1.4);
+  }
+  75%{
+    filter:drop-shadow(0 0 12px rgba(255, 184, 0, 0.9)) brightness(1.2);
+  }
+}
+
+/* Minimal section styling - remove white backing */
+.minimal-section{
+  background:transparent !important;
+  padding:2rem 1rem;
+}
+
+.minimal-section .image-row{
+  background:transparent;
+}
+
+/* Tool card summary - appears below image on hover */
+.image-card.tool-card{
+  padding-bottom:0;
+  margin-bottom:1.5rem;
+}
+
+.image-card.tool-card::after{
+  content:attr(data-title);
+  position:absolute;
+  bottom:calc(100% + 12px);
+  left:50%;
+  transform:translateX(-50%) translateY(4px);
+  background:var(--glass);
+  backdrop-filter:blur(12px) saturate(1.1);
+  padding:0.5rem 1rem;
+  border-radius:6px;
+  font-weight:600;
+  font-size:0.9rem;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  color:var(--brand);
+}
+
+.image-card.tool-card .tool-summary{
+  position:absolute;
+  top:calc(100% + 12px);
+  left:50%;
+  transform:translateX(-50%) translateY(-4px);
+  background:var(--glass);
+  backdrop-filter:blur(12px) saturate(1.1);
+  padding:0.75rem 1rem;
+  border-radius:6px;
+  font-size:0.85rem;
+  line-height:1.4;
+  color:var(--muted);
+  white-space:normal;
+  max-width:280px;
+  width:max-content;
+  min-width:200px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  text-align:center;
+}
+
+.image-card.tool-card:hover .tool-summary{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
 }
 
 /* ---------- Feature List ---------- */
@@ -846,5 +1002,15 @@ blockquote{
   .image-row.books-grid,
   .image-row.tools-grid{
     grid-template-columns:1fr;
+  }
+  .image-card.tool-card .tool-summary{
+    max-width:calc(100% - 2rem);
+    min-width:auto;
+    left:1rem;
+    right:1rem;
+    transform:translateY(-4px);
+  }
+  .image-card.tool-card:hover .tool-summary{
+    transform:translateY(0);
   }
 }

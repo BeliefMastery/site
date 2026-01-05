@@ -213,10 +213,120 @@
       color: var(--brand);
     }
 
+    .instructions-toggle {
+      background: rgba(211, 47, 47, 0.1);
+      border: 2px solid #d32f2f;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .instructions-toggle:hover {
+      background: rgba(211, 47, 47, 0.15);
+      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+    }
+
+    .instructions-toggle-text {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: #d32f2f;
+      font-size: 1rem;
+    }
+
+    .instructions-toggle-text::after {
+      content: '▼';
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      margin-left: 0.5rem;
+    }
+
+    .instructions-toggle.expanded .instructions-toggle-text::after {
+      transform: rotate(180deg);
+    }
+
+    .disclaimer-acknowledgement {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid #d32f2f;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .disclaimer-acknowledgement:hover {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+
+    .disclaimer-acknowledgement-text {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--brand);
+      font-size: 1rem;
+    }
+
+    .disclaimer-acknowledgement-text::after {
+      content: '▼';
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      margin-left: 0.5rem;
+    }
+
+    .disclaimer-acknowledgement.expanded .disclaimer-acknowledgement-text::after {
+      transform: rotate(180deg);
+    }
+
+    .disclaimer-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid #d32f2f;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .disclaimer-section.expanded {
+      max-height: 2000px;
+      opacity: 1;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
     .instructions-panel {
       background: rgba(211, 47, 47, 0.1);
       border: 2px solid #d32f2f;
       border-radius: var(--radius);
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .instructions-panel.expanded {
+      max-height: 2000px;
+      opacity: 1;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
     }
@@ -292,11 +402,30 @@
           <li><strong>Effects:</strong> Impact on self-worth, autonomy, relationships, and daily functioning</li>
           <li><strong>Consequences:</strong> Situational developments and long-term consequences</li>
         </ul>
-        <p style="margin-top: 1rem; font-style: italic; color: var(--muted);"><strong>Note:</strong> This tool is designed for self-awareness and recognition. Understanding manipulation patterns is the first step toward reclaiming sovereignty. Use this knowledge responsibly - awareness without integrity can become a tool of control.</p>
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimers</span>
+          </div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); backdrop-filter: blur(8px); border-left: 3px solid var(--accent);">
+          <p style="margin: 0; font-size: 0.95rem; color: var(--muted); line-height: 1.6;">
+            By participating in this analysis, I acknowledge that this tool is designed for self-awareness and recognition. Understanding manipulation patterns is the first step toward reclaiming sovereignty.
+          </p>
+        </div>
+        <section class="disclaimer-section" id="disclaimerSection">
+          <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
+          <p><strong>This tool is designed for self-awareness and recognition.</strong></p>
+          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">Understanding manipulation patterns is the first step toward reclaiming sovereignty. Use this knowledge responsibly - awareness without integrity can become a tool of control.</p>
+        </section>
       </section>
 
       <section class="questionnaire-section" id="questionnaireSection">
-        <div class="instructions-panel">
+        <div class="instructions-toggle" id="instructionsToggle">
+          <div class="instructions-toggle-text">
+            <span>📋 How to Use This Assessment</span>
+          </div>
+        </div>
+        <div class="instructions-panel" id="instructionsPanel">
           <h3><span>📋</span> How to Use This Assessment</h3>
           <div style="line-height: 1.7;">
             <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
@@ -356,6 +485,28 @@
   <script>
     // Hamburger menu functionality
     document.addEventListener('DOMContentLoaded', function() {
+      // Disclaimer toggle functionality
+      const disclaimerToggle = document.getElementById('disclaimerToggle');
+      const disclaimerSection = document.getElementById('disclaimerSection');
+      
+      if (disclaimerToggle && disclaimerSection) {
+        disclaimerToggle.addEventListener('click', function() {
+          disclaimerToggle.classList.toggle('expanded');
+          disclaimerSection.classList.toggle('expanded');
+        });
+      }
+
+      // Instructions toggle functionality
+      const instructionsToggle = document.getElementById('instructionsToggle');
+      const instructionsPanel = document.getElementById('instructionsPanel');
+      
+      if (instructionsToggle && instructionsPanel) {
+        instructionsToggle.addEventListener('click', function() {
+          instructionsToggle.classList.toggle('expanded');
+          instructionsPanel.classList.toggle('expanded');
+        });
+      }
+
       const hamburger = document.querySelector('.hamburger');
       const nav = document.getElementById('top-nav');
       const dropdownToggle = document.querySelector('.dropdown-toggle');
