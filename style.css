@@ -381,6 +381,49 @@ section:hover{
   color:var(--brand);
 }
 
+/* Section title buttons - styled headings with framing */
+.section-title-btn{
+  display:inline-block;
+  text-align:center;
+  margin:4rem auto 2rem;
+  padding:1rem 2.5rem;
+  font-size:2rem;
+  font-weight:700;
+  color:var(--brand);
+  background:var(--glass);
+  backdrop-filter:blur(12px) saturate(1.1);
+  border-radius:var(--radius);
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  text-decoration:none;
+  transition:var(--transition);
+  border:2px solid rgba(255, 184, 0, 0.2);
+  position:relative;
+  overflow:hidden;
+}
+
+.section-title-btn::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-75%;
+  width:50%;
+  height:100%;
+  background:rgba(255,255,255,0.25);
+  transform:skewX(-25deg);
+  transition:left 0.5s ease;
+}
+
+.section-title-btn:hover::before{
+  left:130%;
+}
+
+.section-title-btn:hover{
+  transform:translateY(-2px) scale(1.02);
+  box-shadow:0 12px 40px rgba(0,0,0,0.16);
+  border-color:rgba(255, 184, 0, 0.4);
+  color:var(--accent);
+}
+
 .btn-outline:hover{
   background:rgba(255,184,0,0.08);
   border-color:var(--accent);
