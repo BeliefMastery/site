@@ -1,5 +1,5 @@
 // Diagnosis Engine - Main questionnaire logic and calculation system
-import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS } from './dsm5-data.js';
+import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS } from './dsm5-data/index.js';
 import { TREATMENT_DATABASE } from './treatment-database.js';
 
 class DiagnosisEngine {
