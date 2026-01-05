@@ -128,13 +128,19 @@
           </ul>
         </li>
         <li role="none"><a role="menuitem" href="index.html#purchase" data-target="purchase">Learn / Purchase</a></li>
-        <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
-        <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
-        <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
-        <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
-        <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
-        <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
-        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#tools" data-target="tools">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html" class="active">About the Author</a></li>
       </ul>
     </nav>
   </header>
@@ -254,14 +260,22 @@
 
     // Dropdown menu toggle (prevent navigation on toggle click)
     (function(){
-      const dropdownToggle = document.querySelector('.dropdown-toggle');
-      if(!dropdownToggle) return;
-      dropdownToggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        const dropdown = dropdownToggle.closest('.nav-dropdown');
-        if(dropdown) {
-          dropdown.classList.toggle('active');
-        }
+      const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dropdown = toggle.closest('.nav-dropdown');
+          if(dropdown) {
+            // Close other dropdowns
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              if(dd !== dropdown) {
+                dd.classList.remove('active');
+              }
+            });
+            // Toggle current dropdown
+            dropdown.classList.toggle('active');
+          }
+        });
       });
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
