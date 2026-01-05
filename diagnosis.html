@@ -405,8 +405,15 @@
       </section>
 
       <section class="category-selection" id="categorySelection">
-        <h2>Select Diagnostic Category</h2>
-        <p style="margin-bottom: 1.5rem; color: var(--muted);">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
+            <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+          </div>
+          <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
+            🧭 Start Here - Not Sure?
+          </button>
+        </div>
         <div class="category-grid" id="categoryGrid">
           <!-- Categories will be populated by JavaScript -->
         </div>

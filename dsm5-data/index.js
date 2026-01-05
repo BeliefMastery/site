@@ -40,4 +40,5 @@ export { SCORING_THRESHOLDS } from './scoring-thresholds.js';
 export { SUB_INQUIRY_QUESTIONS } from './sub-inquiry-questions.js';
 export { COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS, MULTI_BRANCHING_THRESHOLDS } from './comorbidity-mapping.js';
 export { REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS } from './refined-questions.js';
+export { CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS } from './category-guide.js';
 

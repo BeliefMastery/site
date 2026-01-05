@@ -1,5 +1,6 @@
 // Diagnosis Engine - Main questionnaire logic and calculation system
 import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS, MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS } from './dsm5-data/index.js';
+import { CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS } from './dsm5-data/category-guide.js';
 import { TREATMENT_DATABASE } from './treatment-database.js';
 
 class DiagnosisEngine {
@@ -30,6 +31,8 @@ class DiagnosisEngine {
 
   renderCategorySelection() {
     const grid = document.getElementById('categoryGrid');
+    if (!grid) return;
+    
     grid.innerHTML = '';
     
     Object.keys(DSM5_CATEGORIES).forEach(categoryKey => {
@@ -37,13 +40,163 @@ class DiagnosisEngine {
       const card = document.createElement('div');
       card.className = 'category-card';
       card.dataset.category = categoryKey;
+      
+      // Check if this category was suggested by the guide
+      const isSuggested = this.suggestedCategories.includes(categoryKey);
+      if (isSuggested) {
+        card.classList.add('suggested');
+      }
+      
       card.innerHTML = `
         <h3>${category.name}</h3>
         <p>${Object.keys(category.disorders).length} disorder${Object.keys(category.disorders).length !== 1 ? 's' : ''} available</p>
+        ${isSuggested ? '<p style="margin-top: 0.5rem; color: var(--accent); font-weight: 600; font-size: 0.85rem;">✓ Suggested for you</p>' : ''}
       `;
       card.addEventListener('click', () => this.toggleCategory(categoryKey, card));
       grid.appendChild(card);
     });
+  }
+
+  startGuide() {
+    this.guideMode = true;
+    this.guideAnswers = {};
+    this.currentGuideQuestion = 0;
+    this.suggestedCategories = [];
+    
+    // Hide category selection, show guide
+    document.getElementById('categorySelection').style.display = 'none';
+    this.renderGuideQuestion();
+  }
+
+  renderGuideQuestion() {
+    const container = document.getElementById('categorySelection');
+    if (!container) return;
+    
+    const question = CATEGORY_GUIDE_QUESTIONS[this.currentGuideQuestion];
+    const isLast = this.currentGuideQuestion === CATEGORY_GUIDE_QUESTIONS.length - 1;
+    
+    container.innerHTML = `
+      <div class="guide-container" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); backdrop-filter: blur(8px);">
+        <h2 style="margin-bottom: 1rem;">Category Selection Guide</h2>
+        <p style="margin-bottom: 2rem; color: var(--muted);">Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
+        
+        <div class="guide-question" style="margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">${question.question}</h3>
+          ${question.warning ? `<div style="padding: 1rem; background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); margin-bottom: 1.5rem;"><strong>⚠️ Important:</strong> ${question.warning}</div>` : ''}
+          
+          <div class="guide-options" style="display: flex; flex-direction: column; gap: 1rem;">
+            <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideYes">
+              Yes
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideNo">
+              No
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideUnsure">
+              Not Sure / Sometimes
+            </button>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
+          <button class="btn btn-secondary" id="guideBack" ${this.currentGuideQuestion === 0 ? 'disabled' : ''}>Previous</button>
+          <div style="font-size: 0.9rem; color: var(--muted); align-self: center;">
+            Question ${this.currentGuideQuestion + 1} of ${CATEGORY_GUIDE_QUESTIONS.length}
+          </div>
+          ${isLast ? '<button class="btn btn-primary" id="guideComplete">See Suggested Categories</button>' : '<button class="btn btn-secondary" id="guideSkip">Skip to Categories</button>'}
+        </div>
+      </div>
+    `;
+    
+    // Attach event listeners
+    document.getElementById('guideYes').addEventListener('click', () => this.answerGuide(true));
+    document.getElementById('guideNo').addEventListener('click', () => this.answerGuide(false));
+    document.getElementById('guideUnsure').addEventListener('click', () => this.answerGuide('unsure'));
+    
+    const backBtn = document.getElementById('guideBack');
+    if (backBtn && !backBtn.disabled) {
+      backBtn.addEventListener('click', () => this.prevGuideQuestion());
+    }
+    
+    if (isLast) {
+      document.getElementById('guideComplete').addEventListener('click', () => this.completeGuide());
+    } else {
+      document.getElementById('guideSkip').addEventListener('click', () => this.skipGuide());
+    }
+  }
+
+  answerGuide(answer) {
+    const question = CATEGORY_GUIDE_QUESTIONS[this.currentGuideQuestion];
+    this.guideAnswers[question.id] = answer;
+    
+    // If answered yes or unsure, add categories to suggested
+    if (answer === true || answer === 'unsure') {
+      question.categories.forEach(catKey => {
+        if (!this.suggestedCategories.includes(catKey)) {
+          this.suggestedCategories.push(catKey);
+        }
+      });
+    }
+    
+    // Move to next question
+    this.currentGuideQuestion++;
+    if (this.currentGuideQuestion < CATEGORY_GUIDE_QUESTIONS.length) {
+      this.renderGuideQuestion();
+    } else {
+      this.completeGuide();
+    }
+  }
+
+  prevGuideQuestion() {
+    if (this.currentGuideQuestion > 0) {
+      this.currentGuideQuestion--;
+      this.renderGuideQuestion();
+    }
+  }
+
+  skipGuide() {
+    this.completeGuide();
+  }
+
+  completeGuide() {
+    this.guideMode = false;
+    
+    // Show category selection with suggestions highlighted
+    const container = document.getElementById('categorySelection');
+    container.innerHTML = `
+      <h2>Select Diagnostic Category</h2>
+      ${this.suggestedCategories.length > 0 ? `
+        <div style="padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem; color: var(--brand);">💡 Based on your answers, these categories may be relevant:</h3>
+          <p style="margin-bottom: 1rem; line-height: 1.6;">
+            We've highlighted categories below that may be most relevant to your concerns. You can select these or any other categories you'd like to explore.
+          </p>
+          <p style="font-size: 0.9rem; color: var(--muted);">
+            <strong>Note:</strong> You can select multiple categories, or choose different ones if you prefer.
+          </p>
+        </div>
+      ` : `
+        <p style="margin-bottom: 1.5rem; color: var(--muted);">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+      `}
+      <div class="category-grid" id="categoryGrid"></div>
+      <div style="text-align: center; margin-top: 2rem;">
+        <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
+      </div>
+    `;
+    
+    this.renderCategorySelection();
+    
+    // Auto-select suggested categories
+    this.suggestedCategories.forEach(categoryKey => {
+      this.selectedCategories.push(categoryKey);
+      const card = document.querySelector(`[data-category="${categoryKey}"]`);
+      if (card) {
+        card.classList.add('selected');
+      }
+    });
+    
+    if (this.selectedCategories.length > 0) {
+      document.getElementById('startAssessment').disabled = false;
+    }
   }
 
   toggleCategory(categoryKey, cardElement) {
