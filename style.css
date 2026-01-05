@@ -661,29 +661,7 @@ figure.image-card{
   overflow:visible !important;
 }
 
-.image-card::before,
-figure.image-card::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  border-radius:16px;
-  background:#ffb800;
-  z-index:0;
-  pointer-events:none;
-  opacity:1;
-  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;
-  mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite:exclude;
-  padding:4px;
-  margin:0;
-  box-shadow:0 0 8px rgba(255, 184, 0, 0.6), 0 0 16px rgba(255, 184, 0, 0.3);
-}
-
-/* Moving sheen effect within the static border bounds */
+/* Animated golden sheen border - the only border effect */
 .image-card a::before,
 figure.image-card a::before{
   content:'';
