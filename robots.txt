@@ -15,6 +15,9 @@ Allow: /paradigm-data/
 Allow: /relationship.html
 Allow: /relationship-engine.js
 Allow: /relationship-data/
+Allow: /temperament.html
+Allow: /temperament-engine.js
+Allow: /temperament-data/
 Allow: /style.css
 Allow: /images/
 Allow: /diagnosis-engine.js

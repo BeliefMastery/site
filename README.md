@@ -58,6 +58,8 @@ The books function less as guidance and more as an **ally**: a framework for sta
 - **`paradigm-engine.js`** - Paradigm identification and worldview structure analysis engine
 - **`relationship.html`** - Relationship Optimization - Weakest Link Analysis (based on Optimal Relationship Dynamics)
 - **`relationship-engine.js`** - Relationship compatibility analysis and weakest link identification engine
+- **`temperament.html`** - Temperament Analyzer - Masculine-Feminine Spectrum (based on Chapter 7: Timeless Archetypes)
+- **`temperament-engine.js`** - Temperament spectrum positioning and analysis engine
 - **`style.css`** - Shared stylesheet for consistent design across pages
 - **`dsm5-data/`** - Modular DSM-5 diagnostic data (100+ disorders, 13+ categories)
 - **`treatment-database.js`** - Comprehensive treatment information database
@@ -66,6 +68,7 @@ The books function less as guidance and more as an **ally**: a framework for sta
 - **`channel-data/`** - Channel system data (7 nodes, 42 channels, symptoms, remediation strategies)
 - **`paradigm-data/`** - Paradigm system data (Good Life paradigms, God perspectives, dimensions of truth)
 - **`relationship-data/`** - Relationship system data (20 compatibility points, action strategies, archetypal insights)
+- **`temperament-data/`** - Temperament system data (dimensions, intimate dynamics, attraction responsiveness, scoring)
 
 ### Content Sections (index.html)
 1. **Belief Mastery** - Subconscious belief deconstruction and the Belief Inference Process
@@ -81,6 +84,7 @@ The books function less as guidance and more as an **ally**: a framework for sta
 11. **Channel Taxonomy Analysis** - System for identifying channel blockages and providing strategic remediation strategies
 12. **Paradigm Clarification System** - Maps "The Good Life" and "God" across four dimensions of truth (Literal, Symbolic, Esoteric, Mystical) to clarify worldview structure and primary paradigm alignments
 13. **Relationship Optimization - Weakest Link Analysis** - Evaluates relationships across 20 compatibility points organized by impact tier, identifies weakest links, and provides targeted action strategies integrating insights from optimal relationship dynamics, biological essentialism, polarity, and the STATUS/SELECTION/ATTRACTION reference map
+14. **Temperament Analyzer - Masculine-Feminine Spectrum** - Maps position on the masculine-feminine temperament spectrum through comprehensive questions covering behavioral patterns, intimate dynamics (including sexual preferences and positions), emotional responses to intimacy, attraction responsiveness, and relationship polarity. Directly impacts relationship consequences and optimization strategies. Based on Chapter 7: Timeless Archetypes from Sovereign of Mind
 
 ### Available Publications
 - **Belief Mastery** - Available on Amazon
@@ -177,6 +181,7 @@ This system is for **educational and informational purposes only**. It is not a 
 - Channel Analysis: https://beliefmastery.github.io/site/channels.html
 - Paradigm Clarification: https://beliefmastery.github.io/site/paradigm.html
 - Relationship Optimization: https://beliefmastery.github.io/site/relationship.html
+- Temperament Analyzer: https://beliefmastery.github.io/site/temperament.html
 - Instagram: @belief.mastery
 - Facebook: https://www.facebook.com/war.mars.9
 
@@ -220,6 +225,7 @@ This README provides the executive summary. For detailed content:
 ✅ **Channel Analysis** - Channel blockage identification with 42 channels and remediation strategies
 ✅ **Paradigm Clarification** - Worldview structure mapping across four dimensions of truth
 ✅ **Relationship Optimization** - Weakest link analysis across 20 compatibility points with targeted action strategies
+✅ **Temperament Analyzer** - Masculine-feminine spectrum positioning with comprehensive assessment including intimate dynamics and attraction responsiveness
 ✅ **SEO Optimized** - Structured data and meta tags implemented
 ✅ **Mobile Responsive** - Hamburger menu and responsive design complete
 
