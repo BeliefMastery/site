@@ -162,8 +162,17 @@ class DiagnosisEngine {
     
     // Show category selection with suggestions highlighted
     const container = document.getElementById('categorySelection');
+    container.style.display = 'block';
     container.innerHTML = `
-      <h2>Select Diagnostic Category</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
+          <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+        </div>
+        <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
+          🧭 Start Here - Not Sure?
+        </button>
+      </div>
       ${this.suggestedCategories.length > 0 ? `
         <div style="padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; color: var(--brand);">💡 Based on your answers, these categories may be relevant:</h3>
@@ -171,12 +180,10 @@ class DiagnosisEngine {
             We've highlighted categories below that may be most relevant to your concerns. You can select these or any other categories you'd like to explore.
           </p>
           <p style="font-size: 0.9rem; color: var(--muted);">
-            <strong>Note:</strong> You can select multiple categories, or choose different ones if you prefer.
+            <strong>Note:</strong> Suggested categories are pre-selected for you, but you can change your selection.
           </p>
         </div>
-      ` : `
-        <p style="margin-bottom: 1.5rem; color: var(--muted);">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
-      `}
+      ` : ''}
       <div class="category-grid" id="categoryGrid"></div>
       <div style="text-align: center; margin-top: 2rem;">
         <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
@@ -184,10 +191,13 @@ class DiagnosisEngine {
     `;
     
     this.renderCategorySelection();
+    this.attachEventListeners();
     
     // Auto-select suggested categories
     this.suggestedCategories.forEach(categoryKey => {
-      this.selectedCategories.push(categoryKey);
+      if (!this.selectedCategories.includes(categoryKey)) {
+        this.selectedCategories.push(categoryKey);
+      }
       const card = document.querySelector(`[data-category="${categoryKey}"]`);
       if (card) {
         card.classList.add('selected');
