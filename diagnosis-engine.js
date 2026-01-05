@@ -10,7 +10,16 @@ class DiagnosisEngine {
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
+    this.refinedQuestionSequence = [];
     this.currentStage = 'selection'; // selection, questionnaire, results
+    this.guideMode = false;
+    this.guideAnswers = {};
+    this.currentGuideQuestion = 0;
+    this.suggestedCategories = [];
+    this.refinementRequested = false;
+    this.multiBranchingDetected = false;
+    this.debugMode = false;
+    this.debugLog = [];
     this.analysisData = {
       timestamp: new Date().toISOString(),
       categories: [],
@@ -21,6 +30,46 @@ class DiagnosisEngine {
     };
     
     this.init();
+  }
+
+  logDebug(message, data = null) {
+    if (!this.debugMode) return;
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      message: message,
+      data: data,
+      state: {
+        currentQuestionIndex: this.currentQuestionIndex,
+        questionSequenceLength: this.questionSequence.length,
+        refinedQuestionSequenceLength: this.refinedQuestionSequence ? this.refinedQuestionSequence.length : 0,
+        currentStage: this.currentStage,
+        selectedCategories: [...this.selectedCategories]
+      }
+    };
+    this.debugLog.push(logEntry);
+    console.log('[DiagnosisEngine]', message, data || '');
+    
+    // Update debug panel if it exists
+    this.updateDebugPanel();
+  }
+
+  updateDebugPanel() {
+    const debugLogElement = document.getElementById('debugLog');
+    if (!debugLogElement) return;
+    
+    let html = '';
+    this.debugLog.slice(-50).forEach(entry => {
+      const stateInfo = entry.state ? 
+        ` | Stage: ${entry.state.currentStage} | Q: ${entry.state.currentQuestionIndex}/${entry.state.questionSequenceLength}` : '';
+      html += `
+        <div class="debug-entry">
+          <div style="color: #0f0; font-weight: bold;">[${new Date(entry.timestamp).toLocaleTimeString()}] ${entry.message}${stateInfo}</div>
+          ${entry.data ? `<div style="color: #aaa; margin-left: 1rem; font-size: 0.7rem;">${JSON.stringify(entry.data, null, 2)}</div>` : ''}
+        </div>
+      `;
+    });
+    debugLogElement.innerHTML = html;
+    debugLogElement.scrollTop = debugLogElement.scrollHeight;
   }
 
   init() {
