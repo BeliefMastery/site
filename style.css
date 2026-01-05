@@ -496,6 +496,26 @@ section:hover{
   margin-top:.8rem;
 }
 
+/* Books grid: 3 per row */
+.image-row.books-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:1rem;
+  max-width:1200px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Tools grid: 4 per row */
+.image-row.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:1rem;
+  max-width:1400px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
 .image-card{
   flex:1 1 210px;
   max-width:270px;
@@ -507,6 +527,12 @@ section:hover{
   flex-direction:column;
   transition:var(--transition);
   position:relative;
+}
+
+/* Override max-width for grid layouts */
+.image-row.books-grid .image-card,
+.image-row.tools-grid .image-card{
+  max-width:100%;
 }
 
 .image-card:hover{
@@ -806,5 +832,19 @@ blockquote{
   .portal-grid{
     grid-template-columns:1fr;
     gap:1.5rem;
+  }
+  /* Responsive grid layouts */
+  .image-row.books-grid{
+    grid-template-columns:repeat(2, 1fr);
+  }
+  .image-row.tools-grid{
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px){
+  .image-row.books-grid,
+  .image-row.tools-grid{
+    grid-template-columns:1fr;
   }
 }
