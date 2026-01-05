@@ -662,34 +662,7 @@ figure.image-card::before{
   padding:4px;
 }
 
-/* Moving sheen effect within the static border */
-.image-card::before::after,
-figure.image-card::before::after{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  border-radius:16px;
-  background:linear-gradient(135deg, transparent 0%, rgba(255, 215, 0, 0.8) 25%, rgba(255, 237, 78, 1) 50%, rgba(255, 215, 0, 0.8) 75%, transparent 100%);
-  background-size:200% 200%;
-  animation:sheenMove 3s linear infinite;
-  pointer-events:none;
-}
-
-/* Alternative approach: use a pseudo-element on the card itself for the sheen */
-.image-card,
-figure.image-card{
-  position:relative;
-}
-
-.image-card::after,
-figure.image-card::after{
-  /* Note: This conflicts with tool-card summaries, so we'll use a wrapper approach */
-}
-
-/* Create sheen effect using a separate element approach */
+/* Moving sheen effect within the static border bounds */
 .image-card a::before,
 figure.image-card a::before{
   content:'';
@@ -699,12 +672,12 @@ figure.image-card a::before{
   right:-4px;
   bottom:-4px;
   border-radius:16px;
-  background:linear-gradient(135deg, transparent 30%, rgba(255, 215, 0, 0.9) 50%, transparent 70%);
-  background-size:200% 200%;
+  background:linear-gradient(135deg, transparent 20%, rgba(255, 215, 0, 0.9) 40%, rgba(255, 237, 78, 1) 50%, rgba(255, 215, 0, 0.9) 60%, transparent 80%);
+  background-size:300% 300%;
   z-index:1;
   pointer-events:none;
   opacity:0;
-  animation:sheenMove 3s linear infinite, sparkle 2.5s ease-in-out infinite;
+  animation:sheenMove 3s linear infinite;
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -714,11 +687,9 @@ figure.image-card a::before{
 
 .image-card:hover a::before,
 figure.image-card:hover a::before{
-  opacity:0.8;
-  animation:sheenMove 2s linear infinite, sparkle 1.8s ease-in-out infinite;
+  opacity:0.9;
+  animation:sheenMove 2s linear infinite;
 }
-
-/* Note: ::after is used for tool-card summaries, so we use a different approach for the border mask */
 
 .image-card a,
 figure.image-card a{
