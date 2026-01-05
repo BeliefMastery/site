@@ -309,6 +309,24 @@ class DiagnosisEngine {
     if (viewDataBtn) {
       viewDataBtn.addEventListener('click', () => this.viewAnalysisData());
     }
+    
+    const viewAllConditionsBtn = document.getElementById('viewAllConditions');
+    if (viewAllConditionsBtn) {
+      viewAllConditionsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showConditionsDirectory();
+      });
+    }
+    
+    const backToMainBtn = document.getElementById('backToMain');
+    if (backToMainBtn) {
+      backToMainBtn.addEventListener('click', () => this.hideConditionsDirectory());
+    }
+    
+    const conditionSearch = document.getElementById('conditionSearch');
+    if (conditionSearch) {
+      conditionSearch.addEventListener('input', (e) => this.filterConditions(e.target.value));
+    }
   }
 
   startAssessment() {
