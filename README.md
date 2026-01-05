@@ -50,10 +50,16 @@ The books function less as guidance and more as an **ally**: a framework for sta
 - **`diagnosis-engine.js`** - Main assessment engine and questionnaire logic
 - **`coaching.html`** - Personal Coaching Agent Builder (based on Sovereign of Mind Chapter 1)
 - **`coaching-engine.js`** - Coaching profile generation and export engine
+- **`manipulation.html`** - Manipulation Vector Identification System (based on Tactical Manipulation Compendium)
+- **`manipulation-engine.js`** - Manipulation analysis and vector identification engine
+- **`channels.html`** - Channel Taxonomy Analysis System (based on Channel Taxonomy)
+- **`channels-engine.js`** - Channel blockage identification and remediation engine
 - **`style.css`** - Shared stylesheet for consistent design across pages
 - **`dsm5-data/`** - Modular DSM-5 diagnostic data (100+ disorders, 13+ categories)
 - **`treatment-database.js`** - Comprehensive treatment information database
 - **`coaching-data/`** - Coaching system data (15 obstacles, 10 satisfaction domains, prompts, weightings)
+- **`manipulation-data/`** - Manipulation system data (6 vectors, 63 tactics, symptoms, effects, consequences)
+- **`channel-data/`** - Channel system data (7 nodes, 42 channels, symptoms, remediation strategies)
 
 ### Content Sections (index.html)
 1. **Belief Mastery** - Subconscious belief deconstruction and the Belief Inference Process
@@ -65,6 +71,8 @@ The books function less as guidance and more as an **ally**: a framework for sta
 7. **Sovereignty Simulacrum** - AI agent interface for cognitive sovereignty
 8. **Diagnosis System** - Comprehensive DSM-5 self-reporting assessment tool (see `docs/DIAGNOSIS_SYSTEM_README.md`)
 9. **Coaching Agent Builder** - Personal AI coaching agent configuration system based on Sovereign of Mind
+10. **Manipulation Vector Identification** - System for identifying manipulation tactics and vectors through symptom/effect/consequence analysis
+11. **Channel Taxonomy Analysis** - System for identifying channel blockages and providing strategic remediation strategies
 
 ### Available Publications
 - **Belief Mastery** - Available on Amazon
@@ -157,6 +165,8 @@ This system is for **educational and informational purposes only**. It is not a 
 - Website: https://beliefmastery.github.io/site/
 - Diagnosis System: https://beliefmastery.github.io/site/diagnosis.html
 - Coaching Agent Builder: https://beliefmastery.github.io/site/coaching.html
+- Manipulation Analysis: https://beliefmastery.github.io/site/manipulation.html
+- Channel Analysis: https://beliefmastery.github.io/site/channels.html
 - Instagram: @belief.mastery
 - Facebook: https://www.facebook.com/war.mars.9
 
@@ -196,6 +206,8 @@ This README provides the executive summary. For detailed content:
 ✅ **Content Complete** - All book sections populated with summaries and briefing cards
 ✅ **Diagnosis System** - Comprehensive DSM-5 assessment tool with 100+ disorders
 ✅ **Coaching Agent Builder** - Personal AI coaching agent configuration system
+✅ **Manipulation Analysis** - Vector identification system with 63 tactics across 6 vectors
+✅ **Channel Analysis** - Channel blockage identification with 42 channels and remediation strategies
 ✅ **SEO Optimized** - Structured data and meta tags implemented
 ✅ **Mobile Responsive** - Hamburger menu and responsive design complete
 

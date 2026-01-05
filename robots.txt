@@ -7,13 +7,19 @@ Allow: /index.html
 Allow: /about-the-author.html
 Allow: /diagnosis.html
 Allow: /coaching.html
+Allow: /manipulation.html
+Allow: /channels.html
 Allow: /style.css
 Allow: /images/
 Allow: /diagnosis-engine.js
 Allow: /treatment-database.js
 Allow: /coaching-engine.js
+Allow: /manipulation-engine.js
+Allow: /channels-engine.js
 Allow: /dsm5-data/
 Allow: /coaching-data/
+Allow: /manipulation-data/
+Allow: /channel-data/
 
 # Allow all major AI crawlers
 User-agent: GPTBot

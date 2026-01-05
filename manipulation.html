@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manipulation Vector Identification - Belief Mastery</title>
+  <meta name="description" content="Identify manipulation tactics and vectors through comprehensive symptom, effect, and consequence analysis. Based on the Tactical Manipulation Compendium from Sovereign of Mind.">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Page-specific styles for manipulation.html */
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .manipulation-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid #d32f2f;
+    }
+
+    .intro-section h2 {
+      color: #d32f2f;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .questionnaire-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .questionnaire-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d32f2f, var(--accent));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .question-block {
+      margin-bottom: 2rem;
+    }
+
+    .question-block h3 {
+      margin-bottom: 1rem;
+      color: #d32f2f;
+      font-size: 1.25rem;
+    }
+
+    .scale-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .scale-input {
+      flex: 1;
+    }
+
+    .scale-input input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .scale-input input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #d32f2f;
+      cursor: pointer;
+    }
+
+    .scale-input input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #d32f2f;
+      cursor: pointer;
+      border: none;
+    }
+
+    .scale-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: #d32f2f;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .results-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .results-section h2 {
+      color: #d32f2f;
+      margin-bottom: 1.5rem;
+    }
+
+    .vector-result {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+      border-left: 4px solid #d32f2f;
+    }
+
+    .vector-result h3 {
+      color: #d32f2f;
+      margin-bottom: 0.5rem;
+    }
+
+    .tactic-item {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--brand);
+    }
+
+    .tactic-item strong {
+      color: var(--brand);
+    }
+
+    .instructions-panel {
+      background: rgba(211, 47, 47, 0.1);
+      border: 2px solid #d32f2f;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instructions-panel h3 {
+      margin-bottom: 1rem;
+      color: #d32f2f;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .manipulation-container {
+        padding: 1rem;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner" style="position: relative; z-index: 10;">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html#home" data-target="home">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Works <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#belief-mastery" data-target="belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereign-of-mind" data-target="sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="index.html#distortion-codex" data-target="distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="index.html#unspeakables-grimoire" data-target="unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereign-integral-devotionalism" data-target="sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="index.html#peer-counseling-manual" data-target="peer-counseling-manual">Peer-Counseling Manual</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereignty-simulacrum" data-target="sovereignty-simulacrum">Sovereignty Simulacrum</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="index.html#purchase" data-target="purchase">Learn / Purchase</a></li>
+        <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+        <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+        <li role="none"><a role="menuitem" href="manipulation.html" class="active">Manipulation Analysis</a></li>
+        <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 2;">
+    <div class="manipulation-container">
+      <section class="intro-section">
+        <h2>🛡️ Manipulation Vector Identification</h2>
+        <p><strong>Identify how you are being manipulated through comprehensive symptom, effect, and consequence analysis.</strong></p>
+        <p>This system guides you through questions about symptoms, effects, situational developments, and consequences to identify which manipulation vectors are active in your relationships. Based on the <strong>Tactical Manipulation Compendium</strong> from <em>Sovereign of Mind</em>, this tool helps you recognize patterns of coercion, control, and psychological sabotage.</p>
+        <p style="margin-top: 1rem; font-weight: 600;">The assessment covers:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <li><strong>Symptoms:</strong> Emotional, behavioral, cognitive, relational, and physical indicators</li>
+          <li><strong>Effects:</strong> Impact on self-worth, autonomy, relationships, and daily functioning</li>
+          <li><strong>Consequences:</strong> Situational developments and long-term consequences</li>
+        </ul>
+        <p style="margin-top: 1rem; font-style: italic; color: var(--muted);"><strong>Note:</strong> This tool is designed for self-awareness and recognition. Understanding manipulation patterns is the first step toward reclaiming sovereignty. Use this knowledge responsibly - awareness without integrity can become a tool of control.</p>
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="instructions-panel">
+          <h3><span>📋</span> How to Use This Assessment</h3>
+          <div style="line-height: 1.7;">
+            <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+              <li><strong>0-2 (Not at all / Never):</strong> The statement does not apply to you at all.</li>
+              <li><strong>3-4 (Minimal / Rarely):</strong> The statement occurs occasionally but has minimal impact.</li>
+              <li><strong>5-6 (Moderate / Sometimes):</strong> The statement is present with moderate frequency or intensity.</li>
+              <li><strong>7-8 (Significant / Often):</strong> The statement occurs frequently or with significant intensity.</li>
+              <li><strong>9-10 (Extreme / Always):</strong> The statement is nearly constant or extremely intense.</li>
+            </ul>
+            <p style="margin-bottom: 0.5rem;"><strong>Guidelines:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 0;">
+              <li>Answer based on your experience in the relationship(s) you're analyzing</li>
+              <li>Be honest - recognition is the first step to protection</li>
+              <li>Consider how each pattern affects your autonomy and well-being</li>
+              <li>You can go back and change answers using the "Previous" button</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions will be populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <button class="btn btn-secondary" id="clearCacheBtn">🗑️ Clear Cached Data</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsSection">
+        <h2>Manipulation Vector Analysis</h2>
+        <div id="vectorResults">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0, 0, 0, 0.1);">
+          <h3>Export Your Analysis</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Export your analysis for reference or professional consultation.</p>
+          <button class="btn btn-primary" id="exportAnalysis">📥 Export Analysis</button>
+          <button class="btn btn-secondary" id="newAssessment" style="margin-left: 1rem;">Start New Assessment</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" style="position: relative; z-index: 2;">
+    <p>&copy; 2025 Warwick Marshall. All rights reserved.</p>
+  </footer>
+
+  <script type="module" src="manipulation-engine.js"></script>
+  <script>
+    // Hamburger menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.getElementById('top-nav');
+      const dropdownToggle = document.querySelector('.dropdown-toggle');
+      const dropdownMenu = document.querySelector('.dropdown-menu');
+
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', function() {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      if (dropdownToggle && dropdownMenu) {
+        dropdownToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          dropdownMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+

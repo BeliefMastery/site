@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Channel Taxonomy Analysis - Belief Mastery</title>
+  <meta name="description" content="Identify channel blockages and receive strategic remediation suggestions. Based on the Channel Taxonomy from Sovereign of Mind - analyzing flow between 7 nodes through 42 channels.">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Page-specific styles for channels.html */
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .channels-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+    }
+
+    .intro-section h2 {
+      color: var(--brand);
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .questionnaire-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .questionnaire-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .question-block {
+      margin-bottom: 2rem;
+    }
+
+    .question-block h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      font-size: 1.25rem;
+    }
+
+    .scale-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .scale-input {
+      flex: 1;
+    }
+
+    .scale-input input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .scale-input input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+    }
+
+    .scale-input input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+      border: none;
+    }
+
+    .scale-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--brand);
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .results-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .results-section h2 {
+      color: var(--brand);
+      margin-bottom: 1.5rem;
+    }
+
+    .channel-result {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+      border-left: 4px solid var(--brand);
+    }
+
+    .channel-result h3 {
+      color: var(--brand);
+      margin-bottom: 0.5rem;
+    }
+
+    .remediation-item {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 184, 0, 0.1);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--accent);
+    }
+
+    .remediation-item strong {
+      color: var(--accent);
+    }
+
+    .instructions-panel {
+      background: rgba(255, 184, 0, 0.1);
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instructions-panel h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .channels-container {
+        padding: 1rem;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner" style="position: relative; z-index: 10;">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html#home" data-target="home">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="#" class="dropdown-toggle">Works <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="index.html#belief-mastery" data-target="belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereign-of-mind" data-target="sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="index.html#distortion-codex" data-target="distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="index.html#unspeakables-grimoire" data-target="unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereign-integral-devotionalism" data-target="sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="index.html#peer-counseling-manual" data-target="peer-counseling-manual">Peer-Counseling Manual</a></li>
+            <li role="none"><a role="menuitem" href="index.html#sovereignty-simulacrum" data-target="sovereignty-simulacrum">Sovereignty Simulacrum</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="index.html#purchase" data-target="purchase">Learn / Purchase</a></li>
+        <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+        <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+        <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+        <li role="none"><a role="menuitem" href="channels.html" class="active">Channel Analysis</a></li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 2;">
+    <div class="channels-container">
+      <section class="intro-section">
+        <h2>🌀 Channel Taxonomy Analysis</h2>
+        <p><strong>Identify channel blockages and receive strategic remediation suggestions.</strong></p>
+        <p>This system helps you refine symptoms to identify specific "channels of concern" - blockages in the flow between the 7 core nodes (Root, Sex, Gut, Heart, Throat, Mind, Crown). Based on the <strong>Channel Taxonomy</strong> from <em>Sovereign of Mind</em>, this tool analyzes the 42 channels of inter-node dynamics to provide targeted remediation strategies.</p>
+        <p style="margin-top: 1rem; font-weight: 600;">The assessment covers:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <li><strong>Symptom Refinement:</strong> Detailed questions to identify specific channel blockages</li>
+          <li><strong>Channel Identification:</strong> Maps symptoms to specific channels between nodes</li>
+          <li><strong>Remediation Strategies:</strong> Strategic suggestions for restoring flow and unblocking channels</li>
+        </ul>
+        <p style="margin-top: 1rem; font-style: italic; color: var(--muted);"><strong>Note:</strong> Open channels allow balanced integration. Blocked channels isolate nodes from stabilizing inputs. Overloaded channels distort perspective and coherence. This tool helps identify where flow is disrupted and provides strategies for restoration.</p>
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="instructions-panel">
+          <h3><span>📋</span> How to Use This Assessment</h3>
+          <div style="line-height: 1.7;">
+            <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+              <li><strong>0-2 (Not at all / Never):</strong> The symptom does not apply to you at all.</li>
+              <li><strong>3-4 (Minimal / Rarely):</strong> The symptom occurs occasionally but has minimal impact.</li>
+              <li><strong>5-6 (Moderate / Sometimes):</strong> The symptom is present with moderate frequency or intensity.</li>
+              <li><strong>7-8 (Significant / Often):</strong> The symptom occurs frequently or with significant intensity.</li>
+              <li><strong>9-10 (Extreme / Always):</strong> The symptom is nearly constant or extremely intense.</li>
+            </ul>
+            <p style="margin-bottom: 0.5rem;"><strong>Guidelines:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 0;">
+              <li>Answer based on your current experience and patterns</li>
+              <li>Consider how symptoms relate to flow between different aspects of your being</li>
+              <li>Be honest - identifying blockages is the first step to restoration</li>
+              <li>You can go back and change answers using the "Previous" button</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions will be populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <button class="btn btn-secondary" id="clearCacheBtn">🗑️ Clear Cached Data</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsSection">
+        <h2>Channel Analysis Results</h2>
+        <div id="channelResults">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0, 0, 0, 0.1);">
+          <h3>Export Your Analysis</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Export your channel analysis and remediation strategies for reference.</p>
+          <button class="btn btn-primary" id="exportAnalysis">📥 Export Analysis</button>
+          <button class="btn btn-secondary" id="newAssessment" style="margin-left: 1rem;">Start New Assessment</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" style="position: relative; z-index: 2;">
+    <p>&copy; 2025 Warwick Marshall. All rights reserved.</p>
+  </footer>
+
+  <script type="module" src="channels-engine.js"></script>
+  <script>
+    // Hamburger menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.getElementById('top-nav');
+      const dropdownToggle = document.querySelector('.dropdown-toggle');
+      const dropdownMenu = document.querySelector('.dropdown-menu');
+
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', function() {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      if (dropdownToggle && dropdownMenu) {
+        dropdownToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          dropdownMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+
