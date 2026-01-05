@@ -1036,6 +1036,9 @@ blockquote{
   .image-row.books-grid{
     grid-template-columns:repeat(2, 1fr);
   }
+  .books-grid .headline-book{
+    grid-column:span 1;
+  }
   .image-row.tools-grid{
     grid-template-columns:repeat(2, 1fr);
   }
