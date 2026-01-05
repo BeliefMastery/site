@@ -383,7 +383,7 @@ section:hover{
 
 /* Section title buttons - styled headings with framing */
 .section-title-btn{
-  display:inline-block;
+  display:block;
   text-align:center;
   margin:4rem auto 2rem;
   padding:1rem 2.5rem;
@@ -399,6 +399,8 @@ section:hover{
   border:2px solid rgba(255, 184, 0, 0.2);
   position:relative;
   overflow:hidden;
+  width:fit-content;
+  max-width:90%;
 }
 
 .section-title-btn::before{
