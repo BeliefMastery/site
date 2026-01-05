@@ -91,9 +91,14 @@ class CoachingEngine {
       prevBtn.addEventListener('click', () => this.prevQuestion());
     }
     
-    const exportBtn = document.getElementById('exportProfile');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => this.exportProfile());
+    const exportJSONBtn = document.getElementById('exportProfileJSON');
+    if (exportJSONBtn) {
+      exportJSONBtn.addEventListener('click', () => this.exportProfile('json'));
+    }
+    
+    const exportCSVBtn = document.getElementById('exportProfileCSV');
+    if (exportCSVBtn) {
+      exportCSVBtn.addEventListener('click', () => this.exportProfile('csv'));
     }
     
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -482,13 +487,139 @@ class CoachingEngine {
     container.innerHTML = html;
   }
 
-  exportProfile() {
+  exportProfile(format = 'json') {
+    if (format === 'csv') {
+      this.exportCSV();
+    } else {
+      this.exportJSON();
+    }
+  }
+
+  exportJSON() {
     const dataStr = JSON.stringify(this.profileData.coachingProfile, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `coaching-profile-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  exportCSV() {
+    // Build CSV with comprehensive explanations
+    let csv = 'Personal Coaching Agent Profile\n';
+    csv += 'Generated: ' + new Date().toISOString() + '\n';
+    csv += '\n';
+    csv += '=== HOW TO USE THIS DATA ===\n';
+    csv += 'This CSV contains your coaching profile data with explanations for how your AI agent should interpret, value, and prioritize the content.\n';
+    csv += 'Import this data into your AI platform (ChatGPT, Claude, etc.) and use the "Interpretation Guide" section to configure your agent.\n';
+    csv += '\n';
+    csv += '=== INTERPRETATION GUIDE ===\n';
+    csv += 'Column,Meaning,Priority Weight,Interpretation\n';
+    csv += 'Raw Score,Your response on 0-10 scale,Low,Direct user response - use for context\n';
+    csv += 'Weighted Score,Score multiplied by importance weight,High,Primary metric for prioritization - higher = more urgent\n';
+    csv += 'Priority Level,Calculated priority (High/Moderate/Low),High,Use to determine coaching focus and intervention urgency\n';
+    csv += 'Severity/Satisfaction,Interpreted level based on score,Medium,Use to understand user state and adjust tone/approach\n';
+    csv += '\n';
+    csv += '=== SCORING INTERPRETATION ===\n';
+    csv += 'Obstacles: Higher scores = greater obstacles to sovereignty. Weighted scores determine priority.\n';
+    csv += 'Domains: Higher scores = greater satisfaction. Lower scores = areas needing improvement.\n';
+    csv += 'Priority: Focus coaching on high-priority items first, using weighted scores as the primary guide.\n';
+    csv += '\n';
+
+    // Obstacles section
+    if (Object.keys(this.profileData.obstacles).length > 0) {
+      csv += '=== OBSTACLES TO SOVEREIGNTY ===\n';
+      csv += 'Name,Description,Raw Score,Weight,Weighted Score,Priority Level,Severity,Coaching Focus\n';
+      
+      const sortedObstacles = Object.entries(this.profileData.obstacles)
+        .map(([key, data]) => ({ key, ...data }))
+        .sort((a, b) => b.weightedScore - a.weightedScore);
+      
+      sortedObstacles.forEach(obstacle => {
+        const severity = obstacle.rawScore >= 7 ? 'High' : obstacle.rawScore >= 4 ? 'Moderate' : 'Low';
+        const priority = obstacle.weightedScore >= 8 ? 'High' : obstacle.weightedScore >= 5 ? 'Moderate' : 'Low';
+        const focus = obstacle.rawScore >= 7 
+          ? 'Urgent - Address immediately with direct coaching support'
+          : obstacle.rawScore >= 4 
+            ? 'Important - Regular coaching attention and strategies'
+            : 'Monitor - Periodic check-ins and awareness';
+        
+        csv += `"${obstacle.name}","${obstacle.description.replace(/"/g, '""')}",${obstacle.rawScore},${obstacle.weight || 1.0},${obstacle.weightedScore.toFixed(2)},${priority},${severity},"${focus}"\n`;
+      });
+      csv += '\n';
+    }
+
+    // Domains section
+    if (Object.keys(this.profileData.domains).length > 0) {
+      csv += '=== SATISFACTION DOMAINS ===\n';
+      csv += 'Domain,Overall Score,Average Aspect Score,Combined Score,Weight,Weighted Score,Priority Level,Satisfaction Level,Coaching Focus\n';
+      
+      const sortedDomains = Object.entries(this.profileData.domains)
+        .map(([key, data]) => ({ key, ...data }))
+        .sort((a, b) => a.combinedScore - b.combinedScore);
+      
+      sortedDomains.forEach(domain => {
+        const satisfaction = domain.combinedScore >= 7 ? 'High' : domain.combinedScore >= 4 ? 'Moderate' : 'Low';
+        const priority = domain.combinedScore <= 3 ? 'High' : domain.combinedScore <= 5 ? 'Moderate' : 'Low';
+        const focus = domain.combinedScore <= 3
+          ? 'Urgent - Primary focus for satisfaction improvement'
+          : domain.combinedScore <= 5
+            ? 'Important - Regular support and goal-setting'
+            : 'Maintain - Acknowledge strengths and support maintenance';
+        
+        csv += `"${domain.name}",${domain.overviewScore},${domain.averageAspectScore.toFixed(2)},${domain.combinedScore.toFixed(2)},${domain.weight || 1.0},${domain.weightedScore.toFixed(2)},${priority},${satisfaction},"${focus}"\n`;
+      });
+      csv += '\n';
+
+      // Domain aspects detail
+      csv += '=== DOMAIN ASPECTS DETAIL ===\n';
+      csv += 'Domain,Aspect,Score,Importance\n';
+      Object.entries(this.profileData.domains).forEach(([domainKey, domain]) => {
+        domain.aspects.forEach(aspect => {
+          const importance = aspect.score <= 3 ? 'High' : aspect.score <= 5 ? 'Medium' : 'Low';
+          csv += `"${domain.name}","${aspect.name.replace(/"/g, '""')}",${aspect.score},"${importance}"\n`;
+        });
+      });
+      csv += '\n';
+    }
+
+    // Priorities summary
+    csv += '=== PRIORITY SUMMARY ===\n';
+    if (this.profileData.priorities.topObstacles.length > 0) {
+      csv += 'Top Obstacles to Address (Highest Priority):\n';
+      this.profileData.priorities.topObstacles.forEach((obs, index) => {
+        csv += `${index + 1},"${obs.name}",Score: ${obs.rawScore}/10,Weighted: ${obs.weightedScore.toFixed(2)}\n`;
+      });
+      csv += '\n';
+    }
+    
+    if (this.profileData.priorities.topImprovementAreas.length > 0) {
+      csv += 'Top Areas for Improvement (Lowest Satisfaction):\n';
+      this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
+        csv += `${index + 1},"${domain.name}",Satisfaction: ${domain.combinedScore.toFixed(1)}/10,Weighted: ${domain.weightedScore.toFixed(2)}\n`;
+      });
+      csv += '\n';
+    }
+
+    // Coaching instructions
+    csv += '=== AI AGENT CONFIGURATION INSTRUCTIONS ===\n';
+    csv += 'Section,Instruction\n';
+    csv += '"System Prompt","Use the coaching profile to understand the user\'s obstacles and satisfaction levels. Focus on sovereignty-aligned support."\n';
+    csv += '"Primary Focus","Address top obstacles first (highest weighted scores), then work on improvement areas (lowest satisfaction scores)."\n';
+    csv += '"Tone","Adjust tone based on severity: High severity = supportive but direct; Moderate = encouraging with strategies; Low = awareness and maintenance."\n';
+    csv += '"Coaching Style","Question-based inquiry that surfaces self-awareness. Honor individual autonomy and authorship. Support without imposing."\n';
+    csv += '"Prioritization","Use weighted scores as primary metric. Obstacles with weighted scores ≥8 are urgent. Domains with combined scores ≤3 are high-priority improvement areas."\n';
+    csv += '"Response Approach","Focus coaching responses on identified priorities. Acknowledge strengths in high-satisfaction domains. Provide practical strategies for obstacles and improvement areas."\n';
+    csv += '\n';
+
+    // Create and download
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `coaching-profile-${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }

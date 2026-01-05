@@ -401,9 +401,12 @@
         </div>
         <div class="export-section">
           <h3>Export Your Coaching Profile</h3>
-          <p style="color: var(--muted); margin-bottom: 1rem;">Export your profile as a JSON file that can be imported into your custom AI agent to transform it into your personal coaching assistant.</p>
-          <button class="btn btn-primary" id="exportProfile">📥 Export Coaching Profile</button>
-          <button class="btn btn-secondary" id="newAssessment" style="margin-left: 1rem;">Start New Assessment</button>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Export your profile in your preferred format. JSON is ideal for programmatic import, while CSV includes detailed explanations for how your AI agent should interpret, value, and prioritize the content.</p>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+            <button class="btn btn-primary" id="exportProfileJSON">📥 Export JSON</button>
+            <button class="btn btn-primary" id="exportProfileCSV">📊 Export CSV (with AI Instructions)</button>
+            <button class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
+          </div>
         </div>
       </section>
     </div>
