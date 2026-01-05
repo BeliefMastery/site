@@ -534,15 +534,15 @@ section:hover{
 figure.image-card{
   flex:1 1 210px;
   max-width:270px;
-  border-radius:8px;
+  border-radius:16px;
   overflow:visible !important;
   background:transparent;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  box-shadow:none;
   display:flex;
   flex-direction:column;
   transition:var(--transition);
   position:relative;
-  padding:0;
+  padding:4px;
   margin:0;
 }
 
@@ -605,12 +605,15 @@ figure.image-card{
 figure.image-card a{
   display:block;
   width:100%;
+  height:100%;
   overflow:visible !important;
   border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   background:transparent;
+  position:relative;
+  z-index:2;
 }
 
 .image-card img,
@@ -647,10 +650,10 @@ figure.image-card{
 figure.image-card::before{
   content:'';
   position:absolute;
-  top:-4px;
-  left:-4px;
-  right:-4px;
-  bottom:-4px;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
   border-radius:16px;
   background:#ffb800;
   z-index:0;
@@ -669,10 +672,10 @@ figure.image-card::before{
 figure.image-card a::before{
   content:'';
   position:absolute;
-  top:-4px;
-  left:-4px;
-  right:-4px;
-  bottom:-4px;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
   border-radius:16px;
   background:linear-gradient(135deg, transparent 20%, rgba(255, 215, 0, 0.9) 40%, rgba(255, 237, 78, 1) 50%, rgba(255, 215, 0, 0.9) 60%, transparent 80%);
   background-size:300% 300%;
