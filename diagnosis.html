@@ -469,6 +469,29 @@
           <button class="btn btn-secondary" id="viewData">View Analysis Data</button>
         </div>
       </section>
+
+      <section class="conditions-section" id="conditionsSection" style="display: none;">
+        <h2>Comprehensive Condition Directory</h2>
+        <p style="text-align: center; color: var(--muted); margin-bottom: 2rem;">
+          Browse all available conditions and view comprehensive treatment breakdowns, theoretical frameworks, and management strategies.
+        </p>
+        
+        <div style="margin-bottom: 2rem;">
+          <input type="text" id="conditionSearch" placeholder="Search conditions..." style="width: 100%; max-width: 500px; padding: 0.75rem; border: 2px solid var(--accent); border-radius: var(--radius); font-size: 1rem; margin: 0 auto; display: block;">
+        </div>
+        
+        <div id="conditionsList">
+          <!-- Conditions will be populated by JavaScript -->
+        </div>
+        
+        <div id="conditionDetail" style="display: none; margin-top: 3rem;">
+          <!-- Selected condition detail will be populated here -->
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn btn-secondary" id="backToMain">Back to Assessment</button>
+        </div>
+      </section>
     </div>
   </main>
 
