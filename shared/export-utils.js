@@ -36,6 +36,8 @@ export function exportForAIAgent(assessmentData, systemType, systemName) {
     csv += generateDiagnosisExport(assessmentData);
   } else if (systemType === 'relationship') {
     csv += generateRelationshipExport(assessmentData);
+  } else if (systemType === 'temperament' || systemType === 'temperament-analysis') {
+    csv += generateTemperamentExport(assessmentData);
   }
   
   csv += '\n';
@@ -59,9 +61,20 @@ export function exportForAIAgent(assessmentData, systemType, systemName) {
 function generateCoachingExport(data) {
   let csv = '=== COACHING PROFILE DATA ===\n';
   
-  // Include all raw answers
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    csv += '\n=== ALL RAW ANSWERS ===\n';
+  // Include ALL questions with their answers
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Category,Section,Name\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.category || ''}","${q.section || ''}","${(q.name || '').replace(/"/g, '""')}"\n`;
+    });
+  }
+  
+  // Legacy support: include raw answers if questionSequence is missing
+  if ((!data.questionSequence || data.questionSequence.length === 0) && data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS (Legacy Format) ===\n';
     csv += 'Question ID,Answer (0-10)\n';
     Object.entries(data.allAnswers).forEach(([id, answer]) => {
       const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
@@ -134,9 +147,20 @@ function generateCoachingExport(data) {
 function generateManipulationExport(data) {
   let csv = '=== MANIPULATION ANALYSIS DATA ===\n';
   
-  // Include all raw answers
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    csv += '\n=== ALL RAW ANSWERS ===\n';
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Category,Subcategory,Type,Weight\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.text || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.category || ''}","${q.subcategory || ''}","${q.type || ''}",${q.weight || ''}\n`;
+    });
+  }
+  
+  // Legacy support: include raw answers if questionSequence is missing
+  if ((!data.questionSequence || data.questionSequence.length === 0) && data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS (Legacy Format) ===\n';
     csv += 'Question ID,Question,Answer (0-10),Category,Subcategory\n';
     Object.entries(data.allAnswers).forEach(([id, answer]) => {
       const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
@@ -178,18 +202,31 @@ function generateManipulationExport(data) {
 function generateChannelsExport(data) {
   let csv = '=== CHANNEL ANALYSIS DATA ===\n';
   
-  // Include all raw answers
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    csv += '\n=== ALL RAW ANSWERS ===\n';
-    csv += 'Question ID,Question,Answer (0-10),Category,Node,Channel\n';
-    Object.entries(data.allAnswers).forEach(([id, answer]) => {
-      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
-      const questionText = question ? question.question : id;
-      const category = question ? question.category : '';
-      const node = question ? question.node : '';
-      const channel = question ? question.channel : '';
-      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${category}","${node}","${channel}"\n`;
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Stage,Category,Node,Channel,Weight\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.stage || ''}","${q.category || ''}","${q.node || ''}","${q.channel || ''}",${q.weight || ''}\n`;
     });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
   }
   
   if (data.identifiedChannels && data.identifiedChannels.length > 0) {
@@ -225,18 +262,31 @@ function generateChannelsExport(data) {
 function generateParadigmExport(data) {
   let csv = '=== PARADIGM CLARIFICATION DATA ===\n';
   
-  // Include all raw answers
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    csv += '\n=== ALL RAW ANSWERS ===\n';
-    csv += 'Question ID,Question,Answer (0-10),Category,Paradigm/Perspective,Dimension\n';
-    Object.entries(data.allAnswers).forEach(([id, answer]) => {
-      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
-      const questionText = question ? question.question : id;
-      const category = question ? question.category : '';
-      const paradigm = question ? (question.paradigm || question.perspective || '') : '';
-      const dimension = question ? question.dimension : '';
-      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${category}","${paradigm}","${dimension}"\n`;
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Category,Paradigm,Perspective,Dimension,Name\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.category || ''}","${q.paradigm || ''}","${q.perspective || ''}","${q.dimension || ''}","${(q.name || '').replace(/"/g, '""')}"\n`;
     });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
   }
   
   if (data.identifiedParadigms && data.identifiedParadigms.length > 0) {
@@ -262,27 +312,61 @@ function generateParadigmExport(data) {
 function generateDiagnosisExport(data) {
   let csv = '=== DIAGNOSTIC ASSESSMENT DATA ===\n';
   
-  // Include all raw answers
-  if (data.answers && Object.keys(data.answers).length > 0) {
-    csv += '\n=== ALL RAW ANSWERS ===\n';
+  // Combine all answers (main + refined)
+  const allAnswers = {};
+  if (data.answers) {
+    Object.assign(allAnswers, data.answers);
+  }
+  if (data.refinedAnswers) {
+    Object.assign(allAnswers, data.refinedAnswers);
+  }
+  // Fallback to allAnswers if available
+  if (data.allAnswers && Object.keys(allAnswers).length === 0) {
+    Object.assign(allAnswers, data.allAnswers);
+  }
+  
+  // Include ALL questions with their answers (main sequence)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS (Main Sequence) ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Category,Disorder,Criterion\n';
+    data.questionSequence.forEach(q => {
+      const answer = allAnswers[q.id] !== undefined ? allAnswers[q.id] : (data.answers && data.answers[q.id] !== undefined ? data.answers[q.id] : 'Not answered');
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.category || ''}","${q.disorder || ''}","${q.criterion || ''}"\n`;
+    });
+  }
+  
+  // Include ALL refined questions with their answers
+  if (data.refinedQuestionSequence && data.refinedQuestionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS (Refined Sequence) ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Disorder,Category\n';
+    data.refinedQuestionSequence.forEach(q => {
+      const answer = allAnswers[q.id] !== undefined ? allAnswers[q.id] : (data.refinedAnswers && data.refinedAnswers[q.id] !== undefined ? data.refinedAnswers[q.id] : 'Not answered');
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.disorder || ''}","${q.category || ''}"\n`;
+    });
+  }
+  
+  // Ensure ALL questions are included even if not in sequence (comprehensive coverage)
+  const allQuestionIds = new Set();
+  if (data.questionSequence) {
+    data.questionSequence.forEach(q => allQuestionIds.add(q.id));
+  }
+  if (data.refinedQuestionSequence) {
+    data.refinedQuestionSequence.forEach(q => allQuestionIds.add(q.id));
+  }
+  
+  // Legacy support: include raw answers if questionSequence is missing
+  if ((!data.questionSequence || data.questionSequence.length === 0) && allAnswers && Object.keys(allAnswers).length > 0) {
+    csv += '\n=== ALL RAW ANSWERS (Legacy Format) ===\n';
     csv += 'Question ID,Answer (0-10),Category,Disorder,Criterion\n';
-    Object.entries(data.answers).forEach(([id, answer]) => {
-      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
+    Object.entries(allAnswers).forEach(([id, answer]) => {
+      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : 
+                      (data.refinedQuestionSequence ? data.refinedQuestionSequence.find(q => q.id === id) : null);
       const category = question ? question.category : '';
       const disorder = question ? question.disorder : '';
       const criterion = question ? question.criterion : '';
       csv += `"${id}",${answer},"${category}","${disorder}","${criterion}"\n`;
-    });
-  }
-  
-  if (data.refinedAnswers && Object.keys(data.refinedAnswers).length > 0) {
-    csv += '\n=== REFINED ANSWERS ===\n';
-    csv += 'Question ID,Answer (0-10),Disorder,Category\n';
-    Object.entries(data.refinedAnswers).forEach(([id, answer]) => {
-      const question = data.refinedQuestionSequence ? data.refinedQuestionSequence.find(q => q.id === id) : null;
-      const disorder = question ? question.disorder : '';
-      const category = question ? question.category : '';
-      csv += `"${id}",${answer},"${disorder}","${category}"\n`;
     });
   }
   
@@ -307,17 +391,31 @@ function generateDiagnosisExport(data) {
 function generateRelationshipExport(data) {
   let csv = '=== RELATIONSHIP OPTIMIZATION DATA ===\n';
   
-  // Include all raw answers
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    csv += '\n=== ALL RAW ANSWERS ===\n';
-    csv += 'Question ID,Question,Answer (0-10),Compatibility Point,Name\n';
-    Object.entries(data.allAnswers).forEach(([id, answer]) => {
-      const question = data.questionSequence ? data.questionSequence.find(q => q.id === id) : null;
-      const questionText = question ? question.question : id;
-      const point = question ? question.point : id;
-      const name = question ? question.name : '';
-      csv += `"${id}","${questionText.replace(/"/g, '""')}",${answer},"${point}","${name.replace(/"/g, '""')}"\n`;
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Stage,Compatibility Point,Domain,Name\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.stage || ''}","${q.point || ''}","${q.domain || ''}","${(q.name || '').replace(/"/g, '""')}"\n`;
     });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
   }
   
   if (data.weakestLinks && data.weakestLinks.length > 0) {
@@ -370,6 +468,58 @@ function generateRelationshipExport(data) {
           });
         }
       }
+    });
+  }
+  
+  return csv;
+}
+
+function generateTemperamentExport(data) {
+  let csv = '=== TEMPERAMENT ANALYSIS DATA ===\n';
+  
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Type,Dimension/Category,Dimension Name/Category Name\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      const dimensionOrCategory = q.dimension || q.category || '';
+      const name = q.dimensionName || q.categoryName || q.name || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.type || ''}","${dimensionOrCategory}","${name.replace(/"/g, '""')}"\n`;
+    });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
+  }
+  
+  if (data.overallTemperament) {
+    csv += '\n=== OVERALL TEMPERAMENT ===\n';
+    csv += `Category: ${data.overallTemperament.category || 'Not specified'}\n`;
+    csv += `Normalized Score: ${(data.overallTemperament.normalizedScore * 100).toFixed(1)}%\n`;
+    csv += `Masculine Score: ${(data.overallTemperament.masculineScore * 100).toFixed(1)}%\n`;
+    csv += `Feminine Score: ${(data.overallTemperament.feminineScore * 100).toFixed(1)}%\n`;
+    csv += `Net Score: ${(data.overallTemperament.netScore * 100).toFixed(1)}%\n`;
+  }
+  
+  if (data.dimensionScores && Object.keys(data.dimensionScores).length > 0) {
+    csv += '\n=== DIMENSION SCORES ===\n';
+    csv += 'Dimension,Masculine Score,Feminine Score,Net Score\n';
+    Object.entries(data.dimensionScores).forEach(([dim, score]) => {
+      csv += `"${dim}",${(score.masculine * 100).toFixed(1)}%,${(score.feminine * 100).toFixed(1)}%,${(score.net * 100).toFixed(1)}%\n`;
     });
   }
   
