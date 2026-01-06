@@ -339,6 +339,166 @@
       gap: 0.5rem;
     }
 
+    /* New question type styles */
+    .three-point-options, .binary-unsure-options, .frequency-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .three-point-option, .binary-unsure-option, .frequency-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+      background: var(--glass);
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .three-point-option:hover, .binary-unsure-option:hover, .frequency-option:hover {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .three-point-option.selected, .binary-unsure-option.selected, .frequency-option.selected {
+      background: rgba(40, 167, 69, 0.1);
+      border-color: #28a745;
+    }
+
+    .three-point-option input[type="radio"],
+    .binary-unsure-option input[type="radio"],
+    .frequency-option input[type="radio"] {
+      margin-right: 0.75rem;
+      margin-top: 0.25rem;
+      cursor: pointer;
+    }
+
+    .scenario-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .scenario-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+      background: var(--glass);
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .scenario-option:hover {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .scenario-option.selected {
+      background: rgba(40, 167, 69, 0.1);
+      border-color: #28a745;
+    }
+
+    .scenario-option input[type="radio"] {
+      margin-right: 0.75rem;
+      margin-top: 0.25rem;
+      cursor: pointer;
+    }
+
+    .multiselect-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .multiselect-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+      background: var(--glass);
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .multiselect-option:hover {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .multiselect-option.selected {
+      background: rgba(40, 167, 69, 0.1);
+      border-color: #28a745;
+    }
+
+    .multiselect-option input[type="checkbox"] {
+      margin-right: 0.75rem;
+      margin-top: 0.25rem;
+      cursor: pointer;
+    }
+
+    .selection-limit {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .selection-count {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: rgba(40, 167, 69, 0.1);
+      border-left: 3px solid #28a745;
+      border-radius: var(--radius);
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .question-number {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .question-stage {
+      font-size: 0.85rem;
+      color: var(--brand);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .question-text {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      font-size: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .option-text {
+      flex: 1;
+      line-height: 1.6;
+    }
+
     @media (max-width: 768px) {
       .channels-container {
         padding: 1rem;
