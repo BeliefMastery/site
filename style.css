@@ -728,7 +728,7 @@ figure.image-card a::before{
   z-index:1;
   pointer-events:none;
   opacity:1;
-  animation:sheenMove 2.5s linear infinite;
+  animation:sheenMove 7s linear infinite;
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
