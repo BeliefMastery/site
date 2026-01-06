@@ -1,5 +1,6 @@
-// Manipulation Engine
-// Identifies manipulation vectors through symptom, effect, and consequence analysis
+// Manipulation Engine - Version 2
+// Multi-Phase Questionnaire Architecture
+// Optimized for strategic prioritization and experiential assessment
 
 import { MANIPULATION_VECTORS } from './manipulation-data/manipulation-vectors.js';
 import { MANIPULATION_TACTICS } from './manipulation-data/manipulation-tactics.js';
@@ -7,83 +8,40 @@ import { SYMPTOM_QUESTIONS } from './manipulation-data/symptom-questions.js';
 import { EFFECT_QUESTIONS } from './manipulation-data/effect-questions.js';
 import { CONSEQUENCE_QUESTIONS } from './manipulation-data/consequence-questions.js';
 import { VECTOR_MAPPING } from './manipulation-data/vector-mapping.js';
+import { PHASE_1_VECTOR_SCREENING, generatePhase3VectorQuestions } from './manipulation-data/manipulation-questions-v2.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class ManipulationEngine {
   constructor() {
+    this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
-    this.decompressionShown = false;
-    this.symptomQuestionEndIndex = 0;
+    this.vectorScores = {}; // Phase 1 results: { vector: { state: 'high'|'medium'|'low', score: number } }
+    this.prioritizedVectors = []; // Phase 2: User-selected 2-3 priority vectors
+    this.assessedVectors = []; // Phase 3: Vectors that have been assessed
     this.analysisData = {
       timestamp: new Date().toISOString(),
-      symptoms: {},
-      effects: {},
-      consequences: {},
+      phase1Results: {},
+      phase2Results: {},
+      phase3Results: {},
       vectorScores: {},
       identifiedVectors: [],
       primaryVector: null,
       supportingVectors: [],
       tactics: [],
-      structuralModifier: null
+      structuralModifier: null,
+      allAnswers: {},
+      questionSequence: []
     };
     
     this.init();
   }
 
   init() {
-    this.buildQuestionSequence();
     this.attachEventListeners();
     this.loadStoredData();
-    this.startAssessment();
-  }
-
-  buildQuestionSequence() {
-    this.questionSequence = [];
-    
-    // Add symptom questions (will be randomized within subcategories)
-    Object.keys(SYMPTOM_QUESTIONS).forEach(category => {
-      const categoryQuestions = [...SYMPTOM_QUESTIONS[category]];
-      // Randomize within subcategory to reduce pattern priming
-      categoryQuestions.sort(() => Math.random() - 0.5);
-      categoryQuestions.forEach(question => {
-        this.questionSequence.push({
-          ...question,
-          category: 'symptom',
-          subcategory: category
-        });
-      });
-    });
-    
-    // Add effect questions (randomized within subcategories)
-    Object.keys(EFFECT_QUESTIONS).forEach(category => {
-      const categoryQuestions = [...EFFECT_QUESTIONS[category]];
-      categoryQuestions.sort(() => Math.random() - 0.5);
-      categoryQuestions.forEach(question => {
-        this.questionSequence.push({
-          ...question,
-          category: 'effect',
-          subcategory: category
-        });
-      });
-    });
-    
-    // Add consequence questions (randomized within subcategories)
-    Object.keys(CONSEQUENCE_QUESTIONS).forEach(category => {
-      const categoryQuestions = [...CONSEQUENCE_QUESTIONS[category]];
-      categoryQuestions.sort(() => Math.random() - 0.5);
-      categoryQuestions.forEach(question => {
-        this.questionSequence.push({
-          ...question,
-          category: 'consequence',
-          subcategory: category
-        });
-      });
-    });
-    
-    // Track where symptom questions end for decompression checkpoint
-    this.symptomQuestionEndIndex = this.questionSequence.filter(q => q.category === 'symptom').length;
+    this.buildPhase1Sequence();
   }
 
   attachEventListeners() {
@@ -119,114 +77,516 @@ class ManipulationEngine {
 
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => this.abandonAssessment());
+      abandonBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+          this.resetAssessment();
+        }
+      });
     }
   }
 
-  abandonAssessment() {
-    if (confirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
-      this.resetAssessment();
+  buildPhase1Sequence() {
+    // Phase 1: Vector Screening (6-8 questions)
+    this.questionSequence = [];
+    this.currentPhase = 1;
+    this.currentQuestionIndex = 0;
+    
+    this.questionSequence.push(...PHASE_1_VECTOR_SCREENING);
+    
+    // Show questionnaire if not already shown
+    const questionnaireSection = document.getElementById('questionnaireSection');
+    if (questionnaireSection && !questionnaireSection.classList.contains('active')) {
+      questionnaireSection.classList.add('active');
     }
-  }
-
-  startAssessment() {
-    document.getElementById('questionnaireSection').classList.add('active');
+    
     this.renderCurrentQuestion();
+  }
+
+  analyzePhase1Results() {
+    // Calculate vector scores from Phase 1 answers
+    this.vectorScores = {};
+    
+    Object.keys(MANIPULATION_VECTORS).forEach(vectorKey => {
+      const vector = MANIPULATION_VECTORS[vectorKey];
+      let totalScore = 0;
+      let totalWeight = 0;
+      
+      // Find questions that map to this vector
+      PHASE_1_VECTOR_SCREENING.forEach(question => {
+        const answer = this.answers[question.id];
+        if (answer && answer.mapsTo && answer.mapsTo.vector === vectorKey) {
+          const state = answer.mapsTo.state;
+          const weight = answer.mapsTo.weight || 1;
+          
+          // Score: high = 3, medium = 1, low = 0
+          const score = state === 'high' ? 3 : state === 'medium' ? 1 : 0;
+          totalScore += score * weight;
+          totalWeight += weight;
+        }
+      });
+      
+      const avgScore = totalWeight > 0 ? totalScore / totalWeight : 0;
+      const state = avgScore >= 2 ? 'high' : avgScore >= 0.5 ? 'medium' : 'low';
+      
+      this.vectorScores[vectorKey] = {
+        state: state,
+        score: avgScore,
+        vector: vector
+      };
+    });
+    
+    this.analysisData.phase1Results = this.vectorScores;
+    
+    // Build Phase 2 sequence
+    this.buildPhase2Sequence();
+  }
+
+  buildPhase2Sequence() {
+    // Phase 2: Vector Prioritization
+    // Show Phase 1 results and ask user to prioritize 2-3 vectors
+    this.questionSequence = [];
+    this.currentPhase = 2;
+    this.currentQuestionIndex = 0;
+    
+    // Identify likely vectors (high or medium state)
+    const likelyVectors = Object.keys(this.vectorScores)
+      .filter(key => this.vectorScores[key].state === 'high' || this.vectorScores[key].state === 'medium')
+      .map(key => ({
+        id: key,
+        vector: MANIPULATION_VECTORS[key],
+        score: this.vectorScores[key].score,
+        state: this.vectorScores[key].state
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6); // Top 6 for selection
+    
+    // Create prioritization question
+    this.questionSequence.push({
+      id: 'p2_prioritization',
+      question: 'Based on your initial screening, which manipulation vectors would you like to explore in depth?',
+      type: 'multiselect',
+      maxSelections: 3,
+      options: likelyVectors.map(v => ({
+        text: `${v.vector.name}: ${v.vector.description}`,
+        mapsTo: { vector: v.id, priority: v.state === 'high' ? 'high' : 'medium' },
+        vector: v.id
+      })),
+      phase: 2,
+      likelyVectors: likelyVectors
+    });
+    
+    this.renderCurrentQuestion();
+  }
+
+  processPhase2Results() {
+    // Get user's prioritized vectors
+    const prioritizationAnswer = this.answers['p2_prioritization'];
+    if (Array.isArray(prioritizationAnswer)) {
+      this.prioritizedVectors = prioritizationAnswer.map(item => item.mapsTo.vector);
+      this.analysisData.prioritizedVectors = this.prioritizedVectors;
+    }
+    
+    // Build Phase 3 sequence
+    this.buildPhase3Sequence();
+  }
+
+  buildPhase3Sequence() {
+    // Phase 3: Deep Assessment
+    this.questionSequence = [];
+    this.currentPhase = 3;
+    this.currentQuestionIndex = 0;
+    
+    // Collect all existing questions organized by category
+    const existingQuestions = {
+      symptoms: [],
+      effects: [],
+      consequences: []
+    };
+    
+    // Flatten symptom questions
+    Object.keys(SYMPTOM_QUESTIONS).forEach(category => {
+      const categoryQuestions = SYMPTOM_QUESTIONS[category];
+      if (Array.isArray(categoryQuestions)) {
+        existingQuestions.symptoms.push(...categoryQuestions);
+      }
+    });
+    
+    // Flatten effect questions
+    Object.keys(EFFECT_QUESTIONS).forEach(category => {
+      const categoryQuestions = EFFECT_QUESTIONS[category];
+      if (Array.isArray(categoryQuestions)) {
+        existingQuestions.effects.push(...categoryQuestions);
+      }
+    });
+    
+    // Flatten consequence questions
+    Object.keys(CONSEQUENCE_QUESTIONS).forEach(category => {
+      const categoryQuestions = CONSEQUENCE_QUESTIONS[category];
+      if (Array.isArray(categoryQuestions)) {
+        existingQuestions.consequences.push(...categoryQuestions);
+      }
+    });
+    
+    // Generate questions for prioritized vectors
+    this.prioritizedVectors.forEach(vectorId => {
+      const vector = MANIPULATION_VECTORS[vectorId];
+      if (vector) {
+        const vectorQuestions = generatePhase3VectorQuestions(vectorId, vector, existingQuestions);
+        vectorQuestions.forEach(q => {
+          this.questionSequence.push({
+            ...q,
+            phase: 3,
+            vector: vectorId
+          });
+        });
+      }
+    });
+    
+    this.renderCurrentQuestion();
+  }
+
+  processPhase3Answer(question) {
+    // Handle conditional branching for Phase 3 questions
+    if (question.type === 'binary_unsure') {
+      const answer = this.answers[question.id];
+      if (answer && answer.text) {
+        const conditionalQuestions = question.conditional && question.conditional[answer.text];
+        if (conditionalQuestions) {
+          // Insert conditional questions after current question
+          const currentIndex = this.questionSequence.findIndex(q => q.id === question.id);
+          conditionalQuestions.forEach((condQ, index) => {
+            this.questionSequence.splice(currentIndex + 1 + index, 0, {
+              ...condQ,
+              phase: 3,
+              vector: question.vector
+            });
+          });
+        }
+      }
+    }
   }
 
   renderCurrentQuestion() {
     if (this.currentQuestionIndex >= this.questionSequence.length) {
-      this.completeAssessment();
+      this.completePhase();
       return;
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
-    
-    // Check if we just finished symptom questions - show decompression checkpoint
-    // This happens when we encounter the first effect question after symptom questions
-    if (question.category === 'effect' && !this.decompressionShown) {
-      // Count how many symptom questions there are
-      const symptomCount = this.questionSequence.filter(q => q.category === 'symptom').length;
-      // If we're at the index right after all symptom questions, show decompression
-      if (this.currentQuestionIndex === symptomCount) {
-        this.showDecompressionCheckpoint();
-        return;
-      }
-    }
-    this.renderQuestionContent(question);
-  }
-  
-  renderQuestionContent(question) {
     const container = document.getElementById('questionContainer');
+    
     if (!container) return;
     
-    let categoryLabel = '';
-    if (question.category === 'symptom') {
-      categoryLabel = `Symptom: ${question.subcategory.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
-    } else if (question.category === 'effect') {
-      categoryLabel = `Effect: ${question.subcategory.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
-    } else if (question.category === 'consequence') {
-      categoryLabel = `Consequence: ${question.subcategory.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
+    let html = '';
+    
+    // Render based on question type
+    if (question.type === 'three_point') {
+      html = this.renderThreePointQuestion(question);
+    } else if (question.type === 'binary_unsure') {
+      html = this.renderBinaryUnsureQuestion(question);
+    } else if (question.type === 'frequency') {
+      html = this.renderFrequencyQuestion(question);
+    } else if (question.type === 'multiselect') {
+      html = this.renderMultiselectQuestion(question);
     }
     
-    container.innerHTML = `
-      <div class="question-block">
-        ${categoryLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${categoryLabel}</p>` : ''}
-        <h3>${question.question}</h3>
-        <div class="scale-container">
-          <div class="scale-input">
-            <input type="range" 
-                   id="questionInput" 
-                   min="0" 
-                   max="10" 
-                   step="1" 
-                   value="${this.answers[question.id] || 5}"
-                   data-question-id="${question.id}">
-          </div>
-          <div class="scale-value" id="scaleValue">${this.answers[question.id] || 5}</div>
-        </div>
-        <div class="scale-labels">
-          <span>Very Low / Minimal / Weak / Rare / Never (0-2)</span>
-          <span>Moderate / Somewhat / Average / Sometimes (5-6)</span>
-          <span>Very High / Strong / Potent / Frequent / Always (9-10)</span>
-        </div>
-        <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
-          <strong>Tip:</strong> Higher scores indicate stronger presence of this pattern. Be honest about your experience.
-        </div>
-      </div>
-    `;
+    container.innerHTML = html;
     
-    // Attach slider event listener
-    const slider = document.getElementById('questionInput');
-    const valueDisplay = document.getElementById('scaleValue');
-    
-    if (slider && valueDisplay) {
-      slider.addEventListener('input', (e) => {
-        const value = parseInt(e.target.value);
-        valueDisplay.textContent = value;
-        this.answers[question.id] = value;
-        this.saveProgress();
-      });
-      
-      // Set initial value if exists
-      if (this.answers[question.id] !== undefined) {
-        slider.value = this.answers[question.id];
-        valueDisplay.textContent = this.answers[question.id];
-      }
-    }
+    // Attach event listeners for the specific question type
+    this.attachQuestionListeners(question);
     
     this.updateProgress();
     this.updateNavigationButtons();
   }
 
+  renderThreePointQuestion(question) {
+    const currentAnswer = this.answers[question.id];
+    
+    return `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
+        </div>
+        <h3 class="question-text">${question.question}</h3>
+        <div class="three-point-options">
+          ${question.options.map((option, index) => `
+            <label class="three-point-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
+              <input 
+                type="radio" 
+                name="question_${question.id}" 
+                value="${index}"
+                data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+                ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
+              />
+              <span class="option-text">${option.text}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  renderBinaryUnsureQuestion(question) {
+    const currentAnswer = this.answers[question.id];
+    
+    return `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
+        </div>
+        <h3 class="question-text">${question.question}</h3>
+        <div class="binary-unsure-options">
+          ${question.options.map((option, index) => `
+            <label class="binary-unsure-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
+              <input 
+                type="radio" 
+                name="question_${question.id}" 
+                value="${index}"
+                data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+                ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
+              />
+              <span class="option-text">${option.text}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  renderFrequencyQuestion(question) {
+    const currentAnswer = this.answers[question.id];
+    
+    return `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
+        </div>
+        <h3 class="question-text">${question.question}</h3>
+        <div class="frequency-options">
+          ${question.options.map((option, index) => `
+            <label class="frequency-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
+              <input 
+                type="radio" 
+                name="question_${question.id}" 
+                value="${index}"
+                data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+                ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
+              />
+              <span class="option-text">${option.text}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  renderMultiselectQuestion(question) {
+    const currentAnswer = this.answers[question.id] || [];
+    const maxSelections = question.maxSelections || 3;
+    
+    // Special rendering for Phase 2 prioritization with visual feedback
+    if (question.id === 'p2_prioritization') {
+      return this.renderPhase2Prioritization(question, currentAnswer, maxSelections);
+    }
+    
+    return `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
+        </div>
+        <h3 class="question-text">${question.question}</h3>
+        <p class="selection-limit">Select up to ${maxSelections}</p>
+        <div class="multiselect-options">
+          ${question.options.map((option, index) => {
+            const isSelected = currentAnswer.some(ans => ans.text === option.text);
+            return `
+              <label class="multiselect-option ${isSelected ? 'selected' : ''}">
+                <input 
+                  type="checkbox" 
+                  name="question_${question.id}" 
+                  value="${index}"
+                  data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+                  ${isSelected ? 'checked' : ''}
+                />
+                <span class="option-text">${option.text}</span>
+              </label>
+            `;
+          }).join('')}
+        </div>
+        <div class="selection-count" id="selectionCount_${question.id}">Selected: ${currentAnswer.length} / ${maxSelections}</div>
+      </div>
+    `;
+  }
+
+  renderPhase2Prioritization(question, currentAnswer, maxSelections) {
+    // Show Phase 1 results summary
+    const highVectors = Object.keys(this.vectorScores).filter(key => 
+      this.vectorScores[key].state === 'high'
+    ).map(key => MANIPULATION_VECTORS[key].name);
+    const mediumVectors = Object.keys(this.vectorScores).filter(key => 
+      this.vectorScores[key].state === 'medium'
+    ).map(key => MANIPULATION_VECTORS[key].name);
+    
+    let html = `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
+        </div>
+        <div style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h4 style="color: #d32f2f; margin-bottom: 1rem;">Your Vector Screening Summary</h4>
+          ${highVectors.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>High concern:</strong> ${highVectors.join(', ')}</p>` : ''}
+          ${mediumVectors.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>Moderate concern:</strong> ${mediumVectors.join(', ')}</p>` : ''}
+          <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);">Based on this screening, select 2-3 manipulation vectors you'd like to explore in depth.</p>
+        </div>
+        <h3 class="question-text">${question.question}</h3>
+        <p class="selection-limit">Select up to ${maxSelections}</p>
+        <div class="multiselect-options">
+    `;
+    
+    question.options.forEach((option, index) => {
+      const isSelected = currentAnswer.some(ans => ans.text === option.text);
+      const vector = MANIPULATION_VECTORS[option.mapsTo.vector];
+      
+      html += `
+        <label class="multiselect-option ${isSelected ? 'selected' : ''}" style="padding: 1.25rem; border-left: 3px solid ${isSelected ? '#d32f2f' : 'rgba(0,0,0,0.1)'};">
+          <input 
+            type="checkbox" 
+            name="question_${question.id}" 
+            value="${index}"
+            data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+            ${isSelected ? 'checked' : ''}
+          />
+          <div style="flex: 1;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem; color: #d32f2f;">${vector.name}</div>
+            <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.5;">${vector.description}</div>
+          </div>
+        </label>
+      `;
+    });
+    
+    html += `
+        </div>
+        <div class="selection-count" id="selectionCount_${question.id}">Selected: ${currentAnswer.length} / ${maxSelections}</div>
+      </div>
+    `;
+    
+    return html;
+  }
+
+  attachQuestionListeners(question) {
+    if (question.type === 'three_point' || question.type === 'binary_unsure' || question.type === 'frequency') {
+      const inputs = document.querySelectorAll(`input[name="question_${question.id}"]`);
+      inputs.forEach(input => {
+        input.addEventListener('change', (e) => {
+          const optionData = JSON.parse(e.target.dataset.optionData);
+          this.answers[question.id] = optionData;
+          
+          // Update visual selection
+          document.querySelectorAll(`.three-point-option, .binary-unsure-option, .frequency-option`).forEach(opt => {
+            opt.classList.remove('selected');
+          });
+          e.target.closest('label').classList.add('selected');
+          
+          // Process conditional logic for Phase 3
+          if (this.currentPhase === 3) {
+            this.processPhase3Answer(question);
+          }
+          
+          this.saveProgress();
+        });
+      });
+    } else if (question.type === 'multiselect') {
+      const inputs = document.querySelectorAll(`input[name="question_${question.id}"]`);
+      const maxSelections = question.maxSelections || 3;
+      const selectionCount = document.getElementById(`selectionCount_${question.id}`);
+      
+      inputs.forEach(input => {
+        input.addEventListener('change', (e) => {
+          const selected = Array.from(inputs)
+            .filter(inp => inp.checked)
+            .map(inp => JSON.parse(inp.dataset.optionData));
+          
+          if (selected.length > maxSelections) {
+            e.target.checked = false;
+            return;
+          }
+          
+          this.answers[question.id] = selected;
+          
+          // Update visual selection
+          document.querySelectorAll(`.multiselect-option`).forEach(opt => {
+            opt.classList.remove('selected');
+          });
+          selected.forEach(sel => {
+            const matchingInput = Array.from(inputs).find(inp => {
+              const data = JSON.parse(inp.dataset.optionData);
+              return data.text === sel.text;
+            });
+            if (matchingInput) {
+              matchingInput.closest('label').classList.add('selected');
+            }
+          });
+          
+          if (selectionCount) {
+            selectionCount.textContent = `Selected: ${selected.length} / ${maxSelections}`;
+          }
+          
+          this.saveProgress();
+        });
+      });
+    }
+  }
+
+  getPhaseLabel(phase) {
+    const labels = {
+      1: 'Vector Screening',
+      2: 'Vector Prioritization',
+      3: 'Deep Assessment'
+    };
+    return labels[phase] || `Phase ${phase}`;
+  }
+
   updateProgress() {
-    const progress = this.questionSequence.length > 0 
-      ? ((this.currentQuestionIndex + 1) / this.questionSequence.length) * 100 
-      : 0;
+    const totalQuestions = this.getTotalQuestions();
+    const currentQuestion = this.getCurrentQuestionNumber();
+    const progress = totalQuestions > 0 ? (currentQuestion / totalQuestions) * 100 : 0;
+    
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
       progressFill.style.width = `${progress}%`;
     }
+  }
+
+  getTotalQuestions() {
+    // Estimate total questions
+    let total = 0;
+    if (this.currentPhase >= 1) {
+      total += PHASE_1_VECTOR_SCREENING.length; // Phase 1: 7 questions
+    }
+    if (this.currentPhase >= 2) {
+      total += 1; // Phase 2: 1 prioritization question
+    }
+    if (this.currentPhase >= 3) {
+      total += this.prioritizedVectors.length * 6; // Estimate 6 questions per vector
+    }
+    return total;
+  }
+
+  getCurrentQuestionNumber() {
+    let current = 0;
+    if (this.currentPhase > 1) {
+      current += PHASE_1_VECTOR_SCREENING.length; // Phase 1
+    }
+    if (this.currentPhase > 2) {
+      current += 1; // Phase 2
+    }
+    current += this.currentQuestionIndex;
+    return current;
   }
 
   updateNavigationButtons() {
@@ -234,23 +594,17 @@ class ManipulationEngine {
     const nextBtn = document.getElementById('nextQuestion');
     
     if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0;
+      prevBtn.disabled = this.currentQuestionIndex === 0 && this.currentPhase === 1;
     }
     
     if (nextBtn) {
-      nextBtn.textContent = this.currentQuestionIndex === this.questionSequence.length - 1 
-        ? 'Complete' 
-        : 'Next';
+      const isLastQuestion = this.currentQuestionIndex === this.questionSequence.length - 1;
+      nextBtn.textContent = isLastQuestion ? 'Complete Phase' : 'Next';
     }
   }
 
   nextQuestion() {
-    // Save current answer
-    const slider = document.getElementById('questionInput');
-    if (slider) {
-      const questionId = slider.dataset.questionId;
-      this.answers[questionId] = parseInt(slider.value);
-    }
+    this.saveCurrentAnswer();
     
     this.currentQuestionIndex++;
     this.saveProgress();
@@ -258,45 +612,108 @@ class ManipulationEngine {
     if (this.currentQuestionIndex < this.questionSequence.length) {
       this.renderCurrentQuestion();
     } else {
-      this.completeAssessment();
+      this.completePhase();
     }
   }
 
   prevQuestion() {
     if (this.currentQuestionIndex > 0) {
-      // Save current answer before going back
-      const slider = document.getElementById('questionInput');
-      if (slider) {
-        const questionId = slider.dataset.questionId;
-        this.answers[questionId] = parseInt(slider.value);
-      }
-      
+      this.saveCurrentAnswer();
       this.currentQuestionIndex--;
+      this.renderCurrentQuestion();
+      this.saveProgress();
+    } else if (this.currentPhase > 1) {
+      // Go back to previous phase
+      this.currentPhase--;
+      if (this.currentPhase === 1) {
+        this.buildPhase1Sequence();
+      } else if (this.currentPhase === 2) {
+        this.analyzePhase1Results();
+        this.buildPhase2Sequence();
+      }
+      this.currentQuestionIndex = this.questionSequence.length - 1;
       this.renderCurrentQuestion();
       this.saveProgress();
     }
   }
 
+  saveCurrentAnswer() {
+    // Answer is already saved in attachQuestionListeners via saveProgress()
+  }
+
+  completePhase() {
+    if (this.currentPhase === 1) {
+      this.analyzePhase1Results();
+      if (this.questionSequence.length > 0) {
+        this.renderCurrentQuestion(); // Start Phase 2
+      } else {
+        this.completeAssessment();
+      }
+    } else if (this.currentPhase === 2) {
+      this.processPhase2Results();
+      if (this.questionSequence.length > 0) {
+        this.renderCurrentQuestion(); // Start Phase 3
+      } else {
+        this.completeAssessment();
+      }
+    } else if (this.currentPhase === 3) {
+      this.processPhase3Results();
+      this.completeAssessment();
+    }
+  }
+
+  processPhase3Results() {
+    // Calculate vector scores from Phase 3 answers
+    this.analysisData.phase3Results = {};
+    this.assessedVectors = [...this.prioritizedVectors];
+    
+    this.prioritizedVectors.forEach(vectorId => {
+      const vectorAnswers = Object.keys(this.answers)
+        .filter(key => key.startsWith(`p3_${vectorId}`))
+        .map(key => this.answers[key]);
+      
+      // Calculate scores for symptoms, effects, consequences
+      const symptomAnswers = vectorAnswers.filter(a => a && a.mapsTo && a.mapsTo.category === 'symptoms');
+      const effectAnswers = vectorAnswers.filter(a => a && a.mapsTo && a.mapsTo.category === 'effects');
+      const consequenceAnswers = vectorAnswers.filter(a => a && a.mapsTo && a.mapsTo.category === 'consequences');
+      
+      // Calculate frequency scores
+      const getFrequencyScore = (answers) => {
+        if (answers.length === 0) return 0;
+        const total = answers.reduce((sum, a) => {
+          const freq = a.mapsTo && a.mapsTo.frequency;
+          const weight = a.mapsTo && a.mapsTo.weight ? a.mapsTo.weight : 0;
+          return sum + weight;
+        }, 0);
+        return answers.length > 0 ? total / answers.length : 0;
+      };
+      
+      this.analysisData.phase3Results[vectorId] = {
+        vector: MANIPULATION_VECTORS[vectorId],
+        symptoms: {
+          present: symptomAnswers.some(a => a.mapsTo && a.mapsTo.flow === 'present'),
+          score: getFrequencyScore(symptomAnswers.filter(a => a.mapsTo && a.mapsTo.frequency))
+        },
+        effects: {
+          present: effectAnswers.some(a => a.mapsTo && a.mapsTo.flow === 'present'),
+          score: getFrequencyScore(effectAnswers.filter(a => a.mapsTo && a.mapsTo.frequency))
+        },
+        consequences: {
+          present: consequenceAnswers.some(a => a.mapsTo && a.mapsTo.flow === 'present'),
+          score: getFrequencyScore(consequenceAnswers.filter(a => a.mapsTo && a.mapsTo.frequency))
+        },
+        answers: vectorAnswers
+      };
+    });
+  }
+
   completeAssessment() {
-    // Calculate vector scores
-    this.calculateVectorScores();
+    // Calculate final results
+    this.calculateResults();
     
-    // Identify manipulation vectors
-    this.identifyVectors();
-    
-    // Find relevant tactics
-    this.identifyTactics();
-    
-    // Include all raw answers and question sequence for AI agent export
+    // Include all raw answers and question sequence
     this.analysisData.allAnswers = { ...this.answers };
-    this.analysisData.questionSequence = this.questionSequence.map(q => ({
-      id: q.id,
-      question: q.question || q.text,
-      category: q.category,
-      subcategory: q.subcategory,
-      type: q.type,
-      weight: q.weight
-    }));
+    this.analysisData.questionSequence = this.getAllQuestionsAnswered();
     
     // Hide questionnaire, show results
     document.getElementById('questionnaireSection').classList.remove('active');
@@ -306,136 +723,78 @@ class ManipulationEngine {
     this.saveProgress();
   }
 
-  calculateVectorScores() {
-    // Calculate scores for each manipulation vector
-    Object.keys(MANIPULATION_VECTORS).forEach(vectorKey => {
-      const vector = MANIPULATION_VECTORS[vectorKey];
-      const mapping = VECTOR_MAPPING[vectorKey];
-      
-      let totalScore = 0;
-      let questionCount = 0;
-      let totalPossibleQuestions = 0;
-      
-      // Check symptom questions
-      mapping.symptoms.forEach(symptomId => {
-        totalPossibleQuestions++;
-        if (this.answers[symptomId] !== undefined) {
-          const question = this.findQuestionById(symptomId);
-          if (question) {
-            totalScore += this.answers[symptomId] * question.weight;
-            questionCount++;
-          }
-        }
+  getAllQuestionsAnswered() {
+    const allQuestions = [];
+    
+    // Phase 1
+    PHASE_1_VECTOR_SCREENING.forEach(q => {
+      allQuestions.push({
+        id: q.id,
+        question: q.question,
+        phase: 1,
+        answer: this.answers[q.id]
       });
+    });
+    
+    // Phase 2 & 3 would be added similarly
+    // (Simplified for now - would need to track all questions asked)
+    
+    return allQuestions;
+  }
+
+  calculateResults() {
+    // Calculate vector scores from Phase 3 results
+    this.analysisData.vectorScores = {};
+    
+    Object.keys(this.analysisData.phase3Results || {}).forEach(vectorId => {
+      const result = this.analysisData.phase3Results[vectorId];
+      const vector = MANIPULATION_VECTORS[vectorId];
       
-      // Check effect questions
-      mapping.effects.forEach(effectId => {
-        totalPossibleQuestions++;
-        if (this.answers[effectId] !== undefined) {
-          const question = this.findQuestionById(effectId);
-          if (question) {
-            totalScore += this.answers[effectId] * question.weight;
-            questionCount++;
-          }
-        }
-      });
+      // Calculate overall score
+      const symptomScore = result.symptoms.present ? result.symptoms.score : 0;
+      const effectScore = result.effects.present ? result.effects.score : 0;
+      const consequenceScore = result.consequences.present ? result.consequences.score : 0;
       
-      // Check consequence questions
-      mapping.consequences.forEach(consequenceId => {
-        totalPossibleQuestions++;
-        if (this.answers[consequenceId] !== undefined) {
-          const question = this.findQuestionById(consequenceId);
-          if (question) {
-            totalScore += this.answers[consequenceId] * question.weight;
-            questionCount++;
-          }
-        }
-      });
+      const avgScore = (symptomScore + effectScore + consequenceScore) / 3;
+      const weightedScore = avgScore * vector.weight;
       
-      const averageScore = questionCount > 0 ? totalScore / questionCount : 0;
-      const weightedScore = averageScore * vector.weight;
-      
-      // Calculate confidence based on answered questions
-      const answerRate = totalPossibleQuestions > 0 ? questionCount / totalPossibleQuestions : 0;
-      let confidenceBand = 'medium';
-      if (answerRate >= 0.9) {
-        confidenceBand = 'high';
-      } else if (answerRate < 0.7) {
-        confidenceBand = 'low';
-      }
-      
-      // Determine activation level
-      const activationThreshold = mapping.threshold * 10;
-      let activationLevel = 'low';
-      if (weightedScore >= activationThreshold * 1.2) {
-        activationLevel = 'high';
-      } else if (weightedScore >= activationThreshold) {
-        activationLevel = 'medium';
-      }
-      
-      this.analysisData.vectorScores[vectorKey] = {
+      this.analysisData.vectorScores[vectorId] = {
         name: vector.name,
         description: vector.description,
-        rawScore: averageScore,
+        rawScore: avgScore,
         weightedScore: weightedScore,
-        questionCount: questionCount,
-        totalPossibleQuestions: totalPossibleQuestions,
-        answerRate: answerRate,
-        confidenceBand: confidenceBand,
-        activationLevel: activationLevel,
-        threshold: mapping.threshold,
-        activationThreshold: activationThreshold
+        symptoms: result.symptoms,
+        effects: result.effects,
+        consequences: result.consequences,
+        activationLevel: weightedScore >= 6 ? 'high' : weightedScore >= 3 ? 'medium' : 'low'
       };
     });
-  }
-
-  findQuestionById(id) {
-    return this.questionSequence.find(q => q.id === id);
-  }
-
-  identifyVectors() {
-    // Identify vectors that reach activation level
+    
+    // Identify primary vector
     const allVectors = Object.entries(this.analysisData.vectorScores)
       .map(([key, data]) => ({ key, ...data }))
-      .filter(vector => vector.weightedScore >= (vector.threshold * 10))
       .sort((a, b) => b.weightedScore - a.weightedScore);
     
-    // Designate primary vector (highest score)
     if (allVectors.length > 0) {
       this.analysisData.primaryVector = allVectors[0];
       this.analysisData.supportingVectors = allVectors.slice(1);
+      this.analysisData.identifiedVectors = allVectors;
     }
     
-    // Keep identifiedVectors for backward compatibility
-    this.analysisData.identifiedVectors = allVectors;
-    
-    // Determine Situational vs Structural modifier
+    // Determine structural modifier
     this.determineStructuralModifier();
+    
+    // Find relevant tactics
+    this.identifyTactics();
   }
-  
+
   determineStructuralModifier() {
     if (!this.analysisData.primaryVector) return;
     
-    // Calculate average consequence and effect scores
-    let totalConsequenceScore = 0;
-    let totalEffectScore = 0;
-    let consequenceCount = 0;
-    let effectCount = 0;
-    
-    this.questionSequence.forEach(q => {
-      if (q.category === 'consequence' && this.answers[q.id] !== undefined) {
-        totalConsequenceScore += this.answers[q.id];
-        consequenceCount++;
-      }
-      if (q.category === 'effect' && this.answers[q.id] !== undefined) {
-        totalEffectScore += this.answers[q.id];
-        effectCount++;
-      }
-    });
-    
-    const avgConsequence = consequenceCount > 0 ? totalConsequenceScore / consequenceCount : 0;
-    const avgEffect = effectCount > 0 ? totalEffectScore / effectCount : 0;
-    const avgSymptom = this.getAverageSymptomScore();
+    const primary = this.analysisData.primaryVector;
+    const avgConsequence = primary.consequences ? primary.consequences.score : 0;
+    const avgEffect = primary.effects ? primary.effects.score : 0;
+    const avgSymptom = primary.symptoms ? primary.symptoms.score : 0;
     
     // High consequences + high effects = structural
     // High symptoms + low consequences = situational
@@ -447,219 +806,78 @@ class ManipulationEngine {
       this.analysisData.structuralModifier = 'mixed';
     }
   }
-  
-  getAverageSymptomScore() {
-    let total = 0;
-    let count = 0;
-    this.questionSequence.forEach(q => {
-      if (q.category === 'symptom' && this.answers[q.id] !== undefined) {
-        total += this.answers[q.id];
-        count++;
-      }
-    });
-    return count > 0 ? total / count : 0;
-  }
-  
-  showDecompressionCheckpoint() {
-    const container = document.getElementById('questionContainer');
-    if (!container) return;
-    
-    this.decompressionShown = true;
-    
-    container.innerHTML = `
-      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
-        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">You're mapping experiences, not assigning blame.</h3>
-        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-          You've completed the symptom questions. Remember: this analysis identifies patterns consistent with manipulation vectors. It does not determine intent or assign blame. Continue when ready.
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-primary" id="continueFromDecompression" style="min-width: 150px;">Continue Assessment</button>
-          <button class="btn btn-secondary" id="pauseFromDecompression" style="min-width: 150px;">Pause</button>
-        </div>
-      </div>
-    `;
-    
-    const continueBtn = document.getElementById('continueFromDecompression');
-    if (continueBtn) {
-      continueBtn.addEventListener('click', () => {
-        // Mark as shown and render the actual question
-        this.decompressionShown = true;
-        const question = this.questionSequence[this.currentQuestionIndex];
-        this.renderQuestionContent(question);
-        this.updateProgress();
-        this.updateNavigationButtons();
-      });
-    }
-    
-    document.getElementById('pauseFromDecompression').addEventListener('click', () => {
-      // Just stay on this screen - user can continue when ready
-    });
-  }
 
   identifyTactics() {
-    // Find relevant tactics for identified vectors
     this.analysisData.tactics = [];
     
-    this.analysisData.identifiedVectors.forEach(vector => {
-      const tactics = Object.values(MANIPULATION_TACTICS).filter(
-        tactic => tactic.vector === vector.key
-      );
-      this.analysisData.tactics.push(...tactics);
-    });
+    if (this.analysisData.primaryVector) {
+      const vector = MANIPULATION_VECTORS[this.analysisData.primaryVector.key];
+      if (vector && vector.tactics) {
+        vector.tactics.forEach(tacticId => {
+          const tactic = MANIPULATION_TACTICS[tacticId];
+          if (tactic) {
+            this.analysisData.tactics.push(tactic);
+          }
+        });
+      }
+    }
   }
 
   renderResults() {
     const container = document.getElementById('vectorResults');
     if (!container) return;
     
-    let html = '';
+    let html = '<div class="manipulation-summary">';
+    html += '<h3>Manipulation Vector Analysis Results</h3>';
+    html += '<p>Based on your responses, here are the manipulation vectors identified and recommended strategies.</p>';
+    html += '</div>';
     
-    if (this.analysisData.identifiedVectors.length === 0) {
-      html = `
-        <div style="padding: 2rem; text-align: center;">
-          <h3 style="color: var(--brand); margin-bottom: 1rem;">No Strong Manipulation Patterns Detected</h3>
-          <p style="color: var(--muted);">Based on your responses, no manipulation vectors reached activation level. This may indicate:</p>
-          <ul style="text-align: left; max-width: 600px; margin: 1rem auto;">
-            <li>Patterns consistent with healthy and respectful relationships</li>
-            <li>Manipulation patterns are subtle and require deeper analysis</li>
-            <li>You may need to review specific situations more carefully</li>
-          </ul>
+    // Primary vector
+    if (this.analysisData.primaryVector) {
+      const primary = this.analysisData.primaryVector;
+      html += `
+        <div class="vector-result" style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+          <h3 style="color: #d32f2f; margin-bottom: 1rem;">Primary Vector: ${primary.name}</h3>
+          <p style="margin-bottom: 1rem;">${primary.description}</p>
+          <p><strong>Activation Level:</strong> ${primary.activationLevel}</p>
+          <p><strong>Score:</strong> ${primary.rawScore.toFixed(1)}/10 (Weighted: ${primary.weightedScore.toFixed(1)})</p>
+          ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.analysisData.structuralModifier}</p>` : ''}
         </div>
       `;
-    } else {
-      // Overlap warning
-      html = `
-        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
-          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);"><strong style="color: var(--accent);">Note:</strong> Vectors frequently co-occur. Overlap increases intensity, not certainty. These are patterns consistent with manipulation vectors—not discrete perpetrators.</p>
-        </div>
-      `;
-      
-      // Primary Vector
-      if (this.analysisData.primaryVector) {
-        const vector = this.analysisData.primaryVector;
-        const structuralLabel = this.analysisData.structuralModifier === 'structural' ? 'Structural Pattern' : 
-                                this.analysisData.structuralModifier === 'situational' ? 'Situational Pattern' : 
-                                'Mixed Pattern';
-        
+    }
+    
+    // Supporting vectors
+    if (this.analysisData.supportingVectors && this.analysisData.supportingVectors.length > 0) {
+      html += '<div class="supporting-vectors" style="margin-bottom: 2rem;">';
+      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Supporting Vectors</h4>';
+      this.analysisData.supportingVectors.forEach(vector => {
         html += `
-          <div class="vector-result" style="border-left: 6px solid #d32f2f; background: rgba(211, 47, 47, 0.05);">
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-              <h3 style="margin: 0; color: #d32f2f;">Primary Vector: ${vector.name}</h3>
-              <span style="background: #d32f2f; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">${structuralLabel}</span>
-            </div>
-            <p style="color: var(--muted); margin-bottom: 1rem;">${vector.description}</p>
-            <div style="display: flex; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap;">
-              <div>
-                <strong>Activation Level:</strong> <span style="text-transform: capitalize; color: ${vector.activationLevel === 'high' ? '#d32f2f' : vector.activationLevel === 'medium' ? 'var(--accent)' : 'var(--muted)'}; font-weight: 600;">${vector.activationLevel}</span>
-              </div>
-              <div>
-                <strong>Confidence:</strong> <span style="text-transform: capitalize; color: ${vector.confidenceBand === 'high' ? 'var(--brand)' : vector.confidenceBand === 'medium' ? 'var(--accent)' : '#d32f2f'}; font-weight: 600;">${vector.confidenceBand}</span>
-                ${vector.answerRate < 0.9 ? `<span style="font-size: 0.85rem; color: var(--muted); margin-left: 0.5rem;">(${Math.round(vector.answerRate * 100)}% answered)</span>` : ''}
-              </div>
-            </div>
-            <p style="font-size: 0.9rem; color: var(--muted);"><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10 (Weighted: ${vector.weightedScore.toFixed(1)})</p>
-            
-            ${this.getWhatThisDoesNotImply(vector.key)}
-            
-            <p style="margin-top: 1.5rem; font-weight: 600; color: var(--brand);">Relevant Tactics (Top 5):</p>
+          <div class="vector-result" style="background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h4>${vector.name}</h4>
+            <p style="font-size: 0.9rem; color: var(--muted);">${vector.description}</p>
+            <p><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10</p>
+          </div>
         `;
-        
-        const relevantTactics = this.analysisData.tactics.filter(t => t.vector === vector.key);
-        if (relevantTactics.length > 0) {
-          relevantTactics.slice(0, 5).forEach(tactic => {
-            html += `
-              <div class="tactic-item">
-                <strong>${tactic.name}</strong>${tactic.mode && tactic.phase ? ` (${tactic.mode} ${tactic.phase})` : ''}
-                ${tactic.example ? `<p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);"><em>${tactic.example}</em></p>` : ''}
-                ${tactic.mechanism ? `<p style="margin-top: 0.5rem; font-size: 0.9rem;">${tactic.mechanism}</p>` : ''}
-              </div>
-            `;
-          });
-          if (relevantTactics.length > 5) {
-            html += `<p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--muted); font-style: italic;">+ ${relevantTactics.length - 5} additional tactics identified (see export for full list)</p>`;
-          }
-        }
-        
-        html += '</div>';
-      }
-      
-      // Supporting Vectors
-      if (this.analysisData.supportingVectors.length > 0) {
-        html += '<h3 style="color: var(--brand); margin-top: 2rem; margin-bottom: 1rem;">Supporting Vectors:</h3>';
-        
-        this.analysisData.supportingVectors.forEach(vector => {
-          html += `
-            <div class="vector-result">
-              <h3>${vector.name}</h3>
-              <p style="color: var(--muted); margin-bottom: 0.75rem;">${vector.description}</p>
-              <div style="display: flex; gap: 2rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-                <div>
-                  <strong>Activation Level:</strong> <span style="text-transform: capitalize; color: ${vector.activationLevel === 'high' ? '#d32f2f' : vector.activationLevel === 'medium' ? 'var(--accent)' : 'var(--muted)'}; font-weight: 600;">${vector.activationLevel}</span>
-                </div>
-                <div>
-                  <strong>Confidence:</strong> <span style="text-transform: capitalize; color: ${vector.confidenceBand === 'high' ? 'var(--brand)' : vector.confidenceBand === 'medium' ? 'var(--accent)' : '#d32f2f'}; font-weight: 600;">${vector.confidenceBand}</span>
-                  ${vector.answerRate < 0.9 ? `<span style="font-size: 0.85rem; color: var(--muted); margin-left: 0.5rem;">(${Math.round(vector.answerRate * 100)}% answered)</span>` : ''}
-                </div>
-              </div>
-              <p style="font-size: 0.9rem; color: var(--muted);"><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10 (Weighted: ${vector.weightedScore.toFixed(1)})</p>
-            </div>
-          `;
-        });
-      }
-      
-      // Stabilizing Closure
-      html += this.getStabilizingClosure();
+      });
+      html += '</div>';
+    }
+    
+    // Tactics
+    if (this.analysisData.tactics && this.analysisData.tactics.length > 0) {
+      html += '<div class="tactics-section" style="margin-top: 2rem;">';
+      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Identified Tactics</h4>';
+      this.analysisData.tactics.forEach(tactic => {
+        html += `
+          <div class="tactic-item" style="background: var(--glass); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5>${tactic.name}</h5>
+            <p style="font-size: 0.9rem; color: var(--muted);">${tactic.description || ''}</p>
+          </div>
+        `;
+      });
+      html += '</div>';
     }
     
     container.innerHTML = html;
-  }
-  
-  getWhatThisDoesNotImply(vectorKey) {
-    const notImplies = {
-      fear: 'This pattern can appear without deliberate intent. Fear-based dynamics may emerge from unprocessed trauma or defensive patterns, not necessarily malicious manipulation.',
-      dependency: 'Dependency patterns can develop organically in relationships. This does not imply the other person is intentionally creating dependency.',
-      deception: 'Deception patterns may reflect the other person\'s own self-deception or distorted reality, not necessarily calculated manipulation.',
-      obsession: 'Obsessive patterns can stem from attachment wounds or unmet needs, not necessarily deliberate control tactics.',
-      adoration: 'Adoration patterns may reflect genuine but unhealthy idealization, not necessarily calculated manipulation.',
-      sexual: 'Sexual patterns may reflect unprocessed trauma, cultural conditioning, or boundary confusion, not necessarily deliberate exploitation.'
-    };
-    
-    const text = notImplies[vectorKey] || 'This pattern does not necessarily imply deliberate intent or malicious manipulation. Patterns can emerge from various sources including unprocessed trauma, cultural conditioning, or relational dynamics.';
-    
-    return `
-      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; margin-bottom: 1rem;">
-        <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">What this does NOT imply:</strong> ${text}</p>
-      </div>
-    `;
-  }
-  
-  getStabilizingClosure() {
-    return `
-      <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border: 2px solid var(--brand); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <h3 style="color: var(--brand); margin-bottom: 1rem; text-align: center;">Orientation & Next Steps</h3>
-        <div style="line-height: 1.8;">
-          <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">1. What You Experienced</h4>
-            <p style="color: var(--muted); margin: 0;">You've mapped patterns consistent with manipulation vectors. This analysis reflects your reported experiences and effects.</p>
-          </div>
-          <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">2. What Patterns Fit</h4>
-            <p style="color: var(--muted); margin: 0;">The identified vectors show patterns consistent with your responses. Vectors frequently overlap and co-occur.</p>
-          </div>
-          <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">3. Where Your Leverage Is</h4>
-            <p style="color: var(--muted); margin: 0;">Recognition is the first step. Your leverage comes from understanding these patterns and making conscious choices about boundaries, communication, and relationship dynamics.</p>
-          </div>
-          <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">4. Where You Exit Analysis</h4>
-            <p style="color: var(--muted); margin: 0;">This analysis is complete. You can export your results, start a new assessment, or return to the tools page. Use this knowledge to support your sovereignty, not to fuel hypervigilance.</p>
-          </div>
-          <div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Grounding Recommendation:</strong> Take time to integrate this information. Awareness without action can become analysis paralysis. Consider what specific, actionable steps you can take to protect your sovereignty.</p>
-          </div>
-        </div>
-      </div>
-    `;
   }
 
   exportAnalysis(format = 'json') {
@@ -674,8 +892,12 @@ class ManipulationEngine {
 
   saveProgress() {
     const progressData = {
+      currentPhase: this.currentPhase,
       currentQuestionIndex: this.currentQuestionIndex,
       answers: this.answers,
+      vectorScores: this.vectorScores,
+      prioritizedVectors: this.prioritizedVectors,
+      assessedVectors: this.assessedVectors,
       timestamp: new Date().toISOString()
     };
     sessionStorage.setItem('manipulationProgress', JSON.stringify(progressData));
@@ -686,15 +908,26 @@ class ManipulationEngine {
     if (stored) {
       try {
         const data = JSON.parse(stored);
+        this.currentPhase = data.currentPhase || 1;
         this.currentQuestionIndex = data.currentQuestionIndex || 0;
         this.answers = data.answers || {};
+        this.vectorScores = data.vectorScores || {};
+        this.prioritizedVectors = data.prioritizedVectors || [];
+        this.assessedVectors = data.assessedVectors || [];
         
-        // If in progress, restore questionnaire state
-        if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
+        // Restore questionnaire state
+        if (this.currentQuestionIndex > 0) {
+          if (this.currentPhase === 1) {
+            this.buildPhase1Sequence();
+          } else if (this.currentPhase === 2) {
+            this.analyzePhase1Results();
+            this.buildPhase2Sequence();
+          } else if (this.currentPhase === 3) {
+            this.processPhase2Results();
+            this.buildPhase3Sequence();
+          }
+          document.getElementById('questionnaireSection').classList.add('active');
           this.renderCurrentQuestion();
-        } else if (this.currentQuestionIndex >= this.questionSequence.length) {
-          // Assessment was completed, recalculate
-          this.completeAssessment();
         }
       } catch (e) {
         console.error('Error loading stored data:', e);
@@ -703,42 +936,49 @@ class ManipulationEngine {
   }
 
   clearAllCachedData() {
-    if (confirm('Are you sure you want to clear all cached data? This will clear all saved progress and you will need to start from the beginning.')) {
-      sessionStorage.removeItem('manipulationProgress');
-      this.resetAssessment();
-      alert('All cached data has been cleared.');
-    }
+    sessionStorage.removeItem('manipulationProgress');
+    this.resetAssessment();
+    alert('All cached data for Manipulation Analysis has been cleared.');
   }
 
   resetAssessment() {
+    this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
-    this.decompressionShown = false;
+    this.questionSequence = [];
+    this.vectorScores = {};
+    this.prioritizedVectors = [];
+    this.assessedVectors = [];
     this.analysisData = {
       timestamp: new Date().toISOString(),
-      symptoms: {},
-      effects: {},
-      consequences: {},
+      phase1Results: {},
+      phase2Results: {},
+      phase3Results: {},
       vectorScores: {},
       identifiedVectors: [],
       primaryVector: null,
       supportingVectors: [],
       tactics: [],
-      structuralModifier: null
+      structuralModifier: null,
+      allAnswers: {},
+      questionSequence: []
     };
     
     sessionStorage.removeItem('manipulationProgress');
     
     // Reset UI
-    document.getElementById('questionnaireSection').classList.add('active');
+    document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
     
-    this.renderCurrentQuestion();
+    this.buildPhase1Sequence();
   }
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  new ManipulationEngine();
-});
-
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.manipulationEngine = new ManipulationEngine();
+  });
+} else {
+  window.manipulationEngine = new ManipulationEngine();
+}
