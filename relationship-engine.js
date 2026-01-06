@@ -14,9 +14,14 @@ class RelationshipEngine {
     this.currentStage = 1; // 1: Broad Assessment, 2: Domain Deep Dive, 3: Scenarios
     this.currentQuestionIndex = 0;
     this.answers = {};
+    this.confidenceScores = {}; // Confidence modifiers for Stage 1
     this.questionSequence = [];
-    this.weakestLinks = []; // Identified from Stage 1
+    this.weakestLinks = []; // Identified from Stage 1 (renamed to strain points in display)
     this.domainWeakAreas = {}; // Domain-specific weak areas from Stage 2
+    this.crossDomainSpillover = {}; // Track cross-domain amplification
+    this.stage2TransitionShown = false;
+    this.stage3TransitionShown = false;
+    this.groundingPauseShown = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       stage1Results: {},
@@ -25,7 +30,8 @@ class RelationshipEngine {
       compatibilityScores: {},
       weakestLinks: [],
       actionStrategies: {},
-      archetypalInsights: {}
+      archetypalInsights: {},
+      crossDomainSpillover: {}
     };
 
     this.init();
@@ -65,6 +71,168 @@ class RelationshipEngine {
     
     // Shuffle questions for a more dynamic experience
     this.questionSequence.sort(() => Math.random() - 0.5);
+  }
+
+  showStage2Transition() {
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+    
+    this.stage2TransitionShown = true;
+    
+    container.innerHTML = `
+      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
+        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Transitioning to Domain Deep Dive</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          This stage explores expression patterns, not final causes. We're mapping how strain points manifest across relationship domains, not assigning root causes. Questions will focus on your experience: "I experience..." and "I find myself..."—not "They always..."
+        </p>
+        <button class="btn btn-primary" id="continueFromStage2Transition" style="min-width: 150px;">Continue</button>
+      </div>
+    `;
+    
+    const continueBtn = document.getElementById('continueFromStage2Transition');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        this.renderQuestionContent(this.questionSequence[this.currentQuestionIndex]);
+        this.updateProgressBar();
+        this.updateNavigationButtons();
+      });
+    }
+  }
+  
+  showStage3Transition() {
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+    
+    this.stage3TransitionShown = true;
+    
+    container.innerHTML = `
+      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
+        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Scenario-Based Reflection</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          <strong>As-Is Constraint:</strong> Respond as you typically do now, not how you wish you would. These scenarios focus on likely stressors rather than catastrophic situations. Be honest about your current patterns.
+        </p>
+        <button class="btn btn-primary" id="continueFromStage3Transition" style="min-width: 150px;">Continue</button>
+      </div>
+    `;
+    
+    const continueBtn = document.getElementById('continueFromStage3Transition');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        this.renderQuestionContent(this.questionSequence[this.currentQuestionIndex]);
+        this.updateProgressBar();
+        this.updateNavigationButtons();
+      });
+    }
+  }
+  
+  renderQuestionContent(question) {
+    const questionContainer = document.getElementById('questionContainer');
+    if (!questionContainer) return;
+    
+    const savedAnswer = this.answers[question.id] !== undefined ? this.answers[question.id] : 5;
+    const savedConfidence = this.confidenceScores[question.id] !== undefined ? this.confidenceScores[question.id] : 5;
+    
+    let stageLabel = '';
+    if (question.stage === 1) {
+      stageLabel = 'Broad Compatibility Assessment';
+    } else if (question.stage === 2) {
+      stageLabel = question.domainName ? `${question.domainName} - Deep Dive` : 'Domain-Specific Analysis';
+    } else if (question.stage === 3) {
+      stageLabel = 'Scenario-Based Reflection';
+    }
+    
+    let exampleText = '';
+    if (question.example) {
+      exampleText = `<div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius);">
+        <strong style="color: var(--brand);">Example Scenario:</strong>
+        <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${question.example}</p>
+      </div>`;
+    }
+    
+    let confidenceModifier = '';
+    if (question.stage === 1) {
+      confidenceModifier = `
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius);">
+          <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--muted);"><strong>How confident is this rating?</strong> (Optional)</p>
+          <div class="scale-container" style="margin-top: 0.5rem;">
+            <div class="scale-input">
+              <input type="range" min="0" max="10" value="${savedConfidence}" class="slider" id="confidenceSlider">
+              <div class="scale-labels" style="font-size: 0.8rem;">
+                <span>Not confident</span>
+                <span>Somewhat</span>
+                <span>Very confident</span>
+              </div>
+            </div>
+            <span class="scale-value" id="confidenceValue" style="font-size: 0.9rem;">${savedConfidence}</span>
+          </div>
+          <p style="font-size: 0.85em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
+            Low confidence ratings will be flagged for cautious interpretation in results.
+          </p>
+        </div>
+      `;
+    }
+    
+    questionContainer.innerHTML = `
+      <div class="question-block">
+        ${stageLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${stageLabel}</p>` : ''}
+        ${question.name ? `<h3>${question.name}</h3>` : ''}
+        ${question.description ? `<p class="description">${question.description}</p>` : ''}
+        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${question.question}</h4>
+        ${exampleText}
+        <div class="scale-container">
+          <div class="scale-input">
+            <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider">
+            <div class="scale-labels">
+              <span>Very Low / Minimal / Weak / Poor / Rare / Never (0-2)</span>
+              <span>Moderate / Somewhat / Average / Moderate / Sometimes (5-6)</span>
+              <span>Very High / Strong / Potent / Excellent / Frequent / Always (9-10)</span>
+            </div>
+          </div>
+          <span class="scale-value" id="sliderValue">${savedAnswer}</span>
+        </div>
+        <p style="font-size: 0.9em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
+          Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment). I experience... I find myself...
+        </p>
+        ${confidenceModifier}
+      </div>
+    `;
+    
+    const slider = document.getElementById('questionSlider');
+    const sliderValueSpan = document.getElementById('sliderValue');
+    if (slider && sliderValueSpan) {
+      slider.oninput = (event) => {
+        sliderValueSpan.textContent = event.target.value;
+        this.answers[question.id] = parseInt(event.target.value);
+        this.saveProgress();
+      };
+    }
+    
+    if (question.stage === 1) {
+      const confidenceSlider = document.getElementById('confidenceSlider');
+      const confidenceValueSpan = document.getElementById('confidenceValue');
+      if (confidenceSlider && confidenceValueSpan) {
+        confidenceSlider.oninput = (event) => {
+          confidenceValueSpan.textContent = event.target.value;
+          this.confidenceScores[question.id] = parseInt(event.target.value);
+          this.saveProgress();
+        };
+      }
+    }
+    
+    this.updateNavigationButtons();
+  }
+  
+  updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevQuestion');
+    const nextBtn = document.getElementById('nextQuestion');
+    
+    if (prevBtn) {
+      prevBtn.disabled = this.currentQuestionIndex === 0;
+    }
+    
+    if (nextBtn) {
+      nextBtn.textContent = this.currentQuestionIndex === this.questionSequence.length - 1 ? 'Finish Assessment' : 'Next';
+    }
   }
 
   buildStage2Sequence() {
@@ -228,7 +396,31 @@ class RelationshipEngine {
     }
 
     const currentQ = this.questionSequence[this.currentQuestionIndex];
+    
+    // Check for stage transitions
+    if (currentQ.stage === 2 && !this.stage2TransitionShown) {
+      // Count how many Stage 1 questions there are
+      const stage1Count = this.questionSequence.filter(q => q.stage === 1).length;
+      // If we're at the index right after all Stage 1 questions, show transition
+      if (this.currentQuestionIndex === stage1Count) {
+        this.showStage2Transition();
+        return;
+      }
+    }
+    
+    if (currentQ.stage === 3 && !this.stage3TransitionShown) {
+      // Count Stage 1 and Stage 2 questions
+      const stage1Count = this.questionSequence.filter(q => q.stage === 1).length;
+      const stage2Count = this.questionSequence.filter(q => q.stage === 2).length;
+      // If we're at the index right after all Stage 1 and Stage 2 questions, show transition
+      if (this.currentQuestionIndex === stage1Count + stage2Count) {
+        this.showStage3Transition();
+        return;
+      }
+    }
+    
     const savedAnswer = this.answers[currentQ.id] !== undefined ? this.answers[currentQ.id] : 5; // Default to 5
+    const savedConfidence = this.confidenceScores[currentQ.id] !== undefined ? this.confidenceScores[currentQ.id] : 5;
 
     let stageLabel = '';
     if (currentQ.stage === 1) {
@@ -247,6 +439,30 @@ class RelationshipEngine {
       </div>`;
     }
 
+    // Add confidence modifier for Stage 1 questions
+    let confidenceModifier = '';
+    if (currentQ.stage === 1) {
+      confidenceModifier = `
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius);">
+          <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--muted);"><strong>How confident is this rating?</strong> (Optional)</p>
+          <div class="scale-container" style="margin-top: 0.5rem;">
+            <div class="scale-input">
+              <input type="range" min="0" max="10" value="${savedConfidence}" class="slider" id="confidenceSlider">
+              <div class="scale-labels" style="font-size: 0.8rem;">
+                <span>Not confident</span>
+                <span>Somewhat</span>
+                <span>Very confident</span>
+              </div>
+            </div>
+            <span class="scale-value" id="confidenceValue" style="font-size: 0.9rem;">${savedConfidence}</span>
+          </div>
+          <p style="font-size: 0.85em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
+            Low confidence ratings will be flagged for cautious interpretation in results.
+          </p>
+        </div>
+      `;
+    }
+    
     questionContainer.innerHTML = `
       <div class="question-block">
         ${stageLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${stageLabel}</p>` : ''}
@@ -266,8 +482,9 @@ class RelationshipEngine {
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>
         </div>
         <p style="font-size: 0.9em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
-          Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment).
+          Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment). I experience... I find myself...
         </p>
+        ${confidenceModifier}
       </div>
     `;
 
@@ -279,6 +496,19 @@ class RelationshipEngine {
         this.answers[currentQ.id] = parseInt(event.target.value);
         this.saveProgress();
       };
+    }
+    
+    // Handle confidence slider for Stage 1
+    if (currentQ.stage === 1) {
+      const confidenceSlider = document.getElementById('confidenceSlider');
+      const confidenceValueSpan = document.getElementById('confidenceValue');
+      if (confidenceSlider && confidenceValueSpan) {
+        confidenceSlider.oninput = (event) => {
+          confidenceValueSpan.textContent = event.target.value;
+          this.confidenceScores[currentQ.id] = parseInt(event.target.value);
+          this.saveProgress();
+        };
+      }
     }
 
     prevBtn.disabled = this.currentQuestionIndex === 0;
@@ -339,8 +569,12 @@ class RelationshipEngine {
       this.finalizeResults();
       return;
     } else if (this.currentStage === 3) {
-      // Stage 3 complete, finalize results
+      // Stage 3 complete, show grounding pause
       this.analyzeStage3Results();
+      if (!this.groundingPauseShown) {
+        this.showGroundingPause();
+        return;
+      }
       this.finalizeResults();
       return;
     }
@@ -368,13 +602,24 @@ class RelationshipEngine {
       };
     });
 
-    // Identify weakest links (lowest weighted scores)
+    // Identify current strain points (lowest weighted scores)
     const sortedPoints = Object.entries(this.analysisData.stage1Results)
-      .map(([key, data]) => ({ point: key, ...data }))
+      .map(([key, data]) => {
+        // Apply confidence modifier - low confidence reduces weight
+        const confidence = this.confidenceScores[`stage1_${key}`] || 10;
+        const confidenceWeight = confidence / 10; // 0-1 scale
+        return {
+          point: key,
+          ...data,
+          weightedScore: data.weightedScore * confidenceWeight,
+          confidence: confidence,
+          lowConfidence: confidence < 6
+        };
+      })
       .sort((a, b) => a.weightedScore - b.weightedScore);
-
-    // Top 5 weakest links
-    this.weakestLinks = sortedPoints.slice(0, 5);
+    
+    // Top 5-7 current strain points (may include more if confidence is low)
+    this.weakestLinks = sortedPoints.slice(0, 7);
   }
 
   analyzeStage2Results() {
@@ -436,6 +681,40 @@ class RelationshipEngine {
         }
       });
     });
+    
+    // Track cross-domain spillover
+    this.detectCrossDomainSpillover(domainScores);
+  }
+  
+  detectCrossDomainSpillover(domainScores) {
+    // Identify when multiple domains show low scores (cross-domain amplification)
+    const lowScoreDomains = [];
+    Object.keys(domainScores).forEach(domainKey => {
+      const domain = domainScores[domainKey];
+      let totalScore = 0;
+      let count = 0;
+      Object.values(domain).forEach(pointScores => {
+        pointScores.forEach(score => {
+          totalScore += score.answer;
+          count++;
+        });
+      });
+      const avgScore = count > 0 ? totalScore / count : 10;
+      if (avgScore < 5) {
+        lowScoreDomains.push({ domain: domainKey, score: avgScore });
+      }
+    });
+    
+    if (lowScoreDomains.length >= 2) {
+      this.crossDomainSpillover = {
+        detected: true,
+        domains: lowScoreDomains.map(d => d.domain),
+        message: `Cross-domain amplification detected: ${lowScoreDomains.map(d => RELATIONSHIP_DOMAINS[d.domain]?.name || d.domain).join(' and ')} both show strain. This suggests systemic patterns rather than isolated issues.`
+      };
+      this.analysisData.crossDomainSpillover = this.crossDomainSpillover;
+    } else {
+      this.crossDomainSpillover = { detected: false };
+    }
   }
 
   analyzeStage3Results() {
@@ -538,6 +817,8 @@ class RelationshipEngine {
       impactTier: link.impactTier,
       priority: link.priority,
       severity: link.severity,
+      lowConfidence: link.lowConfidence || false,
+      confidence: link.confidence || 10,
       strategies: this.getActionStrategies(link.point, link.rawScore)
     }));
 
@@ -598,39 +879,103 @@ class RelationshipEngine {
     const resultsContainer = document.getElementById('resultsContainer');
     if (!resultsContainer) return;
 
-    let html = '<h3>Your Relationship Weakest Links:</h3>';
-    html += '<p style="color: var(--muted); margin-bottom: 2rem;">These are the areas requiring the most immediate attention, ranked by weighted impact score.</p>';
+    let html = '<h3>Current Strain Points:</h3>';
+    html += '<p style="color: var(--muted); margin-bottom: 1rem;">These are the areas showing current strain, ranked by weighted impact score.</p>';
+    
+    // Normalize universal weak points
+    html += '<div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
+    html += '<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">Note:</strong> All relationships show strain in at least 3–5 areas. This is normal, not failure. These strain points indicate areas for attention, not verdicts on relationship viability.</p>';
+    html += '</div>';
+
+    // Cross-domain spillover
+    if (this.crossDomainSpillover.detected) {
+      html += '<div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
+      html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Cross-Domain Amplification:</strong> ${this.crossDomainSpillover.message}</p>`;
+      html += '</div>';
+    }
 
     if (this.analysisData.weakestLinks.length > 0) {
       this.analysisData.weakestLinks.forEach((link, index) => {
         const criticalClass = link.severity === 'Critical' ? 'critical' : '';
+        const lowConfidenceFlag = link.lowConfidence ? '<span style="background: rgba(255, 184, 0, 0.2); color: #d32f2f; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem; font-weight: 600;">Low Confidence</span>' : '';
+        
+        // Tier action strategies
+        const selfRegulation = this.getSelfRegulationStrategies(link);
+        const relationalInvitation = this.getRelationalInvitationStrategies(link);
+        const structuralBoundary = this.getStructuralBoundaryStrategies(link);
+        
+        // Separate Change from Acceptance
+        const changeStrategies = this.getChangeStrategies(link);
+        const acceptanceStrategies = this.getAcceptanceStrategies(link);
+        
         html += `
           <div class="weakest-link-item ${criticalClass}">
-            <h3>${index + 1}. ${link.name} <span style="font-size: 0.9em; color: var(--muted);">(${link.impactTier} impact)</span></h3>
+            <h3>${index + 1}. ${link.name} <span style="font-size: 0.9em; color: var(--muted);">(${link.impactTier} impact)</span>${lowConfidenceFlag}</h3>
             <p><strong>Score:</strong> ${link.rawScore}/10 (Weighted: ${link.weightedScore.toFixed(2)})</p>
+            ${link.lowConfidence ? '<p style="font-size: 0.85rem; color: #d32f2f; font-style: italic;">This rating had low confidence. Interpret with caution.</p>' : ''}
             <p><strong>Priority:</strong> ${link.priority} | <strong>Severity:</strong> ${link.severity}</p>
             
-            <div class="action-strategies">
-              <h4>Immediate Actions:</h4>
-              <ul>
-                ${link.strategies.immediate.map(strategy => `<li>${strategy}</li>`).join('')}
-              </ul>
+            <div class="action-strategies" style="margin-top: 1.5rem;">
+              <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
               
-              <h4>Structural Changes:</h4>
-              <ul>
-                ${link.strategies.structural.map(strategy => `<li>${strategy}</li>`).join('')}
-              </ul>
+              <div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+                <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Actions you can take independently to improve your experience:</p>
+                <ul style="margin-left: 1.5rem;">
+                  ${selfRegulation.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                </ul>
+              </div>
               
-              <h4>Archetypal Insights:</h4>
-              <ul>
-                ${link.strategies.archetypal.map(insight => `<li>${insight}</li>`).join('')}
-              </ul>
+              <div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+                <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Ways to invite mutual participation and improvement:</p>
+                <ul style="margin-left: 1.5rem;">
+                  ${relationalInvitation.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <div style="background: rgba(211, 47, 47, 0.1); border-left: 3px solid #d32f2f; border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+                <h5 style="color: #d32f2f; margin-bottom: 0.5rem;">3. Structural Boundaries (Optional)</h5>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Boundaries to reduce harm if dynamics persist:</p>
+                <ul style="margin-left: 1.5rem;">
+                  ${structuralBoundary.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.7); border-radius: var(--radius);">
+                <h5 style="color: var(--brand); margin-bottom: 0.75rem;">Change vs. Acceptance:</h5>
+                <div style="margin-bottom: 1rem;">
+                  <strong style="color: var(--brand);">Actions Aiming to Improve Dynamics:</strong>
+                  <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    ${changeStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                  </ul>
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">Actions Aiming to Reduce Harm if Dynamics Persist:</strong>
+                  <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    ${acceptanceStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                  </ul>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-top: 1rem; font-style: italic;">
+                  <strong>Time Horizon:</strong> Reassess after 30–90 days. Avoid impulsive decisions based on this analysis alone.
+                </p>
+              </div>
+              
+              <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius);">
+                <h5 style="color: var(--brand); margin-bottom: 0.5rem;">Archetypal Pressures:</h5>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; font-style: italic;">
+                  <strong>Note:</strong> These describe activated archetypal pressures, not fixed identities. Each archetype has a complementary counterpart. Insight applies forward; avoid rereading the past through a single lens.
+                </p>
+                <ul style="margin-left: 1.5rem;">
+                  ${link.strategies.archetypal.map(insight => `<li style="margin-bottom: 0.5rem;">${insight}</li>`).join('')}
+                </ul>
+              </div>
             </div>
           </div>
         `;
       });
     } else {
-      html += '<p>No weakest links identified. Please complete the assessment.</p>';
+      html += '<p>No current strain points identified. Please complete the assessment.</p>';
     }
 
     // Add summary of all scores
@@ -652,7 +997,132 @@ class RelationshipEngine {
     });
     html += '</ul></div>';
 
+    // Mandatory Closure Section
+    html += this.getClosureSection();
+
     resultsContainer.innerHTML = html;
+  }
+  
+  getSelfRegulationStrategies(link) {
+    // Extract self-regulation actions from immediate strategies
+    const strategies = ACTION_STRATEGIES[link.point];
+    if (!strategies || !strategies.immediate) {
+      return ['Focus on your own responses and boundaries in this area.', 'Practice self-regulation techniques when this strain point is activated.', 'Take responsibility for your part without taking all responsibility.'];
+    }
+    
+    const filtered = strategies.immediate.filter(s => 
+      s.toLowerCase().includes('i ') || 
+      s.toLowerCase().includes('your own') ||
+      s.toLowerCase().includes('practice') ||
+      s.toLowerCase().includes('focus on') ||
+      s.toLowerCase().includes('commit to') ||
+      s.toLowerCase().includes('follow through')
+    );
+    
+    return filtered.length > 0 ? filtered.slice(0, 3) : strategies.immediate.slice(0, 2);
+  }
+  
+  getRelationalInvitationStrategies(link) {
+    // Extract relational invitation actions
+    const strategies = ACTION_STRATEGIES[link.point];
+    if (!strategies || !strategies.immediate) {
+      return ['Invite mutual discussion about this area.', 'Create space for both partners to share perspectives.', 'Propose collaborative solutions.'];
+    }
+    
+    const filtered = strategies.immediate.filter(s => 
+      s.toLowerCase().includes('discuss') ||
+      s.toLowerCase().includes('both') ||
+      s.toLowerCase().includes('together') ||
+      s.toLowerCase().includes('mutual') ||
+      s.toLowerCase().includes('partner') ||
+      s.toLowerCase().includes('schedule') ||
+      s.toLowerCase().includes('create')
+    );
+    
+    return filtered.length > 0 ? filtered.slice(0, 3) : strategies.immediate.slice(0, 2);
+  }
+  
+  getStructuralBoundaryStrategies(link) {
+    // Extract structural boundary actions
+    const strategies = ACTION_STRATEGIES[link.point];
+    if (!strategies || !strategies.structural) {
+      return ['Establish clear boundaries if this pattern persists.', 'Protect yourself through structural changes if dynamics do not improve.'];
+    }
+    
+    const filtered = strategies.structural.filter(s => 
+      s.toLowerCase().includes('boundary') ||
+      s.toLowerCase().includes('limit') ||
+      s.toLowerCase().includes('protect') ||
+      s.toLowerCase().includes('professional') ||
+      s.toLowerCase().includes('system') ||
+      s.toLowerCase().includes('establish')
+    );
+    
+    return filtered.length > 0 ? filtered.slice(0, 2) : strategies.structural.slice(0, 2);
+  }
+  
+  getChangeStrategies(link) {
+    // Strategies that aim to improve dynamics
+    const strategies = ACTION_STRATEGIES[link.point];
+    if (!strategies) {
+      return ['Work together to improve this area.', 'Focus on mutual understanding and growth.', 'Engage in collaborative problem-solving.'];
+    }
+    
+    const all = [...(strategies.immediate || []), ...(strategies.structural || [])];
+    const filtered = all.filter(s => 
+      !s.toLowerCase().includes('if') &&
+      !s.toLowerCase().includes('persist') &&
+      !s.toLowerCase().includes('reduce harm') &&
+      !s.toLowerCase().includes('when') &&
+      !s.toLowerCase().includes('violation')
+    );
+    
+    return filtered.length > 0 ? filtered.slice(0, 4) : all.slice(0, 3);
+  }
+  
+  getAcceptanceStrategies(link) {
+    // Strategies that reduce harm if dynamics persist
+    const strategies = ACTION_STRATEGIES[link.point];
+    if (!strategies) {
+      return ['Accept current limitations and protect yourself accordingly.', 'Establish boundaries to reduce harm if patterns continue.', 'Focus on self-protection if mutual improvement is not possible.'];
+    }
+    
+    const all = [...(strategies.immediate || []), ...(strategies.structural || [])];
+    const filtered = all.filter(s => 
+      s.toLowerCase().includes('if') ||
+      s.toLowerCase().includes('persist') ||
+      s.toLowerCase().includes('reduce harm') ||
+      s.toLowerCase().includes('protect') ||
+      s.toLowerCase().includes('when') ||
+      s.toLowerCase().includes('violation')
+    );
+    
+    return filtered.length > 0 ? filtered.slice(0, 3) : ['Accept current limitations and protect yourself accordingly.'];
+  }
+  
+  getClosureSection() {
+    return `
+      <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border: 2px solid var(--brand); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3 style="color: var(--brand); margin-bottom: 1rem; text-align: center;">Closure & Next Steps</h3>
+        <div style="line-height: 1.8;">
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">What You Control</h4>
+            <p style="color: var(--muted); margin: 0;">You control your responses, boundaries, communication style, and self-regulation. Focus your energy on actions within your sovereignty.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">What Requires Mutual Participation</h4>
+            <p style="color: var(--muted); margin: 0;">Improving relational dynamics requires both partners' participation. You can invite, but cannot force, mutual engagement. Some strain points may require your partner's willingness to address them.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">What Acceptance Would Look Like</h4>
+            <p style="color: var(--muted); margin: 0;">If certain dynamics persist despite your efforts, acceptance means recognizing limitations without self-blame. It means protecting yourself through boundaries while maintaining clarity about what you can and cannot change.</p>
+          </div>
+          <div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Analysis Complete:</strong> This assessment is complete. Use this information to support your sovereignty and relational clarity. Avoid looping back into analysis or using results to escalate conflict. Return to lived action with this understanding.</p>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   exportAnalysis(format = 'json') {
@@ -670,6 +1140,7 @@ class RelationshipEngine {
     const progressData = {
       currentQuestionIndex: this.currentQuestionIndex,
       answers: this.answers,
+      confidenceScores: this.confidenceScores,
       timestamp: new Date().toISOString()
     };
     sessionStorage.setItem('relationshipProgress', JSON.stringify(progressData));
@@ -682,6 +1153,7 @@ class RelationshipEngine {
         const data = JSON.parse(stored);
         this.currentQuestionIndex = data.currentQuestionIndex || 0;
         this.answers = data.answers || {};
+        this.confidenceScores = data.confidenceScores || {};
 
         // If in progress, restore questionnaire state
         if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
@@ -704,12 +1176,18 @@ class RelationshipEngine {
   resetAssessment() {
     this.currentQuestionIndex = 0;
     this.answers = {};
+    this.confidenceScores = {};
+    this.stage2TransitionShown = false;
+    this.stage3TransitionShown = false;
+    this.groundingPauseShown = false;
+    this.crossDomainSpillover = {};
     this.analysisData = {
       timestamp: new Date().toISOString(),
       compatibilityScores: {},
       weakestLinks: [],
       actionStrategies: {},
-      archetypalInsights: {}
+      archetypalInsights: {},
+      crossDomainSpillover: {}
     };
 
     sessionStorage.removeItem('relationshipProgress');
