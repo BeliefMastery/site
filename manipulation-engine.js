@@ -591,6 +591,25 @@ class ManipulationEngine {
     return labels[phase] || `Phase ${phase}`;
   }
 
+  getPhaseLabelPlain(phase) {
+    const labels = {
+      'Ingress': 'Entry Phase - Happens early in the relationship to draw you in',
+      'Entrench': 'Control Phase - Happens once they have you, to keep you trapped',
+      'Extract': 'Harvest Phase - Happens when they\'re taking what they want from you'
+    };
+    return labels[phase] || phase || 'Unknown phase';
+  }
+
+  getModeLabelPlain(mode) {
+    const labels = {
+      'Covert': 'Hidden/Subtle - Hard to notice, sneaky manipulation',
+      'Overt': 'Open/Obvious - Direct and clear manipulation',
+      'Contextual': 'Depends on situation - Changes based on what works',
+      'Overt and Covert': 'Both hidden and open - Uses whatever works in the moment'
+    };
+    return labels[mode] || mode || 'Unknown mode';
+  }
+
   updateProgress() {
     const totalQuestions = this.getTotalQuestions();
     const currentQuestion = this.getCurrentQuestionNumber();
@@ -906,11 +925,38 @@ class ManipulationEngine {
     if (this.analysisData.tactics && this.analysisData.tactics.length > 0) {
       html += '<div class="tactics-section" style="margin-top: 2rem;">';
       html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Identified Tactics</h4>';
+      html += '<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">These are specific manipulation tactics that may be present in your relationship. Each tactic includes examples and explanations in plain language.</p>';
       this.analysisData.tactics.forEach(tactic => {
+        const phaseLabel = this.getPhaseLabelPlain(tactic.phase);
+        const modeLabel = this.getModeLabelPlain(tactic.mode);
         html += `
-          <div class="tactic-item" style="background: var(--glass); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-            <h5>${tactic.name}</h5>
-            <p style="font-size: 0.9rem; color: var(--muted);">${tactic.description || ''}</p>
+          <div class="tactic-item" style="background: var(--glass); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--brand);">
+            <h5 style="color: var(--brand); margin-bottom: 0.75rem;">${tactic.name}</h5>
+            ${tactic.phase || tactic.mode ? `
+              <div style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--muted);">
+                ${tactic.mode ? `<strong>How it works:</strong> ${modeLabel}` : ''}
+                ${tactic.phase && tactic.mode ? ' • ' : ''}
+                ${tactic.phase ? `<strong>When it happens:</strong> ${phaseLabel}` : ''}
+              </div>
+            ` : ''}
+            ${tactic.example ? `
+              <div style="margin-bottom: 0.75rem; padding: 0.75rem; background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); border-left: 3px solid #d32f2f;">
+                <strong style="color: #d32f2f; font-size: 0.9rem;">Example:</strong>
+                <p style="margin: 0.5rem 0 0 0; font-style: italic; color: var(--text);">"${tactic.example}"</p>
+              </div>
+            ` : ''}
+            ${tactic.mechanism ? `
+              <div style="margin-bottom: 0.75rem;">
+                <strong style="font-size: 0.9rem; color: var(--text);">What it does:</strong>
+                <p style="margin: 0.5rem 0 0 0; color: var(--text); line-height: 1.6;">${tactic.mechanism}</p>
+              </div>
+            ` : ''}
+            ${tactic.leverage ? `
+              <div style="margin-bottom: 0.75rem;">
+                <strong style="font-size: 0.9rem; color: var(--text);">How it controls you:</strong>
+                <p style="margin: 0.5rem 0 0 0; color: var(--text); line-height: 1.6;">${tactic.leverage}</p>
+              </div>
+            ` : ''}
           </div>
         `;
       });
