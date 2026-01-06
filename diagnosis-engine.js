@@ -1640,6 +1640,14 @@ class DiagnosisEngine {
     this.analysisData = {
       timestamp: new Date().toISOString(),
       categories: [],
+      refinementPasses: 0,
+      maxRefinementPasses: 1,
+      validationConsistency: null,
+      scaleTranslation: {
+        absent: [0, 3],
+        subthreshold: [4, 6],
+        clinicallySalient: [7, 10]
+      },
       answers: {},
       scores: {},
       probabilities: {},
