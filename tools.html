@@ -83,13 +83,61 @@
   </script>
 
   <style>
-    /* ---------- Background crossfade layers (index.html specific) ---------- */
+    /* ---------- Background crossfade layers ---------- */
     .bg-layer{
       position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
       transition:opacity .9s ease, filter .9s ease;pointer-events:none;
     }
     .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
     .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
+    
+    /* Tool bookmark links */
+    .tool-bookmark-link{
+      display:block;
+      padding:0.75rem 1rem;
+      background:rgba(255,255,255,0.1);
+      border:1px solid var(--accent);
+      border-radius:8px;
+      text-align:center;
+      text-decoration:none;
+      color:var(--brand);
+      font-weight:600;
+      transition:var(--transition);
+    }
+    .tool-bookmark-link:hover{
+      background:rgba(255,184,0,0.15);
+      transform:translateY(-2px);
+    }
+    
+    /* Tool card styling */
+    .tool-card{
+      background:rgba(255,255,255,0.1);
+      border:2px solid var(--accent);
+      border-radius:var(--radius);
+      padding:1.5rem;
+      backdrop-filter:blur(8px);
+      cursor:pointer;
+      transition:all var(--transition);
+    }
+    .tool-card:hover{
+      transform:scale(1.02);
+      box-shadow:0 4px 16px rgba(0,0,0,0.1);
+    }
+    .tool-details{
+      display:none;
+      margin-top:1rem;
+      padding-top:1rem;
+      border-top:1px solid rgba(255,255,255,0.2);
+    }
+    .tool-details.expanded{
+      display:block;
+    }
+    .tool-expand-indicator{
+      text-align:center;
+      margin-top:0.5rem;
+      font-size:0.85rem;
+      color:var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -141,18 +189,19 @@
         <h2 style="text-align:center;margin:0 0 1rem 0;color:var(--brand);font-size:1.5rem;">Available Tools</h2>
         <p style="text-align:center;color:var(--muted);margin-bottom:1.5rem;font-size:0.95rem;">This page contains multiple sovereignty tools. Jump to any tool below:</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem;">
-          <a href="#sovereignty-simulacrum" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🤖 Sovereignty Simulacrum</a>
-          <a href="diagnosis.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🧠 Diagnosis System</a>
-          <a href="coaching.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🤖 Coaching Agent</a>
-          <a href="manipulation.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🔍 Manipulation Analysis</a>
-          <a href="channels.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🌀 Channel Analysis</a>
-          <a href="paradigm.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🧭 Paradigm Clarification</a>
-          <a href="relationship.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">💞 Relationship Optimization</a>
-          <a href="temperament.html" style="display:block;padding:0.75rem 1rem;background:rgba(255,255,255,0.1);border:1px solid var(--accent);border-radius:8px;text-align:center;text-decoration:none;color:var(--brand);font-weight:600;transition:var(--transition);" onmouseover="this.style.background='rgba(255,184,0,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">🧭 Temperament Analyzer</a>
+          <a href="#sovereignty-simulacrum" class="tool-bookmark-link">🤖 Sovereignty Simulacrum</a>
+          <a href="diagnosis.html" class="tool-bookmark-link">🧠 Diagnosis System</a>
+          <a href="coaching.html" class="tool-bookmark-link">🤖 Coaching Agent</a>
+          <a href="manipulation.html" class="tool-bookmark-link">🔍 Manipulation Analysis</a>
+          <a href="channels.html" class="tool-bookmark-link">🌀 Channel Analysis</a>
+          <a href="paradigm.html" class="tool-bookmark-link">🧭 Paradigm Clarification</a>
+          <a href="relationship.html" class="tool-bookmark-link">💞 Relationship Optimization</a>
+          <a href="temperament.html" class="tool-bookmark-link">🧭 Temperament Analyzer</a>
         </div>
       </div>
     </section>
 
+    <!-- Sovereignty Simulacrum Section -->
     <section id="sovereignty-simulacrum" data-bg="./images/index-background.JPG" aria-labelledby="simulacrum-title">
       <div class="section-inner">
         <h2 id="simulacrum-title" style="text-align:center;margin:0 0 .4rem 0">Sovereignty Simulacrum</h2>
@@ -197,17 +246,20 @@
         </div>
       </div>
     </section>
+
+    <!-- All Tools Section -->
     <section id="tools" data-bg="./images/index-background.JPG" aria-labelledby="tools-title">
       <div class="section-inner">
         <h2 id="tools-title" style="text-align:center;margin:0 0 .4rem 0">Sovereignty Tools</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">Comprehensive diagnostic and coaching systems for reclaiming mental sovereignty.</p>
+        <p style="text-align:center;color:var(--muted);margin-top:0;margin-bottom:2rem;">Comprehensive diagnostic and coaching systems for reclaiming mental sovereignty.</p>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+          
           <!-- Diagnosis System Card -->
-          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+          <div class="tool-card" onclick="toggleToolCard(this)">
             <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🧠 Diagnosis System</h3>
             <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">DSM-5 self-reporting diagnostic assessment with 100+ disorders across 13+ categories. Includes category guide, comorbidity detection, and comprehensive treatment information.</p>
-            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+            <div class="tool-details">
               <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
               <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
                 <li>Category selection guide for uncertain users</li>
@@ -218,16 +270,17 @@
                 <li>Condition directory with full breakdowns</li>
                 <li>Export functionality (JSON/CSV) for AI integration</li>
               </ul>
-              <a class="btn btn-primary" href="diagnosis.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Educational tool only - not a substitute for professional mental health evaluation.</p>
+              <a class="btn btn-primary" href="diagnosis.html" style="display:inline-block;width:100%;text-align:center;">Access Diagnosis System</a>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
           <!-- Coaching Agent Card -->
-          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+          <div class="tool-card" onclick="toggleToolCard(this)">
             <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🤖 Coaching Agent Builder</h3>
             <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Transform your AI into a personalized sovereignty-aligned coaching agent. Based on Chapter 1 of Sovereign of Mind.</p>
-            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+            <div class="tool-details">
               <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
               <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
                 <li>15 Obstacles to Sovereignty assessment</li>
@@ -237,16 +290,17 @@
                 <li>Export with AI interpretation instructions (JSON/CSV)</li>
                 <li>Direct import into ChatGPT, Claude, or custom AI</li>
               </ul>
-              <a class="btn btn-primary" href="coaching.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your profile in JSON or CSV format for integration with ChatGPT, Claude, or other AI platforms.</p>
+              <a class="btn btn-primary" href="coaching.html" style="display:inline-block;width:100%;text-align:center;">Build Your Coaching Agent</a>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
           <!-- Manipulation Analysis Card -->
-          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+          <div class="tool-card" onclick="toggleToolCard(this)">
             <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🔍 Manipulation Analysis</h3>
             <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Identify manipulation vectors and tactics. Navigate symptoms, effects, and consequences to categorize manipulation patterns.</p>
-            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+            <div class="tool-details">
               <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
               <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
                 <li>6 core manipulation vectors (Fear, Dependency, Deception, Obsession, Adoration, Sexual Coercion)</li>
@@ -258,14 +312,14 @@
               </ul>
               <a class="btn btn-primary" href="manipulation.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
           <!-- Channel Analysis Card -->
-          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+          <div class="tool-card" onclick="toggleToolCard(this)">
             <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🌀 Channel Taxonomy</h3>
             <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Map 7 nodes and 42 channels to identify blockages, overloads, and flow disruptions in your internal system.</p>
-            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+            <div class="tool-details">
               <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
               <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
                 <li>7 core nodes (Base, Sex, Gut, Heart, Throat, Mind, Crown)</li>
@@ -278,14 +332,14 @@
               </ul>
               <a class="btn btn-primary" href="channels.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
           <!-- Paradigm Clarification Card -->
-          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+          <div class="tool-card" onclick="toggleToolCard(this)">
             <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🧭 Paradigm Clarification</h3>
             <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Clarify your paradigm of "The Good Life" and "God" across four dimensions of truth.</p>
-            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+            <div class="tool-details">
               <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
               <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
                 <li>4 dimensions of truth (Literal, Symbolic, Esoteric, Mystical)</li>
@@ -295,16 +349,17 @@
                 <li>Potential hazards and distortions identification</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <a class="btn btn-primary" href="paradigm.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your paradigm profile in JSON or CSV format for integration with your personal AI coaching agent.</p>
+              <a class="btn btn-primary" href="paradigm.html" style="display:inline-block;width:100%;text-align:center;">Clarify Your Paradigm</a>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
           <!-- Relationship Optimization Card -->
-          <div class="tool-card" style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);cursor:pointer;transition:all var(--transition);" onclick="toggleToolCard(this)">
+          <div class="tool-card" onclick="toggleToolCard(this)">
             <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">💞 Relationship Optimization</h3>
             <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Identify weakest links in relationships across 20 compatibility points with targeted action strategies.</p>
-            <div class="tool-details" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);">
+            <div class="tool-details">
               <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
               <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
                 <li>20 compatibility points organized by impact tier</li>
@@ -315,80 +370,35 @@
                 <li>STATUS/SELECTION/ATTRACTION reference integration</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <a class="btn btn-primary" href="relationship.html" style="display:inline-block;width:100%;text-align:center;">Access Tool</a>
+              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your relationship analysis in JSON or CSV format for integration with your personal AI coaching agent.</p>
+              <a class="btn btn-primary" href="relationship.html" style="display:inline-block;width:100%;text-align:center;">Analyze Your Relationship</a>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;font-size:0.85rem;color:var(--muted);">Click to expand ▼</div>
-          </div>
-        </div>
-
-        <!-- Detailed Tool Descriptions -->
-        <div style="margin-top:3rem;padding-top:3rem;border-top:2px solid rgba(0,0,0,0.1);">
-          <h2 style="text-align:center;margin-bottom:2rem;color:var(--brand);">Detailed Tool Information</h2>
-          
-          <div style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;backdrop-filter:blur(8px);">
-            <h3 style="text-align:center;margin-bottom:1rem;color:var(--brand);font-size:1.3rem;">🧠 Free Diagnostic Assessment Tool</h3>
-            <p style="text-align:center;line-height:1.6;margin-bottom:1rem;">
-              Explore our comprehensive <strong>DSM-5 Self-Reporting Diagnostic Assessment System</strong> - an advanced educational tool featuring 100+ disorders across 13+ diagnostic categories. Includes category selection guide, comorbidity detection, refined assessment questions, and comprehensive treatment information.
-            </p>
-            <div style="text-align:center;">
-              <a class="btn btn-primary" href="diagnosis.html" style="display:inline-block;">Access Diagnosis System</a>
-            </div>
-            <p style="text-align:center;font-size:0.9rem;color:var(--muted);margin-top:1rem;font-style:italic;">
-              Educational tool only - not a substitute for professional mental health evaluation.
-            </p>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
-          <div style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;backdrop-filter:blur(8px);">
-            <h3 style="text-align:center;margin-bottom:1rem;color:var(--brand);font-size:1.3rem;">🤖 Personal Coaching Agent Builder</h3>
-            <p style="text-align:center;line-height:1.6;margin-bottom:1rem;">
-              Transform your AI into a personalized sovereignty-aligned coaching agent. Complete comprehensive questionnaires based on Chapter 1 of <strong>Sovereign of Mind</strong> - including 15 Obstacles to Sovereignty and 10 Satisfaction Domains - to generate a detailed profile that can be exported and imported into your custom AI. Includes weighted scoring, priority identification, and complete coaching configuration for your personal AI agent.
-            </p>
-            <div style="text-align:center;">
-              <a class="btn btn-primary" href="coaching.html" style="display:inline-block;">Build Your Coaching Agent</a>
+          <!-- Temperament Analyzer Card -->
+          <div class="tool-card" onclick="toggleToolCard(this)">
+            <h3 style="margin:0 0 0.5rem 0;color:var(--brand);font-size:1.2rem;">🧭 Temperament Analyzer</h3>
+            <p style="margin:0 0 1rem 0;font-size:0.95rem;line-height:1.5;color:#333;">Discover your position on the masculine-feminine temperament spectrum through comprehensive questions covering behavioral patterns and relationship dynamics.</p>
+            <div class="tool-details">
+              <p style="font-size:0.9rem;line-height:1.6;color:#333;margin-bottom:0.5rem;"><strong>Features:</strong></p>
+              <ul style="font-size:0.85rem;line-height:1.6;color:#333;margin-left:1.5rem;margin-bottom:1rem;">
+                <li>Masculine-feminine temperament spectrum assessment</li>
+                <li>Behavioral patterns evaluation</li>
+                <li>Intimate dynamics analysis (including sexual preferences and positions)</li>
+                <li>Emotional responses to intimacy</li>
+                <li>Attraction responsiveness and relationship polarity</li>
+                <li>Based on Chapter 7: Timeless Archetypes from Sovereign of Mind</li>
+                <li>STATUS/SELECTION/ATTRACTION reference map integration</li>
+                <li>Export functionality for AI integration</li>
+              </ul>
+              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Temperament is distinct from biological sex or gender identity—it refers to archetypal energy patterns that exist on a spectrum. Variation across dimensions is expected and common.</p>
+              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your temperament analysis in JSON or CSV format for integration with your personal AI coaching agent. Understanding your temperament helps clarify relationship polarity, compatibility dynamics, and personal development needs.</p>
+              <a class="btn btn-primary" href="temperament.html" style="display:inline-block;width:100%;text-align:center;">Analyze Your Temperament</a>
             </div>
-            <p style="text-align:center;font-size:0.9rem;color:var(--muted);margin-top:1rem;font-style:italic;">
-              Export your profile in JSON or CSV format for integration with ChatGPT, Claude, or other AI platforms.
-            </p>
+            <div class="tool-expand-indicator">Click to expand ▼</div>
           </div>
 
-          <div style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;backdrop-filter:blur(8px);">
-            <h3 style="text-align:center;margin-bottom:1rem;color:var(--brand);font-size:1.3rem;">🧭 Paradigm Clarification System</h3>
-            <p style="text-align:center;line-height:1.6;margin-bottom:1rem;">
-              Clarify your paradigm of <strong>"The Good Life"</strong> and <strong>"God"</strong> across four dimensions of truth (Literal, Symbolic, Esoteric, Mystical). This comprehensive system helps you identify your primary alignment with different ways of understanding life and the divine. Map your responses to discover your worldview structure, primary paradigms, and how they shape your experience. Based on the "Dimensions-of-Truth Exercises" framework.
-            </p>
-            <div style="text-align:center;">
-              <a class="btn btn-primary" href="paradigm.html" style="display:inline-block;">Clarify Your Paradigm</a>
-            </div>
-            <p style="text-align:center;font-size:0.9rem;color:var(--muted);margin-top:1rem;font-style:italic;">
-              Export your paradigm profile in JSON or CSV format for integration with your personal AI coaching agent.
-            </p>
-          </div>
-
-          <div style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;backdrop-filter:blur(8px);">
-            <h3 style="text-align:center;margin-bottom:1rem;color:var(--brand);font-size:1.3rem;">🔗 Relationship Optimization - Weakest Link Analysis</h3>
-            <p style="text-align:center;line-height:1.6;margin-bottom:1rem;">
-              Identify the weakest links in your relationship across <strong>20 compatibility points</strong> organized by impact tier (Very High, High, Moderate-High, Moderate). This system evaluates core values, trust, boundaries, communication, emotional intelligence, conflict resolution, and more. Receive targeted action strategies integrating insights from optimal relationship dynamics, biological essentialism, polarity, and the STATUS/SELECTION/ATTRACTION reference map. Based on "Optimal Relationship Dynamics" and archetypal frameworks.
-            </p>
-            <div style="text-align:center;">
-              <a class="btn btn-primary" href="relationship.html" style="display:inline-block;">Analyze Your Relationship</a>
-            </div>
-            <p style="text-align:center;font-size:0.9rem;color:var(--muted);margin-top:1rem;font-style:italic;">
-              Export your relationship analysis in JSON or CSV format for integration with your personal AI coaching agent.
-            </p>
-          </div>
-
-          <div style="background:rgba(255,255,255,0.1);border:2px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;backdrop-filter:blur(8px);">
-            <h3 style="text-align:center;margin-bottom:1rem;color:var(--brand);font-size:1.3rem;">🧭 Temperament Analyzer - Masculine-Feminine Spectrum</h3>
-            <p style="text-align:center;line-height:1.6;margin-bottom:1rem;">
-              Discover your position on the <strong>masculine-feminine temperament spectrum</strong> through comprehensive questions covering behavioral patterns, intimate dynamics (including sexual preferences and positions), emotional responses to intimacy, attraction responsiveness, and relationship polarity. This assessment directly impacts relationship consequences and optimization strategies. Based on Chapter 7: Timeless Archetypes from <strong>Sovereign of Mind</strong>, including the STATUS/SELECTION/ATTRACTION reference map. <em>Temperament is distinct from biological sex or gender identity—it refers to archetypal energy patterns that exist on a spectrum. Variation across dimensions is expected and common.</em>
-            </p>
-            <div style="text-align:center;">
-              <a class="btn btn-primary" href="temperament.html" style="display:inline-block;">Analyze Your Temperament</a>
-            </div>
-            <p style="text-align:center;font-size:0.9rem;color:var(--muted);margin-top:1rem;font-style:italic;">
-              Export your temperament analysis in JSON or CSV format for integration with your personal AI coaching agent. Understanding your temperament helps clarify relationship polarity, compatibility dynamics, and personal development needs.
-            </p>
-          </div>
         </div>
       </div>
     </section>
@@ -519,18 +529,19 @@
         }
       });
     })();
+    
     // Tool card toggle functionality
     function toggleToolCard(card) {
       const details = card.querySelector('.tool-details');
-      const indicator = card.querySelector('div:last-child');
-      if (details.style.display === 'none' || !details.style.display) {
-        details.style.display = 'block';
-        if (indicator) indicator.textContent = 'Click to collapse ▲';
-        card.style.transform = 'scale(1.02)';
-      } else {
-        details.style.display = 'none';
+      const indicator = card.querySelector('.tool-expand-indicator');
+      if (details.classList.contains('expanded')) {
+        details.classList.remove('expanded');
         if (indicator) indicator.textContent = 'Click to expand ▼';
         card.style.transform = 'scale(1)';
+      } else {
+        details.classList.add('expanded');
+        if (indicator) indicator.textContent = 'Click to collapse ▲';
+        card.style.transform = 'scale(1.02)';
       }
     }
   </script>
