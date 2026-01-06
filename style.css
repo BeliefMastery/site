@@ -1117,6 +1117,7 @@ blockquote{
     left:1rem;
     right:1rem;
     transform:translateY(-4px);
+    z-index:999999 !important;
   }
   .image-card.tool-card:hover .tool-summary{
     transform:translateY(0);
@@ -1134,6 +1135,7 @@ blockquote{
     left:1rem;
     right:1rem;
     transform:translateY(-4px);
+    z-index:999999 !important;
   }
   .image-card.tool-card:hover .tool-summary{
     transform:translateY(0);
