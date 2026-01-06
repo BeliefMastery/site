@@ -18,7 +18,7 @@ export const EFFECT_QUESTIONS = {
   autonomy: [
     {
       id: 'autonomy_1',
-      question: 'Have you lost independence in decision-making or personal choices?',
+      question: 'Have you lost independence in decision-making or personal choices (feeling you need permission or approval for your own decisions)?',
       vector: ['dependency', 'obsession'],
       weight: 1.3
     },

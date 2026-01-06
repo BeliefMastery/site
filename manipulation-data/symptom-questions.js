@@ -23,13 +23,13 @@ export const SYMPTOM_QUESTIONS = {
     },
     {
       id: 'emotion_4',
-      question: 'Do you feel trapped, voiceless, or unable to set boundaries?',
+      question: 'Do you feel trapped, voiceless, or unable to set boundaries (say no, express limits, or protect yourself)?',
       vector: ['dependency', 'fear', 'obsession'],
       weight: 1.3
     },
     {
       id: 'emotion_5',
-      question: 'Do you suppress your authentic self to avoid conflict or rejection?',
+      question: 'Do you hide who you really are or change yourself to avoid conflict or rejection?',
       vector: ['fear', 'adoration', 'obsession'],
       weight: 1.2
     }
@@ -49,7 +49,7 @@ export const SYMPTOM_QUESTIONS = {
     },
     {
       id: 'behavior_3',
-      question: 'Do you avoid expressing disagreement or setting boundaries?',
+      question: 'Do you avoid expressing disagreement or setting boundaries (saying no, expressing limits)?',
       vector: ['fear', 'dependency'],
       weight: 1.3
     },
@@ -107,7 +107,7 @@ export const SYMPTOM_QUESTIONS = {
     },
     {
       id: 'relational_3',
-      question: 'Do you feel the relationship is conditional on your compliance?',
+      question: 'Do you feel the relationship depends on you doing what they want (love/attention withdrawn if you don\'t comply)?',
       vector: ['dependency', 'fear', 'sexual'],
       weight: 1.3
     },
@@ -127,7 +127,7 @@ export const SYMPTOM_QUESTIONS = {
     },
     {
       id: 'physical_2',
-      question: 'Do you feel your physical boundaries are being violated?',
+      question: 'Do you feel your physical boundaries are being violated (unwanted touching, pressure for physical contact, invasion of personal space)?',
       vector: ['sexual', 'obsession'],
       weight: 1.4
     },

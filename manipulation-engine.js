@@ -309,6 +309,7 @@ class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${question.question}</h3>
+        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${question.description}</div>` : ''}
         <div class="three-point-options">
           ${question.options.map((option, index) => `
             <label class="three-point-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -337,6 +338,7 @@ class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${question.question}</h3>
+        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${question.description}</div>` : ''}
         <div class="binary-unsure-options">
           ${question.options.map((option, index) => `
             <label class="binary-unsure-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -365,6 +367,7 @@ class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${question.question}</h3>
+        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${question.description}</div>` : ''}
         <div class="frequency-options">
           ${question.options.map((option, index) => `
             <label class="frequency-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">

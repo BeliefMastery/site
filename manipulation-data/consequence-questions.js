@@ -4,7 +4,7 @@ export const CONSEQUENCE_QUESTIONS = {
   situational: [
     {
       id: 'situational_1',
-      question: 'Do conflicts or crises seem to arise at times when you try to assert boundaries?',
+      question: 'Do conflicts or crises seem to arise at times when you try to assert boundaries (say no, set limits, or stand up for yourself)?',
       vector: ['fear', 'dependency'],
       weight: 1.3
     },
@@ -36,7 +36,7 @@ export const CONSEQUENCE_QUESTIONS = {
     },
     {
       id: 'consequence_2',
-      question: 'Do you feel you\'ve compromised your values or integrity?',
+      question: 'Do you feel you\'ve compromised your values or integrity (acted against what you believe is right)?',
       vector: ['adoration', 'dependency', 'sexual'],
       weight: 1.2
     },

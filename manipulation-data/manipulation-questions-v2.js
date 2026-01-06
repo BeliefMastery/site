@@ -30,6 +30,7 @@ export const PHASE_1_VECTOR_SCREENING = [
   {
     id: 'p1_dependency_screen',
     question: 'Do you feel dependent on this person or trapped in the relationship?',
+    description: 'Dependency means feeling you cannot leave or function without them. Examples: feeling you need their permission for decisions, relying on them for basic needs, or feeling you have no other options.',
     type: 'three_point',
     options: [
       {
@@ -37,11 +38,11 @@ export const PHASE_1_VECTOR_SCREENING = [
         mapsTo: { vector: 'dependency', state: 'high', weight: 3 }
       },
       {
-        text: 'Somewhat - I feel some dependency or limited autonomy',
+        text: 'Somewhat - I feel some dependency or limited freedom to make my own choices',
         mapsTo: { vector: 'dependency', state: 'medium', weight: 1 }
       },
       {
-        text: 'No - I feel independent and free',
+        text: 'No - I feel independent and free to make my own choices',
         mapsTo: { vector: 'dependency', state: 'low', weight: 0 }
       }
     ],
@@ -50,10 +51,11 @@ export const PHASE_1_VECTOR_SCREENING = [
   {
     id: 'p1_deception_screen',
     question: 'Do you question your own memory, perception, or reality when interacting with this person?',
+    description: 'This includes "gaslighting" - when someone makes you doubt what you know happened. Examples: They say "That never happened" when you remember it clearly, or "You\'re remembering it wrong" about events you witnessed.',
     type: 'three_point',
     options: [
       {
-        text: 'Frequently - I often doubt my own memory or perception',
+        text: 'Frequently - I often doubt my own memory or what I know to be true',
         mapsTo: { vector: 'deception', state: 'high', weight: 3 }
       },
       {
@@ -61,7 +63,7 @@ export const PHASE_1_VECTOR_SCREENING = [
         mapsTo: { vector: 'deception', state: 'medium', weight: 1 }
       },
       {
-        text: 'Rarely or never - I trust my memory and perception',
+        text: 'Rarely or never - I trust my memory and what I know to be true',
         mapsTo: { vector: 'deception', state: 'low', weight: 0 }
       }
     ],
@@ -70,6 +72,7 @@ export const PHASE_1_VECTOR_SCREENING = [
   {
     id: 'p1_obsession_screen',
     question: 'Does this person show obsessive, possessive, or controlling behaviors?',
+    description: 'Obsessive means they can\'t let go or need constant contact. Possessive means they act like they own you. Controlling means they try to dictate your choices. Examples: constant texting/calling, jealousy over friends, telling you what to wear or who to see.',
     type: 'three_point',
     options: [
       {
@@ -90,6 +93,7 @@ export const PHASE_1_VECTOR_SCREENING = [
   {
     id: 'p1_adoration_screen',
     question: 'Does this person use excessive flattery, idealization, or false admiration?',
+    description: 'Idealization means they put you on a pedestal unrealistically. False admiration is praise that feels insincere or used to get something. Examples: "You\'re perfect" when you\'re not, excessive compliments that feel manipulative, or praise that comes with strings attached.',
     type: 'three_point',
     options: [
       {
@@ -110,6 +114,7 @@ export const PHASE_1_VECTOR_SCREENING = [
   {
     id: 'p1_sexual_screen',
     question: 'Does this person use sexuality, sexual pressure, or sexual guilt to influence you?',
+    description: 'Sexual manipulation includes pressuring you into sexual acts, using sex as a reward/punishment, or making you feel guilty about your sexuality. Examples: "If you loved me, you would..." or withholding affection until you comply, or shaming you about your sexual needs.',
     type: 'three_point',
     options: [
       {
@@ -189,6 +194,7 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
     questions.push({
       id: `p3_${vectorId}_symptoms_binary`,
       question: `Do you experience symptoms related to ${vector.name.toLowerCase()}?`,
+      description: `Symptoms are ways this type of manipulation shows up in your thoughts, feelings, or behaviors. For ${vector.name.toLowerCase()}, this might include feeling anxious, confused, trapped, or doubting yourself.`,
       type: 'binary_unsure',
       options: [
         {
@@ -229,6 +235,7 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
     questions.push({
       id: `p3_${vectorId}_effects_binary`,
       question: `Have you noticed effects on your life from ${vector.name.toLowerCase()}?`,
+      description: `Effects are changes in your life caused by this manipulation. This might include changes in your self-esteem, independence, relationships with others, or your ability to function at work or school.`,
       type: 'binary_unsure',
       options: [
         {
@@ -269,6 +276,7 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
     questions.push({
       id: `p3_${vectorId}_consequences_binary`,
       question: `Have you experienced consequences from ${vector.name.toLowerCase()}?`,
+      description: `Consequences are serious outcomes or patterns that have developed. This might include losing yourself, compromising your values, experiencing harm, or feeling trapped or in danger.`,
       type: 'binary_unsure',
       options: [
         {
