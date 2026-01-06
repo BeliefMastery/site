@@ -1,19 +1,24 @@
 // Temperament Analyzer Engine
 // Maps position on masculine-feminine temperament spectrum
+// Version 2: Multi-phase architecture with orientation screening
 
 import { TEMPERAMENT_DIMENSIONS } from './temperament-data/temperament-dimensions.js';
 import { INTIMATE_DYNAMICS } from './temperament-data/intimate-dynamics.js';
 import { ATTRACTION_RESPONSIVENESS } from './temperament-data/attraction-responsiveness.js';
 import { TEMPERAMENT_SCORING } from './temperament-data/temperament-scoring.js';
+import { PHASE_1_ORIENTATION_QUESTIONS } from './temperament-data/temperament-orientation.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class TemperamentEngine {
   constructor() {
+    this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
+    this.phase1Results = null; // Preliminary orientation results
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      phase1Results: null,
       dimensionScores: {},
       overallTemperament: null,
       variationAnalysis: {},
@@ -25,12 +30,56 @@ class TemperamentEngine {
   }
 
   init() {
-    this.buildQuestionSequence();
     this.attachEventListeners();
     this.loadStoredData();
+    this.buildPhase1Sequence();
   }
 
-  buildQuestionSequence() {
+  buildPhase1Sequence() {
+    // Phase 1: Orientation Screening (7 quick questions)
+    this.currentPhase = 1;
+    this.currentQuestionIndex = 0;
+    this.questionSequence = [...PHASE_1_ORIENTATION_QUESTIONS];
+  }
+
+  analyzePhase1Results() {
+    // Calculate preliminary orientation scores
+    let totalMasculine = 0;
+    let totalFeminine = 0;
+    let totalWeight = 0;
+
+    PHASE_1_ORIENTATION_QUESTIONS.forEach(question => {
+      const answer = this.answers[question.id];
+      if (answer && answer.mapsTo) {
+        const weight = answer.mapsTo.weight || 1;
+        totalMasculine += (answer.mapsTo.masculine || 0) * weight;
+        totalFeminine += (answer.mapsTo.feminine || 0) * weight;
+        totalWeight += weight;
+      }
+    });
+
+    const avgMasculine = totalWeight > 0 ? totalMasculine / totalWeight : 0;
+    const avgFeminine = totalWeight > 0 ? totalFeminine / totalWeight : 0;
+    const net = avgMasculine - avgFeminine;
+    const normalizedScore = (net + 2) / 4; // Normalize to 0-1 scale
+
+    this.phase1Results = {
+      masculine: avgMasculine,
+      feminine: avgFeminine,
+      net: net,
+      normalizedScore: normalizedScore
+    };
+
+    this.analysisData.phase1Results = this.phase1Results;
+
+    // Build Phase 2 sequence
+    this.buildPhase2Sequence();
+  }
+
+  buildPhase2Sequence() {
+    // Phase 2: Deep Mapping (all remaining questions)
+    this.currentPhase = 2;
+    this.currentQuestionIndex = 0;
     this.questionSequence = [];
     
     // Add questions from all dimension categories
@@ -142,19 +191,89 @@ class TemperamentEngine {
     if (!questionContainer) return;
 
     if (this.currentQuestionIndex >= this.questionSequence.length) {
-      this.calculateResults();
-      this.renderResults();
-      return;
+      if (this.currentPhase === 1) {
+        this.analyzePhase1Results();
+        this.showPhase1Feedback();
+        return;
+      } else {
+        this.calculateResults();
+        this.renderResults();
+        return;
+      }
     }
 
     const currentQ = this.questionSequence[this.currentQuestionIndex];
     
-    // Check if entering intimate dynamics section and show consent gate
-    if (currentQ.type === 'intimate' && !this.analysisData.intimateConsentGiven) {
+    // Phase 1: Render 3-point orientation questions
+    if (this.currentPhase === 1 && currentQ.type === 'three_point') {
+      this.renderThreePointQuestion(currentQ);
+      return;
+    }
+    
+    // Phase 2: Check if entering intimate dynamics section and show consent gate
+    if (this.currentPhase === 2 && currentQ.type === 'intimate' && !this.analysisData.intimateConsentGiven) {
       this.showIntimateConsentGate();
       return;
     }
     
+    // Phase 2: Render slider-based questions (existing logic)
+    this.renderSliderQuestion(currentQ);
+  }
+
+  renderThreePointQuestion(question) {
+    const questionContainer = document.getElementById('questionContainer');
+    const currentAnswer = this.answers[question.id];
+    
+    questionContainer.innerHTML = `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">Orientation</span>
+        </div>
+        <h3 class="question-text">${question.question}</h3>
+        <div class="three-point-options">
+          ${question.options.map((option, index) => `
+            <label class="three-point-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
+              <input 
+                type="radio" 
+                name="question_${question.id}" 
+                value="${index}"
+                data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+                ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
+              />
+              <span class="option-text">${option.text}</span>
+            </label>
+          `).join('')}
+        </div>
+        <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
+          <strong>Tip:</strong> Answer based on what feels most natural to you, not what you think you "should" be.
+        </div>
+      </div>
+    `;
+    
+    // Attach event listeners
+    const inputs = document.querySelectorAll(`input[name="question_${question.id}"]`);
+    inputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        const optionData = JSON.parse(e.target.dataset.optionData);
+        this.answers[question.id] = optionData;
+        
+        // Update visual selection
+        document.querySelectorAll('.three-point-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        e.target.closest('label').classList.add('selected');
+        
+        this.saveProgress();
+      });
+    });
+    
+    this.updateProgress();
+    this.updateNavigationButtons();
+  }
+
+  renderSliderQuestion(currentQ) {
+    const questionContainer = document.getElementById('questionContainer');
     const savedAnswer = this.answers[currentQ.id] !== undefined ? this.answers[currentQ.id] : 5;
 
     let categoryInfo = '';
@@ -166,6 +285,10 @@ class TemperamentEngine {
 
     questionContainer.innerHTML = `
       <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">Deep Mapping</span>
+        </div>
         ${categoryInfo}
         <h3>${currentQ.question}</h3>
         ${currentQ.description ? `<p class="description" style="margin-top: 0.5rem; font-style: italic; color: var(--muted);">${currentQ.description}</p>` : ''}
@@ -200,19 +323,88 @@ class TemperamentEngine {
     this.updateNavigationButtons();
   }
 
+  showPhase1Feedback() {
+    const questionContainer = document.getElementById('questionContainer');
+    if (!questionContainer || !this.phase1Results) return;
+    
+    const score = this.phase1Results.normalizedScore;
+    let rangeLabel = '';
+    let rangeDescription = '';
+    
+    if (score >= 0.7) {
+      rangeLabel = 'Masculine-Leaning Range';
+      rangeDescription = 'Your initial responses suggest a tendency toward masculine-leaning expression patterns. The detailed assessment will help clarify the specific dimensions and contexts where this shows up.';
+    } else if (score >= 0.55) {
+      rangeLabel = 'Balanced-Masculine Range';
+      rangeDescription = 'Your initial responses suggest a balanced orientation with slight masculine-leaning tendencies. The detailed assessment will explore the nuances across different dimensions.';
+    } else if (score >= 0.45) {
+      rangeLabel = 'Balanced Range';
+      rangeDescription = 'Your initial responses suggest a balanced temperament with flexibility across the spectrum. The detailed assessment will map how this expresses across different dimensions and contexts.';
+    } else if (score >= 0.3) {
+      rangeLabel = 'Balanced-Feminine Range';
+      rangeDescription = 'Your initial responses suggest a balanced orientation with slight feminine-leaning tendencies. The detailed assessment will explore the nuances across different dimensions.';
+    } else {
+      rangeLabel = 'Feminine-Leaning Range';
+      rangeDescription = 'Your initial responses suggest a tendency toward feminine-leaning expression patterns. The detailed assessment will help clarify the specific dimensions and contexts where this shows up.';
+    }
+    
+    questionContainer.innerHTML = `
+      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
+        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Orientation Complete</h3>
+        <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">${rangeLabel}</h4>
+          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">${rangeDescription}</p>
+          <div style="position: relative; height: 30px; background: linear-gradient(to right, rgba(0,123,255,0.3), rgba(255,192,203,0.3)); border-radius: var(--radius); margin-top: 1rem; border: 2px solid var(--brand);">
+            <div style="position: absolute; top: 50%; left: ${score * 100}%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--brand); border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>
+          </div>
+          <p style="text-align: center; margin-top: 0.75rem; font-size: 0.9rem; color: var(--muted);">
+            Preliminary Position: ${(score * 100).toFixed(0)}% on the spectrum
+          </p>
+        </div>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          Now we'll explore the detailed dimensions to map your temperament expression across different contexts and relationships.
+        </p>
+        <button class="btn btn-primary" id="continueToPhase2" style="min-width: 200px;">Continue to Detailed Assessment</button>
+      </div>
+    `;
+    
+    const continueBtn = document.getElementById('continueToPhase2');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        this.renderCurrentQuestion(); // Start Phase 2
+      });
+    }
+    
+    this.updateNavigationButtons();
+  }
+
   updateProgress() {
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
-      const progress = this.questionSequence.length > 0 
-        ? ((this.currentQuestionIndex + 1) / this.questionSequence.length) * 100 
-        : 0;
+      // Calculate total progress across both phases
+      const phase1Total = PHASE_1_ORIENTATION_QUESTIONS.length;
+      const phase2Total = this.currentPhase === 2 ? this.questionSequence.length : 
+                         (Object.keys(TEMPERAMENT_DIMENSIONS).reduce((sum, k) => sum + TEMPERAMENT_DIMENSIONS[k].questions.length, 0) +
+                          Object.keys(INTIMATE_DYNAMICS).reduce((sum, k) => sum + INTIMATE_DYNAMICS[k].questions.length, 0) +
+                          Object.keys(ATTRACTION_RESPONSIVENESS).reduce((sum, k) => sum + ATTRACTION_RESPONSIVENESS[k].questions.length, 0));
+      const totalQuestions = phase1Total + phase2Total;
+      
+      let currentProgress = 0;
+      if (this.currentPhase === 1) {
+        currentProgress = this.currentQuestionIndex + 1;
+      } else {
+        currentProgress = phase1Total + this.currentQuestionIndex + 1;
+      }
+      
+      const progress = totalQuestions > 0 ? (currentProgress / totalQuestions) * 100 : 0;
       progressFill.style.width = `${progress}%`;
     }
     
     const questionCount = document.getElementById('questionCount');
     if (questionCount) {
       const remaining = this.questionSequence.length - this.currentQuestionIndex;
-      questionCount.textContent = `${remaining} question${remaining !== 1 ? 's' : ''} remaining`;
+      const phaseLabel = this.currentPhase === 1 ? ' (Orientation)' : ' (Deep Mapping)';
+      questionCount.textContent = `${remaining} question${remaining !== 1 ? 's' : ''} remaining${phaseLabel}`;
     }
   }
 
@@ -233,8 +425,20 @@ class TemperamentEngine {
 
   nextQuestion() {
     const currentQ = this.questionSequence[this.currentQuestionIndex];
-    if (this.answers[currentQ.id] === undefined) {
-      this.answers[currentQ.id] = 5;
+    
+    // For Phase 1, ensure answer is saved
+    if (this.currentPhase === 1) {
+      if (this.answers[currentQ.id] === undefined) {
+        // Default to middle option if none selected
+        if (currentQ.options && currentQ.options.length > 0) {
+          this.answers[currentQ.id] = currentQ.options[Math.floor(currentQ.options.length / 2)];
+        }
+      }
+    } else {
+      // For Phase 2, default to 5 if slider not moved
+      if (this.answers[currentQ.id] === undefined) {
+        this.answers[currentQ.id] = 5;
+      }
     }
 
     if (this.currentQuestionIndex < this.questionSequence.length - 1) {
@@ -242,8 +446,14 @@ class TemperamentEngine {
       this.renderCurrentQuestion();
       this.saveProgress();
     } else {
-      this.calculateResults();
-      this.renderResults();
+      // End of current phase
+      if (this.currentPhase === 1) {
+        this.analyzePhase1Results();
+        this.showPhase1Feedback();
+      } else {
+        this.calculateResults();
+        this.renderResults();
+      }
     }
   }
 
@@ -262,13 +472,18 @@ class TemperamentEngine {
   }
 
   calculateResults() {
-    // Calculate dimension scores
+    // Calculate dimension scores (only from Phase 2 questions)
     this.analysisData.dimensionScores = {};
     
-    // Group answers by dimension/category
+    // Group answers by dimension/category (exclude Phase 1 orientation questions)
     const dimensionGroups = {};
     
     this.questionSequence.forEach(q => {
+      // Skip Phase 1 orientation questions
+      if (q.id && q.id.startsWith('p1_orientation')) {
+        return;
+      }
+      
       const groupKey = q.dimension || q.category || 'other';
       if (!dimensionGroups[groupKey]) {
         dimensionGroups[groupKey] = [];
@@ -695,8 +910,10 @@ AI AGENT CONFIGURATION:
 
   saveProgress() {
     const progressData = {
+      currentPhase: this.currentPhase,
       currentQuestionIndex: this.currentQuestionIndex,
       answers: this.answers,
+      phase1Results: this.phase1Results,
       timestamp: new Date().toISOString()
     };
     sessionStorage.setItem('temperamentProgress', JSON.stringify(progressData));
@@ -707,8 +924,18 @@ AI AGENT CONFIGURATION:
     if (stored) {
       try {
         const data = JSON.parse(stored);
+        this.currentPhase = data.currentPhase || 1;
         this.currentQuestionIndex = data.currentQuestionIndex || 0;
         this.answers = data.answers || {};
+        this.phase1Results = data.phase1Results || null;
+        
+        // Restore appropriate phase
+        if (this.currentPhase === 1) {
+          this.buildPhase1Sequence();
+        } else if (this.currentPhase === 2) {
+          this.phase1Results = data.phase1Results || null;
+          this.buildPhase2Sequence();
+        }
         
         if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
           // Resume assessment
@@ -730,10 +957,13 @@ AI AGENT CONFIGURATION:
   }
 
   resetAssessment() {
+    this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
+    this.phase1Results = null;
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      phase1Results: null,
       dimensionScores: {},
       overallTemperament: null,
       variationAnalysis: {},
@@ -746,7 +976,7 @@ AI AGENT CONFIGURATION:
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
     
-    this.renderCurrentQuestion();
+    this.buildPhase1Sequence();
   }
 }
 
