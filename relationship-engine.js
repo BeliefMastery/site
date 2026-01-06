@@ -503,6 +503,37 @@ class RelationshipEngine {
     }
   }
 
+  showGroundingPause() {
+    const container = document.getElementById('questionContainer');
+    if (!container) {
+      // If container doesn't exist, go straight to results
+      this.finalizeResults();
+      return;
+    }
+    
+    this.groundingPauseShown = true;
+    
+    container.innerHTML = `
+      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
+        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Assessment Complete</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          Before viewing your results, take a moment to ground yourself. This analysis is a tool for clarity, not a verdict. Use it to support your sovereignty and relational understanding.
+        </p>
+        <button class="btn btn-primary" id="continueToResults" style="min-width: 150px;">View Results</button>
+      </div>
+    `;
+    
+    const continueBtn = document.getElementById('continueToResults');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        this.finalizeResults();
+      });
+    } else {
+      // If button creation fails, go straight to results
+      setTimeout(() => this.finalizeResults(), 100);
+    }
+  }
+
   analyzeStage1Results() {
     // Calculate compatibility scores from Stage 1
     this.analysisData.stage1Results = {};
