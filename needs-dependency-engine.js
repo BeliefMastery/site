@@ -1,10 +1,17 @@
 // Needs Dependency Loop Determinator Engine
 // Based on Chapter 5: Needs and Beliefs from Belief Mastery
-// Identifies dependency loops through needs and vices assessment
+// Expanded with BM-Appendix1.html (Patterns Compendium) and BM-Appendix2.html (Reference Tables)
+// Identifies dependency loops through needs, vices, patterns, compulsions, and aversions assessment
 
 import { NEEDS_VOCABULARY } from './needs-dependency-data/needs-vocabulary.js';
 import { VICES_VOCABULARY } from './needs-dependency-data/vices-vocabulary.js';
 import { DEPENDENCY_LOOP_QUESTIONS } from './needs-dependency-data/dependency-loop-questions.js';
+import { PATTERN_NEEDS_MAPPING } from './needs-dependency-data/pattern-needs-mapping.js';
+import { NEED_COMPULSION_AVERSION_MAPPING } from './needs-dependency-data/need-compulsion-aversion-mapping.js';
+import { VICE_NEEDS_MAPPING } from './needs-dependency-data/vice-needs-mapping.js';
+import { PATTERNS_COMPENDIUM } from './needs-dependency-data/patterns-compendium.js';
+import { NEEDS_GLOSSARY } from './needs-dependency-data/needs-glossary.js';
+import { VICES_GLOSSARY } from './needs-dependency-data/vices-glossary.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 class NeedsDependencyEngine {
@@ -20,7 +27,16 @@ class NeedsDependencyEngine {
       dependencyPatterns: {},
       identifiedLoops: [],
       primaryLoop: null,
-      recommendations: []
+      recommendations: [],
+      // Expanded analysis data from Appendices 1 & 2
+      patterns: {},
+      patternMatches: [],
+      compulsions: {},
+      aversions: {},
+      triggers: {},
+      viceNeedMappings: {},
+      needCompulsionAversionMappings: {},
+      patternNeedsMappings: {}
     };
     
     this.init();
@@ -152,21 +168,23 @@ class NeedsDependencyEngine {
         </div>
         <h3 class="question-text">${question.question}</h3>
         <div class="scale-container">
-          <input 
-            type="range" 
-            id="questionInput" 
-            data-question-id="${question.id}"
-            min="0" 
-            max="10" 
-            value="${this.answers[question.id] || 5}"
-            class="slider"
-          />
-          <div class="scale-labels">
-            <span>Not at all / Never (0-2)</span>
-            <span>Moderately / Sometimes (5-6)</span>
-            <span>Extremely / Always (9-10)</span>
+          <div class="scale-input">
+            <input 
+              type="range" 
+              id="questionInput" 
+              data-question-id="${question.id}"
+              min="0" 
+              max="10" 
+              step="1"
+              value="${this.answers[question.id] || 5}"
+            />
           </div>
           <div class="scale-value" id="scaleValue">${this.answers[question.id] || 5}</div>
+        </div>
+        <div class="scale-labels">
+          <span>Not at all / Never (0-2)</span>
+          <span>Moderately / Sometimes (5-6)</span>
+          <span>Extremely / Always (9-10)</span>
         </div>
       </div>
     `;
@@ -261,6 +279,18 @@ class NeedsDependencyEngine {
   completeAssessment() {
     // Map answers to needs and vices
     this.mapToNeedsAndVices();
+    
+    // Identify patterns (from Appendix 1)
+    this.identifyPatterns();
+    
+    // Map compulsions and aversions (from Appendix 2)
+    this.mapCompulsionsAndAversions();
+    
+    // Map vice-need relationships (from Appendix 2)
+    this.mapViceNeedRelationships();
+    
+    // Map pattern-needs relationships (from Appendix 2)
+    this.mapPatternNeedsRelationships();
     
     // Identify dependency loops
     this.identifyDependencyLoops();
@@ -564,6 +594,130 @@ class NeedsDependencyEngine {
     return 'Unknown';
   }
 
+  // NEW METHODS FOR APPENDIX 1 & 2 INTEGRATION
+
+  identifyPatterns() {
+    // Match identified needs and vices to patterns from the compendium
+    const patternMatches = [];
+    const identifiedNeeds = Object.keys(this.analysisData.needs).filter(
+      need => this.analysisData.needs[need].averageScore >= 5
+    );
+    const identifiedVices = Object.keys(this.analysisData.vices).filter(
+      vice => this.analysisData.vices[vice].averageScore >= 5
+    );
+
+    // Check each pattern in the compendium
+    Object.entries(PATTERNS_COMPENDIUM).forEach(([patternName, patternData]) => {
+      if (!patternData.needs) return;
+      
+      // Calculate match score based on needs overlap
+      const patternNeeds = patternData.needs.map(n => n.toLowerCase());
+      const matchingNeeds = identifiedNeeds.filter(need => 
+        patternNeeds.some(pn => need.toLowerCase().includes(pn) || pn.includes(need.toLowerCase()))
+      );
+      
+      // Calculate match score based on vices overlap
+      const patternVices = (patternData.viceExpression || []).map(v => v.toLowerCase());
+      const matchingVices = identifiedVices.filter(vice => 
+        patternVices.some(pv => vice.toLowerCase().includes(pv) || pv.includes(vice.toLowerCase()))
+      );
+      
+      // Calculate overall match score
+      const needsMatchScore = patternNeeds.length > 0 ? (matchingNeeds.length / patternNeeds.length) * 100 : 0;
+      const vicesMatchScore = patternVices.length > 0 ? (matchingVices.length / patternVices.length) * 100 : 0;
+      const overallScore = (needsMatchScore * 0.7) + (vicesMatchScore * 0.3);
+      
+      if (overallScore >= 30) { // Threshold for pattern match
+        patternMatches.push({
+          patternName,
+          category: patternData.category,
+          narrative: patternData.narrative,
+          impact: patternData.impact,
+          matchScore: overallScore,
+          needsMatch: matchingNeeds,
+          vicesMatch: matchingVices,
+          needs: patternData.needs,
+          compulsions: patternData.compulsions,
+          aversions: patternData.aversions,
+          triggers: patternData.triggers,
+          viceExpression: patternData.viceExpression
+        });
+      }
+    });
+
+    // Sort by match score
+    patternMatches.sort((a, b) => b.matchScore - a.matchScore);
+    this.analysisData.patternMatches = patternMatches;
+    this.analysisData.patterns = patternMatches.reduce((acc, match) => {
+      acc[match.patternName] = match;
+      return acc;
+    }, {});
+  }
+
+  mapCompulsionsAndAversions() {
+    // Map identified needs to their compulsions and aversions from Appendix 2
+    const identifiedNeeds = Object.keys(this.analysisData.needs).filter(
+      need => this.analysisData.needs[need].averageScore >= 5
+    );
+
+    identifiedNeeds.forEach(need => {
+      // Try to find matching need in the mapping (case-insensitive)
+      const mappingKey = Object.keys(NEED_COMPULSION_AVERSION_MAPPING).find(
+        key => key.toLowerCase() === need.toLowerCase() || need.toLowerCase().includes(key.toLowerCase())
+      );
+      
+      if (mappingKey) {
+        const mapping = NEED_COMPULSION_AVERSION_MAPPING[mappingKey];
+        this.analysisData.needCompulsionAversionMappings[need] = {
+          need: need,
+          compulsion: mapping.compulsion,
+          aversion: mapping.aversion,
+          needScore: this.analysisData.needs[need].averageScore
+        };
+      }
+    });
+  }
+
+  mapViceNeedRelationships() {
+    // Map identified vices to their associated needs from Appendix 2
+    const identifiedVices = Object.keys(this.analysisData.vices).filter(
+      vice => this.analysisData.vices[vice].averageScore >= 5
+    );
+
+    identifiedVices.forEach(vice => {
+      // Try to find matching vice in the mapping (case-insensitive)
+      const mappingKey = Object.keys(VICE_NEEDS_MAPPING).find(
+        key => key.toLowerCase() === vice.toLowerCase() || 
+               key.toLowerCase().includes(vice.toLowerCase()) ||
+               vice.toLowerCase().includes(key.toLowerCase())
+      );
+      
+      if (mappingKey) {
+        const mapping = VICE_NEEDS_MAPPING[mappingKey];
+        this.analysisData.viceNeedMappings[vice] = {
+          vice: vice,
+          chronicNeeds: mapping.chronic,
+          acuteNeeds: mapping.acute,
+          viceScore: this.analysisData.vices[vice].averageScore
+        };
+      }
+    });
+  }
+
+  mapPatternNeedsRelationships() {
+    // Map identified patterns to their associated needs from Appendix 2
+    this.analysisData.patternMatches.forEach(match => {
+      const patternName = match.patternName;
+      if (PATTERN_NEEDS_MAPPING[patternName]) {
+        this.analysisData.patternNeedsMappings[patternName] = {
+          pattern: patternName,
+          associatedNeeds: PATTERN_NEEDS_MAPPING[patternName],
+          matchScore: match.matchScore
+        };
+      }
+    });
+  }
+
   generateRecommendations() {
     const recommendations = [];
     
@@ -639,6 +793,11 @@ class NeedsDependencyEngine {
       html += this.renderPrimaryLoop(this.analysisData.primaryLoop);
     }
     
+    // Pattern Matches (NEW - from Appendix 1)
+    if (this.analysisData.patternMatches && this.analysisData.patternMatches.length > 0) {
+      html += this.renderPatternMatches();
+    }
+    
     // All Identified Loops
     if (this.analysisData.identifiedLoops.length > 0) {
       html += this.renderAllLoops();
@@ -647,8 +806,18 @@ class NeedsDependencyEngine {
     // Top Needs
     html += this.renderTopNeeds();
     
+    // Compulsions and Aversions (NEW - from Appendix 2)
+    if (Object.keys(this.analysisData.needCompulsionAversionMappings).length > 0) {
+      html += this.renderCompulsionsAndAversions();
+    }
+    
     // Top Vices
     html += this.renderTopVices();
+    
+    // Vice-Need Mappings (NEW - from Appendix 2)
+    if (Object.keys(this.analysisData.viceNeedMappings).length > 0) {
+      html += this.renderViceNeedMappings();
+    }
     
     // Recommendations
     html += this.renderRecommendations();
@@ -797,6 +966,128 @@ class NeedsDependencyEngine {
     
     html += '</div></div>';
     
+    return html;
+  }
+
+  renderPatternMatches() {
+    if (!this.analysisData.patternMatches || this.analysisData.patternMatches.length === 0) return '';
+    
+    let html = `
+      <div class="pattern-matches-section">
+        <h2>Identified Coping Patterns</h2>
+        <p class="section-note">Based on your responses, the following patterns from the Patterns Compendium (Appendix 1) show significant alignment:</p>
+    `;
+    
+    // Show top 5 pattern matches
+    const topPatterns = this.analysisData.patternMatches.slice(0, 5);
+    
+    topPatterns.forEach((match, index) => {
+      html += `
+        <div class="pattern-match-card ${index === 0 ? 'primary' : ''}">
+          <div class="pattern-header">
+            <h3>${match.patternName}</h3>
+            <span class="match-score">${match.matchScore.toFixed(0)}% Match</span>
+          </div>
+          <div class="pattern-category">${match.category}</div>
+          ${match.narrative ? `<p class="pattern-narrative"><strong>Narrative:</strong> "${match.narrative}"</p>` : ''}
+          ${match.impact ? `<p class="pattern-impact"><strong>Impact:</strong> ${match.impact}</p>` : ''}
+          ${match.needsMatch && match.needsMatch.length > 0 ? `
+            <div class="pattern-needs">
+              <strong>Matching Needs:</strong> ${match.needsMatch.join(', ')}
+            </div>
+          ` : ''}
+          ${match.vicesMatch && match.vicesMatch.length > 0 ? `
+            <div class="pattern-vices">
+              <strong>Matching Vices:</strong> ${match.vicesMatch.join(', ')}
+            </div>
+          ` : ''}
+          ${match.triggers ? `
+            <div class="pattern-triggers">
+              <strong>Potential Triggers:</strong> ${Array.isArray(match.triggers) ? match.triggers.join(', ') : match.triggers}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+    
+    html += '</div>';
+    return html;
+  }
+
+  renderCompulsionsAndAversions() {
+    if (Object.keys(this.analysisData.needCompulsionAversionMappings).length === 0) return '';
+    
+    let html = `
+      <div class="compulsions-aversions-section">
+        <h2>Compulsions and Aversions</h2>
+        <p class="section-note">For each identified unmet need, here are the typical compulsion (external dependency) and aversion (avoiding aggravation) patterns:</p>
+    `;
+    
+    // Sort by need score
+    const sortedMappings = Object.values(this.analysisData.needCompulsionAversionMappings)
+      .sort((a, b) => b.needScore - a.needScore)
+      .slice(0, 8); // Show top 8
+    
+    sortedMappings.forEach(mapping => {
+      html += `
+        <div class="compulsion-aversion-card">
+          <div class="need-header">
+            <h3>${mapping.need}</h3>
+            <span class="need-score">Score: ${mapping.needScore.toFixed(1)}/10</span>
+          </div>
+          <div class="compulsion-section">
+            <strong>Compulsion (External Dependency):</strong>
+            <p>${mapping.compulsion}</p>
+          </div>
+          <div class="aversion-section">
+            <strong>Aversion (Avoiding Aggravation):</strong>
+            <p>${mapping.aversion}</p>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += '</div>';
+    return html;
+  }
+
+  renderViceNeedMappings() {
+    if (Object.keys(this.analysisData.viceNeedMappings).length === 0) return '';
+    
+    let html = `
+      <div class="vice-need-mappings-section">
+        <h2>Vice-Need Relationships</h2>
+        <p class="section-note">Each vice expression signals specific unmet needs. Understanding these relationships helps trace from symptoms to root causes:</p>
+    `;
+    
+    // Sort by vice score
+    const sortedMappings = Object.values(this.analysisData.viceNeedMappings)
+      .sort((a, b) => b.viceScore - a.viceScore)
+      .slice(0, 8); // Show top 8
+    
+    sortedMappings.forEach(mapping => {
+      html += `
+        <div class="vice-need-mapping-card">
+          <div class="vice-header">
+            <h3>${mapping.vice}</h3>
+            <span class="vice-score">Score: ${mapping.viceScore.toFixed(1)}/10</span>
+          </div>
+          <div class="chronic-needs">
+            <strong>Chronic Need Deprivation:</strong>
+            <p>${mapping.chronicNeeds.join(', ')}</p>
+          </div>
+          <div class="acute-needs">
+            <strong>Acute Need Aggravation:</strong>
+            <p>${mapping.acuteNeeds.join(', ')}</p>
+          </div>
+          <div class="vice-note">
+            <em>This vice is the language of these unmet needs pushed to distortion.</em>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += '</div>';
     return html;
   }
 

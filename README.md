@@ -44,7 +44,9 @@ The books function less as guidance and more as an **ally**: a framework for sta
 ## Project Structure
 
 ### Primary Files
-- **`index.html`** - Main single-page application with all book sections, navigation, and purchase information
+- **`index.html`** - Main landing page with visual orientation, book grid, and tools grid
+- **`books.html`** - Comprehensive page with all book sections, detailed descriptions, and purchase information
+- **`tools.html`** - Detailed page listing all sovereignty tools and analysis engines
 - **`about-the-author.html`** - Author biography and professional background
 - **`diagnosis.html`** - DSM-5 self-reporting diagnostic assessment system (educational tool)
 - **`diagnosis-engine.js`** - Main assessment engine and questionnaire logic

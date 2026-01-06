@@ -847,12 +847,23 @@ figure.image-card:hover a::after{
   color:var(--brand);
 }
 
+.image-card.tool-card{
+  position:relative;
+  z-index:1;
+}
+
+.image-card.tool-card:hover{
+  z-index:1000;
+  position:relative;
+}
+
 .image-card.tool-card .tool-summary{
   position:absolute;
   top:calc(100% + 12px);
   left:50%;
   transform:translateX(-50%) translateY(-4px);
   background:var(--glass);
+  z-index:1001;
   backdrop-filter:blur(12px) saturate(1.1);
   padding:0.75rem 1rem;
   border-radius:6px;

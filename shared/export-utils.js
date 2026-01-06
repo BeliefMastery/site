@@ -38,6 +38,8 @@ export function exportForAIAgent(assessmentData, systemType, systemName) {
     csv += generateRelationshipExport(assessmentData);
   } else if (systemType === 'temperament' || systemType === 'temperament-analysis') {
     csv += generateTemperamentExport(assessmentData);
+  } else if (systemType === 'needs-dependency') {
+    csv += generateNeedsDependencyExport(assessmentData);
   }
   
   csv += '\n';
@@ -520,6 +522,119 @@ function generateTemperamentExport(data) {
     csv += 'Dimension,Masculine Score,Feminine Score,Net Score\n';
     Object.entries(data.dimensionScores).forEach(([dim, score]) => {
       csv += `"${dim}",${(score.masculine * 100).toFixed(1)}%,${(score.feminine * 100).toFixed(1)}%,${(score.net * 100).toFixed(1)}%\n`;
+    });
+  }
+  
+  return csv;
+}
+
+function generateNeedsDependencyExport(data) {
+  let csv = '=== NEEDS DEPENDENCY LOOP DETERMINATOR DATA ===\n';
+  
+  // Include ALL questions with their answers
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Stage,Category,Maps to Need,Maps to Vice\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      const mapsToNeed = (q.mapsToNeed || []).join('; ');
+      const mapsToVice = (q.mapsToVice || []).join('; ');
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.stage || ''}","${q.category || ''}","${mapsToNeed.replace(/"/g, '""')}","${mapsToVice.replace(/"/g, '""')}"\n`;
+    });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
+  }
+  
+  // Primary Dependency Loop
+  if (data.primaryLoop) {
+    csv += '\n=== PRIMARY DEPENDENCY LOOP ===\n';
+    csv += `Loop Type: ${data.primaryLoop.type || 'Not specified'}\n`;
+    csv += `Loop Strength: ${data.primaryLoop.strength.toFixed(1)}/10\n`;
+    if (data.primaryLoop.surfaceExperience) {
+      csv += `Surface Experience: "${data.primaryLoop.surfaceExperience.replace(/"/g, '""')}"\n`;
+      csv += `Surface Score: ${data.primaryLoop.surfaceScore.toFixed(1)}\n`;
+    }
+    if (data.primaryLoop.vice) {
+      csv += `Vice: ${data.primaryLoop.vice}\n`;
+      csv += `Vice Score: ${data.primaryLoop.viceScore.toFixed(1)}\n`;
+    }
+    if (data.primaryLoop.needsChain && data.primaryLoop.needsChain.length > 0) {
+      csv += '\nNeeds Chain:\n';
+      csv += 'Position,Need,Score,Category,Depth\n';
+      data.primaryLoop.needsChain.forEach((need, index) => {
+        csv += `${index + 1},"${need.need.replace(/"/g, '""')}",${need.score.toFixed(1)},"${need.category}","${need.depth || 'surface'}"\n`;
+      });
+    }
+    if (data.primaryLoop.vices && data.primaryLoop.vices.length > 0) {
+      csv += '\nRelated Vices:\n';
+      csv += 'Vice,Score,Category\n';
+      data.primaryLoop.vices.forEach(vice => {
+        csv += `"${vice.vice.replace(/"/g, '""')}",${vice.score.toFixed(1)},"${vice.category}"\n`;
+      });
+    }
+    if (data.primaryLoop.dependencyPatterns && data.primaryLoop.dependencyPatterns.length > 0) {
+      csv += '\nDependency Patterns:\n';
+      csv += 'Pattern,Score,Type\n';
+      data.primaryLoop.dependencyPatterns.forEach(pattern => {
+        csv += `"${pattern.pattern.replace(/"/g, '""')}",${pattern.score.toFixed(1)},"${pattern.type}"\n`;
+      });
+    }
+  }
+  
+  // All Identified Loops
+  if (data.identifiedLoops && data.identifiedLoops.length > 0) {
+    csv += '\n=== ALL IDENTIFIED LOOPS ===\n';
+    csv += 'Loop ID,Type,Strength,Surface Experience,Vice,Needs Count\n';
+    data.identifiedLoops.forEach(loop => {
+      csv += `"${loop.id}","${loop.type}",${loop.strength.toFixed(1)},"${(loop.surfaceExperience || '').replace(/"/g, '""')}","${loop.vice || ''}",${loop.needsChain ? loop.needsChain.length : 0}\n`;
+    });
+  }
+  
+  // Top Unmet Needs
+  if (data.needs && Object.keys(data.needs).length > 0) {
+    csv += '\n=== TOP UNMET NEEDS ===\n';
+    csv += 'Need,Average Score,Category,Question Count,Total Score\n';
+    const topNeeds = Object.entries(data.needs)
+      .map(([key, needData]) => ({ key, ...needData }))
+      .sort((a, b) => b.averageScore - a.averageScore);
+    topNeeds.forEach(need => {
+      csv += `"${need.name.replace(/"/g, '""')}",${need.averageScore.toFixed(1)},${need.category || 'Unknown'},${need.questionCount},${need.score.toFixed(1)}\n`;
+    });
+  }
+  
+  // Top Vice Expressions
+  if (data.vices && Object.keys(data.vices).length > 0) {
+    csv += '\n=== TOP VICE EXPRESSIONS ===\n';
+    csv += 'Vice,Average Score,Category,Question Count,Total Score\n';
+    const topVices = Object.entries(data.vices)
+      .map(([key, viceData]) => ({ key, ...viceData }))
+      .sort((a, b) => b.averageScore - a.averageScore);
+    topVices.forEach(vice => {
+      csv += `"${vice.name.replace(/"/g, '""')}",${vice.averageScore.toFixed(1)},${vice.category || 'Unknown'},${vice.questionCount},${vice.score.toFixed(1)}\n`;
+    });
+  }
+  
+  // Recommendations
+  if (data.recommendations && data.recommendations.length > 0) {
+    csv += '\n=== RECOMMENDATIONS ===\n';
+    csv += 'Priority,Title,Description\n';
+    data.recommendations.forEach(rec => {
+      csv += `${rec.priority},"${rec.title.replace(/"/g, '""')}","${rec.description.replace(/"/g, '""')}"\n`;
     });
   }
   
