@@ -584,6 +584,47 @@
         }
       });
     })();
+
+    // Variable speed shimmer animation - changes speeds occasionally
+    (function(){
+      const shimmerElements = document.querySelectorAll('.image-card a::before, figure.image-card a::before');
+      if(!shimmerElements.length) return;
+      
+      // Base speeds (slower)
+      const baseSpeeds = [7, 7.5, 8, 8.2, 8.3, 8.5, 8.8, 7.2, 7.3];
+      let currentSpeedIndex = 0;
+      
+      function varySpeeds(){
+        shimmerElements.forEach((el, idx) => {
+          // Get base speed from computed style or use default
+          const computed = window.getComputedStyle(el);
+          const currentDuration = parseFloat(computed.animationDuration) || baseSpeeds[idx % baseSpeeds.length];
+          
+          // Vary speed by ±20% occasionally
+          const variation = (Math.random() - 0.5) * 0.4; // -0.2 to +0.2 (20% variation)
+          const newSpeed = currentDuration * (1 + variation);
+          
+          // Clamp between 6s and 10s
+          const clampedSpeed = Math.max(6, Math.min(10, newSpeed));
+          
+          el.style.animationDuration = clampedSpeed + 's';
+        });
+      }
+      
+      // Change speeds every 8-12 seconds
+      function scheduleNextVariation(){
+        const delay = 8000 + Math.random() * 4000; // 8-12 seconds
+        setTimeout(() => {
+          varySpeeds();
+          scheduleNextVariation();
+        }, delay);
+      }
+      
+      // Start varying speeds after initial load
+      setTimeout(() => {
+        scheduleNextVariation();
+      }, 5000);
+    })();
   </script>
 </body>
 </html>
