@@ -714,7 +714,9 @@ figure.image-card{
 
 /* Animated lightning blue sheen border - the only border effect */
 .image-card a::before,
-figure.image-card a::before{
+figure.image-card a::before,
+.headline-book a::before,
+figure.headline-book a::before{
   content:'';
   position:absolute;
   top:0;
