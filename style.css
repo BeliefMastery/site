@@ -820,7 +820,9 @@ figure.image-card:hover a::before{
 }
 
 .image-card a,
-figure.image-card a{
+figure.image-card a,
+.headline-book a,
+figure.headline-book a{
   position:relative;
   z-index:2;
 }
