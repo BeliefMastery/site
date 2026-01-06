@@ -638,28 +638,52 @@ class TemperamentEngine {
     const aiInstructions = `
 This temperament analysis maps the user's position on the masculine-feminine temperament spectrum based on comprehensive questions across behavioral patterns, intimate dynamics, and attraction responsiveness.
 
-KEY INTERPRETATION GUIDELINES:
+MANDATORY INTERPRETATION GUIDELINES:
+- Temperament descriptors indicate tendencies, not mandates
+- Always ask for situational context before applying polarity insights
+- Temperament reflects how energy tends to organize in relational and intimate contexts
+- It varies by partner, season, safety, and life phase
 - Temperament is NOT the same as biological sex or gender identity
 - Variation across dimensions is expected and common
 - The spectrum position indicates archetypal energy patterns, not rigid roles
 - Both masculine and feminine qualities can coexist in the same individual
-- Use this data to understand relationship polarity, compatibility, and personal development needs
+
+PROHIBITED LANGUAGE:
+- DO NOT use "You are [masculine/feminine]"
+- DO NOT use "This means you should..."
+- DO NOT prescribe polarity-based partner advice as obligation
+- DO NOT make fixed identity claims
+
+REQUIRED LANGUAGE:
+- Use "tends to express"
+- Use "often organizes as"
+- Use "shows preference toward"
+- Use "This pattern sometimes expresses as..."
+
+CONTEXT INQUIRY REQUIREMENT:
+- Before interpreting temperament results, always inquire about:
+  * Current relational context
+  * Partner dynamics
+  * Life phase and current stressors
+  * Safety and security levels
 
 SCORING INTERPRETATION:
-- Normalized Score: 0.0-1.0 scale where 1.0 = highly masculine, 0.0 = highly feminine, 0.5 = balanced
+- Normalized Score: 0.0-1.0 scale where 1.0 = masculine-leaning, 0.0 = feminine-leaning, 0.5 = balanced
 - Dimension scores show variation across different life areas
 - Expected variations indicate dimensions where mixed responses are common and healthy
+- High variation across dimensions indicates context-responsiveness rather than inconsistency
 
 RELATIONSHIP POLARITY IMPLICATIONS:
 - Higher polarity (greater difference between partners) typically increases attraction
 - Understanding temperament helps optimize relationship dynamics
-- Both partners can develop complementary qualities while honoring their core temperament
+- Both partners can develop complementary qualities while honoring their core expression patterns
 
 AI AGENT CONFIGURATION:
 - Use temperament data to inform coaching style and communication approach
-- Masculine-leaning users may respond better to direct, goal-oriented guidance
-- Feminine-leaning users may respond better to emotional support and clarity
-- Balanced temperaments may need both approaches depending on context
+- Masculine-leaning expression may respond better to direct, goal-oriented guidance
+- Feminine-leaning expression may respond better to emotional support and clarity
+- Balanced expression may need both approaches depending on context
+- Always inquire about current context before applying temperament insights
 `;
 
     if (format === 'csv') {
