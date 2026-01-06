@@ -1116,6 +1116,18 @@ blockquote{
   .image-row.tools-grid{
     grid-template-columns:repeat(2, 1fr);
   }
+  .image-card.tool-card .tool-summary,
+  .image-card .book-summary{
+    max-width:calc(100% - 2rem);
+    min-width:auto;
+    left:1rem;
+    right:1rem;
+    transform:translateY(-4px);
+  }
+  .image-card.tool-card:hover .tool-summary,
+  .image-card:hover .book-summary{
+    transform:translateY(0);
+  }
 }
 
 @media (max-width: 480px){
