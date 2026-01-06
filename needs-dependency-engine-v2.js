@@ -5,7 +5,7 @@
 
 import { NEEDS_VOCABULARY } from './needs-dependency-data/needs-vocabulary.js';
 import { VICES_VOCABULARY } from './needs-dependency-data/vices-vocabulary.js';
-import { DEPENDENCY_LOOPS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS } from './needs-dependency-data/dependency-loop-questions.js';
+import { DEPENDENCY_LOOPS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS } from './needs-dependency-data/dependency-loop-questions-v2.js';
 import { PATTERN_NEEDS_MAPPING } from './needs-dependency-data/pattern-needs-mapping.js';
 import { NEED_COMPULSION_AVERSION_MAPPING } from './needs-dependency-data/need-compulsion-aversion-mapping.js';
 import { VICE_NEEDS_MAPPING } from './needs-dependency-data/vice-needs-mapping.js';
