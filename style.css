@@ -724,7 +724,7 @@ figure.image-card a::before{
   bottom:0;
   border-radius:16px;
   background:linear-gradient(135deg, transparent 10%, rgba(135, 206, 250, 0.4) 25%, rgba(100, 149, 237, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(100, 149, 237, 1) 45%, rgba(135, 206, 250, 0.4) 55%, transparent 70%);
-  background-size:400% 400%;
+  background-size:400% 400% !important;
   z-index:1;
   pointer-events:none;
   opacity:1;
