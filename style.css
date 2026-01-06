@@ -746,7 +746,7 @@ figure.image-card a::before{
 .books-grid .image-card:nth-child(1) a::before,
 .books-grid figure.image-card:nth-child(1) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(173, 216, 230, 0.5) 25%, rgba(70, 130, 180, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(70, 130, 180, 1) 45%, rgba(173, 216, 230, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.8s linear infinite;
+  animation:sheenMove 7.5s linear infinite;
   animation-delay:0s;
 }
 
@@ -760,28 +760,28 @@ figure.image-card a::before{
 .books-grid .image-card:nth-child(3) a::before,
 .books-grid figure.image-card:nth-child(3) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(135, 206, 250, 0.5) 25%, rgba(30, 144, 255, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(30, 144, 255, 1) 45%, rgba(135, 206, 250, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.6s linear infinite;
+  animation:sheenMove 7.2s linear infinite;
   animation-delay:0.8s;
 }
 
 .books-grid .image-card:nth-child(4) a::before,
 .books-grid figure.image-card:nth-child(4) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(173, 216, 230, 0.5) 25%, rgba(0, 191, 255, 1) 35%, rgba(224, 255, 255, 1) 40%, rgba(0, 191, 255, 1) 45%, rgba(173, 216, 230, 0.5) 55%, transparent 70%);
-  animation:sheenMove 3.0s linear infinite;
+  animation:sheenMove 8.2s linear infinite;
   animation-delay:1.2s;
 }
 
 .books-grid .image-card:nth-child(5) a::before,
 .books-grid figure.image-card:nth-child(5) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(176, 224, 230, 0.5) 25%, rgba(72, 209, 204, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(72, 209, 204, 1) 45%, rgba(176, 224, 230, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.9s linear infinite;
+  animation:sheenMove 8s linear infinite;
   animation-delay:1.6s;
 }
 
 .books-grid .image-card:nth-child(6) a::before,
 .books-grid figure.image-card:nth-child(6) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(175, 238, 238, 0.5) 25%, rgba(64, 224, 208, 1) 35%, rgba(240, 255, 255, 1) 40%, rgba(64, 224, 208, 1) 45%, rgba(175, 238, 238, 0.5) 55%, transparent 70%);
-  animation:sheenMove 3.1s linear infinite;
+  animation:sheenMove 8.3s linear infinite;
   animation-delay:2.0s;
 }
 
@@ -803,42 +803,42 @@ figure.image-card a::before{
 .tools-grid .image-card:nth-child(3) a::before,
 .tools-grid figure.image-card:nth-child(3) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(176, 196, 222, 0.5) 25%, rgba(65, 105, 225, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(65, 105, 225, 1) 45%, rgba(176, 196, 222, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.5s linear infinite;
+  animation:sheenMove 7s linear infinite;
   animation-delay:1.0s;
 }
 
 .tools-grid .image-card:nth-child(4) a::before,
 .tools-grid figure.image-card:nth-child(4) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(135, 206, 250, 0.5) 25%, rgba(30, 144, 255, 1) 35%, rgba(224, 255, 255, 1) 40%, rgba(30, 144, 255, 1) 45%, rgba(135, 206, 250, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.9s linear infinite;
+  animation:sheenMove 8s linear infinite;
   animation-delay:1.4s;
 }
 
 .tools-grid .image-card:nth-child(5) a::before,
 .tools-grid figure.image-card:nth-child(5) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(173, 216, 230, 0.5) 25%, rgba(0, 191, 255, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(0, 191, 255, 1) 45%, rgba(173, 216, 230, 0.5) 55%, transparent 70%);
-  animation:sheenMove 3.1s linear infinite;
+  animation:sheenMove 8.3s linear infinite;
   animation-delay:1.8s;
 }
 
 .tools-grid .image-card:nth-child(6) a::before,
 .tools-grid figure.image-card:nth-child(6) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(176, 224, 230, 0.5) 25%, rgba(72, 209, 204, 1) 35%, rgba(240, 255, 255, 1) 40%, rgba(72, 209, 204, 1) 45%, rgba(176, 224, 230, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.8s linear infinite;
+  animation:sheenMove 7.5s linear infinite;
   animation-delay:2.2s;
 }
 
 .tools-grid .image-card:nth-child(7) a::before,
 .tools-grid figure.image-card:nth-child(7) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(175, 238, 238, 0.5) 25%, rgba(64, 224, 208, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(64, 224, 208, 1) 45%, rgba(175, 238, 238, 0.5) 55%, transparent 70%);
-  animation:sheenMove 3.0s linear infinite;
+  animation:sheenMove 8.2s linear infinite;
   animation-delay:2.6s;
 }
 
 .tools-grid .image-card:nth-child(8) a::before,
 .tools-grid figure.image-card:nth-child(8) a::before{
   background:linear-gradient(135deg, transparent 10%, rgba(135, 206, 250, 0.5) 25%, rgba(100, 149, 237, 1) 35%, rgba(224, 255, 255, 1) 40%, rgba(100, 149, 237, 1) 45%, rgba(135, 206, 250, 0.5) 55%, transparent 70%);
-  animation:sheenMove 2.6s linear infinite;
+  animation:sheenMove 7.2s linear infinite;
   animation-delay:3.0s;
 }
 
