@@ -434,13 +434,13 @@
       
       function runDiagnostics() {
         debugContent.innerHTML = '';
-        log('=== SHIMMER BORDER DIAGNOSTICS ===', 'info');
+        log('=== GRADIENT FRAME DIAGNOSTICS ===', 'info');
         log('', 'info');
         
-        // 1. Check if animation is defined in CSS
-        log('1. Checking CSS Animation Definition...', 'info');
+        // 1. Check for gradient frame CSS (static, no animation expected)
+        log('1. Checking CSS Gradient Frame Definition...', 'info');
         const styleSheets = Array.from(document.styleSheets);
-        let animationFound = false;
+        let gradientFrameFound = false;
         try {
           styleSheets.forEach((sheet, idx) => {
             try {
@@ -454,10 +454,15 @@
               const href = sheet.href || 'inline';
               log(`   Checking stylesheet ${idx}: ${href.substring(href.lastIndexOf('/') + 1) || 'inline'}`, 'info');
               rules.forEach(rule => {
-                if(rule.type === CSSRule.KEYFRAMES_RULE && rule.name === 'sheenMove') {
-                  animationFound = true;
-                  log(`   ✓ Animation 'sheenMove' found in stylesheet ${idx}`, 'success');
-                  log(`   Keyframes: ${rule.cssText.substring(0, 100)}...`, 'info');
+                if(rule.type === CSSRule.STYLE_RULE) {
+                  const selector = rule.selectorText || '';
+                  if(selector.includes('.image-card') && selector.includes('::before')) {
+                    const styleText = rule.cssText || '';
+                    if(styleText.includes('conic-gradient') || styleText.includes('gradient')) {
+                      gradientFrameFound = true;
+                      log(`   ✓ Gradient frame found in stylesheet ${idx}`, 'success');
+                    }
+                  }
                 }
               });
             } catch(e) {
@@ -469,17 +474,19 @@
               }
             }
           });
-          if(!animationFound) {
-            log('   ✗ Animation "sheenMove" NOT FOUND in accessible stylesheets!', 'error');
+          if(!gradientFrameFound) {
+            log('   ⚠ Gradient frame CSS not found in accessible stylesheets (may be in cross-origin stylesheet)', 'warning');
             log('   Note: Cross-origin stylesheets (like Google Fonts) cannot be checked', 'info');
+          } else {
+            log('   ✓ Static gradient frames are configured (no animation expected)', 'success');
           }
         } catch(e) {
           log(`   ✗ Error checking stylesheets: ${e.message}`, 'error');
         }
         log('', 'info');
         
-        // 2. Check shimmer elements
-        log('2. Checking Shimmer Border Elements...', 'info');
+        // 2. Check gradient frame elements
+        log('2. Checking Gradient Frame Elements...', 'info');
         const imageCards = document.querySelectorAll('.image-card, figure.image-card');
         log(`   Found ${imageCards.length} image cards`, 'info');
         
@@ -501,15 +508,22 @@
           const backgroundSize = pseudo.backgroundSize;
           const filter = pseudo.filter;
           
-          log(`   Card ${idx + 1} (${card.dataset.title || 'untitled'}):`, 'info');
-          log(`      Animation: ${animationName || 'none'}`, animationName ? 'success' : 'error');
+          const cardTitle = card.querySelector('img')?.alt || card.dataset.title || card.querySelector('h3')?.textContent || 'untitled';
+          log(`   Card ${idx + 1} (${cardTitle}):`, 'info');
+          
+          // Check for gradient (expected)
+          const hasGradient = background && (background.includes('gradient') || background.includes('conic-gradient'));
+          log(`      Gradient Frame: ${hasGradient ? '✓ Present' : '✗ Missing'}`, hasGradient ? 'success' : 'error');
+          
+          // Animation should be none (expected for static frames)
+          log(`      Animation: ${animationName || 'none'} (expected: none)`, !animationName ? 'success' : 'warning');
           log(`      Duration: ${animationDuration}`, 'info');
           log(`      Delay: ${animationDelay}`, 'info');
-          log(`      Play State: ${animationPlayState}`, animationPlayState === 'running' ? 'success' : 'warning');
-          log(`      Opacity: ${opacity}`, opacity === '1' || opacity === '0' ? 'success' : 'warning');
-          log(`      Background: ${background.substring(0, 50)}...`, 'info');
+          log(`      Play State: ${animationPlayState}`, 'info');
+          log(`      Opacity: ${opacity}`, opacity === '1' ? 'success' : 'warning');
+          log(`      Background: ${background.substring(0, 60)}...`, 'info');
           log(`      Background Size: ${backgroundSize}`, 'info');
-          log(`      Filter: ${filter || 'none'}`, filter ? 'info' : 'warning');
+          log(`      Filter: ${filter || 'none'}`, filter ? 'success' : 'info');
           
           // Check if element is actually rendered
           const rect = link.getBoundingClientRect();
@@ -554,20 +568,25 @@
         log(`   CSS Masks: ${CSS.supports('mask', 'none') ? '✓ Supported' : '✗ Not Supported'}`, CSS.supports('mask', 'none') ? 'success' : 'warning');
         log('', 'info');
         
-        // 6. Test animation manually
-        log('6. Manual Animation Test...', 'info');
+        // 6. Test gradient frame manually
+        log('6. Manual Gradient Frame Test...', 'info');
         const testCard = imageCards[0];
         if(testCard) {
           const testLink = testCard.querySelector('a');
           if(testLink) {
             const testStyle = window.getComputedStyle(testLink, '::before');
-            log(`   Testing first card animation...`, 'info');
-            log(`   Computed animation: ${testStyle.animation || 'none'}`, testStyle.animation ? 'success' : 'error');
+            log(`   Testing first card gradient frame...`, 'info');
+            const bg = testStyle.background || testStyle.backgroundImage;
+            const hasGradient = bg && (bg.includes('gradient') || bg.includes('conic-gradient'));
+            log(`   Gradient present: ${hasGradient ? '✓ Yes' : '✗ No'}`, hasGradient ? 'success' : 'error');
+            log(`   Animation: ${testStyle.animation || 'none'} (static frame - no animation expected)`, !testStyle.animation ? 'success' : 'warning');
             
             // Try to force reflow and check
             testLink.offsetHeight; // Force reflow
             const afterReflow = window.getComputedStyle(testLink, '::before');
-            log(`   After reflow: ${afterReflow.animation || 'none'}`, afterReflow.animation ? 'success' : 'error');
+            const bgAfter = afterReflow.background || afterReflow.backgroundImage;
+            const hasGradientAfter = bgAfter && (bgAfter.includes('gradient') || bgAfter.includes('conic-gradient'));
+            log(`   After reflow - Gradient: ${hasGradientAfter ? '✓ Yes' : '✗ No'}`, hasGradientAfter ? 'success' : 'error');
           }
         }
         log('', 'info');
