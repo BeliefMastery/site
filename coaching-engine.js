@@ -22,8 +22,15 @@ class CoachingEngine {
       domains: {},
       weightedScores: {},
       priorities: {},
-      coachingProfile: {}
+      coachingProfile: {},
+      primaryAxis: null,
+      axisValidUntil: null,
+      userWeightAdjustment: 1.0,
+      deploymentContext: null
     };
+    
+    // Make instance accessible globally for deployment context selection
+    window.coachingEngine = this;
     
     this.init();
   }
