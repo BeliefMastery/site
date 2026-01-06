@@ -849,7 +849,19 @@ class DiagnosisEngine {
     });
     
     document.getElementById('proceedToRefinement').addEventListener('click', () => {
+      // Check refinement ceiling
+      if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
+        alert('Maximum refinement passes reached. Proceeding to results.');
+        this.showResults();
+        return;
+      }
+      
+      if (!confirm('This step sharpens distinctions for learning clarity. Proceed?')) {
+        return;
+      }
+      
       this.refinementRequested = true;
+      this.analysisData.refinementPasses++;
       this.startRefinementQuestions();
     });
     
