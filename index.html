@@ -443,7 +443,15 @@
         try {
           styleSheets.forEach((sheet, idx) => {
             try {
+              // Check if stylesheet is accessible (not cross-origin)
+              if(!sheet.cssRules && !sheet.rules) {
+                const href = sheet.href || 'inline';
+                log(`   ⚠ Stylesheet ${idx} (${href}): Cross-origin or inaccessible - skipping`, 'warning');
+                return;
+              }
               const rules = Array.from(sheet.cssRules || sheet.rules || []);
+              const href = sheet.href || 'inline';
+              log(`   Checking stylesheet ${idx}: ${href.substring(href.lastIndexOf('/') + 1) || 'inline'}`, 'info');
               rules.forEach(rule => {
                 if(rule.type === CSSRule.KEYFRAMES_RULE && rule.name === 'sheenMove') {
                   animationFound = true;
@@ -452,11 +460,17 @@
                 }
               });
             } catch(e) {
-              log(`   ⚠ Cannot access stylesheet ${idx}: ${e.message}`, 'warning');
+              const href = sheet.href || 'inline';
+              if(e.message.includes('Cannot access') || e.message.includes('SecurityError')) {
+                log(`   ⚠ Stylesheet ${idx} (${href.substring(href.lastIndexOf('/') + 1) || 'inline'}): Cross-origin restriction - this is normal for external stylesheets`, 'warning');
+              } else {
+                log(`   ⚠ Stylesheet ${idx}: ${e.message}`, 'warning');
+              }
             }
           });
           if(!animationFound) {
-            log('   ✗ Animation "sheenMove" NOT FOUND in CSS!', 'error');
+            log('   ✗ Animation "sheenMove" NOT FOUND in accessible stylesheets!', 'error');
+            log('   Note: Cross-origin stylesheets (like Google Fonts) cannot be checked', 'info');
           }
         } catch(e) {
           log(`   ✗ Error checking stylesheets: ${e.message}`, 'error');
@@ -511,10 +525,22 @@
         log('4. Checking CSS Syntax...', 'info');
         styleSheets.forEach((sheet, idx) => {
           try {
+            // Check if stylesheet is accessible
+            if(!sheet.cssRules && !sheet.rules) {
+              const href = sheet.href || 'inline';
+              log(`   Stylesheet ${idx} (${href.substring(href.lastIndexOf('/') + 1) || 'inline'}): ⚠ Cross-origin - cannot access (normal for external stylesheets)`, 'warning');
+              return;
+            }
             const rules = Array.from(sheet.cssRules || sheet.rules || []);
-            log(`   Stylesheet ${idx}: ✓ ${rules.length} rules loaded`, 'success');
+            const href = sheet.href || 'inline';
+            log(`   Stylesheet ${idx} (${href.substring(href.lastIndexOf('/') + 1) || 'inline'}): ✓ ${rules.length} rules loaded`, 'success');
           } catch(e) {
-            log(`   Stylesheet ${idx}: ✗ ${e.message}`, 'error');
+            const href = sheet.href || 'inline';
+            if(e.message.includes('Cannot access') || e.message.includes('SecurityError')) {
+              log(`   Stylesheet ${idx} (${href.substring(href.lastIndexOf('/') + 1) || 'inline'}): ⚠ Cross-origin restriction (normal for external stylesheets)`, 'warning');
+            } else {
+              log(`   Stylesheet ${idx}: ✗ ${e.message}`, 'error');
+            }
           }
         });
         log('', 'info');
