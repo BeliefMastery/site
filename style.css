@@ -745,7 +745,7 @@ figure.image-card a::before{
 /* Different blue shades and speeds for each image - Books grid */
 .books-grid .image-card:nth-child(1) a::before,
 .books-grid figure.image-card:nth-child(1) a::before{
-  background:linear-gradient(135deg, transparent 10%, rgba(173, 216, 230, 0.5) 25%, rgba(70, 130, 180, 1) 35%, rgba(255, 255, 255, 1) 40%, rgba(70, 130, 180, 1) 45%, rgba(173, 216, 230, 0.5) 55%, transparent 70%);
+  background:linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
   animation:whiteToBlue 20s ease-in-out infinite;
   animation-delay:0s;
 }
