@@ -647,7 +647,36 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     }
     
     html += '</div>';
+    
+    // Add weight provenance declaration
+    html += '<div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-top: 2rem;">';
+    html += '<p style="margin: 0; font-size: 0.9rem; color: var(--muted); line-height: 1.6;"><strong style="color: var(--accent);">Weight Provenance:</strong> Weights reflect Sovereign of Mind prioritization logic. They encode framework values, not universal truths.</p>';
+    if (this.profileData.userWeightAdjustment !== 1.0) {
+      html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--muted);">User weight adjustment applied: ${(this.profileData.userWeightAdjustment * 100).toFixed(0)}%</p>`;
+    }
+    html += '</div>';
+    
+    // Clear closure statement
+    html += this.getClosureSection();
+    
     container.innerHTML = html;
+  }
+  
+  getClosureSection() {
+    return `
+      <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border: 2px solid var(--brand); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3 style="color: var(--brand); margin-bottom: 1rem; text-align: center;">Orientation → Selection → Application</h3>
+        <div style="line-height: 1.8;">
+          <p style="color: var(--muted); margin-bottom: 1rem; text-align: center; font-size: 1.05rem;">This coaching profile is complete. You have received a map of your current constraints and satisfaction domains, along with a primary coaching axis.</p>
+          <div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Exit Cue:</strong> Do not re-run this assessment immediately. Apply the primary axis for 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
+          </div>
+          <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-radius: var(--radius);">
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">What this engine is not:</strong> Therapy replacement, diagnosis, or truth oracle. This is a self-inquiry tool for sovereignty support.</p>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   startDeeperInquiry() {
