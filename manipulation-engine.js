@@ -14,6 +14,8 @@ class ManipulationEngine {
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
+    this.decompressionShown = false;
+    this.symptomQuestionEndIndex = 0;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       symptoms: {},
@@ -21,7 +23,10 @@ class ManipulationEngine {
       consequences: {},
       vectorScores: {},
       identifiedVectors: [],
-      tactics: []
+      primaryVector: null,
+      supportingVectors: [],
+      tactics: [],
+      structuralModifier: null
     };
     
     this.init();
@@ -37,9 +42,12 @@ class ManipulationEngine {
   buildQuestionSequence() {
     this.questionSequence = [];
     
-    // Add symptom questions
+    // Add symptom questions (will be randomized within subcategories)
     Object.keys(SYMPTOM_QUESTIONS).forEach(category => {
-      SYMPTOM_QUESTIONS[category].forEach(question => {
+      const categoryQuestions = [...SYMPTOM_QUESTIONS[category]];
+      // Randomize within subcategory to reduce pattern priming
+      categoryQuestions.sort(() => Math.random() - 0.5);
+      categoryQuestions.forEach(question => {
         this.questionSequence.push({
           ...question,
           category: 'symptom',
@@ -48,9 +56,11 @@ class ManipulationEngine {
       });
     });
     
-    // Add effect questions
+    // Add effect questions (randomized within subcategories)
     Object.keys(EFFECT_QUESTIONS).forEach(category => {
-      EFFECT_QUESTIONS[category].forEach(question => {
+      const categoryQuestions = [...EFFECT_QUESTIONS[category]];
+      categoryQuestions.sort(() => Math.random() - 0.5);
+      categoryQuestions.forEach(question => {
         this.questionSequence.push({
           ...question,
           category: 'effect',
@@ -59,9 +69,11 @@ class ManipulationEngine {
       });
     });
     
-    // Add consequence questions
+    // Add consequence questions (randomized within subcategories)
     Object.keys(CONSEQUENCE_QUESTIONS).forEach(category => {
-      CONSEQUENCE_QUESTIONS[category].forEach(question => {
+      const categoryQuestions = [...CONSEQUENCE_QUESTIONS[category]];
+      categoryQuestions.sort(() => Math.random() - 0.5);
+      categoryQuestions.forEach(question => {
         this.questionSequence.push({
           ...question,
           category: 'consequence',
@@ -69,6 +81,9 @@ class ManipulationEngine {
         });
       });
     });
+    
+    // Track where symptom questions end for decompression checkpoint
+    this.symptomQuestionEndIndex = this.questionSequence.filter(q => q.category === 'symptom').length;
   }
 
   attachEventListeners() {
@@ -126,8 +141,23 @@ class ManipulationEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
-    const container = document.getElementById('questionContainer');
     
+    // Check if we just finished symptom questions - show decompression checkpoint
+    // This happens when we encounter the first effect question after symptom questions
+    if (question.category === 'effect' && !this.decompressionShown) {
+      // Count how many symptom questions there are
+      const symptomCount = this.questionSequence.filter(q => q.category === 'symptom').length;
+      // If we're at the index right after all symptom questions, show decompression
+      if (this.currentQuestionIndex === symptomCount) {
+        this.showDecompressionCheckpoint();
+        return;
+      }
+    }
+    this.renderQuestionContent(question);
+  }
+  
+  renderQuestionContent(question) {
+    const container = document.getElementById('questionContainer');
     if (!container) return;
     
     let categoryLabel = '';
@@ -284,9 +314,11 @@ class ManipulationEngine {
       
       let totalScore = 0;
       let questionCount = 0;
+      let totalPossibleQuestions = 0;
       
       // Check symptom questions
       mapping.symptoms.forEach(symptomId => {
+        totalPossibleQuestions++;
         if (this.answers[symptomId] !== undefined) {
           const question = this.findQuestionById(symptomId);
           if (question) {
@@ -298,6 +330,7 @@ class ManipulationEngine {
       
       // Check effect questions
       mapping.effects.forEach(effectId => {
+        totalPossibleQuestions++;
         if (this.answers[effectId] !== undefined) {
           const question = this.findQuestionById(effectId);
           if (question) {
@@ -309,6 +342,7 @@ class ManipulationEngine {
       
       // Check consequence questions
       mapping.consequences.forEach(consequenceId => {
+        totalPossibleQuestions++;
         if (this.answers[consequenceId] !== undefined) {
           const question = this.findQuestionById(consequenceId);
           if (question) {
@@ -321,13 +355,36 @@ class ManipulationEngine {
       const averageScore = questionCount > 0 ? totalScore / questionCount : 0;
       const weightedScore = averageScore * vector.weight;
       
+      // Calculate confidence based on answered questions
+      const answerRate = totalPossibleQuestions > 0 ? questionCount / totalPossibleQuestions : 0;
+      let confidenceBand = 'medium';
+      if (answerRate >= 0.9) {
+        confidenceBand = 'high';
+      } else if (answerRate < 0.7) {
+        confidenceBand = 'low';
+      }
+      
+      // Determine activation level
+      const activationThreshold = mapping.threshold * 10;
+      let activationLevel = 'low';
+      if (weightedScore >= activationThreshold * 1.2) {
+        activationLevel = 'high';
+      } else if (weightedScore >= activationThreshold) {
+        activationLevel = 'medium';
+      }
+      
       this.analysisData.vectorScores[vectorKey] = {
         name: vector.name,
         description: vector.description,
         rawScore: averageScore,
         weightedScore: weightedScore,
         questionCount: questionCount,
-        threshold: mapping.threshold
+        totalPossibleQuestions: totalPossibleQuestions,
+        answerRate: answerRate,
+        confidenceBand: confidenceBand,
+        activationLevel: activationLevel,
+        threshold: mapping.threshold,
+        activationThreshold: activationThreshold
       };
     });
   }
@@ -337,11 +394,106 @@ class ManipulationEngine {
   }
 
   identifyVectors() {
-    // Identify vectors that exceed threshold
-    this.analysisData.identifiedVectors = Object.entries(this.analysisData.vectorScores)
+    // Identify vectors that reach activation level
+    const allVectors = Object.entries(this.analysisData.vectorScores)
       .map(([key, data]) => ({ key, ...data }))
       .filter(vector => vector.weightedScore >= (vector.threshold * 10))
       .sort((a, b) => b.weightedScore - a.weightedScore);
+    
+    // Designate primary vector (highest score)
+    if (allVectors.length > 0) {
+      this.analysisData.primaryVector = allVectors[0];
+      this.analysisData.supportingVectors = allVectors.slice(1);
+    }
+    
+    // Keep identifiedVectors for backward compatibility
+    this.analysisData.identifiedVectors = allVectors;
+    
+    // Determine Situational vs Structural modifier
+    this.determineStructuralModifier();
+  }
+  
+  determineStructuralModifier() {
+    if (!this.analysisData.primaryVector) return;
+    
+    // Calculate average consequence and effect scores
+    let totalConsequenceScore = 0;
+    let totalEffectScore = 0;
+    let consequenceCount = 0;
+    let effectCount = 0;
+    
+    this.questionSequence.forEach(q => {
+      if (q.category === 'consequence' && this.answers[q.id] !== undefined) {
+        totalConsequenceScore += this.answers[q.id];
+        consequenceCount++;
+      }
+      if (q.category === 'effect' && this.answers[q.id] !== undefined) {
+        totalEffectScore += this.answers[q.id];
+        effectCount++;
+      }
+    });
+    
+    const avgConsequence = consequenceCount > 0 ? totalConsequenceScore / consequenceCount : 0;
+    const avgEffect = effectCount > 0 ? totalEffectScore / effectCount : 0;
+    const avgSymptom = this.getAverageSymptomScore();
+    
+    // High consequences + high effects = structural
+    // High symptoms + low consequences = situational
+    if (avgConsequence >= 6 && avgEffect >= 6) {
+      this.analysisData.structuralModifier = 'structural';
+    } else if (avgSymptom >= 6 && avgConsequence < 5) {
+      this.analysisData.structuralModifier = 'situational';
+    } else {
+      this.analysisData.structuralModifier = 'mixed';
+    }
+  }
+  
+  getAverageSymptomScore() {
+    let total = 0;
+    let count = 0;
+    this.questionSequence.forEach(q => {
+      if (q.category === 'symptom' && this.answers[q.id] !== undefined) {
+        total += this.answers[q.id];
+        count++;
+      }
+    });
+    return count > 0 ? total / count : 0;
+  }
+  
+  showDecompressionCheckpoint() {
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+    
+    this.decompressionShown = true;
+    
+    container.innerHTML = `
+      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
+        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">You're mapping experiences, not assigning blame.</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          You've completed the symptom questions. Remember: this analysis identifies patterns consistent with manipulation vectors. It does not determine intent or assign blame. Continue when ready.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="continueFromDecompression" style="min-width: 150px;">Continue Assessment</button>
+          <button class="btn btn-secondary" id="pauseFromDecompression" style="min-width: 150px;">Pause</button>
+        </div>
+      </div>
+    `;
+    
+    const continueBtn = document.getElementById('continueFromDecompression');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        // Mark as shown and render the actual question
+        this.decompressionShown = true;
+        const question = this.questionSequence[this.currentQuestionIndex];
+        this.renderQuestionContent(question);
+        this.updateProgress();
+        this.updateNavigationButtons();
+      });
+    }
+    
+    document.getElementById('pauseFromDecompression').addEventListener('click', () => {
+      // Just stay on this screen - user can continue when ready
+    });
   }
 
   identifyTactics() {
@@ -366,45 +518,148 @@ class ManipulationEngine {
       html = `
         <div style="padding: 2rem; text-align: center;">
           <h3 style="color: var(--brand); margin-bottom: 1rem;">No Strong Manipulation Patterns Detected</h3>
-          <p style="color: var(--muted);">Based on your responses, no manipulation vectors scored above the identification threshold. This may indicate:</p>
+          <p style="color: var(--muted);">Based on your responses, no manipulation vectors reached activation level. This may indicate:</p>
           <ul style="text-align: left; max-width: 600px; margin: 1rem auto;">
-            <li>The relationship is healthy and respectful</li>
+            <li>Patterns consistent with healthy and respectful relationships</li>
             <li>Manipulation patterns are subtle and require deeper analysis</li>
             <li>You may need to review specific situations more carefully</li>
           </ul>
         </div>
       `;
     } else {
-      html = '<p style="color: var(--muted); margin-bottom: 1.5rem;">Based on your responses, the following manipulation vectors have been identified:</p>';
+      // Overlap warning
+      html = `
+        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);"><strong style="color: var(--accent);">Note:</strong> Vectors frequently co-occur. Overlap increases intensity, not certainty. These are patterns consistent with manipulation vectors—not discrete perpetrators.</p>
+        </div>
+      `;
       
-      this.analysisData.identifiedVectors.forEach(vector => {
-        const severity = vector.weightedScore >= 8 ? 'High' : vector.weightedScore >= 5 ? 'Moderate' : 'Low';
+      // Primary Vector
+      if (this.analysisData.primaryVector) {
+        const vector = this.analysisData.primaryVector;
+        const structuralLabel = this.analysisData.structuralModifier === 'structural' ? 'Structural Pattern' : 
+                                this.analysisData.structuralModifier === 'situational' ? 'Situational Pattern' : 
+                                'Mixed Pattern';
+        
         html += `
-          <div class="vector-result">
-            <h3>${vector.name} - ${severity} Priority</h3>
+          <div class="vector-result" style="border-left: 6px solid #d32f2f; background: rgba(211, 47, 47, 0.05);">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <h3 style="margin: 0; color: #d32f2f;">Primary Vector: ${vector.name}</h3>
+              <span style="background: #d32f2f; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">${structuralLabel}</span>
+            </div>
             <p style="color: var(--muted); margin-bottom: 1rem;">${vector.description}</p>
-            <p><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10 (Weighted: ${vector.weightedScore.toFixed(1)})</p>
-            <p style="margin-top: 1rem; font-weight: 600;">Relevant Tactics:</p>
+            <div style="display: flex; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap;">
+              <div>
+                <strong>Activation Level:</strong> <span style="text-transform: capitalize; color: ${vector.activationLevel === 'high' ? '#d32f2f' : vector.activationLevel === 'medium' ? 'var(--accent)' : 'var(--muted)'}; font-weight: 600;">${vector.activationLevel}</span>
+              </div>
+              <div>
+                <strong>Confidence:</strong> <span style="text-transform: capitalize; color: ${vector.confidenceBand === 'high' ? 'var(--brand)' : vector.confidenceBand === 'medium' ? 'var(--accent)' : '#d32f2f'}; font-weight: 600;">${vector.confidenceBand}</span>
+                ${vector.answerRate < 0.9 ? `<span style="font-size: 0.85rem; color: var(--muted); margin-left: 0.5rem;">(${Math.round(vector.answerRate * 100)}% answered)</span>` : ''}
+              </div>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--muted);"><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10 (Weighted: ${vector.weightedScore.toFixed(1)})</p>
+            
+            ${this.getWhatThisDoesNotImply(vector.key)}
+            
+            <p style="margin-top: 1.5rem; font-weight: 600; color: var(--brand);">Relevant Tactics (Top 5):</p>
         `;
         
         const relevantTactics = this.analysisData.tactics.filter(t => t.vector === vector.key);
         if (relevantTactics.length > 0) {
-          relevantTactics.slice(0, 3).forEach(tactic => {
+          relevantTactics.slice(0, 5).forEach(tactic => {
             html += `
               <div class="tactic-item">
-                <strong>${tactic.name}</strong> (${tactic.mode} ${tactic.phase})
-                <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);"><em>${tactic.example}</em></p>
-                <p style="margin-top: 0.5rem; font-size: 0.9rem;">${tactic.mechanism}</p>
+                <strong>${tactic.name}</strong>${tactic.mode && tactic.phase ? ` (${tactic.mode} ${tactic.phase})` : ''}
+                ${tactic.example ? `<p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);"><em>${tactic.example}</em></p>` : ''}
+                ${tactic.mechanism ? `<p style="margin-top: 0.5rem; font-size: 0.9rem;">${tactic.mechanism}</p>` : ''}
               </div>
             `;
           });
+          if (relevantTactics.length > 5) {
+            html += `<p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--muted); font-style: italic;">+ ${relevantTactics.length - 5} additional tactics identified (see export for full list)</p>`;
+          }
         }
         
         html += '</div>';
-      });
+      }
+      
+      // Supporting Vectors
+      if (this.analysisData.supportingVectors.length > 0) {
+        html += '<h3 style="color: var(--brand); margin-top: 2rem; margin-bottom: 1rem;">Supporting Vectors:</h3>';
+        
+        this.analysisData.supportingVectors.forEach(vector => {
+          html += `
+            <div class="vector-result">
+              <h3>${vector.name}</h3>
+              <p style="color: var(--muted); margin-bottom: 0.75rem;">${vector.description}</p>
+              <div style="display: flex; gap: 2rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <div>
+                  <strong>Activation Level:</strong> <span style="text-transform: capitalize; color: ${vector.activationLevel === 'high' ? '#d32f2f' : vector.activationLevel === 'medium' ? 'var(--accent)' : 'var(--muted)'}; font-weight: 600;">${vector.activationLevel}</span>
+                </div>
+                <div>
+                  <strong>Confidence:</strong> <span style="text-transform: capitalize; color: ${vector.confidenceBand === 'high' ? 'var(--brand)' : vector.confidenceBand === 'medium' ? 'var(--accent)' : '#d32f2f'}; font-weight: 600;">${vector.confidenceBand}</span>
+                  ${vector.answerRate < 0.9 ? `<span style="font-size: 0.85rem; color: var(--muted); margin-left: 0.5rem;">(${Math.round(vector.answerRate * 100)}% answered)</span>` : ''}
+                </div>
+              </div>
+              <p style="font-size: 0.9rem; color: var(--muted);"><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10 (Weighted: ${vector.weightedScore.toFixed(1)})</p>
+            </div>
+          `;
+        });
+      }
+      
+      // Stabilizing Closure
+      html += this.getStabilizingClosure();
     }
     
     container.innerHTML = html;
+  }
+  
+  getWhatThisDoesNotImply(vectorKey) {
+    const notImplies = {
+      fear: 'This pattern can appear without deliberate intent. Fear-based dynamics may emerge from unprocessed trauma or defensive patterns, not necessarily malicious manipulation.',
+      dependency: 'Dependency patterns can develop organically in relationships. This does not imply the other person is intentionally creating dependency.',
+      deception: 'Deception patterns may reflect the other person\'s own self-deception or distorted reality, not necessarily calculated manipulation.',
+      obsession: 'Obsessive patterns can stem from attachment wounds or unmet needs, not necessarily deliberate control tactics.',
+      adoration: 'Adoration patterns may reflect genuine but unhealthy idealization, not necessarily calculated manipulation.',
+      sexual: 'Sexual patterns may reflect unprocessed trauma, cultural conditioning, or boundary confusion, not necessarily deliberate exploitation.'
+    };
+    
+    const text = notImplies[vectorKey] || 'This pattern does not necessarily imply deliberate intent or malicious manipulation. Patterns can emerge from various sources including unprocessed trauma, cultural conditioning, or relational dynamics.';
+    
+    return `
+      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; margin-bottom: 1rem;">
+        <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">What this does NOT imply:</strong> ${text}</p>
+      </div>
+    `;
+  }
+  
+  getStabilizingClosure() {
+    return `
+      <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border: 2px solid var(--brand); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3 style="color: var(--brand); margin-bottom: 1rem; text-align: center;">Orientation & Next Steps</h3>
+        <div style="line-height: 1.8;">
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">1. What You Experienced</h4>
+            <p style="color: var(--muted); margin: 0;">You've mapped patterns consistent with manipulation vectors. This analysis reflects your reported experiences and effects.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">2. What Patterns Fit</h4>
+            <p style="color: var(--muted); margin: 0;">The identified vectors show patterns consistent with your responses. Vectors frequently overlap and co-occur.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">3. Where Your Leverage Is</h4>
+            <p style="color: var(--muted); margin: 0;">Recognition is the first step. Your leverage comes from understanding these patterns and making conscious choices about boundaries, communication, and relationship dynamics.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">4. Where You Exit Analysis</h4>
+            <p style="color: var(--muted); margin: 0;">This analysis is complete. You can export your results, start a new assessment, or return to the tools page. Use this knowledge to support your sovereignty, not to fuel hypervigilance.</p>
+          </div>
+          <div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Grounding Recommendation:</strong> Take time to integrate this information. Awareness without action can become analysis paralysis. Consider what specific, actionable steps you can take to protect your sovereignty.</p>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   exportAnalysis(format = 'json') {
@@ -458,6 +713,7 @@ class ManipulationEngine {
   resetAssessment() {
     this.currentQuestionIndex = 0;
     this.answers = {};
+    this.decompressionShown = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       symptoms: {},
@@ -465,7 +721,10 @@ class ManipulationEngine {
       consequences: {},
       vectorScores: {},
       identifiedVectors: [],
-      tactics: []
+      primaryVector: null,
+      supportingVectors: [],
+      tactics: [],
+      structuralModifier: null
     };
     
     sessionStorage.removeItem('manipulationProgress');
