@@ -744,7 +744,6 @@ figure.image-card a::before{
 .books-grid .image-card:nth-child(1) a::before,
 .books-grid figure.image-card:nth-child(1) a::before{
   background:conic-gradient(from 0deg, rgba(255, 255, 255, 1) 0%, rgba(200, 225, 255, 1) 25%, rgba(30, 144, 255, 1) 50%, rgba(0, 191, 255, 1) 75%, rgba(255, 255, 255, 1) 100%);
-  animation-delay:0s;
 }
 
 .books-grid .image-card:nth-child(2) a::before,
