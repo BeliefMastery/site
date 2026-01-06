@@ -281,17 +281,22 @@ class ParadigmEngine {
     
     let html = '';
     
+    // Show phase explanation if this is the first question of a phase
+    if (this.currentQuestionIndex === 0) {
+      html += this.getPhaseExplanation(this.currentPhase);
+    }
+    
     // Render based on question type
     if (question.type === 'binary') {
-      html = this.renderBinaryQuestion(question);
+      html += this.renderBinaryQuestion(question);
     } else if (question.type === 'scenario') {
-      html = this.renderScenarioQuestion(question);
+      html += this.renderScenarioQuestion(question);
     } else if (question.type === 'multiselect') {
-      html = this.renderMultiselectQuestion(question);
+      html += this.renderMultiselectQuestion(question);
     } else if (question.type === 'ranked') {
-      html = this.renderRankedQuestion(question);
+      html += this.renderRankedQuestion(question);
     } else if (question.type === 'scaled') {
-      html = this.renderScaledQuestion(question);
+      html += this.renderScaledQuestion(question);
     }
     
     container.innerHTML = html;
@@ -641,6 +646,37 @@ class ParadigmEngine {
     return labels[phase] || `Phase ${phase}`;
   }
 
+  getPhaseExplanation(phase) {
+    const explanations = {
+      1: {
+        title: 'Phase 1: Orientation',
+        description: 'These questions help identify your broad paradigm orientation. They use binary choices and simple filters to establish a baseline understanding of how you approach "The Good Life" and "God". There are no right or wrong answers—just honest responses about your current perspective.',
+        purpose: 'Purpose: To quickly identify which paradigms and perspectives are most relevant to explore in depth.'
+      },
+      2: {
+        title: 'Phase 2: Depth Mapping',
+        description: 'Now we\'ll explore the specific dimensions of your identified paradigms in more detail. You\'ll encounter ranked choices, multi-select options, and scenario-based questions that help map the nuanced ways you relate to these concepts.',
+        purpose: 'Purpose: To understand the specific dimensions (literal, symbolic, esoteric, mystical) within your primary paradigms and how they interact.'
+      },
+      3: {
+        title: 'Phase 3: Integration Check',
+        description: 'This final phase examines how well-integrated your understanding is across different contexts and dimensions. We\'ll check for consistency, certainty levels, and identify any gaps or contradictions in your paradigm structure.',
+        purpose: 'Purpose: To assess integration, identify blind spots, and understand how your paradigm functions under different conditions.'
+      }
+    };
+    
+    const exp = explanations[phase];
+    if (!exp) return '';
+    
+    return `
+      <div class="phase-explanation" style="background: rgba(33, 150, 243, 0.1); border-left: 4px solid #2196F3; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="color: #2196F3; margin-bottom: 0.75rem; font-size: 1.25rem;">${exp.title}</h3>
+        <p style="color: var(--text); margin-bottom: 0.75rem; line-height: 1.6;">${exp.description}</p>
+        <p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">${exp.purpose}</p>
+      </div>
+    `;
+  }
+
   updateProgress() {
     const totalQuestions = this.getTotalQuestions();
     const currentQuestion = this.getCurrentQuestionNumber();
@@ -822,13 +858,47 @@ class ParadigmEngine {
 
   calculateIntegrationScores() {
     // Calculate integration scores from Phase 3
-    const goodLifeIntegration = this.answers['p3_goodlife_integration'] || 0;
-    const godIntegration = this.answers['p3_god_integration'] || 0;
+    // If Phase 3 integration questions weren't answered, calculate from dimensional variance
+    let goodLifeIntegration = this.answers['p3_goodlife_integration'];
+    let godIntegration = this.answers['p3_god_integration'];
+    
+    // If not answered, calculate from dimensional variance (lower variance = higher integration)
+    if (goodLifeIntegration === undefined || goodLifeIntegration === null) {
+      const goodLifeVariances = [];
+      Object.values(this.analysisData.goodLife || {}).forEach(paradigm => {
+        const dimensionScores = Object.values(paradigm.dimensions || {}).map(d => d.score || 0);
+        if (dimensionScores.length > 0) {
+          const variance = this.calculateVariance(dimensionScores);
+          goodLifeVariances.push(variance);
+        }
+      });
+      const avgVariance = goodLifeVariances.length > 0 
+        ? goodLifeVariances.reduce((a, b) => a + b, 0) / goodLifeVariances.length 
+        : 7;
+      // Convert variance to integration score (inverse relationship, scaled to 0-7)
+      goodLifeIntegration = Math.max(0, Math.min(7, 7 - (avgVariance / 2)));
+    }
+    
+    if (godIntegration === undefined || godIntegration === null) {
+      const godVariances = [];
+      Object.values(this.analysisData.god || {}).forEach(perspective => {
+        const dimensionScores = Object.values(perspective.dimensions || {}).map(d => d.score || 0);
+        if (dimensionScores.length > 0) {
+          const variance = this.calculateVariance(dimensionScores);
+          godVariances.push(variance);
+        }
+      });
+      const avgVariance = godVariances.length > 0 
+        ? godVariances.reduce((a, b) => a + b, 0) / godVariances.length 
+        : 7;
+      // Convert variance to integration score (inverse relationship, scaled to 0-7)
+      godIntegration = Math.max(0, Math.min(7, 7 - (avgVariance / 2)));
+    }
     
     this.analysisData.integrationScores = {
-      good_life: goodLifeIntegration,
-      god: godIntegration,
-      overall: (goodLifeIntegration + godIntegration) / 2
+      good_life: Math.round(goodLifeIntegration * 10) / 10,
+      god: Math.round(godIntegration * 10) / 10,
+      overall: Math.round(((goodLifeIntegration + godIntegration) / 2) * 10) / 10
     };
   }
 
@@ -1277,8 +1347,9 @@ class ParadigmEngine {
         
         Object.entries(this.analysisData.shadowBlindSpots.god || {}).forEach(([perspectiveKey, dimensions]) => {
           const perspective = this.analysisData.god[perspectiveKey];
-          if (perspective) {
-            html += `<p style="margin-bottom: 0.5rem;"><strong>${perspective.name}:</strong> `;
+          if (perspective && Array.isArray(dimensions) && dimensions.length > 0) {
+            const perspectiveName = GOD_PERSPECTIVES[perspectiveKey]?.name || perspective.name || perspectiveKey;
+            html += `<p style="margin-bottom: 0.5rem;"><strong>${perspectiveName}:</strong> `;
             html += dimensions.map(dim => this.getDimensionLabel(dim)).join(', ');
             html += '</p>';
           }
@@ -1308,12 +1379,13 @@ class ParadigmEngine {
         }
         
         if ((this.analysisData.developmentEdges.god || []).length > 0) {
-          html += '<p style="margin-bottom: 0.5rem;"><strong>God Perspectives:</strong> ';
-          html += this.analysisData.developmentEdges.god
-            .filter(gap => gap !== 'none')
-            .map(gap => this.getDimensionLabel(gap))
-            .join(', ');
-          html += '</p>';
+          const validGaps = this.analysisData.developmentEdges.god
+            .filter(gap => gap && gap !== 'none' && gap !== '');
+          if (validGaps.length > 0) {
+            html += '<p style="margin-bottom: 0.5rem;"><strong>God Perspectives:</strong> ';
+            html += validGaps.map(gap => this.getDimensionLabel(gap)).join(', ');
+            html += '</p>';
+          }
         }
         
         html += '</div>';
@@ -1337,7 +1409,20 @@ class ParadigmEngine {
       html += '<h4 style="color: #ff9800;">Tension Points</h4>';
       html += '<p style="color: var(--muted); margin-bottom: 0.75rem;">Areas of internal contradiction or tension (not necessarily problematic):</p>';
       this.analysisData.tensionPoints.forEach(tension => {
-        html += `<p style="margin-bottom: 0.5rem;">${tension.description || tension.type || 'Internal tension detected'}</p>`;
+        let description = '';
+        if (tension.description) {
+          description = tension.description;
+        } else if (tension.type === 'dimensional_tension' && tension.high && tension.low) {
+          const highLabel = this.getDimensionLabel(tension.high);
+          const lowLabel = this.getDimensionLabel(tension.low);
+          const location = tension.location ? ` (${tension.location.replace(/^(good_life|god)_/, '')})` : '';
+          description = `Tension between ${highLabel} and ${lowLabel} dimensions${location}`;
+        } else if (tension.type) {
+          description = tension.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        } else {
+          description = 'Internal tension detected';
+        }
+        html += `<p style="margin-bottom: 0.5rem;">${description}</p>`;
       });
       html += '</div>';
     }
@@ -1364,13 +1449,16 @@ class ParadigmEngine {
   }
 
   getDimensionLabel(dimensionKey) {
+    if (!dimensionKey || typeof dimensionKey !== 'string') {
+      return 'Unknown';
+    }
     const labels = {
       'literal': 'Literal',
       'symbolic': 'Symbolic',
       'esoteric': 'Esoteric',
       'mystical': 'Mystical'
     };
-    return labels[dimensionKey] || dimensionKey;
+    return labels[dimensionKey.toLowerCase()] || dimensionKey;
   }
 
   getIntegrationSection() {
