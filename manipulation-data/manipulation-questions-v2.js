@@ -189,32 +189,30 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
   
   const questions = [];
   
-  // Add binary initial filter for symptoms
+  // Add multi-select question for symptoms
   if (vectorQuestions.symptoms.length > 0) {
     questions.push({
-      id: `p3_${vectorId}_symptoms_binary`,
-      question: `Do you experience symptoms related to ${vector.name.toLowerCase()}?`,
-      description: `Symptoms are ways this type of manipulation shows up in your thoughts, feelings, or behaviors. For ${vector.name.toLowerCase()}, this might include feeling anxious, confused, trapped, or doubting yourself.`,
-      type: 'binary_unsure',
-      options: [
-        {
-          text: 'Yes - I experience these symptoms',
-          mapsTo: { vector: vectorId, category: 'symptoms', flow: 'present', weight: 2 }
+      id: `p3_${vectorId}_symptoms_multiselect`,
+      question: `Which of these symptoms related to ${vector.name.toLowerCase()} do you experience?`,
+      description: `Symptoms are ways this type of manipulation shows up in your thoughts, feelings, or behaviors. Select all that apply.`,
+      type: 'multiselect',
+      maxSelections: vectorQuestions.symptoms.length, // Allow selecting all
+      options: vectorQuestions.symptoms.map(q => ({
+        text: q.question,
+        mapsTo: { 
+          vector: vectorId, 
+          category: 'symptoms', 
+          symptomId: q.id,
+          weight: q.weight || 1 
         },
-        {
-          text: 'No - I do not experience these symptoms',
-          mapsTo: { vector: vectorId, category: 'symptoms', flow: 'absent', weight: 0 }
-        },
-        {
-          text: "I'm not sure",
-          mapsTo: { vector: vectorId, category: 'symptoms', flow: 'unknown', weight: 1 }
-        }
-      ],
+        originalQuestion: q
+      })),
       vector: vectorId,
       conditional: {
-        'Yes': vectorQuestions.symptoms.slice(0, 3).map(q => ({
-          id: `p3_${vectorId}_${q.id}`,
-          question: q.question,
+        // For each selected symptom, ask frequency
+        'selected': vectorQuestions.symptoms.map(q => ({
+          id: `p3_${vectorId}_${q.id}_frequency`,
+          question: `How often do you experience: "${q.question}"?`,
           type: 'frequency',
           options: [
             { text: 'Always', mapsTo: { vector: vectorId, frequency: 'always', weight: 3 } },
@@ -224,38 +222,37 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
             { text: 'Never', mapsTo: { vector: vectorId, frequency: 'never', weight: 0 } }
           ],
           vector: vectorId,
-          originalQuestion: q
+          originalQuestion: q,
+          conditional: true // Only show if symptom was selected
         }))
       }
     });
   }
   
-  // Add effect questions
+  // Add multi-select question for effects
   if (vectorQuestions.effects.length > 0) {
     questions.push({
-      id: `p3_${vectorId}_effects_binary`,
-      question: `Have you noticed effects on your life from ${vector.name.toLowerCase()}?`,
-      description: `Effects are changes in your life caused by this manipulation. This might include changes in your self-esteem, independence, relationships with others, or your ability to function at work or school.`,
-      type: 'binary_unsure',
-      options: [
-        {
-          text: 'Yes - I have noticed effects',
-          mapsTo: { vector: vectorId, category: 'effects', flow: 'present', weight: 2 }
+      id: `p3_${vectorId}_effects_multiselect`,
+      question: `Which of these effects on your life from ${vector.name.toLowerCase()} have you noticed?`,
+      description: `Effects are changes in your life caused by this manipulation. Select all that apply.`,
+      type: 'multiselect',
+      maxSelections: vectorQuestions.effects.length, // Allow selecting all
+      options: vectorQuestions.effects.map(q => ({
+        text: q.question,
+        mapsTo: { 
+          vector: vectorId, 
+          category: 'effects', 
+          effectId: q.id,
+          weight: q.weight || 1 
         },
-        {
-          text: 'No - I have not noticed effects',
-          mapsTo: { vector: vectorId, category: 'effects', flow: 'absent', weight: 0 }
-        },
-        {
-          text: "I'm not sure",
-          mapsTo: { vector: vectorId, category: 'effects', flow: 'unknown', weight: 1 }
-        }
-      ],
+        originalQuestion: q
+      })),
       vector: vectorId,
       conditional: {
-        'Yes': vectorQuestions.effects.slice(0, 3).map(q => ({
-          id: `p3_${vectorId}_${q.id}`,
-          question: q.question,
+        // For each selected effect, ask frequency
+        'selected': vectorQuestions.effects.map(q => ({
+          id: `p3_${vectorId}_${q.id}_frequency`,
+          question: `How often do you experience: "${q.question}"?`,
           type: 'frequency',
           options: [
             { text: 'Always', mapsTo: { vector: vectorId, frequency: 'always', weight: 3 } },
@@ -265,38 +262,37 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
             { text: 'Never', mapsTo: { vector: vectorId, frequency: 'never', weight: 0 } }
           ],
           vector: vectorId,
-          originalQuestion: q
+          originalQuestion: q,
+          conditional: true // Only show if effect was selected
         }))
       }
     });
   }
   
-  // Add consequence questions
+  // Add multi-select question for consequences
   if (vectorQuestions.consequences.length > 0) {
     questions.push({
-      id: `p3_${vectorId}_consequences_binary`,
-      question: `Have you experienced consequences from ${vector.name.toLowerCase()}?`,
-      description: `Consequences are serious outcomes or patterns that have developed. This might include losing yourself, compromising your values, experiencing harm, or feeling trapped or in danger.`,
-      type: 'binary_unsure',
-      options: [
-        {
-          text: 'Yes - I have experienced consequences',
-          mapsTo: { vector: vectorId, category: 'consequences', flow: 'present', weight: 2 }
+      id: `p3_${vectorId}_consequences_multiselect`,
+      question: `Which of these consequences from ${vector.name.toLowerCase()} have you experienced?`,
+      description: `Consequences are serious outcomes or patterns that have developed. Select all that apply.`,
+      type: 'multiselect',
+      maxSelections: vectorQuestions.consequences.length, // Allow selecting all
+      options: vectorQuestions.consequences.map(q => ({
+        text: q.question,
+        mapsTo: { 
+          vector: vectorId, 
+          category: 'consequences', 
+          consequenceId: q.id,
+          weight: q.weight || 1 
         },
-        {
-          text: 'No - I have not experienced consequences',
-          mapsTo: { vector: vectorId, category: 'consequences', flow: 'absent', weight: 0 }
-        },
-        {
-          text: "I'm not sure",
-          mapsTo: { vector: vectorId, category: 'consequences', flow: 'unknown', weight: 1 }
-        }
-      ],
+        originalQuestion: q
+      })),
       vector: vectorId,
       conditional: {
-        'Yes': vectorQuestions.consequences.slice(0, 3).map(q => ({
-          id: `p3_${vectorId}_${q.id}`,
-          question: q.question,
+        // For each selected consequence, ask frequency
+        'selected': vectorQuestions.consequences.map(q => ({
+          id: `p3_${vectorId}_${q.id}_frequency`,
+          question: `How often do you experience: "${q.question}"?`,
           type: 'frequency',
           options: [
             { text: 'Always', mapsTo: { vector: vectorId, frequency: 'always', weight: 3 } },
@@ -306,7 +302,8 @@ export function generatePhase3VectorQuestions(vectorId, vector, existingQuestion
             { text: 'Never', mapsTo: { vector: vectorId, frequency: 'never', weight: 0 } }
           ],
           vector: vectorId,
-          originalQuestion: q
+          originalQuestion: q,
+          conditional: true // Only show if consequence was selected
         }))
       }
     });

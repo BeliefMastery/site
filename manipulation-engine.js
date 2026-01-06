@@ -263,6 +263,36 @@ class ManipulationEngine {
           });
         }
       }
+    } else if (question.type === 'multiselect' && question.conditional && question.conditional['selected']) {
+      // Handle multi-select: show frequency questions for selected items
+      const answer = this.answers[question.id];
+      if (answer && Array.isArray(answer) && answer.length > 0) {
+        const selectedIds = answer.map(a => a.mapsTo?.symptomId || a.mapsTo?.effectId || a.mapsTo?.consequenceId).filter(Boolean);
+        const conditionalQuestions = question.conditional['selected'];
+        
+        // Filter to only show frequency questions for selected items
+        const questionsToAdd = conditionalQuestions.filter(condQ => {
+          if (condQ.conditional !== true) return false; // Only show conditional questions
+          const originalId = condQ.originalQuestion?.id;
+          return originalId && selectedIds.includes(originalId);
+        });
+        
+        if (questionsToAdd.length > 0) {
+          // Insert conditional questions after current question
+          const currentIndex = this.questionSequence.findIndex(q => q.id === question.id);
+          questionsToAdd.forEach((condQ, index) => {
+            // Check if this question already exists in sequence
+            const existingIndex = this.questionSequence.findIndex(q => q.id === condQ.id);
+            if (existingIndex === -1) {
+              this.questionSequence.splice(currentIndex + 1 + index, 0, {
+                ...condQ,
+                phase: 3,
+                vector: question.vector
+              });
+            }
+          });
+        }
+      }
     }
   }
 
@@ -402,7 +432,8 @@ class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${question.question}</h3>
-        <p class="selection-limit">Select up to ${maxSelections}</p>
+        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${question.description}</div>` : ''}
+        <p class="selection-limit">Select all that apply${maxSelections < question.options.length ? ` (up to ${maxSelections})` : ''}</p>
         <div class="multiselect-options">
           ${question.options.map((option, index) => {
             const isSelected = currentAnswer.some(ans => ans.text === option.text);
@@ -420,7 +451,7 @@ class ManipulationEngine {
             `;
           }).join('')}
         </div>
-        <div class="selection-count" id="selectionCount_${question.id}">Selected: ${currentAnswer.length} / ${maxSelections}</div>
+        <div class="selection-count" id="selectionCount_${question.id}">Selected: ${currentAnswer.length}${maxSelections < question.options.length ? ` / ${maxSelections}` : ''}</div>
       </div>
     `;
   }
@@ -536,7 +567,13 @@ class ManipulationEngine {
           });
           
           if (selectionCount) {
-            selectionCount.textContent = `Selected: ${selected.length} / ${maxSelections}`;
+            const maxText = maxSelections < question.options.length ? ` / ${maxSelections}` : '';
+            selectionCount.textContent = `Selected: ${selected.length}${maxText}`;
+          }
+          
+          // Process conditional logic for Phase 3 multi-select questions
+          if (this.currentPhase === 3) {
+            this.processPhase3Answer(question);
           }
           
           this.saveProgress();
