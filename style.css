@@ -937,8 +937,7 @@ figure.image-card:hover a::after{
   color:var(--brand);
 }
 
-.image-card.tool-card .tool-summary,
-.image-card .book-summary{
+.image-card.tool-card .tool-summary{
   position:absolute;
   top:calc(100% + 12px);
   left:50%;
@@ -964,20 +963,9 @@ figure.image-card:hover a::after{
   text-align:center;
 }
 
-.image-card.tool-card:hover .tool-summary,
-.image-card:hover .book-summary{
+.image-card.tool-card:hover .tool-summary{
   opacity:1;
   transform:translateX(-50%) translateY(0);
-}
-
-.image-card .book-summary{
-  opacity:0;
-  transition:opacity 0.3s ease, transform 0.3s ease;
-  white-space:normal;
-  max-width:280px;
-  text-align:center;
-  color:var(--brand);
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* ---------- Feature List ---------- */
