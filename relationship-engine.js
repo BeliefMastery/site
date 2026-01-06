@@ -14,7 +14,6 @@ class RelationshipEngine {
     this.currentStage = 1; // 1: Broad Assessment, 2: Domain Deep Dive, 3: Scenarios
     this.currentQuestionIndex = 0;
     this.answers = {};
-    this.confidenceScores = {}; // Confidence modifiers for Stage 1
     this.questionSequence = [];
     this.weakestLinks = []; // Identified from Stage 1 (renamed to strain points in display)
     this.domainWeakAreas = {}; // Domain-specific weak areas from Stage 2
@@ -130,7 +129,6 @@ class RelationshipEngine {
     if (!questionContainer) return;
     
     const savedAnswer = this.answers[question.id] !== undefined ? this.answers[question.id] : 5;
-    const savedConfidence = this.confidenceScores[question.id] !== undefined ? this.confidenceScores[question.id] : 5;
     
     let stageLabel = '';
     if (question.stage === 1) {
@@ -147,29 +145,6 @@ class RelationshipEngine {
         <strong style="color: var(--brand);">Example Scenario:</strong>
         <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${question.example}</p>
       </div>`;
-    }
-    
-    let confidenceModifier = '';
-    if (question.stage === 1) {
-      confidenceModifier = `
-        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius);">
-          <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--muted);"><strong>How confident is this rating?</strong> (Optional)</p>
-          <div class="scale-container" style="margin-top: 0.5rem;">
-            <div class="scale-input">
-              <input type="range" min="0" max="10" value="${savedConfidence}" class="slider" id="confidenceSlider">
-              <div class="scale-labels" style="font-size: 0.8rem;">
-                <span>Not confident</span>
-                <span>Somewhat</span>
-                <span>Very confident</span>
-              </div>
-            </div>
-            <span class="scale-value" id="confidenceValue" style="font-size: 0.9rem;">${savedConfidence}</span>
-          </div>
-          <p style="font-size: 0.85em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
-            Low confidence ratings will be flagged for cautious interpretation in results.
-          </p>
-        </div>
-      `;
     }
     
     questionContainer.innerHTML = `
@@ -193,7 +168,6 @@ class RelationshipEngine {
         <p style="font-size: 0.9em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
           Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment). I experience... I find myself...
         </p>
-        ${confidenceModifier}
       </div>
     `;
     
@@ -205,18 +179,6 @@ class RelationshipEngine {
         this.answers[question.id] = parseInt(event.target.value);
         this.saveProgress();
       };
-    }
-    
-    if (question.stage === 1) {
-      const confidenceSlider = document.getElementById('confidenceSlider');
-      const confidenceValueSpan = document.getElementById('confidenceValue');
-      if (confidenceSlider && confidenceValueSpan) {
-        confidenceSlider.oninput = (event) => {
-          confidenceValueSpan.textContent = event.target.value;
-          this.confidenceScores[question.id] = parseInt(event.target.value);
-          this.saveProgress();
-        };
-      }
     }
     
     this.updateNavigationButtons();
@@ -420,7 +382,6 @@ class RelationshipEngine {
     }
     
     const savedAnswer = this.answers[currentQ.id] !== undefined ? this.answers[currentQ.id] : 5; // Default to 5
-    const savedConfidence = this.confidenceScores[currentQ.id] !== undefined ? this.confidenceScores[currentQ.id] : 5;
 
     let stageLabel = '';
     if (currentQ.stage === 1) {
@@ -437,30 +398,6 @@ class RelationshipEngine {
         <strong style="color: var(--brand);">Example Scenario:</strong>
         <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${currentQ.example}</p>
       </div>`;
-    }
-
-    // Add confidence modifier for Stage 1 questions
-    let confidenceModifier = '';
-    if (currentQ.stage === 1) {
-      confidenceModifier = `
-        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius);">
-          <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--muted);"><strong>How confident is this rating?</strong> (Optional)</p>
-          <div class="scale-container" style="margin-top: 0.5rem;">
-            <div class="scale-input">
-              <input type="range" min="0" max="10" value="${savedConfidence}" class="slider" id="confidenceSlider">
-              <div class="scale-labels" style="font-size: 0.8rem;">
-                <span>Not confident</span>
-                <span>Somewhat</span>
-                <span>Very confident</span>
-              </div>
-            </div>
-            <span class="scale-value" id="confidenceValue" style="font-size: 0.9rem;">${savedConfidence}</span>
-          </div>
-          <p style="font-size: 0.85em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
-            Low confidence ratings will be flagged for cautious interpretation in results.
-          </p>
-        </div>
-      `;
     }
     
     questionContainer.innerHTML = `
@@ -484,7 +421,6 @@ class RelationshipEngine {
         <p style="font-size: 0.9em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
           Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment). I experience... I find myself...
         </p>
-        ${confidenceModifier}
       </div>
     `;
 
@@ -496,19 +432,6 @@ class RelationshipEngine {
         this.answers[currentQ.id] = parseInt(event.target.value);
         this.saveProgress();
       };
-    }
-    
-    // Handle confidence slider for Stage 1
-    if (currentQ.stage === 1) {
-      const confidenceSlider = document.getElementById('confidenceSlider');
-      const confidenceValueSpan = document.getElementById('confidenceValue');
-      if (confidenceSlider && confidenceValueSpan) {
-        confidenceSlider.oninput = (event) => {
-          confidenceValueSpan.textContent = event.target.value;
-          this.confidenceScores[currentQ.id] = parseInt(event.target.value);
-          this.saveProgress();
-        };
-      }
     }
 
     prevBtn.disabled = this.currentQuestionIndex === 0;
@@ -605,20 +528,14 @@ class RelationshipEngine {
     // Identify current strain points (lowest weighted scores)
     const sortedPoints = Object.entries(this.analysisData.stage1Results)
       .map(([key, data]) => {
-        // Apply confidence modifier - low confidence reduces weight
-        const confidence = this.confidenceScores[`stage1_${key}`] || 10;
-        const confidenceWeight = confidence / 10; // 0-1 scale
         return {
           point: key,
-          ...data,
-          weightedScore: data.weightedScore * confidenceWeight,
-          confidence: confidence,
-          lowConfidence: confidence < 6
+          ...data
         };
       })
       .sort((a, b) => a.weightedScore - b.weightedScore);
     
-    // Top 5-7 current strain points (may include more if confidence is low)
+    // Top 5-7 current strain points
     this.weakestLinks = sortedPoints.slice(0, 7);
   }
 
@@ -817,8 +734,6 @@ class RelationshipEngine {
       impactTier: link.impactTier,
       priority: link.priority,
       severity: link.severity,
-      lowConfidence: link.lowConfidence || false,
-      confidence: link.confidence || 10,
       strategies: this.getActionStrategies(link.point, link.rawScore)
     }));
 
@@ -897,7 +812,6 @@ class RelationshipEngine {
     if (this.analysisData.weakestLinks.length > 0) {
       this.analysisData.weakestLinks.forEach((link, index) => {
         const criticalClass = link.severity === 'Critical' ? 'critical' : '';
-        const lowConfidenceFlag = link.lowConfidence ? '<span style="background: rgba(255, 184, 0, 0.2); color: #d32f2f; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem; font-weight: 600;">Low Confidence</span>' : '';
         
         // Tier action strategies
         const selfRegulation = this.getSelfRegulationStrategies(link);
@@ -910,9 +824,8 @@ class RelationshipEngine {
         
         html += `
           <div class="weakest-link-item ${criticalClass}">
-            <h3>${index + 1}. ${link.name} <span style="font-size: 0.9em; color: var(--muted);">(${link.impactTier} impact)</span>${lowConfidenceFlag}</h3>
+            <h3>${index + 1}. ${link.name} <span style="font-size: 0.9em; color: var(--muted);">(${link.impactTier} impact)</span></h3>
             <p><strong>Score:</strong> ${link.rawScore}/10 (Weighted: ${link.weightedScore.toFixed(2)})</p>
-            ${link.lowConfidence ? '<p style="font-size: 0.85rem; color: #d32f2f; font-style: italic;">This rating had low confidence. Interpret with caution.</p>' : ''}
             <p><strong>Priority:</strong> ${link.priority} | <strong>Severity:</strong> ${link.severity}</p>
             
             <div class="action-strategies" style="margin-top: 1.5rem;">
@@ -1140,7 +1053,6 @@ class RelationshipEngine {
     const progressData = {
       currentQuestionIndex: this.currentQuestionIndex,
       answers: this.answers,
-      confidenceScores: this.confidenceScores,
       timestamp: new Date().toISOString()
     };
     sessionStorage.setItem('relationshipProgress', JSON.stringify(progressData));
@@ -1153,7 +1065,6 @@ class RelationshipEngine {
         const data = JSON.parse(stored);
         this.currentQuestionIndex = data.currentQuestionIndex || 0;
         this.answers = data.answers || {};
-        this.confidenceScores = data.confidenceScores || {};
 
         // If in progress, restore questionnaire state
         if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
@@ -1176,7 +1087,6 @@ class RelationshipEngine {
   resetAssessment() {
     this.currentQuestionIndex = 0;
     this.answers = {};
-    this.confidenceScores = {};
     this.stage2TransitionShown = false;
     this.stage3TransitionShown = false;
     this.groundingPauseShown = false;
