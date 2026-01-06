@@ -421,39 +421,98 @@ class CoachingEngine {
   }
 
   calculatePriorities() {
-    // Top obstacles (highest weighted scores)
+    // Apply user weight adjustment if set
+    const weightMultiplier = this.profileData.userWeightAdjustment || 1.0;
+    
+    // Top obstacles (highest weighted scores) - now called "Active Constraints"
     const obstacles = Object.entries(this.profileData.obstacles)
-      .map(([key, data]) => ({ key, ...data }))
+      .map(([key, data]) => {
+        // Calculate volatility: high obstacle score + low domain dissatisfaction = situational
+        const domainScores = Object.values(this.profileData.domains).map(d => d.combinedScore);
+        const avgDomainSatisfaction = domainScores.length > 0 
+          ? domainScores.reduce((a, b) => a + b, 0) / domainScores.length 
+          : 5;
+        const isSituational = data.rawScore >= 7 && avgDomainSatisfaction >= 5;
+        
+        return {
+          key,
+          ...data,
+          weightedScore: data.weightedScore * weightMultiplier,
+          volatility: isSituational ? 'situationally amplified' : 'structurally persistent'
+        };
+      })
       .sort((a, b) => b.weightedScore - a.weightedScore)
       .slice(0, 5);
     
     // Top improvement areas (lowest satisfaction domains)
     const improvementAreas = Object.entries(this.profileData.domains)
-      .map(([key, data]) => ({ key, ...data }))
+      .map(([key, data]) => ({
+        key,
+        ...data,
+        weightedScore: data.weightedScore * weightMultiplier
+      }))
       .sort((a, b) => a.combinedScore - b.combinedScore)
       .slice(0, 5);
     
+    // Prevent total domain collapse - if all domains score low, surface one stabilizing domain
+    const allDomainScores = Object.values(this.profileData.domains).map(d => d.combinedScore);
+    const allLow = allDomainScores.every(score => score < 4);
+    let stabilizingDomain = null;
+    if (allLow && allDomainScores.length > 0) {
+      // Find the highest scoring domain as stabilizing
+      const highestDomain = Object.entries(this.profileData.domains)
+        .map(([key, data]) => ({ key, ...data }))
+        .sort((a, b) => b.combinedScore - a.combinedScore)[0];
+      stabilizingDomain = highestDomain;
+    }
+    
+    // Enforce primary axis: one obstacle + one domain
+    const primaryObstacle = obstacles.length > 0 ? obstacles[0] : null;
+    const primaryDomain = improvementAreas.length > 0 ? improvementAreas[0] : null;
+    
+    // Calculate axis valid until date (30 days from now)
+    const axisValidUntil = new Date();
+    axisValidUntil.setDate(axisValidUntil.getDate() + 30);
+    
     this.profileData.priorities = {
       topObstacles: obstacles,
-      topImprovementAreas: improvementAreas
+      topImprovementAreas: improvementAreas,
+      stabilizingDomain: stabilizingDomain
+    };
+    
+    this.profileData.primaryAxis = {
+      obstacle: primaryObstacle,
+      domain: primaryDomain,
+      validUntil: axisValidUntil.toISOString(),
+      note: "Focus on this axis for 30 days. Other priorities serve as background context."
     };
   }
 
   generateCoachingProfile() {
-    // Create coaching profile for AI agent
+    // Create coaching profile for AI agent with sovereignty clause
+    const systemPromptWithClause = `SOVEREIGNTY CLAUSE: This agent serves reflective and catalytic functions. It holds no authority over decision, value, or identity.
+
+${COACHING_PROMPTS.system_prompt}
+
+QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
+    
     this.profileData.coachingProfile = {
-      systemPrompt: COACHING_PROMPTS.system_prompt,
+      systemPrompt: systemPromptWithClause,
       coachingStyle: COACHING_PROMPTS.coaching_style,
       userProfile: {
         obstacles: this.profileData.obstacles,
         domains: this.profileData.domains,
-        priorities: this.profileData.priorities
+        priorities: this.profileData.priorities,
+        primaryAxis: this.profileData.primaryAxis
       },
       responseTemplates: COACHING_PROMPTS.response_templates,
       metadata: {
         timestamp: this.profileData.timestamp,
         sectionsCompleted: this.selectedSections,
-        totalQuestions: this.questionSequence.length
+        totalQuestions: this.questionSequence.length,
+        axisValidUntil: this.profileData.primaryAxis?.validUntil,
+        weightProvenance: "Weights reflect Sovereign of Mind prioritization logic.",
+        userWeightAdjustment: this.profileData.userWeightAdjustment
       }
     };
   }
@@ -510,22 +569,69 @@ class CoachingEngine {
       html += '<h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.4rem;">🎯 Areas of Greatest Impact</h3>';
       html += '<p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6;">These are the areas that will provide the greatest positive impact when addressed:</p>';
       
+      // Show primary axis prominently
+      if (this.profileData.primaryAxis && (this.profileData.primaryAxis.obstacle || this.profileData.primaryAxis.domain)) {
+        html += '<div style="background: rgba(0, 123, 255, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;">';
+        html += '<h3 style="color: var(--brand); margin-bottom: 1rem; font-size: 1.3rem;">🎯 Primary Coaching Axis</h3>';
+        html += '<p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">Focus on this axis for 30 days. Other priorities serve as background context.</p>';
+        if (this.profileData.primaryAxis.obstacle) {
+          html += `<div style="background: rgba(255, 255, 255, 0.8); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border-left: 4px solid #dc3545;">`;
+          html += `<p style="margin: 0; font-weight: 600; color: #dc3545;">Active Constraint: ${this.profileData.primaryAxis.obstacle.name}</p>`;
+          html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Score: ${this.profileData.primaryAxis.obstacle.rawScore}/10 | ${this.profileData.primaryAxis.obstacle.volatility}</p>`;
+          html += `</div>`;
+        }
+        if (this.profileData.primaryAxis.domain) {
+          html += `<div style="background: rgba(255, 255, 255, 0.8); padding: 1rem; border-radius: var(--radius); border-left: 4px solid #28a745;">`;
+          html += `<p style="margin: 0; font-weight: 600; color: #28a745;">Improvement Area: ${this.profileData.primaryAxis.domain.name}</p>`;
+          html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Satisfaction: ${this.profileData.primaryAxis.domain.combinedScore.toFixed(1)}/10</p>`;
+          html += `</div>`;
+        }
+        html += `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted); font-style: italic;">Axis valid until: ${new Date(this.profileData.primaryAxis.validUntil).toLocaleDateString()}</p>`;
+        html += '</div>';
+      }
+      
       if (this.profileData.priorities.topObstacles.length > 0) {
         html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid #dc3545;">';
-        html += '<h4 style="color: #dc3545; margin-bottom: 1rem; font-size: 1.1rem;">🔥 Top Obstacles to Address (Highest Priority)</h4>';
+        html += '<h4 style="color: #dc3545; margin-bottom: 1rem; font-size: 1.1rem;">🔥 Currently Active Constraints</h4>';
+        html += '<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem; font-style: italic;">These are currently active constraints, not fixed identity traits.</p>';
         html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
         this.profileData.priorities.topObstacles.forEach((obs, index) => {
-          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${obs.name}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)})</li>`;
+          const volatilityTag = obs.volatility === 'situationally amplified' 
+            ? '<span style="background: rgba(255, 184, 0, 0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem;">Situational</span>'
+            : '<span style="background: rgba(211, 47, 47, 0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem;">Structural</span>';
+          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${obs.name}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)}) ${volatilityTag}</li>`;
         });
         html += '</ul></div>';
       }
       
+      // Show stabilizing domain if all domains are low
+      if (this.profileData.priorities.stabilizingDomain) {
+        html += '<div style="background: rgba(255, 184, 0, 0.15); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">';
+        html += '<h4 style="color: var(--accent); margin-bottom: 1rem; font-size: 1.1rem;">⚖️ Stabilizing Domain</h4>';
+        html += `<p style="color: var(--muted); margin-bottom: 0.5rem;">When all domains show low satisfaction, start with stabilizing: <strong>${this.profileData.priorities.stabilizingDomain.name}</strong> (${this.profileData.priorities.stabilizingDomain.combinedScore.toFixed(1)}/10)</p>`;
+        html += '<p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">Build a supportive baseline before addressing improvement areas.</p>';
+        html += '</div>';
+      }
+      
       if (this.profileData.priorities.topImprovementAreas.length > 0) {
         html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); border-left: 4px solid #28a745;">';
-        html += '<h4 style="color: #28a745; margin-bottom: 1rem; font-size: 1.1rem;">✨ Top Areas for Improvement (Lowest Satisfaction)</h4>';
+        html += '<h4 style="color: #28a745; margin-bottom: 1rem; font-size: 1.1rem;">✨ Areas for Improvement (Lowest Satisfaction)</h4>';
         html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
         this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
-          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${domain.name}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})</li>`;
+          // Dual-read output: opportunity + stabilization
+          const isLow = domain.combinedScore < 4;
+          const opportunityFraming = isLow 
+            ? `<span style="color: #28a745; font-weight: 600;">Growth edge:</span> Significant opportunity for improvement`
+            : `<span style="color: var(--brand); font-weight: 600;">Enhancement:</span> Room for refinement`;
+          const stabilizationFraming = `<span style="color: var(--muted); font-size: 0.9rem; font-style: italic;">Supportive baseline action: Maintain current strengths while addressing gaps</span>`;
+          
+          html += `<li style="margin-bottom: 1rem;">
+            <strong>${index + 1}. ${domain.name}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})
+            <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 2px solid rgba(0,0,0,0.1);">
+              <p style="margin: 0.25rem 0; font-size: 0.9rem;">${opportunityFraming}</p>
+              <p style="margin: 0.25rem 0;">${stabilizationFraming}</p>
+            </div>
+          </li>`;
         });
         html += '</ul></div>';
       }
@@ -659,11 +765,54 @@ class CoachingEngine {
   }
 
   exportProfile(format = 'json', includeDeeper = false) {
+    // Deployment threshold: require user to select application context
+    const deploymentContext = this.getDeploymentContext();
+    if (!deploymentContext) {
+      this.showDeploymentThreshold();
+      return;
+    }
+    
+    // Add deployment context to profile metadata
+    this.profileData.coachingProfile.metadata.deploymentContext = deploymentContext;
+    
     if (format === 'csv') {
       this.exportCSV();
     } else {
       this.exportJSON();
     }
+  }
+  
+  getDeploymentContext() {
+    // Check if deployment context was already selected
+    return this.profileData.deploymentContext || null;
+  }
+  
+  showDeploymentThreshold() {
+    const container = document.getElementById('profileResults');
+    if (!container) return;
+    
+    const existingContent = container.innerHTML;
+    const deploymentHTML = `
+      <div style="background: rgba(0, 123, 255, 0.1); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-top: 2rem;">
+        <h3 style="color: var(--brand); margin-bottom: 1rem;">Deployment Threshold</h3>
+        <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">Before exporting, select one immediate application context to ground your use:</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('journaling')" style="padding: 1rem;">📔 Journaling</button>
+          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('weekly-reflection')" style="padding: 1rem;">📅 Weekly Reflection</button>
+          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('decision-audit')" style="padding: 1rem;">⚖️ Decision Audit</button>
+          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('coaching-dialogue')" style="padding: 1rem;">💬 Coaching Dialogue</button>
+        </div>
+        <p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">This selection helps focus the agent's initial application and prevents abstract deployment.</p>
+      </div>
+    `;
+    
+    container.innerHTML = existingContent + deploymentHTML;
+  }
+  
+  selectDeploymentContext(context) {
+    this.profileData.deploymentContext = context;
+    this.profileData.coachingProfile.metadata.deploymentContext = context;
+    this.renderResults(); // Re-render to show export buttons again
   }
 
   exportJSON() {
