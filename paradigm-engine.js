@@ -858,48 +858,73 @@ class ParadigmEngine {
 
   calculateIntegrationScores() {
     // Calculate integration scores from Phase 3
-    // If Phase 3 integration questions weren't answered, calculate from dimensional variance
+    // First try to get direct answers from Phase 3 integration questions
     let goodLifeIntegration = this.answers['p3_goodlife_integration'];
     let godIntegration = this.answers['p3_god_integration'];
     
-    // If not answered, calculate from dimensional variance (lower variance = higher integration)
-    if (goodLifeIntegration === undefined || goodLifeIntegration === null) {
+    // Handle scaled question answers (they might be stored as objects with value property)
+    if (goodLifeIntegration && typeof goodLifeIntegration === 'object' && goodLifeIntegration.value !== undefined) {
+      goodLifeIntegration = goodLifeIntegration.value;
+    }
+    if (godIntegration && typeof godIntegration === 'object' && godIntegration.value !== undefined) {
+      godIntegration = godIntegration.value;
+    }
+    
+    // If not answered or is 0, calculate from dimensional variance (lower variance = higher integration)
+    // Only calculate if we have actual dimensional data
+    if ((goodLifeIntegration === undefined || goodLifeIntegration === null || goodLifeIntegration === 0) && 
+        Object.keys(this.analysisData.goodLife || {}).length > 0) {
       const goodLifeVariances = [];
       Object.values(this.analysisData.goodLife || {}).forEach(paradigm => {
-        const dimensionScores = Object.values(paradigm.dimensions || {}).map(d => d.score || 0);
-        if (dimensionScores.length > 0) {
+        const dimensionScores = Object.values(paradigm.dimensions || {}).map(d => d.score || 0).filter(s => s > 0);
+        if (dimensionScores.length > 1) { // Need at least 2 dimensions to calculate variance
           const variance = this.calculateVariance(dimensionScores);
           goodLifeVariances.push(variance);
         }
       });
-      const avgVariance = goodLifeVariances.length > 0 
-        ? goodLifeVariances.reduce((a, b) => a + b, 0) / goodLifeVariances.length 
-        : 7;
-      // Convert variance to integration score (inverse relationship, scaled to 0-7)
-      goodLifeIntegration = Math.max(0, Math.min(7, 7 - (avgVariance / 2)));
+      if (goodLifeVariances.length > 0) {
+        const avgVariance = goodLifeVariances.reduce((a, b) => a + b, 0) / goodLifeVariances.length;
+        // Convert variance to integration score (inverse relationship, scaled to 0-7)
+        // Lower variance = more balanced = higher integration
+        goodLifeIntegration = Math.max(0, Math.min(7, 7 - (avgVariance / 1.5)));
+      }
     }
     
-    if (godIntegration === undefined || godIntegration === null) {
+    if ((godIntegration === undefined || godIntegration === null || godIntegration === 0) && 
+        Object.keys(this.analysisData.god || {}).length > 0) {
       const godVariances = [];
       Object.values(this.analysisData.god || {}).forEach(perspective => {
-        const dimensionScores = Object.values(perspective.dimensions || {}).map(d => d.score || 0);
-        if (dimensionScores.length > 0) {
+        const dimensionScores = Object.values(perspective.dimensions || {}).map(d => d.score || 0).filter(s => s > 0);
+        if (dimensionScores.length > 1) { // Need at least 2 dimensions to calculate variance
           const variance = this.calculateVariance(dimensionScores);
           godVariances.push(variance);
         }
       });
-      const avgVariance = godVariances.length > 0 
-        ? godVariances.reduce((a, b) => a + b, 0) / godVariances.length 
-        : 7;
-      // Convert variance to integration score (inverse relationship, scaled to 0-7)
-      godIntegration = Math.max(0, Math.min(7, 7 - (avgVariance / 2)));
+      if (godVariances.length > 0) {
+        const avgVariance = godVariances.reduce((a, b) => a + b, 0) / godVariances.length;
+        // Convert variance to integration score (inverse relationship, scaled to 0-7)
+        godIntegration = Math.max(0, Math.min(7, 7 - (avgVariance / 1.5)));
+      }
     }
     
-    this.analysisData.integrationScores = {
-      good_life: Math.round(goodLifeIntegration * 10) / 10,
-      god: Math.round(godIntegration * 10) / 10,
-      overall: Math.round(((goodLifeIntegration + godIntegration) / 2) * 10) / 10
-    };
+    // Only set integration scores if we have meaningful data
+    if ((goodLifeIntegration !== undefined && goodLifeIntegration !== null && goodLifeIntegration > 0) ||
+        (godIntegration !== undefined && godIntegration !== null && godIntegration > 0)) {
+      this.analysisData.integrationScores = {
+        good_life: goodLifeIntegration ? Math.round(goodLifeIntegration * 10) / 10 : undefined,
+        god: godIntegration ? Math.round(godIntegration * 10) / 10 : undefined,
+        overall: (goodLifeIntegration && godIntegration) 
+          ? Math.round(((goodLifeIntegration + godIntegration) / 2) * 10) / 10
+          : (goodLifeIntegration || godIntegration || undefined)
+      };
+    }
+  }
+
+  getIntegrationLevel(score) {
+    if (score >= 6) return 'Highly Integrated - Your different perspectives work well together';
+    if (score >= 4) return 'Moderately Integrated - Some connection between your perspectives';
+    if (score >= 2) return 'Low Integration - Your perspectives feel separate or disconnected';
+    return 'Very Low Integration - Your perspectives are largely disconnected';
   }
 
   completeAssessment() {
@@ -1427,21 +1452,31 @@ class ParadigmEngine {
       html += '</div>';
     }
     
-    // Integration Scores
+    // Integration Scores - Only show if meaningful data exists
     if (this.analysisData.integrationScores) {
-      html += '<div class="insight-section" style="border-left-color: var(--brand);">';
-      html += '<h4 style="color: var(--brand);">Integration Scores</h4>';
-      html += '<p style="color: var(--muted); margin-bottom: 0.75rem;">How well integrated are your different ways of understanding:</p>';
-      if (this.analysisData.integrationScores.good_life !== undefined) {
-        html += `<p style="margin-bottom: 0.5rem;"><strong>The Good Life:</strong> ${this.analysisData.integrationScores.good_life}/7</p>`;
+      const hasMeaningfulData = (
+        (this.analysisData.integrationScores.good_life !== undefined && this.analysisData.integrationScores.good_life > 0) ||
+        (this.analysisData.integrationScores.god !== undefined && this.analysisData.integrationScores.god > 0)
+      );
+      
+      if (hasMeaningfulData) {
+        html += '<div class="insight-section" style="border-left-color: var(--brand);">';
+        html += '<h4 style="color: var(--brand);">Integration Scores</h4>';
+        html += '<p style="color: var(--muted); margin-bottom: 0.75rem;">How well integrated are your different ways of understanding (how well your different perspectives work together):</p>';
+        if (this.analysisData.integrationScores.good_life !== undefined && this.analysisData.integrationScores.good_life > 0) {
+          const level = this.getIntegrationLevel(this.analysisData.integrationScores.good_life);
+          html += `<p style="margin-bottom: 0.5rem;"><strong>The Good Life:</strong> ${this.analysisData.integrationScores.good_life.toFixed(1)}/7 - ${level}</p>`;
+        }
+        if (this.analysisData.integrationScores.god !== undefined && this.analysisData.integrationScores.god > 0) {
+          const level = this.getIntegrationLevel(this.analysisData.integrationScores.god);
+          html += `<p style="margin-bottom: 0.5rem;"><strong>God Perspectives:</strong> ${this.analysisData.integrationScores.god.toFixed(1)}/7 - ${level}</p>`;
+        }
+        if (this.analysisData.integrationScores.overall !== undefined && this.analysisData.integrationScores.overall > 0) {
+          const level = this.getIntegrationLevel(this.analysisData.integrationScores.overall);
+          html += `<p style="margin-bottom: 0.5rem;"><strong>Overall Integration:</strong> ${this.analysisData.integrationScores.overall.toFixed(1)}/7 - ${level}</p>`;
+        }
+        html += '</div>';
       }
-      if (this.analysisData.integrationScores.god !== undefined) {
-        html += `<p style="margin-bottom: 0.5rem;"><strong>God Perspectives:</strong> ${this.analysisData.integrationScores.god}/7</p>`;
-      }
-      if (this.analysisData.integrationScores.overall !== undefined) {
-        html += `<p style="margin-bottom: 0.5rem;"><strong>Overall Integration:</strong> ${this.analysisData.integrationScores.overall.toFixed(1)}/7</p>`;
-      }
-      html += '</div>';
     }
     
     html += '</div>';
