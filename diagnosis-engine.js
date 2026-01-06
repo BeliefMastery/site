@@ -826,7 +826,7 @@ class DiagnosisEngine {
         </p>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
           <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; background: rgba(255,255,255,0.7); border-radius: var(--radius); flex: 1; min-width: 200px;">
-            <input type="checkbox" id="requestRefinement" ${this.refinementRequested ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
+            <input type="checkbox" id="requestRefinement" ${this.refinementRequested ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;" ${this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses ? 'disabled' : ''}>
             <span style="font-weight: 600;">Complete refined assessment</span>
           </label>
           <button class="btn btn-primary" id="proceedToRefinement" style="flex: 1; min-width: 200px;">Continue with Refined Questions</button>
@@ -837,8 +837,15 @@ class DiagnosisEngine {
     
     container.innerHTML = html;
     
-    document.getElementById('requestRefinement').addEventListener('change', (e) => {
-      this.refinementRequested = e.target.checked;
+    const refinementCheckbox = document.getElementById('requestRefinement');
+    if (refinementCheckbox) {
+      refinementCheckbox.addEventListener('change', (e) => {
+        // Require user intent confirmation
+        if (e.target.checked && !confirm('This step sharpens distinctions for learning clarity. Proceed?')) {
+          e.target.checked = false;
+          return;
+        }
+        this.refinementRequested = e.target.checked;
     });
     
     document.getElementById('proceedToRefinement').addEventListener('click', () => {
@@ -1042,17 +1049,21 @@ class DiagnosisEngine {
       }
     });
     
-    // Add refined questions for primary diagnosis if available
+    // Add refined questions for primary pattern match if available (with ceiling enforcement)
     const vector = this.analysisData.conclusionVector;
-    if (vector.primaryDiagnosis && REFINED_QUESTIONS[vector.primaryDiagnosis]) {
-      const refined = REFINED_QUESTIONS[vector.primaryDiagnosis];
+    if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
+      return; // Hard stop - refinement ceiling reached
+    }
+    
+    if (vector.primaryPatternMatch && REFINED_QUESTIONS[vector.primaryPatternMatch]) {
+      const refined = REFINED_QUESTIONS[vector.primaryPatternMatch];
       
       Object.keys(refined).forEach(category => {
         refined[category].forEach((question, index) => {
           this.refinedQuestionSequence.push({
-            id: `refined_${vector.primaryDiagnosis}_${category}_${index}`,
+            id: `refined_${vector.primaryPatternMatch}_${category}_${index}`,
             type: 'refinement',
-            disorder: vector.primaryDiagnosis,
+            disorder: vector.primaryPatternMatch,
             category: category,
             questionText: question,
             weight: 0.8
@@ -1061,12 +1072,12 @@ class DiagnosisEngine {
       });
     }
     
-    // Add differential questions for secondary diagnoses
-    const secondaryDisorders = vector.secondaryDiagnoses.map(s => s.disorder);
+    // Add differential questions for secondary pattern matches
+    const secondaryDisorders = vector.secondaryPatternMatches.map(s => s.disorder);
     secondaryDisorders.forEach(disorder => {
       // Check for differential questions
       Object.keys(DIFFERENTIAL_QUESTIONS).forEach(key => {
-        if (key.includes(disorder) || key.includes(vector.primaryDiagnosis)) {
+        if (key.includes(disorder) || key.includes(vector.primaryPatternMatch)) {
           const diffQuestions = DIFFERENTIAL_QUESTIONS[key];
           diffQuestions.forEach((question, index) => {
             this.refinedQuestionSequence.push({
@@ -1085,31 +1096,37 @@ class DiagnosisEngine {
 
   buildConclusionVector() {
     const vector = {
-      primaryDiagnosis: null,
-      primaryProbability: 0,
-      secondaryDiagnoses: [],
+      primaryPatternMatch: null,
+      primaryAlignment: 0,
+      primaryAlignmentBand: null,
+      secondaryPatternMatches: [],
       requiresSubInquiry: [],
       comorbidity: [],
       overallSeverity: 'low',
       recommendation: ''
     };
     
-    // Find primary diagnosis
+    // Find primary pattern match
     Object.keys(this.analysisData.probabilities).forEach(disorder => {
       const prob = this.analysisData.probabilities[disorder];
-      if (prob > vector.primaryProbability) {
-        if (vector.primaryDiagnosis) {
-          vector.secondaryDiagnoses.push({
-            disorder: vector.primaryDiagnosis,
-            probability: vector.primaryProbability
+      const alignmentBand = this.getAlignmentBand(prob);
+      
+      if (prob > vector.primaryAlignment) {
+        if (vector.primaryPatternMatch) {
+          vector.secondaryPatternMatches.push({
+            disorder: vector.primaryPatternMatch,
+            alignment: vector.primaryAlignment,
+            alignmentBand: vector.primaryAlignmentBand
           });
         }
-        vector.primaryDiagnosis = disorder;
-        vector.primaryProbability = prob;
+        vector.primaryPatternMatch = disorder;
+        vector.primaryAlignment = prob;
+        vector.primaryAlignmentBand = alignmentBand;
       } else if (prob >= SCORING_THRESHOLDS.moderate_probability) {
-        vector.secondaryDiagnoses.push({
+        vector.secondaryPatternMatches.push({
           disorder: disorder,
-          probability: prob
+          alignment: prob,
+          alignmentBand: alignmentBand
         });
       }
     });
@@ -1127,65 +1144,195 @@ class DiagnosisEngine {
     const comorbidityGroups = this.detectComorbidity();
     vector.comorbidity = comorbidityGroups;
     
-    // Determine overall severity
-    if (vector.primaryProbability >= SCORING_THRESHOLDS.high_probability) {
-      vector.overallSeverity = 'high';
-      vector.recommendation = 'Consider professional evaluation. High probability indicators present.';
-    } else if (vector.primaryProbability >= SCORING_THRESHOLDS.moderate_probability) {
-      vector.overallSeverity = 'moderate';
-      vector.recommendation = 'Some indicators present. Professional consultation recommended for accurate assessment.';
+    // Determine overall alignment level
+    if (vector.primaryAlignment >= SCORING_THRESHOLDS.high_probability) {
+      vector.overallAlignment = 'high';
+      vector.recommendation = 'High pattern alignment detected. Consider professional evaluation for clinical assessment.';
+    } else if (vector.primaryAlignment >= SCORING_THRESHOLDS.moderate_probability) {
+      vector.overallAlignment = 'moderate';
+      vector.recommendation = 'Moderate pattern alignment. Professional consultation recommended for accurate assessment.';
     } else {
-      vector.overallSeverity = 'low';
-      vector.recommendation = 'Limited indicators. Continue self-monitoring.';
+      vector.overallAlignment = 'low';
+      vector.recommendation = 'Low pattern alignment. Continue self-monitoring and reflection.';
     }
     
     // Add comorbidity note to recommendation
     if (vector.comorbidity.length > 0) {
-      vector.recommendation += ' Multiple disorders detected - differential diagnosis recommended.';
+      vector.recommendation += ' Multiple pattern matches detected - professional differential assessment recommended.';
     }
     
+    // Calculate validation consistency
+    this.calculateValidationConsistency();
+    
     this.analysisData.conclusionVector = vector;
+  }
+
+  getAlignmentBand(probability) {
+    if (probability >= SCORING_THRESHOLDS.high_probability) {
+      return 'High alignment';
+    } else if (probability >= SCORING_THRESHOLDS.moderate_probability) {
+      return 'Moderate alignment';
+    } else {
+      return 'Low alignment';
+    }
+  }
+  
+  calculateValidationConsistency() {
+    // Calculate response consistency from validation pairs
+    const validationPairs = VALIDATION_PAIRS || [];
+    if (validationPairs.length === 0) {
+      this.analysisData.validationConsistency = 'unknown';
+      return;
+    }
+    
+    let consistentCount = 0;
+    let totalPairs = 0;
+    
+    validationPairs.forEach(pair => {
+      const answer1 = this.answers[pair.question1];
+      const answer2 = this.answers[pair.question2];
+      
+      if (answer1 !== undefined && answer2 !== undefined) {
+        totalPairs++;
+        // Check if answers are consistent (within 2 points for similar questions)
+        const diff = Math.abs(answer1 - answer2);
+        if (diff <= 2) {
+          consistentCount++;
+        }
+      }
+    });
+    
+    const consistencyRatio = totalPairs > 0 ? consistentCount / totalPairs : 0;
+    
+    if (consistencyRatio >= 0.8) {
+      this.analysisData.validationConsistency = 'high';
+    } else if (consistencyRatio >= 0.6) {
+      this.analysisData.validationConsistency = 'moderate';
+    } else {
+      this.analysisData.validationConsistency = 'low';
+    }
+  }
+  
+  translateLikertToDSM(likertScore) {
+    // Translate 0-10 Likert to DSM-relevant salience bands
+    if (likertScore <= 3) return 'Absent';
+    if (likertScore <= 6) return 'Subthreshold';
+    return 'Clinically Salient';
   }
 
   renderResults() {
     const container = document.getElementById('resultsContainer');
     const vector = this.analysisData.conclusionVector;
-    const primaryDiagnosis = vector.primaryDiagnosis;
-    const treatmentData = TREATMENT_DATABASE[primaryDiagnosis] || null;
+    const primaryPattern = vector.primaryPatternMatch;
+    const treatmentData = TREATMENT_DATABASE[primaryPattern] || null;
     
-    let html = `
-      <div class="diagnosis-result">
-        <h3>Primary Assessment: ${primaryDiagnosis || 'No clear diagnosis'}</h3>
-        <div class="probability-bar">
-          <div class="probability-fill" style="width: ${vector.primaryProbability * 100}%">
-            ${Math.round(vector.primaryProbability * 100)}%
-          </div>
-        </div>
-        <p class="probability-label">Probability Score: ${Math.round(vector.primaryProbability * 100)}%</p>
-        <p style="margin-top: 1rem;"><strong>Recommendation:</strong> ${vector.recommendation}</p>
-      </div>
-    `;
+    // Show validation consistency
+    const validationDisplay = this.analysisData.validationConsistency 
+      ? `<div style="background: ${this.analysisData.validationConsistency === 'high' ? 'rgba(40, 167, 69, 0.1)' : this.analysisData.validationConsistency === 'moderate' ? 'rgba(255, 184, 0, 0.1)' : 'rgba(211, 47, 47, 0.1)'}; border-left: 4px solid ${this.analysisData.validationConsistency === 'high' ? '#28a745' : this.analysisData.validationConsistency === 'moderate' ? '#ffc107' : '#d32f2f'}; border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
+          <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);">
+            <strong style="color: ${this.analysisData.validationConsistency === 'high' ? '#28a745' : this.analysisData.validationConsistency === 'moderate' ? '#ffc107' : '#d32f2f'};">
+              Response Consistency:</strong> ${this.analysisData.validationConsistency.charAt(0).toUpperCase() + this.analysisData.validationConsistency.slice(1)}
+            ${this.analysisData.validationConsistency === 'low' ? ' - Lower consistency reduces confidence in results. This indicates variability in responses rather than user error.' : ''}
+          </p>
+        </div>`
+      : '';
     
-    // Display comprehensive treatment and theory information for primary diagnosis
-    if (treatmentData && primaryDiagnosis) {
-      html += this.renderTreatmentInformation(primaryDiagnosis, treatmentData);
+    let html = validationDisplay;
+    
+    // Scale translation documentation
+    html += `<div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
+      <p style="margin: 0; font-size: 0.85rem; line-height: 1.6; color: var(--muted);">
+        <strong style="color: var(--brand);">Scale Translation:</strong> Likert scores (0-10) are translated into DSM-relevant salience bands: 0-3 = Absent, 4-6 = Subthreshold, 7-10 = Clinically Salient. This protects methodological integrity.
+      </p>
+    </div>`;
+    
+    // Group results by category first (collapsed view)
+    const categoryGroups = {};
+    if (primaryPattern) {
+      const category = this.getCategoryForDisorder(primaryPattern);
+      if (!categoryGroups[category]) {
+        categoryGroups[category] = [];
+      }
+      categoryGroups[category].push({
+        disorder: primaryPattern,
+        alignment: vector.primaryAlignment,
+        alignmentBand: vector.primaryAlignmentBand,
+        isPrimary: true
+      });
     }
     
-    if (vector.secondaryDiagnoses.length > 0) {
-      html += '<h3 style="margin-top: 2rem;">Secondary Considerations</h3>';
-      vector.secondaryDiagnoses.forEach(secondary => {
+    vector.secondaryPatternMatches.forEach(secondary => {
+      const category = this.getCategoryForDisorder(secondary.disorder);
+      if (!categoryGroups[category]) {
+        categoryGroups[category] = [];
+      }
+      categoryGroups[category].push({
+        disorder: secondary.disorder,
+        alignment: secondary.alignment,
+        alignmentBand: secondary.alignmentBand,
+        isPrimary: false
+      });
+    });
+    
+    html += '<h3 style="margin-bottom: 1rem;">Pattern Alignment Results by Category</h3>';
+    
+    Object.keys(categoryGroups).forEach(categoryName => {
+      html += `<div style="margin-bottom: 1.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius); overflow: hidden;">`;
+      html += `<div style="background: rgba(0, 123, 255, 0.1); padding: 1rem; font-weight: 600; color: var(--brand); cursor: pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">`;
+      html += `${categoryName} <span style="float: right; font-size: 0.9rem; font-weight: normal;">▼</span>`;
+      html += `</div>`;
+      html += `<div style="padding: 1rem; background: rgba(255,255,255,0.9);">`;
+      
+      categoryGroups[categoryName].forEach(pattern => {
+        const isPrimary = pattern.isPrimary;
         html += `
-          <div class="diagnosis-result">
-            <h3>${secondary.disorder}</h3>
-            <div class="probability-bar">
-              <div class="probability-fill" style="width: ${secondary.probability * 100}%">
-                ${Math.round(secondary.probability * 100)}%
-              </div>
+          <div style="margin-bottom: ${isPrimary ? '1.5rem' : '1rem'}; padding: ${isPrimary ? '1.5rem' : '1rem'}; background: ${isPrimary ? 'rgba(0, 123, 255, 0.1)' : 'rgba(255,255,255,0.7)'}; border-radius: var(--radius); border-left: 4px solid ${isPrimary ? 'var(--brand)' : 'var(--accent)'};">
+            <h4 style="color: ${isPrimary ? 'var(--brand)' : 'var(--accent)'}; margin-bottom: 0.75rem;">
+              ${isPrimary ? '🎯 Primary Pattern Match:' : 'Secondary Pattern Match:'} ${pattern.disorder}
+            </h4>
+            <div style="margin-bottom: 0.5rem;">
+              <strong>Alignment Band:</strong> <span style="color: ${pattern.alignmentBand === 'High alignment' ? '#d32f2f' : pattern.alignmentBand === 'Moderate alignment' ? '#ffc107' : '#28a745'};">${pattern.alignmentBand}</span>
             </div>
-            <p class="probability-label">Probability Score: ${Math.round(secondary.probability * 100)}%</p>
+            <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">
+              Raw alignment score: ${Math.round(pattern.alignment * 100)}% 
+              ${this.analysisData.validationConsistency === 'low' ? '<span style="color: #d32f2f;">(Low confidence due to response inconsistency)</span>' : ''}
+            </p>
           </div>
         `;
       });
+      
+      html += `</div></div>`;
+    });
+    
+    // Integration step before showing full details
+    if (primaryPattern) {
+      html += `
+        <div style="background: rgba(255, 184, 0, 0.15); border: 2px solid var(--accent); border-radius: var(--radius); padding: 2rem; margin-top: 2rem; text-align: center;">
+          <h3 style="color: var(--brand); margin-bottom: 1rem;">Integration Step</h3>
+          <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">
+            Which result feels most relevant to explore right now? This helps focus your learning and prevents overwhelm.
+          </p>
+          <button class="btn btn-primary" onclick="window.diagnosisEngine.showFullDetails('${primaryPattern}')" style="margin: 0.5rem;">
+            Explore: ${primaryPattern}
+          </button>
+      `;
+      
+      if (vector.secondaryPatternMatches.length > 0) {
+        vector.secondaryPatternMatches.slice(0, 2).forEach(secondary => {
+          html += `<button class="btn btn-secondary" onclick="window.diagnosisEngine.showFullDetails('${secondary.disorder}')" style="margin: 0.5rem;">
+            Explore: ${secondary.disorder}
+          </button>`;
+        });
+      }
+      
+      html += `</div>`;
+    }
+    
+    // Display comprehensive support information for selected pattern
+    if (treatmentData && primaryPattern) {
+      html += `<div id="fullDetailsSection" style="display: none; margin-top: 2rem;">`;
+      html += this.renderTreatmentInformation(primaryPattern, treatmentData);
+      html += `</div>`;
     }
     
     // Display comorbidity information
@@ -1234,15 +1381,44 @@ class DiagnosisEngine {
     `;
     
     container.innerHTML = html;
+    
+    // Make instance globally accessible for integration step
+    window.diagnosisEngine = this;
+  }
+  
+  getCategoryForDisorder(disorderName) {
+    // Find which category contains this disorder
+    for (const [categoryKey, category] of Object.entries(DSM5_CATEGORIES)) {
+      if (category.disorders[disorderName]) {
+        return category.name;
+      }
+    }
+    return 'Other';
+  }
+  
+  showFullDetails(disorderName) {
+    const treatmentData = TREATMENT_DATABASE[disorderName] || null;
+    const detailsSection = document.getElementById('fullDetailsSection');
+    
+    if (detailsSection && treatmentData) {
+      detailsSection.style.display = 'block';
+      detailsSection.innerHTML = this.renderTreatmentInformation(disorderName, treatmentData);
+      detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   renderTreatmentInformation(disorderName, treatmentData) {
     let html = `<div class="treatment-section" style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.9); border-radius: var(--radius); box-shadow: var(--shadow);">`;
-    html += `<h2 style="margin-bottom: 2rem; color: var(--brand);">Comprehensive Information: ${disorderName}</h2>`;
+    html += `<h2 style="margin-bottom: 2rem; color: var(--brand);">Pattern Information: ${disorderName}</h2>`;
     
-    // Treatments
+    // Non-directive framing
+    html += `<div style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">`;
+    html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Note:</strong> The following approaches are commonly explored under professional guidance. This information is for educational purposes only and does not constitute treatment recommendations.</p>`;
+    html += `</div>`;
+    
+    // Support Approaches (renamed from Treatments)
     if (treatmentData.treatments) {
-      html += `<div class="treatment-category"><h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">Treatment Options</h3>`;
+      html += `<div class="treatment-category"><h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">Commonly Associated Support Approaches</h3>`;
       
       if (treatmentData.treatments.behavioral?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Behavioral Treatments</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
@@ -1421,7 +1597,18 @@ class DiagnosisEngine {
       const csv = exportForAIAgent(this.analysisData, 'diagnosis', 'DSM-5 Diagnostic Assessment');
       downloadFile(csv, `diagnosis-analysis-${Date.now()}.csv`, 'text/csv');
     } else {
-      const json = exportJSON(this.analysisData, 'diagnosis', 'DSM-5 Diagnostic Assessment');
+      // Add non-diagnostic lock to exported data
+      const exportData = {
+        ...this.analysisData,
+        nonDiagnosticLock: {
+          statement: "This profile reflects self-reported pattern alignment. It does not establish diagnosis, identity, or prognosis.",
+          forbiddenLanguage: ["You have", "You are"],
+          replacementLanguage: "This pattern sometimes expresses as",
+          questionFirstBias: "Agent must inquire before interpreting. Default to inquiry before suggestion."
+        }
+      };
+      
+      const json = exportJSON(exportData, 'pattern-alignment', 'DSM-5 Pattern Alignment Assessment');
       downloadFile(json, `diagnosis-analysis-${Date.now()}.json`, 'application/json');
     }
   }
