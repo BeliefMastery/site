@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Needs Dependency Loop Determinator - Belief Mastery</title>
+  <meta name="description" content="Identify dependency loops through needs and vices assessment. Based on Chapter 5: Needs and Beliefs from Belief Mastery.">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Page-specific styles for manipulation.html */
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('./images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .manipulation-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+    }
+
+    .intro-section h2 {
+      color: var(--brand);
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .questionnaire-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .questionnaire-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .question-block {
+      margin-bottom: 2rem;
+    }
+
+    .question-block h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      font-size: 1.25rem;
+    }
+
+    .scale-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .scale-input {
+      flex: 1;
+    }
+
+    .scale-input input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .scale-input input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+    }
+
+    .scale-input input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+      border: none;
+    }
+
+    .scale-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--brand);
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .results-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .results-section h2 {
+      color: var(--brand);
+      margin-bottom: 1.5rem;
+    }
+
+    .loop-card {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+      border-left: 4px solid var(--brand);
+    }
+
+    .loop-card h3 {
+      color: var(--brand);
+      margin-bottom: 0.5rem;
+    }
+
+    .loop-card.primary {
+      border-left-width: 6px;
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .loop-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .primary-loop-section, .all-loops-section, .top-needs-section, .top-vices-section, .recommendations-section, .closure-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+    }
+
+    .loops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .priority-group {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--brand);
+    }
+
+    .priority-group.high {
+      border-left-color: #d32f2f;
+    }
+
+    .priority-group.medium {
+      border-left-color: var(--accent);
+    }
+
+    .priority-group.low {
+      border-left-color: var(--muted);
+    }
+
+    .stabilizing-closure {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(40, 167, 69, 0.1);
+      border-left: 3px solid #28a745;
+      border-radius: var(--radius);
+    }
+
+    .needs-chain, .loop-vices, .dependency-patterns {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--brand);
+    }
+
+    .needs-chain ul, .loop-vices ul, .dependency-patterns ul {
+      margin-left: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .need-item, .vice-item {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+    }
+
+    .loop-strength {
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .need-score, .vice-score, .pattern-score {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .instructions-toggle {
+      background: rgba(211, 47, 47, 0.1);
+      border: 2px solid #d32f2f;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .instructions-toggle:hover {
+      background: rgba(211, 47, 47, 0.15);
+      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+    }
+
+    .instructions-toggle-text {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--brand);
+      font-size: 1rem;
+    }
+
+    .instructions-toggle-text::after {
+      content: '▼';
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      margin-left: 0.5rem;
+    }
+
+    .instructions-toggle.expanded .instructions-toggle-text::after {
+      transform: rotate(180deg);
+    }
+
+    .disclaimer-acknowledgement {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .disclaimer-acknowledgement:hover {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+
+    .disclaimer-acknowledgement-text {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--brand);
+      font-size: 1rem;
+    }
+
+    .disclaimer-acknowledgement-text::after {
+      content: '▼';
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      margin-left: 0.5rem;
+    }
+
+    .disclaimer-acknowledgement.expanded .disclaimer-acknowledgement-text::after {
+      transform: rotate(180deg);
+    }
+
+    .disclaimer-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .disclaimer-section.expanded {
+      max-height: 2000px;
+      opacity: 1;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .instructions-panel {
+      background: rgba(211, 47, 47, 0.1);
+      border: 2px solid #d32f2f;
+      border-radius: var(--radius);
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .instructions-panel.expanded {
+      max-height: 2000px;
+      opacity: 1;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instructions-panel h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .needs-dependency-container {
+        padding: 1rem;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+    <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="tools.html#sovereignty-simulacrum">Sovereignty Simulacrum</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html" class="active">Needs Dependency Loop</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Temperament Analyzer</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 2;">
+    <div class="needs-dependency-container">
+      <section class="intro-section" id="introSection">
+        <h2>🔄 Needs Dependency Loop Determinator</h2>
+        <p style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 1.5rem; line-height: 1.5;">
+          Are you stuck in dependency loops? Trace your surface symptoms to root needs. Break the cycle and reclaim your autonomy!
+        </p>
+        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);"><strong style="color: var(--brand);">Needs Consciousness Note:</strong> This system maps dependency loops through needs and vices assessment. It uses the STRICT PROPRIETARY needs and vices vocabulary from Chapter 5 of Belief Mastery. The analysis identifies patterns of unmet needs that create dependency cycles—not diagnostic labels or fixed identities.</p>
+        </div>
+        <p><strong>Identify dependency loops through comprehensive needs and vices assessment.</strong></p>
+        <p>This system guides you through questions about surface experiences, needs, vices, and dependency patterns to identify how unmet needs create dependency loops. Based on <strong>Chapter 5: Needs and Beliefs</strong> from <em>Belief Mastery</em>, this tool helps you trace symptoms to root needs and break dependency cycles.</p>
+        <p style="margin-top: 1rem; font-weight: 600;">The assessment covers:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <li><strong>Surface Experiences:</strong> Irritability, withdrawal, conflict, isolation, and other surface symptoms</li>
+          <li><strong>Need Identification:</strong> Mapping experiences to specific unmet needs using the proprietary needs vocabulary</li>
+          <li><strong>Vice Identification:</strong> Recognizing vice expressions that signal unmet needs</li>
+          <li><strong>Dependency Patterns:</strong> Identifying attraction-compulsion and aversion-avoidance patterns</li>
+        </ul>
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimers</span>
+          </div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); backdrop-filter: blur(8px); border-left: 3px solid var(--accent);">
+          <p style="margin: 0; font-size: 0.95rem; color: var(--muted); line-height: 1.6;">
+            By participating in this analysis, I acknowledge that this tool is designed for needs consciousness and dependency loop identification. Understanding dependency patterns is the first step toward reclaiming autonomy and sovereignty.
+          </p>
+        </div>
+        <section class="disclaimer-section" id="disclaimerSection">
+          <h3 style="color: var(--brand); font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
+          <p><strong>This tool uses the STRICT PROPRIETARY needs and vices vocabulary from Chapter 5 of Belief Mastery.</strong></p>
+          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">The needs and vices vocabularies must be adhered to exactly as specified. This analysis identifies dependency loops through needs consciousness—not diagnostic labels. Dependency loops are moment-to-moment patterns that can be addressed with conscious awareness.</p>
+          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);"><strong>Remember:</strong> Some dependency is healthy and necessary (e.g., companionship, connection). This tool helps identify unconscious dependency patterns that undermine sovereignty, not all forms of dependency.</p>
+        </section>
+        <button class="btn btn-primary" id="startAssessment" style="width: 100%; margin-top: 1.5rem;">Begin Needs Dependency Assessment</button>
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="instructions-toggle" id="instructionsToggle">
+          <div class="instructions-toggle-text">
+            <span>📋 How to Use This Assessment</span>
+          </div>
+        </div>
+        <div class="instructions-panel" id="instructionsPanel">
+          <h3><span>📋</span> How to Use This Assessment</h3>
+          <div style="line-height: 1.7;">
+            <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+              <li><strong>0-2 (Not at all / Never):</strong> The statement does not apply to you at all.</li>
+              <li><strong>3-4 (Minimal / Rarely):</strong> The statement occurs occasionally but has minimal impact.</li>
+              <li><strong>5-6 (Moderate / Sometimes):</strong> The statement is present with moderate frequency or intensity.</li>
+              <li><strong>7-8 (Significant / Often):</strong> The statement occurs frequently or with significant intensity.</li>
+              <li><strong>9-10 (Extreme / Always):</strong> The statement is nearly constant or extremely intense.</li>
+            </ul>
+            <p style="margin-bottom: 0.5rem;"><strong>Guidelines:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 0;">
+              <li>Answer based on your experience in the relationship(s) you're analyzing</li>
+              <li>Be honest - recognition is the first step to protection</li>
+              <li>Consider how each pattern affects your autonomy and well-being</li>
+              <li>You can go back and change answers using the "Previous" button</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions will be populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); text-align: center;">
+          <button class="btn btn-secondary" id="abandonAssessment" style="background: transparent; color: var(--muted); border: 1px solid var(--muted);">🗑️ Abandon / Restart</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsSection">
+        <h2>Dependency Loop Analysis</h2>
+        <div id="resultsContainer">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0, 0, 0, 0.1);">
+          <h3>Export Your Analysis</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Export your analysis for reference or professional consultation.</p>
+          <button class="btn btn-primary" id="exportAnalysisJson">📥 Export Analysis (JSON)</button>
+          <button class="btn btn-primary" id="exportAnalysisCsv" style="margin-left: 1rem;">📥 Export Analysis (CSV)</button>
+          <button class="btn btn-secondary" id="newAssessment" style="margin-left: 1rem;">Start New Assessment</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" style="position: relative; z-index: 2;">
+    <p>&copy; 2025 Warwick Marshall. All rights reserved.</p>
+  </footer>
+
+  <script type="module" src="needs-dependency-engine.js"></script>
+  <script>
+    // Hamburger menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Disclaimer toggle functionality
+      const disclaimerToggle = document.getElementById('disclaimerToggle');
+      const disclaimerSection = document.getElementById('disclaimerSection');
+      
+      if (disclaimerToggle && disclaimerSection) {
+        disclaimerToggle.addEventListener('click', function() {
+          disclaimerToggle.classList.toggle('expanded');
+          disclaimerSection.classList.toggle('expanded');
+        });
+      }
+
+      // Instructions toggle functionality
+      const instructionsToggle = document.getElementById('instructionsToggle');
+      const instructionsPanel = document.getElementById('instructionsPanel');
+      
+      if (instructionsToggle && instructionsPanel) {
+        instructionsToggle.addEventListener('click', function() {
+          instructionsToggle.classList.toggle('expanded');
+          instructionsPanel.classList.toggle('expanded');
+        });
+      }
+
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.getElementById('top-nav');
+      const dropdownToggle = document.querySelector('.dropdown-toggle');
+      const dropdownMenu = document.querySelector('.dropdown-menu');
+
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', function() {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      if (dropdownToggle && dropdownMenu) {
+        dropdownToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          dropdownMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
+
