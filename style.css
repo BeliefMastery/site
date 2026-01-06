@@ -285,6 +285,13 @@ section:hover{
 .section-inner{
   max-width:980px;
   margin:0 auto;
+  background:var(--glass);
+}
+
+/* Transparent section-inner only for index.html minimal sections */
+section.minimal-section .section-inner,
+section#books .section-inner,
+section#tools .section-inner{
   background:transparent !important;
 }
 
