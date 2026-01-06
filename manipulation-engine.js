@@ -610,6 +610,24 @@ class ManipulationEngine {
     return labels[mode] || mode || 'Unknown mode';
   }
 
+  getActivationLevelLabel(level) {
+    const labels = {
+      'high': 'High - This manipulation is very active and strong',
+      'medium': 'Medium - This manipulation is moderately present',
+      'low': 'Low - This manipulation is present but weak'
+    };
+    return labels[level] || level || 'Unknown';
+  }
+
+  getStructuralModifierLabel(modifier) {
+    const labels = {
+      'structural': 'Structural - This is a deep, ongoing pattern that affects your whole life',
+      'situational': 'Situational - This happens in specific situations but isn\'t constant',
+      'mixed': 'Mixed - This shows up both as ongoing patterns and in specific situations'
+    };
+    return labels[modifier] || modifier || 'Unknown';
+  }
+
   updateProgress() {
     const totalQuestions = this.getTotalQuestions();
     const currentQuestion = this.getCurrentQuestionNumber();
@@ -898,9 +916,9 @@ class ManipulationEngine {
         <div class="vector-result" style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
           <h3 style="color: #d32f2f; margin-bottom: 1rem;">Primary Vector: ${primary.name}</h3>
           <p style="margin-bottom: 1rem;">${primary.description}</p>
-          <p><strong>Activation Level:</strong> ${primary.activationLevel}</p>
+          <p><strong>Activation Level:</strong> ${this.getActivationLevelLabel(primary.activationLevel)}</p>
           <p><strong>Score:</strong> ${primary.rawScore.toFixed(1)}/10 (Weighted: ${primary.weightedScore.toFixed(1)})</p>
-          ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.analysisData.structuralModifier}</p>` : ''}
+          ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.getStructuralModifierLabel(this.analysisData.structuralModifier)}</p>` : ''}
         </div>
       `;
     }
