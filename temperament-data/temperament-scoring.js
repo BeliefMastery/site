@@ -48,88 +48,88 @@ export const TEMPERAMENT_SCORING = {
   // Interpretation guide
   interpretation: {
     highly_masculine: {
-      label: 'Highly Masculine Temperament',
-      description: 'Strong alignment with masculine archetypal patterns: direction, structure, provision, focus, and achievement orientation.',
+      label: 'Masculine-Leaning Expression',
+      description: 'Tends to express strong alignment with masculine archetypal patterns: direction, structure, provision, focus, and achievement orientation.',
       characteristics: [
-        'Strong preference for establishing direction and structure',
-        'Drive to provide, protect, and secure',
-        'Focused, goal-directed action',
-        'Sensitivity to shame and status',
-        'Preference for control and mastery',
-        'Tendency to take lead in intimate dynamics'
+        'Often shows preference for establishing direction and structure',
+        'Tends to express drive to provide, protect, and secure',
+        'Shows preference toward focused, goal-directed action',
+        'Often expresses sensitivity to shame and status',
+        'Shows preference toward control and mastery',
+        'Tends to take lead in intimate dynamics'
       ],
-      variations: 'May show variation in emotional expression, need for connection, or intuitive capacity while maintaining core masculine orientation.'
+      variations: 'May show variation in emotional expression, need for connection, or intuitive capacity while maintaining core masculine-leaning expression.'
     },
     predominantly_masculine: {
-      label: 'Predominantly Masculine Temperament',
-      description: 'Clear masculine orientation with some integration of feminine qualities.',
+      label: 'Masculine-Leaning Expression',
+      description: 'Tends to express clear masculine orientation with some integration of feminine qualities.',
       characteristics: [
-        'Preference for structure with some flexibility',
-        'Provision-oriented with capacity for nurture',
-        'Focused action with emotional awareness',
-        'Some sensitivity to both shame and fear',
-        'Control preference with some receptivity'
+        'Shows preference for structure with some flexibility',
+        'Tends to express provision-oriented patterns with capacity for nurture',
+        'Often shows focused action with emotional awareness',
+        'Tends to express some sensitivity to both shame and fear',
+        'Shows preference toward control with some receptivity'
       ],
       variations: 'May show significant variation in emotional expression, connection needs, or intuitive/feeling capacity.'
     },
     balanced_masculine: {
-      label: 'Balanced Masculine-Leaning Temperament',
-      description: 'Masculine-leaning with substantial integration of feminine qualities.',
+      label: 'Masculine-Leaning Expression',
+      description: 'Tends to express masculine-leaning patterns with substantial integration of feminine qualities.',
       characteristics: [
-        'Appreciates structure but can flow',
-        'Both provision and nurture capacities',
-        'Action-oriented with emotional expression',
-        'Some balance between shame and fear sensitivity'
+        'Often appreciates structure but can flow',
+        'Tends to express both provision and nurture capacities',
+        'Shows preference toward action-oriented patterns with emotional expression',
+        'Often expresses some balance between shame and fear sensitivity'
       ],
       variations: 'Significant variation expected across dimensions - may be highly structured in some areas, highly expressive in others.'
     },
     balanced: {
-      label: 'Balanced Temperament',
-      description: 'Integration of both masculine and feminine qualities without strong preference for either pole.',
+      label: 'Balanced Polarity Expression',
+      description: 'Tends to express integration of both masculine and feminine qualities without strong preference for either pole.',
       characteristics: [
-        'Comfortable with both structure and flow',
-        'Both provision and nurture capacities',
-        'Action and expression in balance',
-        'Moderate sensitivity to both shame and fear',
-        'Can take lead or follow as needed'
+        'Often shows comfort with both structure and flow',
+        'Tends to express both provision and nurture capacities',
+        'Shows preference toward action and expression in balance',
+        'Often expresses moderate sensitivity to both shame and fear',
+        'Tends to take lead or follow as needed'
       ],
       variations: 'High variation expected - may show strong masculine traits in some contexts, strong feminine traits in others. This is normal and healthy.'
     },
     balanced_feminine: {
-      label: 'Balanced Feminine-Leaning Temperament',
-      description: 'Feminine-leaning with substantial integration of masculine qualities.',
+      label: 'Feminine-Leaning Expression',
+      description: 'Tends to express feminine-leaning patterns with substantial integration of masculine qualities.',
       characteristics: [
-        'Preference for flow with some structure',
-        'Nurture-oriented with provision capacity',
-        'Expression with some focused action',
-        'Some balance between fear and shame sensitivity'
+        'Shows preference for flow with some structure',
+        'Tends to express nurture-oriented patterns with provision capacity',
+        'Often shows expression with some focused action',
+        'Tends to express some balance between fear and shame sensitivity'
       ],
       variations: 'Significant variation expected - may be highly expressive in some areas, highly structured in others.'
     },
     predominantly_feminine: {
-      label: 'Predominantly Feminine Temperament',
-      description: 'Clear feminine orientation with some integration of masculine qualities.',
+      label: 'Feminine-Leaning Expression',
+      description: 'Tends to express clear feminine orientation with some integration of masculine qualities.',
       characteristics: [
-        'Preference for flow and emergence',
-        'Nurture and connection-oriented',
-        'Emotional expression and receptivity',
-        'Sensitivity to fear and isolation',
-        'Receptive and responsive preference'
+        'Shows preference for flow and emergence',
+        'Tends to express nurture and connection-oriented patterns',
+        'Often shows emotional expression and receptivity',
+        'Tends to express sensitivity to fear and isolation',
+        'Shows preference toward receptive and responsive patterns'
       ],
-      variations: 'May show variation in structure needs, achievement drive, or logical capacity while maintaining core feminine orientation.'
+      variations: 'May show variation in structure needs, achievement drive, or logical capacity while maintaining core feminine-leaning expression.'
     },
     highly_feminine: {
-      label: 'Highly Feminine Temperament',
-      description: 'Strong alignment with feminine archetypal patterns: flow, expression, nurture, receptivity, and connection orientation.',
+      label: 'Feminine-Leaning Expression',
+      description: 'Tends to express strong alignment with feminine archetypal patterns: flow, expression, nurture, receptivity, and connection orientation.',
       characteristics: [
-        'Strong preference for flow and emergence',
-        'Drive for nurture, connection, and emotional richness',
-        'Expressive and emotionally responsive',
-        'Sensitivity to fear, isolation, and lack of clarity',
-        'Preference for receptivity and response',
-        'Tendency to receive and respond in intimate dynamics'
+        'Often shows strong preference for flow and emergence',
+        'Tends to express drive for nurture, connection, and emotional richness',
+        'Shows preference toward expressive and emotionally responsive patterns',
+        'Often expresses sensitivity to fear, isolation, and lack of clarity',
+        'Shows preference toward receptivity and response',
+        'Tends to receive and respond in intimate dynamics'
       ],
-      variations: 'May show variation in structure capacity, achievement orientation, or logical thinking while maintaining core feminine orientation.'
+      variations: 'May show variation in structure capacity, achievement orientation, or logical thinking while maintaining core feminine-leaning expression.'
     }
   }
 };

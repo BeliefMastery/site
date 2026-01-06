@@ -84,8 +84,8 @@ class TemperamentEngine {
       });
     });
 
-    // Shuffle for variety (optional - can be removed for consistency)
-    // this.questionSequence.sort(() => Math.random() - 0.5);
+    // Shuffle questions to mitigate bias
+    this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
   attachEventListeners() {
@@ -148,6 +148,13 @@ class TemperamentEngine {
     }
 
     const currentQ = this.questionSequence[this.currentQuestionIndex];
+    
+    // Check if entering intimate dynamics section and show consent gate
+    if (currentQ.type === 'intimate' && !this.analysisData.intimateConsentGiven) {
+      this.showIntimateConsentGate();
+      return;
+    }
+    
     const savedAnswer = this.answers[currentQ.id] !== undefined ? this.answers[currentQ.id] : 5;
 
     let categoryInfo = '';
@@ -389,6 +396,129 @@ class TemperamentEngine {
         });
       }
     });
+    
+    // Calculate context sensitivity flag
+    const variationCount = this.analysisData.variationAnalysis.highVariationDimensions.length;
+    const totalDimensions = Object.keys(this.analysisData.dimensionScores).length;
+    const variationRatio = totalDimensions > 0 ? variationCount / totalDimensions : 0;
+    
+    // If variation exceeds threshold (more than 40% of dimensions show high variation)
+    if (variationRatio > 0.4) {
+      this.analysisData.contextSensitivity = {
+        detected: true,
+        variationRatio: variationRatio,
+        message: 'Context-responsive temperament: High variation across dimensions indicates adaptability rather than confusion. Expression tends to shift based on partner, season, safety, and life phase.'
+      };
+    } else {
+      this.analysisData.contextSensitivity = {
+        detected: false,
+        variationRatio: variationRatio
+      };
+    }
+  }
+  
+  showIntimateConsentGate() {
+    const questionContainer = document.getElementById('questionContainer');
+    if (!questionContainer) return;
+    
+    questionContainer.innerHTML = `
+      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
+        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Intimate Dynamics Section</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          The next section explores intimate and attraction patterns. These questions help map how energy organizes in relational and intimate contexts. <strong>Skip any question that feels misaligned.</strong> Your responses are for pattern recognition, not judgment.
+        </p>
+        <button class="btn btn-primary" id="continueToIntimate" style="min-width: 150px;">Continue</button>
+        <button class="btn btn-secondary" id="skipIntimate" style="min-width: 150px; margin-left: 1rem;">Skip This Section</button>
+      </div>
+    `;
+    
+    const continueBtn = document.getElementById('continueToIntimate');
+    const skipBtn = document.getElementById('skipIntimate');
+    
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        this.analysisData.intimateConsentGiven = true;
+        this.renderQuestionContent(this.questionSequence[this.currentQuestionIndex]);
+        this.updateProgress();
+        this.updateNavigationButtons();
+      });
+    }
+    
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => {
+        // Skip all intimate questions
+        while (this.currentQuestionIndex < this.questionSequence.length && 
+               this.questionSequence[this.currentQuestionIndex].type === 'intimate') {
+          this.currentQuestionIndex++;
+        }
+        this.analysisData.intimateConsentGiven = true;
+        this.renderCurrentQuestion();
+        this.updateProgress();
+      });
+    }
+  }
+  
+  renderQuestionContent(question) {
+    const questionContainer = document.getElementById('questionContainer');
+    if (!questionContainer) return;
+    
+    const savedAnswer = this.answers[question.id] !== undefined ? this.answers[question.id] : 5;
+    
+    let categoryLabel = '';
+    if (question.type === 'intimate') {
+      categoryLabel = 'Intimate Dynamics';
+    } else if (question.type === 'attraction') {
+      categoryLabel = 'Attraction Responsiveness';
+    } else {
+      categoryLabel = question.dimensionName || 'Behavioral Patterns';
+    }
+    
+    questionContainer.innerHTML = `
+      <div class="question-block">
+        ${categoryLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${categoryLabel}</p>` : ''}
+        ${question.description ? `<p class="description" style="margin-bottom: 1rem; color: var(--muted);">${question.description}</p>` : ''}
+        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${question.question}</h4>
+        <div class="scale-container">
+          <div class="scale-input">
+            <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider">
+            <div class="scale-labels">
+              <span>Very Low / Minimal / Weak / Poor / Rare / Never (0-2)</span>
+              <span>Moderate / Somewhat / Average / Moderate / Sometimes (5-6)</span>
+              <span>Very High / Strong / Potent / Excellent / Frequent / Always (9-10)</span>
+            </div>
+          </div>
+          <span class="scale-value" id="sliderValue">${savedAnswer}</span>
+        </div>
+        <p style="font-size: 0.9em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
+          Tip: Rate the degree to which this pattern is present in your experience.
+        </p>
+      </div>
+    `;
+    
+    const slider = document.getElementById('questionSlider');
+    const sliderValueSpan = document.getElementById('sliderValue');
+    if (slider && sliderValueSpan) {
+      slider.oninput = (event) => {
+        sliderValueSpan.textContent = event.target.value;
+        this.answers[question.id] = parseInt(event.target.value);
+        this.saveProgress();
+      };
+    }
+    
+    this.updateNavigationButtons();
+  }
+  
+  updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevQuestion');
+    const nextBtn = document.getElementById('nextQuestion');
+    
+    if (prevBtn) {
+      prevBtn.disabled = this.currentQuestionIndex === 0;
+    }
+    
+    if (nextBtn) {
+      nextBtn.textContent = this.currentQuestionIndex === this.questionSequence.length - 1 ? 'Finish Assessment' : 'Next';
+    }
   }
 
   renderResults() {
@@ -401,15 +531,35 @@ class TemperamentEngine {
     const temperament = this.analysisData.overallTemperament;
     const interpretation = TEMPERAMENT_SCORING.interpretation[temperament.category];
 
+    // Contextual framing block at results entry
     let html = `
+      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 2rem;">
+        <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);">
+          <strong style="color: var(--brand);">Contextual Framing:</strong> Temperament reflects how energy tends to organize in relational and intimate contexts. It varies by partner, season, safety, and life phase. These results describe tendencies and preferences, not fixed identity or mandates.
+        </p>
+      </div>
+    `;
+    
+    // Context sensitivity flag
+    if (this.analysisData.contextSensitivity && this.analysisData.contextSensitivity.detected) {
+      html += `
+        <div style="background: rgba(255, 184, 0, 0.15); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 2rem;">
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);">
+            <strong style="color: var(--accent);">Context-Responsive Temperament:</strong> ${this.analysisData.contextSensitivity.message}
+          </p>
+        </div>
+      `;
+    }
+
+    html += `
       <div style="background: rgba(255, 184, 0, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;">
-        <h2 style="color: var(--brand); margin-bottom: 1rem; font-size: 1.5rem;">Your Temperament Profile</h2>
+        <h2 style="color: var(--brand); margin-bottom: 1rem; font-size: 1.5rem;">Temperament Expression Profile</h2>
         <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
           <h3 style="color: var(--brand); margin-bottom: 1rem;">${interpretation.label}</h3>
           <p style="color: var(--muted); line-height: 1.6; margin-bottom: 1rem;">${interpretation.description}</p>
           
           <div style="margin-top: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Key Characteristics:</h4>
+            <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Expression Patterns:</h4>
             <ul style="margin-left: 1.5rem; line-height: 1.8;">
               ${interpretation.characteristics.map(char => `<li style="margin-bottom: 0.5rem;">${char}</li>`).join('')}
             </ul>
@@ -426,12 +576,12 @@ class TemperamentEngine {
             <div style="position: absolute; top: 50%; left: ${temperament.normalizedScore * 100}%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: var(--brand); border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted);">
-            <span>Highly Feminine (0%)</span>
+            <span>Feminine-Leaning (0%)</span>
             <span>Balanced (50%)</span>
-            <span>Highly Masculine (100%)</span>
+            <span>Masculine-Leaning (100%)</span>
           </div>
           <p style="text-align: center; margin-top: 0.5rem; font-weight: 600; color: var(--brand);">
-            Your Position: ${(temperament.normalizedScore * 100).toFixed(1)}% on the spectrum
+            Expression Position: ${(temperament.normalizedScore * 100).toFixed(1)}% on the spectrum
           </p>
         </div>
       </div>
