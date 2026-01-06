@@ -633,6 +633,7 @@ class ChannelsEngine {
     this.analysisData.stage3Results = {};
     
     this.identifiedChannels.forEach(channel => {
+      const channelKey = channel.key;
       const managementAnswers = {};
       this.questionSequence
         .filter(q => q.channel === channelKey && q.stage === 3)
