@@ -33,9 +33,18 @@ class ArchetypeEngine {
   }
 
   init() {
-    this.attachEventListeners();
-    this.loadStoredData();
-    this.initializeScores();
+    // Ensure DOM is ready before attaching event listeners
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.attachEventListeners();
+        this.loadStoredData();
+        this.initializeScores();
+      });
+    } else {
+      this.attachEventListeners();
+      this.loadStoredData();
+      this.initializeScores();
+    }
   }
 
   initializeScores() {
@@ -1053,6 +1062,9 @@ if (document.readyState === 'loading') {
     window.archetypeEngine = new ArchetypeEngine();
   });
 } else {
-  window.archetypeEngine = new ArchetypeEngine();
+  // DOM already ready, but wait a tick to ensure all elements are available
+  setTimeout(() => {
+    window.archetypeEngine = new ArchetypeEngine();
+  }, 0);
 }
 
