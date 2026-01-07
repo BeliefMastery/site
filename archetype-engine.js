@@ -154,8 +154,8 @@ class ArchetypeEngine {
         });
       });
     }, 100);
-  }
-    this.renderCurrentQuestion();
+    
+    // Show the questionnaire section
     this.showQuestionContainer();
   }
 
