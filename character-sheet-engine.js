@@ -84,6 +84,8 @@ export class CharacterSheetEngine {
       sunSign: document.getElementById('sunSign')?.value || '',
       moonSign: document.getElementById('moonSign')?.value || '',
       ascendantSign: document.getElementById('ascendantSign')?.value || '',
+      chineseAnimal: document.getElementById('chineseAnimal')?.value || '',
+      chineseElement: document.getElementById('chineseElement')?.value || '',
       mayanSign: document.getElementById('mayanSign')?.value || ''
     };
   }
@@ -124,11 +126,40 @@ export class CharacterSheetEngine {
     ) : null;
     const ascendantSign = ascendantSignKey ? WESTERN_SIGNS[ascendantSignKey] : null;
 
-    // Chinese Astrology
-    const chineseAnimal = getChineseAnimal(year);
-    const chineseElement = getChineseElement(year);
-    const chineseAnimalData = CHINESE_ANIMALS[chineseAnimal];
-    const chineseElementData = CHINESE_ELEMENTS[chineseElement];
+    // Chinese Astrology - check for manual input first
+    let chineseAnimalData = null;
+    let chineseElementData = null;
+    
+    if (formData.chineseAnimal) {
+      // Find matching animal from manual input
+      const animalKey = Object.keys(CHINESE_ANIMALS).find(
+        key => CHINESE_ANIMALS[key].name.toLowerCase() === formData.chineseAnimal.toLowerCase()
+      );
+      if (animalKey) {
+        chineseAnimalData = CHINESE_ANIMALS[animalKey];
+      }
+    }
+    
+    if (formData.chineseElement) {
+      // Find matching element from manual input
+      const elementKey = Object.keys(CHINESE_ELEMENTS).find(
+        key => CHINESE_ELEMENTS[key].name.toLowerCase() === formData.chineseElement.toLowerCase()
+      );
+      if (elementKey) {
+        chineseElementData = CHINESE_ELEMENTS[elementKey];
+      }
+    }
+    
+    // If no manual input, calculate automatically
+    if (!chineseAnimalData) {
+      const chineseAnimal = getChineseAnimal(year);
+      chineseAnimalData = CHINESE_ANIMALS[chineseAnimal];
+    }
+    
+    if (!chineseElementData) {
+      const chineseElement = getChineseElement(year);
+      chineseElementData = CHINESE_ELEMENTS[chineseElement];
+    }
 
     // Mayan Astrology - check for manual input first
     let mayanSeal = null;

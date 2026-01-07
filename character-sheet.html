@@ -455,13 +455,40 @@
         </div>
 
         <div class="form-group">
-          <label for="mayanSign">Mayan Dreamspell Sign (Optional)</label>
-          <input type="text" id="mayanSign" name="mayanSign" placeholder="e.g., White Solar Wind, Yellow Cosmic Star">
-          <div class="form-help">If the auto-calculated Mayan sign doesn't match <a href="https://www.starroot.com/cgi/daycalc.pl" target="_blank">starroot.com</a>, enter it manually in the format: "Color Tone Seal" (e.g., "White Solar Wind")</div>
+          <label for="chineseAnimal">Chinese Animal (Optional)</label>
+          <input type="text" id="chineseAnimal" name="chineseAnimal" list="chineseAnimals" placeholder="Will auto-calculate from birth year">
+          <datalist id="chineseAnimals">
+            <option value="Rat">Rat</option>
+            <option value="Ox">Ox</option>
+            <option value="Tiger">Tiger</option>
+            <option value="Rabbit">Rabbit</option>
+            <option value="Dragon">Dragon</option>
+            <option value="Snake">Snake</option>
+            <option value="Horse">Horse</option>
+            <option value="Goat">Goat</option>
+            <option value="Monkey">Monkey</option>
+            <option value="Rooster">Rooster</option>
+            <option value="Dog">Dog</option>
+            <option value="Pig">Pig</option>
+          </datalist>
+          <div class="form-help">Auto-calculated from birth year, or enter manually if you know your Chinese zodiac animal</div>
         </div>
 
         <div class="form-group">
-          <label for="mayanSign">Mayan Dreamspell Sign</label>
+          <label for="chineseElement">Chinese Element (Optional)</label>
+          <input type="text" id="chineseElement" name="chineseElement" list="chineseElements" placeholder="Will auto-calculate from birth year">
+          <datalist id="chineseElements">
+            <option value="Wood">Wood</option>
+            <option value="Fire">Fire</option>
+            <option value="Earth">Earth</option>
+            <option value="Metal">Metal</option>
+            <option value="Water">Water</option>
+          </datalist>
+          <div class="form-help">Auto-calculated from birth year, or enter manually if you know your Chinese element</div>
+        </div>
+
+        <div class="form-group">
+          <label for="mayanSign">Mayan Dreamspell Sign (Optional)</label>
           <input type="text" id="mayanSign" name="mayanSign" placeholder="e.g., White Solar Wind, Yellow Cosmic Star, Blue Solar Hand">
           <div class="form-help">Auto-calculated from birth date, but you can override with the exact result from <a href="https://www.starroot.com/cgi/daycalc.pl" target="_blank">starroot.com Dreamspell calculator</a> (format: Color Tone Seal, e.g., "White Solar Wind")</div>
         </div>

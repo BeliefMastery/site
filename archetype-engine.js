@@ -230,23 +230,28 @@ export class ArchetypeEngine {
     const container = document.getElementById('questionContainer');
     if (!container) return;
 
+    let html = '';
+
     // Show phase explanation at start of each phase
     if (this.currentQuestionIndex === 0) {
-      const phaseExplanation = this.getPhaseExplanation(this.currentPhase);
-      container.innerHTML = phaseExplanation;
+      html += this.getPhaseExplanation(this.currentPhase);
     }
 
-    let questionHTML = '';
+    // Determine if this question has already been answered (locked)
+    const isAnswered = this.answers[question.id] !== undefined;
+    const isLocked = isAnswered; // Answers are locked once made
 
+    // Render the current question only (replace previous content)
     if (question.type === 'forced_choice') {
-      questionHTML = this.renderForcedChoiceQuestion(question);
+      html += this.renderForcedChoiceQuestion(question, isLocked);
     } else if (question.type === 'likert') {
-      questionHTML = this.renderLikertQuestion(question);
+      html += this.renderLikertQuestion(question, isLocked);
     } else if (question.type === 'narrative') {
-      questionHTML = this.renderNarrativeQuestion(question);
+      html += this.renderNarrativeQuestion(question, isLocked);
     }
 
-    container.innerHTML += questionHTML;
+    // Replace content instead of appending - only show current question
+    container.innerHTML = html;
     this.updateNavigation();
   }
 
@@ -284,37 +289,46 @@ export class ArchetypeEngine {
     `;
   }
 
-  renderForcedChoiceQuestion(question) {
+  renderForcedChoiceQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
     let optionsHTML = question.options.map((option, index) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
+      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
+      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       return `
-        <label class="option-label ${isSelected ? 'selected' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; position: relative;">
-          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
+          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
           <span style="flex: 1;">${option.text}</span>
           ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
         </label>
       `;
     }).join('');
 
-    // Add click handlers
-    setTimeout(() => {
-      document.querySelectorAll(`input[name="question_${question.id}"]`).forEach(radio => {
-        radio.addEventListener('change', (e) => {
-          const selectedIndex = parseInt(e.target.value);
-          this.processAnswer(question, selectedIndex);
-          // Update visual selection
-          document.querySelectorAll(`label.option-label`).forEach(label => {
-            label.classList.remove('selected');
-            label.style.background = 'rgba(255, 255, 255, 0.1)';
-            label.style.border = '2px solid transparent';
+    // Add click handlers only if not locked
+    if (!isLocked) {
+      setTimeout(() => {
+        document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`).forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const selectedIndex = parseInt(e.target.value);
+            this.processAnswer(question, selectedIndex);
+            // Update visual selection immediately
+            document.querySelectorAll(`label.option-label`).forEach(label => {
+              label.classList.remove('selected');
+              label.style.background = 'rgba(255, 255, 255, 0.1)';
+              label.style.border = '2px solid transparent';
+            });
+            const selectedLabel = e.target.closest('label');
+            if (selectedLabel) {
+              selectedLabel.classList.add('selected');
+              selectedLabel.style.background = 'rgba(255, 184, 0, 0.25)';
+              selectedLabel.style.border = '2px solid var(--brand)';
+            }
           });
-          e.target.closest('label').classList.add('selected');
-          e.target.closest('label').style.background = 'rgba(255, 184, 0, 0.2)';
-          e.target.closest('label').style.border = '2px solid var(--brand)';
         });
-      });
-    }, 100);
+      }, 100);
+    }
+
+    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
@@ -322,11 +336,12 @@ export class ArchetypeEngine {
         <div class="options-container">
           ${optionsHTML}
         </div>
+        ${lockedNotice}
       </div>
     `;
   }
 
-  renderLikertQuestion(question) {
+  renderLikertQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
     const scale = question.scale || 5;
     const labels = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
@@ -334,33 +349,42 @@ export class ArchetypeEngine {
     let scaleHTML = '';
     for (let i = 1; i <= scale; i++) {
       const isSelected = currentAnswer && currentAnswer.value === i;
+      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
+      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       scaleHTML += `
-        <label class="likert-option ${isSelected ? 'selected' : ''}" style="display: inline-block; padding: 0.75rem 1rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} style="display: none;">
+        <label class="likert-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: inline-block; padding: 0.75rem 1rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedLockedStyle}">
+          <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="display: none;">
           <span>${i}</span>
           <div style="font-size: 0.75rem; margin-top: 0.25rem; color: var(--muted);">${labels[i - 1] || ''}</div>
         </label>
       `;
     }
 
-    // Add click handlers
-    setTimeout(() => {
-      document.querySelectorAll(`input[name="question_${question.id}"]`).forEach(radio => {
-        radio.addEventListener('change', (e) => {
-          const value = parseInt(e.target.value);
-          this.processAnswer(question, value);
-          // Update visual selection
-          document.querySelectorAll(`label.likert-option`).forEach(label => {
-            label.classList.remove('selected');
-            label.style.background = 'rgba(255, 255, 255, 0.1)';
-            label.style.border = '2px solid transparent';
+    // Add click handlers only if not locked
+    if (!isLocked) {
+      setTimeout(() => {
+        document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`).forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const value = parseInt(e.target.value);
+            this.processAnswer(question, value);
+            // Update visual selection immediately
+            document.querySelectorAll(`label.likert-option`).forEach(label => {
+              label.classList.remove('selected');
+              label.style.background = 'rgba(255, 255, 255, 0.1)';
+              label.style.border = '2px solid transparent';
+            });
+            const selectedLabel = e.target.closest('label');
+            if (selectedLabel) {
+              selectedLabel.classList.add('selected');
+              selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
+              selectedLabel.style.border = '2px solid var(--brand)';
+            }
           });
-          e.target.closest('label').classList.add('selected');
-          e.target.closest('label').style.background = 'rgba(255, 184, 0, 0.2)';
-          e.target.closest('label').style.border = '2px solid var(--brand)';
         });
-      });
-    }, 100);
+      }, 100);
+    }
+
+    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
@@ -368,40 +392,51 @@ export class ArchetypeEngine {
         <div class="likert-scale" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1rem;">
           ${scaleHTML}
         </div>
+        ${lockedNotice}
       </div>
     `;
   }
 
-  renderNarrativeQuestion(question) {
+  renderNarrativeQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
     let vignettesHTML = question.vignettes.map((vignette, index) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
+      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
+      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       return `
-        <label class="narrative-option ${isSelected ? 'selected' : ''}" style="display: block; padding: 1.5rem; margin: 1rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} style="margin-right: 0.5rem;">
+        <label class="narrative-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: block; padding: 1.5rem; margin: 1rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedLockedStyle}">
+          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.5rem;">
           <div style="font-style: italic; color: var(--muted); line-height: 1.7;">${vignette.text}</div>
+          ${isSelected ? '<div style="margin-top: 0.5rem; color: var(--brand); font-weight: 700; font-size: 0.9rem;">✓ Selected</div>' : ''}
         </label>
       `;
     }).join('');
 
-    // Add click handlers
-    setTimeout(() => {
-      document.querySelectorAll(`input[name="question_${question.id}"]`).forEach(radio => {
-        radio.addEventListener('change', (e) => {
-          const selectedIndex = parseInt(e.target.value);
-          this.processAnswer(question, selectedIndex);
-          // Update visual selection
-          document.querySelectorAll(`label.narrative-option`).forEach(label => {
-            label.classList.remove('selected');
-            label.style.background = 'rgba(255, 255, 255, 0.1)';
-            label.style.border = '2px solid transparent';
+    // Add click handlers only if not locked
+    if (!isLocked) {
+      setTimeout(() => {
+        document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`).forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const selectedIndex = parseInt(e.target.value);
+            this.processAnswer(question, selectedIndex);
+            // Update visual selection immediately
+            document.querySelectorAll(`label.narrative-option`).forEach(label => {
+              label.classList.remove('selected');
+              label.style.background = 'rgba(255, 255, 255, 0.1)';
+              label.style.border = '2px solid transparent';
+            });
+            const selectedLabel = e.target.closest('label');
+            if (selectedLabel) {
+              selectedLabel.classList.add('selected');
+              selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
+              selectedLabel.style.border = '2px solid var(--brand)';
+            }
           });
-          e.target.closest('label').classList.add('selected');
-          e.target.closest('label').style.background = 'rgba(255, 184, 0, 0.2)';
-          e.target.closest('label').style.border = '2px solid var(--brand)';
         });
-      });
-    }, 100);
+      }, 100);
+    }
+
+    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
@@ -409,6 +444,7 @@ export class ArchetypeEngine {
         <div class="narrative-container">
           ${vignettesHTML}
         </div>
+        ${lockedNotice}
       </div>
     `;
   }
@@ -650,9 +686,17 @@ export class ArchetypeEngine {
   }
 
   nextQuestion() {
+    // Check if current question has been answered
+    const currentQuestion = this.questionSequence[this.currentQuestionIndex];
+    if (currentQuestion && !this.answers[currentQuestion.id]) {
+      alert('Please select an answer before proceeding.');
+      return;
+    }
+
     if (this.currentQuestionIndex < this.questionSequence.length - 1) {
       this.currentQuestionIndex++;
       this.renderCurrentQuestion();
+      this.saveProgress();
     } else {
       // End of current phase
       this.completePhase();
