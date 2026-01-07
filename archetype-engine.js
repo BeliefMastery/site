@@ -8,13 +8,15 @@ import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-util
 
 class ArchetypeEngine {
   constructor() {
-    this.currentPhase = 1;
+    this.currentPhase = 0; // 0 = gender selection, 1-4 = assessment phases
     this.currentQuestionIndex = 0;
+    this.gender = null; // 'male' or 'female'
     this.answers = {};
     this.questionSequence = [];
     this.archetypeScores = {};
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      gender: null,
       phase1Results: {},
       phase2Results: {},
       phase3Results: {},
@@ -92,12 +94,67 @@ class ArchetypeEngine {
   }
 
   startAssessment() {
-    this.currentPhase = 1;
+    this.currentPhase = 0; // Start with gender selection
     this.currentQuestionIndex = 0;
+    this.gender = null;
     this.answers = {};
     this.initializeScores();
-    this.buildPhase1Sequence();
+    this.showGenderSelection();
     this.saveProgress();
+  }
+
+  showGenderSelection() {
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
+        <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your Gender</h2>
+        <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">This assessment adapts questions based on gender to provide more accurate archetype identification. Your selection is used only for question branching and does not affect the validity of results.</p>
+        <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+          <button id="selectMale" class="gender-btn" style="padding: 1.5rem 3rem; font-size: 1.1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600;">
+            Male
+          </button>
+          <button id="selectFemale" class="gender-btn" style="padding: 1.5rem 3rem; font-size: 1.1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600;">
+            Female
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Add hover effects
+    setTimeout(() => {
+      document.getElementById('selectMale')?.addEventListener('click', () => {
+        this.gender = 'male';
+        this.analysisData.gender = 'male';
+        this.currentPhase = 1;
+        this.buildPhase1Sequence();
+        this.renderCurrentQuestion();
+        this.saveProgress();
+      });
+
+      document.getElementById('selectFemale')?.addEventListener('click', () => {
+        this.gender = 'female';
+        this.analysisData.gender = 'female';
+        this.currentPhase = 1;
+        this.buildPhase1Sequence();
+        this.renderCurrentQuestion();
+        this.saveProgress();
+      });
+
+      // Add hover effects
+      document.querySelectorAll('.gender-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          btn.style.background = 'rgba(255, 184, 0, 0.2)';
+          btn.style.transform = 'translateY(-2px)';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.background = 'rgba(255, 184, 0, 0.1)';
+          btn.style.transform = 'translateY(0)';
+        });
+      });
+    }, 100);
+  }
     this.renderCurrentQuestion();
     this.showQuestionContainer();
   }
@@ -205,9 +262,10 @@ class ArchetypeEngine {
     let optionsHTML = question.options.map((option, index) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
       return `
-        <label class="option-label ${isSelected ? 'selected' : ''}" style="display: block; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} style="margin-right: 0.5rem;">
-          ${option.text}
+        <label class="option-label ${isSelected ? 'selected' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; position: relative;">
+          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+          <span style="flex: 1;">${option.text}</span>
+          ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
         </label>
       `;
     }).join('');
@@ -356,8 +414,48 @@ class ArchetypeEngine {
     if (!selectedOption) return;
 
     selectedOption.archetypes.forEach(archId => {
+      // Map to gender-specific archetype if gender is selected
+      let targetArchId = archId;
+      if (this.gender === 'female') {
+        const femaleMapping = {
+          'alpha': 'alpha_female',
+          'alpha_xi': 'alpha_xi_female',
+          'alpha_rho': 'alpha_xi_female', // Alpha-Rho doesn't exist for female
+          'dark_alpha': 'dark_alpha_female',
+          'beta': 'beta_female',
+          'beta_iota': 'alpha_unicorn_female',
+          'beta_nu': 'beta_nu_female',
+          'beta_manipulator': 'beta_manipulator_female',
+          'beta_kappa': 'beta_kappa_female',
+          'gamma': 'gamma_female',
+          'gamma_theta': 'gamma_theta_female',
+          'dark_gamma': 'dark_gamma_female',
+          'delta': 'delta_female',
+          'delta_mu': 'delta_mu_female',
+          'dark_delta': 'dark_delta_female',
+          'sigma': 'sigma_female',
+          'dark_sigma_zeta': 'dark_sigma_zeta_female',
+          'omega': 'omega_female',
+          'dark_omega': 'dark_omega_female',
+          'phi': 'phi_female'
+        };
+        targetArchId = femaleMapping[archId] || archId;
+      }
+      
+      // Initialize score if needed
+      if (!this.archetypeScores[targetArchId]) {
+        this.archetypeScores[targetArchId] = {
+          phase1: 0,
+          phase2: 0,
+          phase3: 0,
+          phase4: 0,
+          total: 0,
+          weighted: 0
+        };
+      }
+      
       const weight = selectedOption.weight || 1;
-      this.archetypeScores[archId].phase1 += weight * 3; // Phase 1 gets 3x multiplier
+      this.archetypeScores[targetArchId].phase1 += weight * 3; // Phase 1 gets 3x multiplier
     });
   }
 
@@ -378,8 +476,48 @@ class ArchetypeEngine {
     if (!selectedOption) return;
 
     selectedOption.archetypes.forEach(archId => {
+      // Map to gender-specific archetype if gender is selected
+      let targetArchId = archId;
+      if (this.gender === 'female') {
+        const femaleMapping = {
+          'alpha': 'alpha_female',
+          'alpha_xi': 'alpha_xi_female',
+          'alpha_rho': 'alpha_xi_female',
+          'dark_alpha': 'dark_alpha_female',
+          'beta': 'beta_female',
+          'beta_iota': 'alpha_unicorn_female',
+          'beta_nu': 'beta_nu_female',
+          'beta_manipulator': 'beta_manipulator_female',
+          'beta_kappa': 'beta_kappa_female',
+          'gamma': 'gamma_female',
+          'gamma_theta': 'gamma_theta_female',
+          'dark_gamma': 'dark_gamma_female',
+          'delta': 'delta_female',
+          'delta_mu': 'delta_mu_female',
+          'dark_delta': 'dark_delta_female',
+          'sigma': 'sigma_female',
+          'dark_sigma_zeta': 'dark_sigma_zeta_female',
+          'omega': 'omega_female',
+          'dark_omega': 'dark_omega_female',
+          'phi': 'phi_female'
+        };
+        targetArchId = femaleMapping[archId] || archId;
+      }
+      
+      // Initialize score if needed
+      if (!this.archetypeScores[targetArchId]) {
+        this.archetypeScores[targetArchId] = {
+          phase1: 0,
+          phase2: 0,
+          phase3: 0,
+          phase4: 0,
+          total: 0,
+          weighted: 0
+        };
+      }
+      
       const weight = selectedOption.weight || 1;
-      this.archetypeScores[archId].phase3 += weight * 1; // Phase 3 gets 1x multiplier
+      this.archetypeScores[targetArchId].phase3 += weight * 1; // Phase 3 gets 1x multiplier
     });
   }
 
@@ -406,14 +544,44 @@ class ArchetypeEngine {
   identifyArchetypes() {
     this.calculateFinalScores();
 
-    // Get all archetypes sorted by weighted score
+    // Map gender-neutral archetype IDs to gender-specific ones
+    const genderMapping = {
+      'alpha': this.gender === 'female' ? 'alpha_female' : 'alpha',
+      'alpha_xi': this.gender === 'female' ? 'alpha_xi_female' : 'alpha_xi',
+      'alpha_rho': this.gender === 'female' ? 'alpha_rho' : 'alpha_rho', // Alpha-Rho is male-specific
+      'dark_alpha': this.gender === 'female' ? 'dark_alpha_female' : 'dark_alpha',
+      'beta': this.gender === 'female' ? 'beta_female' : 'beta',
+      'beta_iota': this.gender === 'female' ? 'alpha_unicorn_female' : 'beta_iota', // Alpha-Unicorn maps to Beta-Iota pattern
+      'beta_nu': this.gender === 'female' ? 'beta_nu_female' : 'beta_nu',
+      'beta_manipulator': this.gender === 'female' ? 'beta_manipulator_female' : 'beta_manipulator',
+      'beta_kappa': this.gender === 'female' ? 'beta_kappa_female' : 'beta_kappa',
+      'gamma': this.gender === 'female' ? 'gamma_female' : 'gamma',
+      'gamma_theta': this.gender === 'female' ? 'gamma_theta_female' : 'gamma_theta',
+      'dark_gamma': this.gender === 'female' ? 'dark_gamma_female' : 'dark_gamma',
+      'delta': this.gender === 'female' ? 'delta_female' : 'delta',
+      'delta_mu': this.gender === 'female' ? 'delta_mu_female' : 'delta_mu',
+      'dark_delta': this.gender === 'female' ? 'dark_delta_female' : 'dark_delta',
+      'sigma': this.gender === 'female' ? 'sigma_female' : 'sigma',
+      'dark_sigma_zeta': this.gender === 'female' ? 'dark_sigma_zeta_female' : 'dark_sigma_zeta',
+      'omega': this.gender === 'female' ? 'omega_female' : 'omega',
+      'dark_omega': this.gender === 'female' ? 'dark_omega_female' : 'dark_omega',
+      'phi': this.gender === 'female' ? 'phi_female' : 'phi'
+    };
+
+    // Get all archetypes sorted by weighted score, mapping to gender-specific IDs
     const sortedArchetypes = Object.keys(this.archetypeScores)
-      .map(archId => ({
-        id: archId,
-        ...ARCHETYPES[archId],
-        score: this.archetypeScores[archId].weighted,
-        totalScore: this.archetypeScores[archId].total
-      }))
+      .map(archId => {
+        const genderSpecificId = genderMapping[archId] || archId;
+        const archetype = ARCHETYPES[genderSpecificId] || ARCHETYPES[archId];
+        if (!archetype) return null;
+        return {
+          id: genderSpecificId,
+          ...archetype,
+          score: this.archetypeScores[archId].weighted,
+          totalScore: this.archetypeScores[archId].total
+        };
+      })
+      .filter(arch => arch !== null)
       .sort((a, b) => b.score - a.score);
 
     // Primary archetype (highest score)
@@ -638,6 +806,21 @@ class ArchetypeEngine {
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Growth Edge:</h4>
             <p style="color: var(--muted); line-height: 1.7;">${primary.growthEdge}</p>
           </div>
+
+          ${primary.jungianEquivalent || primary.vedicEquivalent || primary.greekPantheon || primary.tarotCard ? `
+          <div style="margin-top: 1.5rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem;">
+            <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Cross-Paradigm Equivalents:</h4>
+            <div style="color: var(--muted); line-height: 1.8; font-size: 0.9rem;">
+              ${primary.jungianEquivalent ? `<p style="margin: 0.5rem 0;"><strong>Jungian/Q-KWML:</strong> ${primary.jungianEquivalent}</p>` : ''}
+              ${primary.vedicEquivalent ? `<p style="margin: 0.5rem 0;"><strong>Vedic:</strong> ${primary.vedicEquivalent}</p>` : ''}
+              ${primary.greekPantheon ? `<p style="margin: 0.5rem 0;"><strong>Greek Pantheon:</strong> ${primary.greekPantheon}</p>` : ''}
+              ${primary.tarotCard ? `<p style="margin: 0.5rem 0;"><strong>Tarot Card:</strong> ${primary.tarotCard}</p>` : ''}
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem; font-style: italic; margin-top: 0.75rem; margin-bottom: 0;">
+              These equivalents help translate this archetype across different psychological and mythological frameworks.
+            </p>
+          </div>
+          ` : ''}
         </div>
     `;
 
@@ -762,6 +945,7 @@ class ArchetypeEngine {
     const progress = {
       currentPhase: this.currentPhase,
       currentQuestionIndex: this.currentQuestionIndex,
+      gender: this.gender,
       answers: this.answers,
       archetypeScores: this.archetypeScores,
       analysisData: this.analysisData
@@ -774,11 +958,18 @@ class ArchetypeEngine {
     if (stored) {
       try {
         const progress = JSON.parse(stored);
-        this.currentPhase = progress.currentPhase || 1;
+        this.currentPhase = progress.currentPhase || 0;
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
+        this.gender = progress.gender || null;
         this.answers = progress.answers || {};
         this.archetypeScores = progress.archetypeScores || {};
         this.analysisData = progress.analysisData || this.analysisData;
+        
+        // If gender not selected, show gender selection
+        if (!this.gender || this.currentPhase === 0) {
+          this.showGenderSelection();
+          return;
+        }
         
         // Rebuild question sequence based on phase
         if (this.currentPhase === 1) {

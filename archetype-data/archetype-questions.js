@@ -505,7 +505,7 @@ export const PHASE_3_QUESTIONS = [
   },
   {
     id: 'p3_q4',
-    question: 'My biggest fear is:',
+    question: 'Which of these considerations produces the most resistance in you?',
     type: 'forced_choice',
     options: [
       { text: 'Losing control or authority', archetypes: ['alpha'], weight: 2 },
