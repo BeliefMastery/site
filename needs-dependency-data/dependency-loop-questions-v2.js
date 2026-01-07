@@ -40,11 +40,11 @@ export const PHASE_1_QUESTIONS = [
         mapsTo: { loops: ['SPACE', 'SECURITY', 'INDEPENDENCE'], stressResponse: 'Avoidance/Evasion', sourcing: 'avoidant' }
       },
       {
-        text: 'I blame my partner or external circumstances for the instability',
+        text: 'My partner or external circumstances keep pushing me into triggered states',
         mapsTo: { loops: ['EQUALITY', 'CONSIDERATION', 'TO SEE AND BE SEEN'], stressResponse: 'Blame/Externalization', sourcing: 'compulsive' }
       },
       {
-        text: 'I create chaos or tension to gain a sense of control',
+        text: 'I find myself stirring up situations when I need to feel in control',
         mapsTo: { loops: ['STIMULATION/ADVENTURE', 'CONTRIBUTION', 'FLOW'], stressResponse: 'Sabotage', sourcing: 'compulsive' }
       },
       {
@@ -68,11 +68,11 @@ export const PHASE_1_QUESTIONS = [
         mapsTo: { stressResponse: 'Perfectionism/Overcompensation', loops: ['APPROVAL', 'CONTRIBUTION', 'TO SEE AND BE SEEN'] }
       },
       {
-        text: 'I blame others or externalize responsibility',
+        text: 'I find myself focusing on what others are doing rather than what I can change',
         mapsTo: { stressResponse: 'Blame/Externalization', loops: ['EQUALITY', 'CONSIDERATION', 'BEING WANTED'] }
       },
       {
-        text: 'I sabotage myself or the situation, confirming negative beliefs',
+        text: 'I find myself making choices that reinforce my negative beliefs about myself',
         mapsTo: { stressResponse: 'Sabotage', loops: ['MOURNING', 'BELONGING', 'INDEPENDENCE'] }
       },
       {
@@ -1008,11 +1008,11 @@ export const PHASE_4_QUESTIONS = [
         mapsTo: { resistanceType: 'skeptical_doubt', loops: ['ALL'] }
       },
       {
-        text: 'External blame - "It\'s not my fault, others need to change"',
+        text: 'Focus on others - "It\'s not my fault, others need to change"',
         mapsTo: { resistanceType: 'external_blame', loops: ['ALL'] }
       },
       {
-        text: 'Harsh self-attack - "I\'m broken, I can\'t do this"',
+        text: 'Self-doubt - "I don\'t believe I can do this"',
         mapsTo: { resistanceType: 'harsh_self_attack', loops: ['ALL'] }
       },
       {
