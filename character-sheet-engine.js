@@ -370,7 +370,13 @@ export class CharacterSheetEngine {
     const chineseElement = astrologyData.chinese.element;
     const mayanSeal = astrologyData.mayan.seal;
     const mayanTone = astrologyData.mayan.tone;
-    const mayanDisplay = getMayanSignDisplayName(astrologyData.mayan.seal?.id || '', astrologyData.mayan.tone?.name || '');
+    // Get Mayan display name - find the seal key
+    let sealKey = '';
+    if (mayanSeal) {
+      const foundKey = Object.keys(MAYAN_SEALS).find(key => MAYAN_SEALS[key].name === mayanSeal.name);
+      sealKey = foundKey || mayanSeal.name?.toLowerCase().replace(/\s+/g, '_').replace('-', '_') || '';
+    }
+    const mayanDisplay = getMayanSignDisplayName(sealKey, mayanTone?.name || '');
     
     // Create a more narrative, innovative backstory
     const narratives = [];
