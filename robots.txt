@@ -18,6 +18,13 @@ Allow: /relationship-data/
 Allow: /temperament.html
 Allow: /temperament-engine.js
 Allow: /temperament-data/
+Allow: /needs-dependency.html
+Allow: /needs-dependency-engine-v2.js
+Allow: /needs-dependency-data/
+Allow: /archetype.html
+Allow: /archetype-engine.js
+Allow: /archetype-data/
+Allow: /example-reports/
 Allow: /style.css
 Allow: /images/
 Allow: /diagnosis-engine.js
@@ -29,6 +36,8 @@ Allow: /dsm5-data/
 Allow: /coaching-data/
 Allow: /manipulation-data/
 Allow: /channel-data/
+Allow: /paradigm-data/
+Allow: /relationship-data/
 
 # Allow all major AI crawlers
 User-agent: GPTBot

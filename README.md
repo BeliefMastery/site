@@ -62,6 +62,10 @@ The books function less as guidance and more as an **ally**: a framework for sta
 - **`relationship-engine.js`** - Relationship compatibility analysis and weakest link identification engine
 - **`temperament.html`** - Temperament Analyzer - Masculine-Feminine Spectrum (based on Chapter 7: Timeless Archetypes)
 - **`temperament-engine.js`** - Temperament spectrum positioning and analysis engine
+- **`needs-dependency.html`** - Needs Dependency Loop Determinator (based on Chapter 5: Needs and Beliefs from Belief Mastery)
+- **`needs-dependency-engine-v2.js`** - Dependency loop identification and chain mapping engine
+- **`archetype.html`** - Multi-Tier Archetype Assessment System - Modern Redpill Archetypes
+- **`archetype-engine.js`** - Multi-tier archetype identification engine with gender-specific branching
 - **`style.css`** - Shared stylesheet for consistent design across pages
 - **`dsm5-data/`** - Modular DSM-5 diagnostic data (100+ disorders, 13+ categories)
 - **`treatment-database.js`** - Comprehensive treatment information database
@@ -71,6 +75,9 @@ The books function less as guidance and more as an **ally**: a framework for sta
 - **`paradigm-data/`** - Paradigm system data (Good Life paradigms, God perspectives, dimensions of truth)
 - **`relationship-data/`** - Relationship system data (20 compatibility points, action strategies, archetypal insights)
 - **`temperament-data/`** - Temperament system data (dimensions, intimate dynamics, attraction responsiveness, scoring)
+- **`needs-dependency-data/`** - Needs dependency system data (16 dependency loops, needs vocabulary, vice responses, chain mapping)
+- **`archetype-data/`** - Archetype system data (male and female archetypes, question banks for 4 phases, cross-paradigm mappings)
+- **`example-reports/`** - Example output reports for all 10 analysis tools
 
 ### Content Sections (index.html)
 1. **Belief Mastery** - Subconscious belief deconstruction and the Belief Inference Process
@@ -87,6 +94,8 @@ The books function less as guidance and more as an **ally**: a framework for sta
 12. **Paradigm Clarification System** - Maps "The Good Life" and "God" across four dimensions of truth (Literal, Symbolic, Esoteric, Mystical) to clarify worldview structure and primary paradigm alignments
 13. **Relationship Optimization - Weakest Link Analysis** - Evaluates relationships across 20 compatibility points organized by impact tier, identifies weakest links, and provides targeted action strategies integrating insights from optimal relationship dynamics, biological essentialism, polarity, and the STATUS/SELECTION/ATTRACTION reference map. Uses self-reported ratings without confidence modifiers, treating all responses as valid data for the thought experiment.
 14. **Temperament Analyzer - Masculine-Feminine Spectrum** - Maps position on the masculine-feminine temperament spectrum through comprehensive questions covering behavioral patterns, intimate dynamics (including sexual preferences and positions), emotional responses to intimacy, attraction responsiveness, and relationship polarity. Directly impacts relationship consequences and optimization strategies. Based on Chapter 7: Timeless Archetypes from Sovereign of Mind
+15. **Needs Dependency Loop Determinator** - Identifies dependency loops through needs and vices assessment. Traces surface symptoms to root needs and breaks dependency cycles. Uses STRICT PROPRIETARY needs and vices vocabulary from Chapter 5 of Belief Mastery. Features 4-phase architecture: Initial Screening, Loop-Specific Deep Dive, Causal Need Chain Mapping, and Validation & Prioritization.
+16. **Multi-Tier Archetype Assessment System** - Identifies primary, secondary, and tertiary modern redpill archetypes through a comprehensive multi-tier assessment system. Features gender-specific branching (male/female archetypes have distinct characteristics and question matrices), 4-phase architecture (Core Orientation, Dimensional Refinement, Shadow/Integration Assessment, Validation & Narrative Matching), cross-paradigm translations (Jungian, Vedic, Greek Pantheon, Tarot equivalents), and bias-mitigation protocols. Based on modern redpill archetype taxonomy with behavioral focus and values-neutral framing.
 
 ### Available Publications
 - **Belief Mastery** - Available on Amazon
@@ -184,6 +193,8 @@ This system is for **educational and informational purposes only**. It is not a 
 - Paradigm Clarification: https://beliefmastery.github.io/site/paradigm.html
 - Relationship Optimization: https://beliefmastery.github.io/site/relationship.html
 - Temperament Analyzer: https://beliefmastery.github.io/site/temperament.html
+- Needs Dependency Analysis: https://beliefmastery.github.io/site/needs-dependency.html
+- Archetype Analysis: https://beliefmastery.github.io/site/archetype.html
 - Instagram: @belief.mastery
 - Facebook: https://www.facebook.com/war.mars.9
 
@@ -225,9 +236,12 @@ This README provides the executive summary. For detailed content:
 ✅ **Coaching Agent Builder** - Personal AI coaching agent configuration system
 ✅ **Manipulation Analysis** - Vector identification system with 63 tactics across 6 vectors
 ✅ **Channel Analysis** - Channel blockage identification with 42 channels and remediation strategies
-✅ **Paradigm Clarification** - Worldview structure mapping across four dimensions of truth
+✅ **Paradigm Clarification** - Worldview structure mapping across four dimensions of truth with 3-phase architecture (Orientation, Depth Mapping, Integration Check)
 ✅ **Relationship Optimization** - Weakest link analysis across 20 compatibility points with targeted action strategies (confidence slider removed - all responses treated as valid self-reported data)
 ✅ **Temperament Analyzer** - Masculine-feminine spectrum positioning with comprehensive assessment including intimate dynamics and attraction responsiveness
+✅ **Needs Dependency Loop Determinator** - 4-phase dependency loop identification system with proprietary needs/vices vocabulary and causal chain mapping
+✅ **Multi-Tier Archetype Assessment** - Gender-specific archetype identification system with 4-phase architecture, cross-paradigm translations, and bias-mitigation protocols
+✅ **Example Reports** - Sample output reports available for all 10 analysis tools
 ✅ **SEO Optimized** - Structured data and meta tags implemented
 ✅ **Mobile Responsive** - Hamburger menu and responsive design complete
 
