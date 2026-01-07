@@ -258,7 +258,116 @@
     <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
   </footer>
 
-  <script type="module" src="archetype-engine.js"></script>
+  <script type="module">
+    // Debug: Comprehensive debugging for archetype assessment button
+    console.log('=== ARCHETYPE ASSESSMENT DEBUG ===');
+    console.log('Document ready state:', document.readyState);
+    console.log('Script execution started');
+    
+    // Import the engine class
+    import { ArchetypeEngine } from './archetype-engine.js';
+    console.log('ArchetypeEngine imported:', typeof ArchetypeEngine);
+    
+    // Wait for DOM to be fully ready
+    function initializeAssessment() {
+      console.log('=== INITIALIZING ASSESSMENT ===');
+      console.log('Document ready state:', document.readyState);
+      
+      // Check for button
+      const startBtn = document.getElementById('startAssessment');
+      console.log('Start button element:', startBtn);
+      console.log('Start button ID:', startBtn?.id);
+      console.log('Start button classes:', startBtn?.className);
+      console.log('Start button style:', startBtn?.style.cssText);
+      
+      if (!startBtn) {
+        console.error('❌ START BUTTON NOT FOUND IN DOM!');
+        console.log('Available elements with IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
+        return;
+      }
+      
+      // Create engine instance
+      console.log('Creating ArchetypeEngine instance...');
+      window.archetypeEngine = new ArchetypeEngine();
+      console.log('Engine instance created:', window.archetypeEngine);
+      console.log('Engine startAssessment method:', typeof window.archetypeEngine?.startAssessment);
+      
+      // Add multiple event listeners as backup
+      console.log('Adding event listeners...');
+      
+      // Method 1: addEventListener
+      startBtn.addEventListener('click', function(e) {
+        console.log('✅ CLICK EVENT FIRED (addEventListener)');
+        console.log('Event:', e);
+        console.log('Target:', e.target);
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (window.archetypeEngine) {
+          console.log('Calling startAssessment...');
+          try {
+            window.archetypeEngine.startAssessment();
+            console.log('startAssessment called successfully');
+          } catch (error) {
+            console.error('Error calling startAssessment:', error);
+          }
+        } else {
+          console.error('❌ Engine not found on window object');
+        }
+      });
+      console.log('addEventListener attached');
+      
+      // Method 2: onclick (backup)
+      startBtn.onclick = function(e) {
+        console.log('✅ CLICK EVENT FIRED (onclick)');
+        console.log('Event:', e);
+        e.preventDefault();
+        e.stopPropagation();
+        if (window.archetypeEngine) {
+          try {
+            window.archetypeEngine.startAssessment();
+            console.log('startAssessment called successfully (onclick)');
+          } catch (error) {
+            console.error('Error calling startAssessment (onclick):', error);
+          }
+        }
+      };
+      console.log('onclick handler attached');
+      
+      // Method 3: Test click programmatically
+      console.log('Testing button clickability...');
+      console.log('Button disabled:', startBtn.disabled);
+      console.log('Button type:', startBtn.type);
+      
+      // Verify button is visible and clickable
+      const rect = startBtn.getBoundingClientRect();
+      console.log('Button position:', { x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+      console.log('Button visible:', rect.width > 0 && rect.height > 0);
+      
+      console.log('=== INITIALIZATION COMPLETE ===');
+      console.log('Button should now be functional. Click it to test.');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      console.log('DOM is loading, waiting for DOMContentLoaded...');
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded event fired');
+        setTimeout(() => initializeAssessment(), 100);
+      });
+    } else {
+      console.log('DOM already ready, initializing immediately');
+      setTimeout(() => initializeAssessment(), 100);
+    }
+    
+    // Also try after a longer delay as backup
+    setTimeout(() => {
+      if (!window.archetypeEngine) {
+        console.warn('Engine not initialized after 1 second, retrying...');
+        initializeAssessment();
+      }
+    }, 1000);
+  </script>
   <script>
     // Hamburger menu toggle
     (function(){

@@ -6,7 +6,7 @@ import { ARCHETYPES, CORE_GROUPS } from './archetype-data/archetypes.js';
 import { PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS } from './archetype-data/archetype-questions.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class ArchetypeEngine {
+export class ArchetypeEngine {
   constructor() {
     this.currentPhase = 0; // 0 = gender selection, 1-4 = assessment phases
     this.currentQuestionIndex = 0;
