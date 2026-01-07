@@ -39,17 +39,8 @@ class ArchetypeEngine {
   }
 
   initializeScores() {
-    // Initialize scores for all archetypes
-    Object.keys(ARCHETYPES).forEach(archId => {
-      this.archetypeScores[archId] = {
-        phase1: 0,
-        phase2: 0,
-        phase3: 0,
-        phase4: 0,
-        total: 0,
-        weighted: 0
-      };
-    });
+    // Initialize scores dynamically as archetypes are scored (to support gender-specific archetypes)
+    this.archetypeScores = {};
   }
 
   attachEventListeners() {
