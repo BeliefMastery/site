@@ -1,0 +1,794 @@
+// Multi-Tier Archetype Assessment Questions
+// Following bias-mitigation principles: behavioral focus, concrete scenarios, values-neutral framing
+
+// PHASE 1: Core Orientation (15-20 forced-choice scenarios)
+// Purpose: Identify primary quadrant (Alpha/Beta/Gamma/Delta/Sigma/Omega/Phi)
+export const PHASE_1_QUESTIONS = [
+  {
+    id: 'p1_q1',
+    question: 'You\'re invited to join a community project. What most appeals to you?',
+    type: 'forced_choice',
+    options: [
+      { text: 'Leading the initiative and setting the vision', archetypes: ['alpha'], weight: 3 },
+      { text: 'Contributing specialized expertise and knowledge', archetypes: ['gamma'], weight: 3 },
+      { text: 'Supporting others and ensuring everyone\'s included', archetypes: ['beta'], weight: 3 },
+      { text: 'Working independently on a specific component', archetypes: ['sigma'], weight: 3 },
+      { text: 'Handling practical logistics and execution', archetypes: ['delta'], weight: 3 },
+      { text: 'Observing and learning without committing', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q2',
+    question: 'When a project you\'re involved in fails, you typically:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take responsibility and lead the recovery effort', archetypes: ['alpha'], weight: 3 },
+      { text: 'Analyze what went wrong and propose solutions', archetypes: ['gamma'], weight: 3 },
+      { text: 'Support others who are struggling with the failure', archetypes: ['beta'], weight: 3 },
+      { text: 'Focus on your specific part and ensure it works', archetypes: ['delta'], weight: 3 },
+      { text: 'Withdraw and work on something else independently', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel overwhelmed and avoid dealing with it', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q3',
+    question: 'At a party where you know few people, you:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Introduce yourself to groups and take leadership in conversations', archetypes: ['alpha'], weight: 3 },
+      { text: 'Find interesting people to have deep conversations with', archetypes: ['gamma'], weight: 3 },
+      { text: 'Look for people who seem left out and include them', archetypes: ['beta'], weight: 3 },
+      { text: 'Help with practical tasks like serving food or cleaning', archetypes: ['delta'], weight: 3 },
+      { text: 'Find a quiet corner and observe, engaging only if approached', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel uncomfortable and leave early', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q4',
+    question: 'If you could only choose one:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Recognition from peers for your achievements', archetypes: ['alpha'], weight: 3 },
+      { text: 'Freedom from obligation and social expectations', archetypes: ['sigma'], weight: 3 },
+      { text: 'Deep understanding of how things work', archetypes: ['gamma'], weight: 3 },
+      { text: 'Being needed and valued by others', archetypes: ['beta'], weight: 3 },
+      { text: 'Completing practical tasks that make a difference', archetypes: ['delta'], weight: 3 },
+      { text: 'Being left alone without expectations', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q5',
+    question: 'When someone challenges your approach with less experience:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Assert your authority and explain why your method works', archetypes: ['alpha'], weight: 3 },
+      { text: 'Engage in debate and explore their perspective', archetypes: ['gamma'], weight: 3 },
+      { text: 'Listen carefully and try to incorporate their ideas', archetypes: ['beta'], weight: 3 },
+      { text: 'Show them the practical steps and help them understand', archetypes: ['delta'], weight: 3 },
+      { text: 'Ignore them and continue your way independently', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel intimidated and defer to their opinion', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q6',
+    question: 'In a group decision, you prefer to:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Make the final call after hearing input', archetypes: ['alpha'], weight: 3 },
+      { text: 'Question assumptions and propose alternatives', archetypes: ['gamma'], weight: 3 },
+      { text: 'Ensure everyone\'s voice is heard and find consensus', archetypes: ['beta'], weight: 3 },
+      { text: 'Focus on what\'s practical and achievable', archetypes: ['delta'], weight: 3 },
+      { text: 'Opt out and make your own decision separately', archetypes: ['sigma'], weight: 3 },
+      { text: 'Go along with whatever others decide', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q7',
+    question: 'When you see injustice or unfairness, you:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take action to correct it directly', archetypes: ['alpha', 'alpha_rho'], weight: 3 },
+      { text: 'Question the system and propose alternatives', archetypes: ['gamma'], weight: 3 },
+      { text: 'Support those who are being treated unfairly', archetypes: ['beta'], weight: 3 },
+      { text: 'Work within the system to make practical changes', archetypes: ['delta'], weight: 3 },
+      { text: 'Withdraw from the system entirely', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel powerless and avoid the situation', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q8',
+    question: 'Your ideal work environment is:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Leading a team with clear hierarchy', archetypes: ['alpha'], weight: 3 },
+      { text: 'Independent research or creative work', archetypes: ['gamma', 'sigma'], weight: 3 },
+      { text: 'Supportive team where everyone collaborates', archetypes: ['beta'], weight: 3 },
+      { text: 'Structured environment with clear tasks', archetypes: ['delta'], weight: 3 },
+      { text: 'Completely autonomous, no oversight', archetypes: ['sigma'], weight: 3 },
+      { text: 'Minimal interaction, simple tasks', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q9',
+    question: 'When you disagree with someone in authority:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Challenge them directly and assert your position', archetypes: ['alpha'], weight: 3 },
+      { text: 'Question their reasoning and propose alternatives', archetypes: ['gamma'], weight: 3 },
+      { text: 'Express your view gently and seek compromise', archetypes: ['beta'], weight: 3 },
+      { text: 'Follow protocol but work around the issue', archetypes: ['delta'], weight: 3 },
+      { text: 'Ignore their authority and do what you think is right', archetypes: ['sigma'], weight: 3 },
+      { text: 'Avoid confrontation and comply', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q10',
+    question: 'In relationships, you value most:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Respect and recognition of your leadership', archetypes: ['alpha'], weight: 3 },
+      { text: 'Intellectual connection and deep conversations', archetypes: ['gamma'], weight: 3 },
+      { text: 'Harmony, support, and mutual care', archetypes: ['beta'], weight: 3 },
+      { text: 'Practical partnership and shared responsibilities', archetypes: ['delta'], weight: 3 },
+      { text: 'Independence and space for personal growth', archetypes: ['sigma'], weight: 3 },
+      { text: 'Acceptance without expectations', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q11',
+    question: 'When you need to learn something new, you:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take charge of the learning process and teach others', archetypes: ['alpha'], weight: 3 },
+      { text: 'Deep dive into theory and explore multiple perspectives', archetypes: ['gamma'], weight: 3 },
+      { text: 'Learn alongside others and share knowledge', archetypes: ['beta'], weight: 3 },
+      { text: 'Focus on practical, hands-on application', archetypes: ['delta'], weight: 3 },
+      { text: 'Learn independently through experimentation', archetypes: ['sigma'], weight: 3 },
+      { text: 'Struggle and may need significant support', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q12',
+    question: 'When facing a major life decision, you primarily:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Make the decision confidently and take responsibility', archetypes: ['alpha'], weight: 3 },
+      { text: 'Analyze all options deeply and question assumptions', archetypes: ['gamma'], weight: 3 },
+      { text: 'Consult with trusted others and seek consensus', archetypes: ['beta'], weight: 3 },
+      { text: 'Focus on practical considerations and what works', archetypes: ['delta'], weight: 3 },
+      { text: 'Trust your own judgment regardless of others\' input', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel overwhelmed and delay the decision', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q13',
+    question: 'Your response to social conflict is typically:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Step in and mediate or take control', archetypes: ['alpha'], weight: 3 },
+      { text: 'Question the underlying issues and propose solutions', archetypes: ['gamma'], weight: 3 },
+      { text: 'Try to help everyone feel heard and find peace', archetypes: ['beta'], weight: 3 },
+      { text: 'Focus on practical resolution and moving forward', archetypes: ['delta'], weight: 3 },
+      { text: 'Remove yourself from the situation', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel anxious and avoid the conflict', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q14',
+    question: 'When you achieve something significant, you:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Share it widely and expect recognition', archetypes: ['alpha'], weight: 3 },
+      { text: 'Reflect on what it means and what you learned', archetypes: ['gamma'], weight: 3 },
+      { text: 'Share it with close others and celebrate together', archetypes: ['beta'], weight: 3 },
+      { text: 'Move on to the next practical task', archetypes: ['delta'], weight: 3 },
+      { text: 'Keep it private and continue independently', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel it\'s not significant enough to matter', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p1_q15',
+    question: 'In a crisis, your natural response is to:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take charge and direct the response', archetypes: ['alpha', 'alpha_xi'], weight: 3 },
+      { text: 'Analyze the situation and propose strategic solutions', archetypes: ['gamma', 'sigma_kappa'], weight: 3 },
+      { text: 'Support and care for those affected', archetypes: ['beta', 'delta_mu'], weight: 3 },
+      { text: 'Focus on practical tasks that need doing', archetypes: ['delta'], weight: 3 },
+      { text: 'Handle your own needs independently', archetypes: ['sigma'], weight: 3 },
+      { text: 'Feel overwhelmed and seek help', archetypes: ['omega'], weight: 2 }
+    ]
+  }
+];
+
+// PHASE 2: Dimensional Refinement (20-25 Likert-scale statements)
+// Purpose: Distinguish between main type and variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha)
+export const PHASE_2_QUESTIONS = [
+  {
+    id: 'p2_q1',
+    question: 'I explain patiently why my method works when challenged',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'alpha', weight: 2 },
+      { id: 'alpha_rho', weight: 3 }
+    ]
+  },
+  {
+    id: 'p2_q2',
+    question: 'I feel disrespected when my approach is questioned',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'dark_alpha', weight: 3 },
+      { id: 'alpha', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q3',
+    question: 'I appreciate fresh perspectives even from less experienced people',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'beta', weight: 3 },
+      { id: 'gamma', weight: 2 },
+      { id: 'alpha_rho', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q4',
+    question: 'I value honor and loyalty above personal gain',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'alpha_xi', weight: 3 },
+      { id: 'beta', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q5',
+    question: 'I focus on justice and fairness in all situations',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'alpha_rho', weight: 3 },
+      { id: 'alpha', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q6',
+    question: 'I use manipulation to get what I need',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'beta_manipulator', weight: 3 },
+      { id: 'sigma_kappa', weight: 2 },
+      { id: 'dark_alpha', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q7',
+    question: 'I prefer gentle, nurturing approaches to conflict',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'beta_iota', weight: 3 },
+      { id: 'beta', weight: 2 },
+      { id: 'delta_mu', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q8',
+    question: 'I value tradition and established ways of doing things',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'beta_nu', weight: 3 },
+      { id: 'delta', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q9',
+    question: 'I question social norms and conventional wisdom',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'gamma', weight: 3 },
+      { id: 'sigma', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q10',
+    question: 'I am drawn to romantic ideals and deep emotional connection',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'gamma_nu', weight: 3 },
+      { id: 'beta_iota', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q11',
+    question: 'I seek mystical or spiritual experiences',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'gamma_theta', weight: 3 },
+      { id: 'phi', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q12',
+    question: 'I take calculated risks and seize opportunities',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'gamma_pi', weight: 3 },
+      { id: 'alpha', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q13',
+    question: 'I feel isolated and disconnected from others',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'dark_gamma', weight: 3 },
+      { id: 'omega', weight: 2 },
+      { id: 'sigma', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q14',
+    question: 'I find meaning in hard work and practical service',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'delta', weight: 3 },
+      { id: 'beta', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q15',
+    question: 'I am naturally protective and fatherly/motherly',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'delta_mu', weight: 3 },
+      { id: 'beta_kappa', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q16',
+    question: 'I sacrifice my own needs for others frequently',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'dark_delta', weight: 3 },
+      { id: 'beta', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q17',
+    question: 'I prefer to work completely independently',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'sigma', weight: 3 },
+      { id: 'gamma', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q18',
+    question: 'I use strategic thinking and indirect influence',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'sigma_kappa', weight: 3 },
+      { id: 'gamma', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q19',
+    question: 'I express myself through creative or artistic work',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'sigma_lambda', weight: 3 },
+      { id: 'gamma', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q20',
+    question: 'I am anti-establishment and reject social structures',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'dark_sigma_zeta', weight: 3 },
+      { id: 'sigma', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q21',
+    question: 'I feel powerless in social situations',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'omega', weight: 3 },
+      { id: 'beta', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q22',
+    question: 'I feel destructive or nihilistic tendencies',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'dark_omega', weight: 3 },
+      { id: 'dark_gamma', weight: 2 }
+    ]
+  },
+  {
+    id: 'p2_q23',
+    question: 'I operate beyond typical social hierarchies',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'phi', weight: 3 },
+      { id: 'sigma', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q24',
+    question: 'I use care and nurturing as a form of control',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'beta_kappa', weight: 3 },
+      { id: 'delta_mu', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q25',
+    question: 'I become defensive when my methods are questioned',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'dark_alpha', weight: 3 },
+      { id: 'alpha', weight: 1 },
+      { id: 'gamma', weight: 1 }
+    ]
+  }
+];
+
+// PHASE 3: Shadow/Integration Assessment (10-15 contextual questions)
+// Purpose: Identify secondary influences and developmental areas
+export const PHASE_3_QUESTIONS = [
+  {
+    id: 'p3_q1',
+    question: 'Under high stress, I\'m most likely to:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take charge and push harder', archetypes: ['alpha'], weight: 2 },
+      { text: 'Withdraw and analyze alone', archetypes: ['gamma', 'sigma'], weight: 2 },
+      { text: 'Seek support from trusted others', archetypes: ['beta'], weight: 2 },
+      { text: 'Focus on practical tasks', archetypes: ['delta'], weight: 2 },
+      { text: 'Become destructive or nihilistic', archetypes: ['dark_omega', 'dark_gamma'], weight: 2 },
+      { text: 'Feel overwhelmed and shut down', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q2',
+    question: 'In intimate relationships, I tend to:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take a leadership role', archetypes: ['alpha'], weight: 2 },
+      { text: 'Seek deep intellectual connection', archetypes: ['gamma'], weight: 2 },
+      { text: 'Prioritize harmony and support', archetypes: ['beta'], weight: 2 },
+      { text: 'Focus on practical partnership', archetypes: ['delta'], weight: 2 },
+      { text: 'Maintain independence and space', archetypes: ['sigma'], weight: 2 },
+      { text: 'Feel insecure and seek constant reassurance', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q3',
+    question: 'When I feel I\'m not getting what I need, I:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Assert my needs directly', archetypes: ['alpha'], weight: 2 },
+      { text: 'Question why and analyze the situation', archetypes: ['gamma'], weight: 2 },
+      { text: 'Try to meet others\' needs hoping they\'ll reciprocate', archetypes: ['beta'], weight: 2 },
+      { text: 'Work harder to earn what I need', archetypes: ['delta'], weight: 2 },
+      { text: 'Withdraw and handle it independently', archetypes: ['sigma'], weight: 2 },
+      { text: 'Feel powerless and resentful', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q4',
+    question: 'My biggest fear is:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Losing control or authority', archetypes: ['alpha'], weight: 2 },
+      { text: 'Being wrong or ignorant', archetypes: ['gamma'], weight: 2 },
+      { text: 'Being rejected or unloved', archetypes: ['beta'], weight: 2 },
+      { text: 'Failing in my duties', archetypes: ['delta'], weight: 2 },
+      { text: 'Losing my independence', archetypes: ['sigma'], weight: 2 },
+      { text: 'Being completely alone', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q5',
+    question: 'When others succeed where I haven\'t, I:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Feel competitive and work harder', archetypes: ['alpha'], weight: 2 },
+      { text: 'Analyze what they did differently', archetypes: ['gamma'], weight: 2 },
+      { text: 'Feel happy for them and supportive', archetypes: ['beta'], weight: 2 },
+      { text: 'Focus on my own work and improvement', archetypes: ['delta'], weight: 2 },
+      { text: 'Don\'t compare, focus on my own path', archetypes: ['sigma'], weight: 2 },
+      { text: 'Feel inadequate and discouraged', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q6',
+    question: 'In group settings, I often feel:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Natural taking leadership', archetypes: ['alpha'], weight: 2 },
+      { text: 'Curious about different perspectives', archetypes: ['gamma'], weight: 2 },
+      { text: 'Responsible for others\' comfort', archetypes: ['beta'], weight: 2 },
+      { text: 'Useful when given clear tasks', archetypes: ['delta'], weight: 2 },
+      { text: 'More comfortable observing', archetypes: ['sigma'], weight: 2 },
+      { text: 'Uncomfortable and out of place', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q7',
+    question: 'When I make a mistake, I typically:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Take responsibility and fix it immediately', archetypes: ['alpha'], weight: 2 },
+      { text: 'Analyze what went wrong and learn from it', archetypes: ['gamma'], weight: 2 },
+      { text: 'Feel bad and try to make it up to others', archetypes: ['beta'], weight: 2 },
+      { text: 'Focus on practical correction', archetypes: ['delta'], weight: 2 },
+      { text: 'Handle it independently without involving others', archetypes: ['sigma'], weight: 2 },
+      { text: 'Feel overwhelmed and may avoid dealing with it', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q8',
+    question: 'I aspire to be more:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Wise and integrated in my leadership', archetypes: ['alpha'], weight: 2, isAspirational: true },
+      { text: 'Connected and understood by others', archetypes: ['gamma'], weight: 2, isAspirational: true },
+      { text: 'Assertive and able to set boundaries', archetypes: ['beta'], weight: 2, isAspirational: true },
+      { text: 'Confident in taking leadership', archetypes: ['delta'], weight: 2, isAspirational: true },
+      { text: 'Able to connect and collaborate', archetypes: ['sigma'], weight: 2, isAspirational: true },
+      { text: 'Confident and socially skilled', archetypes: ['omega'], weight: 2, isAspirational: true }
+    ]
+  },
+  {
+    id: 'p3_q9',
+    question: 'When I feel most authentic, I am:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Leading and making decisions', archetypes: ['alpha'], weight: 2 },
+      { text: 'Exploring ideas and questioning', archetypes: ['gamma'], weight: 2 },
+      { text: 'Caring for and supporting others', archetypes: ['beta'], weight: 2 },
+      { text: 'Working on practical, meaningful tasks', archetypes: ['delta'], weight: 2 },
+      { text: 'Operating independently on my own terms', archetypes: ['sigma'], weight: 2 },
+      { text: 'Alone and free from expectations', archetypes: ['omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_q10',
+    question: 'My shadow side (what I try to hide) includes:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Need for control and dominance', archetypes: ['dark_alpha'], weight: 2, isShadow: true },
+      { text: 'Isolation and nihilism', archetypes: ['dark_gamma'], weight: 2, isShadow: true },
+      { text: 'Manipulation and self-interest', archetypes: ['beta_manipulator'], weight: 2, isShadow: true },
+      { text: 'Martyrdom and resentment', archetypes: ['dark_delta'], weight: 2, isShadow: true },
+      { text: 'Destructive rebellion', archetypes: ['dark_sigma_zeta'], weight: 2, isShadow: true },
+      { text: 'Destructive consumption', archetypes: ['dark_omega'], weight: 2, isShadow: true }
+    ]
+  }
+];
+
+// PHASE 4: Validation & Narrative Matching (8-10 narrative vignettes)
+// Purpose: Confirm archetype resonance
+export const PHASE_4_QUESTIONS = [
+  {
+    id: 'p4_q1',
+    question: 'Which scenario feels most like you?',
+    type: 'narrative',
+    vignettes: [
+      {
+        text: 'You\'re at a team meeting where a major decision needs to be made. Everyone is looking to you for direction. You confidently assess the situation, consider input from others, and make a clear decision that everyone accepts. You feel energized and in your element.',
+        archetypes: ['alpha'],
+        weight: 3
+      },
+      {
+        text: 'You\'re at a team meeting where a major decision needs to be made. You notice several assumptions that haven\'t been questioned. You raise thoughtful questions, propose alternative perspectives, and the group engages in deeper analysis. You feel intellectually satisfied.',
+        archetypes: ['gamma'],
+        weight: 3
+      },
+      {
+        text: 'You\'re at a team meeting where a major decision needs to be made. You notice someone seems left out and another person looks stressed. You make sure everyone feels heard, help find common ground, and the group reaches consensus. You feel fulfilled by the harmony.',
+        archetypes: ['beta'],
+        weight: 3
+      },
+      {
+        text: 'You\'re at a team meeting where a major decision needs to be made. You focus on what\'s practical and achievable, break down the decision into actionable steps, and ensure the logistics are clear. You feel useful and productive.',
+        archetypes: ['delta'],
+        weight: 3
+      },
+      {
+        text: 'You\'re at a team meeting where a major decision needs to be made. You observe quietly, form your own opinion, and make your decision independently regardless of the group outcome. You feel autonomous and clear.',
+        archetypes: ['sigma'],
+        weight: 3
+      },
+      {
+        text: 'You\'re at a team meeting where a major decision needs to be made. You feel overwhelmed by the discussion and unsure of your position. You go along with whatever is decided, feeling relieved when it\'s over.',
+        archetypes: ['omega'],
+        weight: 2
+      }
+    ]
+  },
+  {
+    id: 'p4_q2',
+    question: 'Which relationship dynamic resonates most?',
+    type: 'narrative',
+    vignettes: [
+      {
+        text: 'In your closest relationship, you naturally take the lead on major decisions. Your partner respects your judgment and you feel responsible for the relationship\'s direction. You value their input but make the final calls.',
+        archetypes: ['alpha'],
+        weight: 3
+      },
+      {
+        text: 'In your closest relationship, you have deep, intellectual conversations that last for hours. You challenge each other\'s thinking and explore ideas together. Connection comes through shared curiosity and understanding.',
+        archetypes: ['gamma'],
+        weight: 3
+      },
+      {
+        text: 'In your closest relationship, you prioritize harmony and mutual support. You\'re attentive to your partner\'s needs and they are to yours. You feel most connected when you\'re caring for each other.',
+        archetypes: ['beta'],
+        weight: 3
+      },
+      {
+        text: 'In your closest relationship, you focus on practical partnership. You divide responsibilities, work together on shared goals, and build a stable life together. Connection comes through shared work and commitment.',
+        archetypes: ['delta'],
+        weight: 3
+      },
+      {
+        text: 'In your closest relationship, you maintain strong independence. You value your partner but need significant space and autonomy. Connection comes through mutual respect for each other\'s independence.',
+        archetypes: ['sigma'],
+        weight: 3
+      },
+      {
+        text: 'In your closest relationship, you often feel insecure and seek reassurance. You worry about being enough and may struggle to express your needs directly. You value acceptance and fear rejection.',
+        archetypes: ['omega'],
+        weight: 2
+      }
+    ]
+  },
+  {
+    id: 'p4_q3',
+    question: 'Which work scenario fits you best?',
+    type: 'narrative',
+    vignettes: [
+      {
+        text: 'You\'re leading a project that\'s facing challenges. You rally the team, make tough decisions, and push through obstacles. People look to you for direction and you deliver results. You thrive under pressure.',
+        archetypes: ['alpha', 'alpha_xi'],
+        weight: 3
+      },
+      {
+        text: 'You\'re working on a complex problem that requires innovative thinking. You question conventional approaches, research deeply, and propose creative solutions. You work best when given intellectual freedom.',
+        archetypes: ['gamma'],
+        weight: 3
+      },
+      {
+        text: 'You\'re part of a team where your role is supporting others and ensuring everyone works well together. You handle conflicts, coordinate communication, and help people feel included. The team functions better because of you.',
+        archetypes: ['beta'],
+        weight: 3
+      },
+      {
+        text: 'You\'re working on a project with clear tasks and responsibilities. You focus on doing your part well, meeting deadlines, and ensuring quality. You take pride in reliable, practical work.',
+        archetypes: ['delta'],
+        weight: 3
+      },
+      {
+        text: 'You\'re working independently on a project that requires your unique skills. You set your own pace, make your own decisions, and deliver results on your terms. You work best without oversight.',
+        archetypes: ['sigma'],
+        weight: 3
+      },
+      {
+        text: 'You\'re working on a project but feel uncertain about your contributions. You need clear guidance and may struggle with confidence. You do better with structured support and encouragement.',
+        archetypes: ['omega'],
+        weight: 2
+      }
+    ]
+  },
+  {
+    id: 'p4_q4',
+    question: 'Which conflict resolution style fits you?',
+    type: 'narrative',
+    vignettes: [
+      {
+        text: 'When conflict arises, you step in to mediate or take control. You assess the situation, make a judgment, and enforce a resolution. You\'re comfortable with authority and making tough calls.',
+        archetypes: ['alpha', 'alpha_rho'],
+        weight: 3
+      },
+      {
+        text: 'When conflict arises, you analyze the underlying issues and propose solutions that address root causes. You question assumptions and help people see different perspectives.',
+        archetypes: ['gamma'],
+        weight: 3
+      },
+      {
+        text: 'When conflict arises, you focus on helping everyone feel heard and finding common ground. You work to restore harmony and ensure no one feels excluded or hurt.',
+        archetypes: ['beta'],
+        weight: 3
+      },
+      {
+        text: 'When conflict arises, you focus on practical resolution and moving forward. You help people see what needs to be done and work toward getting things back on track.',
+        archetypes: ['delta'],
+        weight: 3
+      },
+      {
+        text: 'When conflict arises, you remove yourself from the situation. You prefer to handle your own conflicts independently and avoid getting involved in others\' disputes.',
+        archetypes: ['sigma'],
+        weight: 3
+      },
+      {
+        text: 'When conflict arises, you feel anxious and may avoid it entirely. You struggle with confrontation and may need support to address conflicts directly.',
+        archetypes: ['omega'],
+        weight: 2
+      }
+    ]
+  },
+  {
+    id: 'p4_q5',
+    question: 'Which personal growth journey resonates?',
+    type: 'narrative',
+    vignettes: [
+      {
+        text: 'You\'re learning to balance leadership with humility, to delegate effectively, and to develop emotional intelligence alongside your natural authority. You want to lead with wisdom, not just power.',
+        archetypes: ['alpha'],
+        weight: 2,
+        isAspirational: true
+      },
+      {
+        text: 'You\'re learning to balance intellectual independence with social connection, to share your insights in ways others can understand, and to value emotional intelligence alongside intellectual depth.',
+        archetypes: ['gamma'],
+        weight: 2,
+        isAspirational: true
+      },
+      {
+        text: 'You\'re learning to balance support for others with self-care, to set healthy boundaries, and to develop assertiveness alongside your natural nurturing. You want to care without losing yourself.',
+        archetypes: ['beta'],
+        weight: 2,
+        isAspirational: true
+      },
+      {
+        text: 'You\'re learning to balance practical service with personal ambition, to take on leadership when appropriate, and to value your contributions as more than just duty. You want to serve while also leading.',
+        archetypes: ['delta'],
+        weight: 2,
+        isAspirational: true
+      },
+      {
+        text: 'You\'re learning to balance independence with connection, to engage with others without losing autonomy, and to value collaboration alongside self-reliance. You want independence without isolation.',
+        archetypes: ['sigma'],
+        weight: 2,
+        isAspirational: true
+      },
+      {
+        text: 'You\'re learning to build confidence and social skills, to express your needs directly, and to value your contributions. You want to feel capable and connected without losing yourself.',
+        archetypes: ['omega'],
+        weight: 2,
+        isAspirational: true
+      }
+    ]
+  }
+];
+

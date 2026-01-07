@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archetype Analysis - Modern Redpill Archetypes - Belief Mastery</title>
+  <meta name="description" content="Identify your primary, secondary, and tertiary modern redpill archetypes through a comprehensive multi-tier assessment system.">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Page-specific styles for archetype.html */
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('./images/paradigm-background.jpg');
+      background-size: contain;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .archetype-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+    }
+
+    .intro-section h2 {
+      color: var(--brand);
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .questionnaire-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .questionnaire-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    #questionContainer {
+      min-height: 400px;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .results-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    #questionCounter {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .archetype-container {
+        padding: 1rem;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Sovereignty Simulacrum</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Temperament Analyzer</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html">Needs Dependency Loop</a></li>
+            <li role="none"><a role="menuitem" href="archetype.html" class="active">Archetype Analysis</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 2;">
+    <div class="archetype-container">
+      <section class="intro-section">
+        <h2>Archetype Analysis System</h2>
+        <p style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 1.5rem; line-height: 1.5;">
+          Identify your primary, secondary, and tertiary modern redpill archetypes. Discover your behavioral patterns and social role alignment!
+        </p>
+        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);">
+            <strong style="color: var(--brand);">Descriptive Framework:</strong> This assessment maps behavioral patterns and social roles. 
+            Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
+            Results reflect current patterns, not fixed identity.
+          </p>
+        </div>
+        <p><strong>This multi-tier assessment system identifies your dominant archetype through four phases:</strong></p>
+        <ul style="color: var(--muted); line-height: 1.8; margin: 1rem 0;">
+          <li><strong>Phase 1 - Core Orientation:</strong> Identifies your primary archetype group (Alpha, Beta, Gamma, Delta, Sigma, Omega, or Phi) through concrete behavioral scenarios.</li>
+          <li><strong>Phase 2 - Dimensional Refinement:</strong> Distinguishes between main types and their variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha) through detailed behavioral statements.</li>
+          <li><strong>Phase 3 - Shadow & Integration:</strong> Reveals situational variability, stress responses, and potential shadow expressions.</li>
+          <li><strong>Phase 4 - Validation:</strong> Confirms archetype resonance through narrative scenarios.</li>
+        </ul>
+        <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">
+          <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);">
+            <strong style="color: var(--brand);">Note:</strong> This assessment uses gender-neutral behavioral patterns. 
+            Archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex.
+          </p>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <a href="example-reports/archetype-example.html" target="_blank" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
+          <button class="btn btn-primary" id="startAssessment" style="flex: 1;">Begin Archetype Assessment</button>
+        </div>
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span id="questionCounter" style="color: var(--muted); font-size: 0.9rem;"></span>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions will be populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" style="display: none;">Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); text-align: center;">
+          <button class="btn btn-secondary" id="abandonAssessment" style="background: transparent; color: var(--muted); border: 1px solid var(--muted);">Abandon / Restart</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsContainer">
+        <div id="resultsContent">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+        <div class="export-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0,0,0,0.1);">
+          <h3 style="color: var(--brand); margin-bottom: 1rem;">Export Your Analysis</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem; line-height: 1.6;">
+            Export your archetype analysis in JSON or CSV format for integration with your personal AI coaching agent or for personal reference.
+          </p>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="exportJSON">Export JSON</button>
+            <button class="btn btn-primary" id="exportCSV">Export CSV</button>
+            <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer style="position: relative; z-index: 2; text-align: center; padding: 2rem 1rem; color: var(--muted);">
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+  </footer>
+
+  <script type="module" src="archetype-engine.js"></script>
+  <script>
+    // Hamburger menu toggle
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      if(!hamburger || !nav) return;
+      
+      hamburger.addEventListener('click', () => {
+        const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+        hamburger.setAttribute('aria-expanded', !isExpanded);
+        nav.classList.toggle('active');
+      });
+    })();
+
+    // Dropdown menu toggle
+    (function(){
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      if(!dropdownToggles.length) return;
+
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dropdown = toggle.closest('.nav-dropdown');
+          if(dropdown) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              if (dd !== dropdown) {
+                dd.classList.remove('active');
+              }
+            });
+            dropdown.classList.toggle('active');
+          }
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if(!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+    })();
+
+    // Update results container when results are rendered
+    document.addEventListener('DOMContentLoaded', function() {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList' && mutation.target.id === 'questionContainer') {
+            const resultsContent = document.getElementById('resultsContent');
+            if (resultsContent && mutation.target.innerHTML.includes('results-container')) {
+              resultsContent.innerHTML = mutation.target.innerHTML;
+              mutation.target.innerHTML = '';
+              document.getElementById('resultsContainer').classList.add('active');
+              document.getElementById('questionnaireSection').classList.remove('active');
+            }
+          }
+        });
+      });
+
+      const questionContainer = document.getElementById('questionContainer');
+      if (questionContainer) {
+        observer.observe(questionContainer, { childList: true, subtree: true });
+      }
+    });
+  </script>
+</body>
+</html>
+

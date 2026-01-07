@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Report: Archetype Analysis - Belief Mastery</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../images/paradigm-background.jpg');
+      background-size: contain;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .example-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .example-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+      text-align: center;
+    }
+    .results-content {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .archetype-card {
+      margin-bottom: 2rem;
+      padding: 2rem;
+      border-radius: var(--radius);
+    }
+    .archetype-card.primary {
+      border: 2px solid var(--brand);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .archetype-card.secondary,
+    .archetype-card.tertiary {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="example-container">
+    <div class="example-header">
+      <h1>Example Report: Archetype Analysis</h1>
+      <p style="color: var(--muted); margin-top: 0.5rem;">This is an example of what your results would look like after completing the assessment.</p>
+      <a href="../archetype.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; border-radius: var(--radius); text-decoration: none;">Take the Assessment</a>
+    </div>
+
+    <div class="results-content">
+      <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+        <p style="margin: 0; color: var(--muted); line-height: 1.7; font-size: 0.95rem;">
+          <strong style="color: var(--brand);">Important:</strong> This is a descriptive tool, not a diagnostic or predictive instrument. 
+          Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
+          Results reflect current patterns, not fixed identity.
+        </p>
+      </div>
+
+      <!-- Primary Archetype -->
+      <div class="archetype-card primary">
+        <h3 style="color: var(--brand); margin-top: 0; font-size: 1.5rem;">Primary Archetype: Gamma</h3>
+        <p style="color: var(--muted); margin: 0.5rem 0; font-size: 1.1rem;"><strong>Confidence:</strong> 68.5%</p>
+        <div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin: 1rem 0;">
+          <p style="margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-style: italic;">
+            The Gamma archetype represents intellectual independence and questioning of social norms. The term "Gamma" in this context refers to behavioral patterns of intellectual rebellion and outsider positioning, not a social hierarchy ranking. This archetype values knowledge, freedom, and authenticity over social acceptance.
+          </p>
+        </div>
+        <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> Intellectual, Rebellious Outsider</p>
+        <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">Intellectual, independent thinker who questions norms. Values knowledge, freedom, and authenticity over social acceptance.</p>
+        
+        <div style="margin-top: 1.5rem;">
+          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Key Characteristics:</h4>
+          <ul style="color: var(--muted); line-height: 1.8;">
+            <li>Intellectual</li>
+            <li>Rebellious</li>
+            <li>Independent</li>
+            <li>Questioning</li>
+            <li>Authentic</li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Core Motivations:</h4>
+          <ul style="color: var(--muted); line-height: 1.8;">
+            <li>Knowledge</li>
+            <li>Freedom</li>
+            <li>Authenticity</li>
+            <li>Truth</li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Stress Response:</h4>
+          <p style="color: var(--muted); line-height: 1.7;">Withdraws, becomes more isolated, questions everything</p>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Growth Edge:</h4>
+          <p style="color: var(--muted); line-height: 1.7;">Developing social skills, learning to connect</p>
+        </div>
+      </div>
+
+      <!-- Secondary Archetype -->
+      <div class="archetype-card secondary">
+        <h3 style="color: var(--brand); margin-top: 0;">Secondary Influence: Sigma</h3>
+        <p style="color: var(--muted); margin: 0.5rem 0;"><strong>Confidence:</strong> 28.3%</p>
+        <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> Lone Wolf, Self-Sufficient, Adaptable by own authority</p>
+        <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">Independent, self-sufficient, operates outside social hierarchies. Values autonomy and personal authority.</p>
+        <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
+          This archetype influences you in specific contexts or situations, complementing your primary archetype. You may express Sigma patterns when you need complete autonomy or when operating outside established structures.
+        </p>
+      </div>
+
+      <!-- Tertiary Archetype -->
+      <div class="archetype-card tertiary">
+        <h3 style="color: var(--brand); margin-top: 0;">Tertiary Influence: Alpha</h3>
+        <p style="color: var(--muted); margin: 0.5rem 0;"><strong>Confidence:</strong> 18.2%</p>
+        <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> Dominant, Charismatic Leader</p>
+        <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">Naturally takes leadership roles, commands respect through presence and competence. Comfortable with authority and responsibility.</p>
+        <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
+          This archetype may emerge under stress, represent aspirational qualities, or appear in specific life domains. You may access Alpha patterns when you need to take charge or when leadership is required.
+        </p>
+      </div>
+
+      <!-- Shadow Patterns -->
+      <div style="background: rgba(255, 0, 0, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid #ff4444;">
+        <h3 style="color: #ff4444; margin-top: 0;">Shadow Patterns</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">
+          These patterns may emerge under stress or represent areas for healing and integration.
+        </p>
+        <ul style="color: var(--muted); line-height: 1.8;">
+          <li><strong>Dark Gamma:</strong> Shadow expression of Gamma - isolated, nihilistic, sees truth but becomes consumed by it. May be prophetic but destructive.</li>
+        </ul>
+      </div>
+
+      <!-- Developmental Opportunities -->
+      <div style="background: rgba(0, 255, 0, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid #44ff44;">
+        <h3 style="color: #44ff44; margin-top: 0;">Developmental Opportunities</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">
+          Areas you identified as aspirational - qualities you'd like to develop further.
+        </p>
+        <ul style="color: var(--muted); line-height: 1.8;">
+          <li><strong>Beta:</strong> Developing assertiveness, setting boundaries</li>
+          <li><strong>Alpha:</strong> Learning to delegate, developing emotional intelligence</li>
+        </ul>
+      </div>
+
+      <!-- Contextual Notes -->
+      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+        <h4 style="color: var(--brand); margin-top: 0; margin-bottom: 1rem;">Understanding Your Results</h4>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">
+          Your primary archetype (Gamma) reflects your dominant behavioral patterns and social positioning. The secondary and tertiary influences show how you may express different patterns in various contexts.
+        </p>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">
+          <strong>Remember:</strong> Archetypes are descriptive frameworks, not fixed identities. You may express different archetypal patterns in different areas of your life (work, relationships, creative pursuits, etc.). These results help you understand your current patterns and identify areas for growth.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
