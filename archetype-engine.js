@@ -55,7 +55,28 @@ class ArchetypeEngine {
   attachEventListeners() {
     const startBtn = document.getElementById('startAssessment');
     if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
+      startBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Start button clicked');
+        this.startAssessment();
+      });
+      console.log('Start button event listener attached');
+    } else {
+      console.error('Start button not found!');
+      // Try again after a short delay in case DOM isn't ready
+      setTimeout(() => {
+        const retryBtn = document.getElementById('startAssessment');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Start button clicked (retry)');
+            this.startAssessment();
+          });
+          console.log('Start button event listener attached (retry)');
+        }
+      }, 500);
     }
 
     const nextBtn = document.getElementById('nextQuestion');
@@ -94,11 +115,13 @@ class ArchetypeEngine {
   }
 
   startAssessment() {
+    console.log('startAssessment called');
     this.currentPhase = 0; // Start with gender selection
     this.currentQuestionIndex = 0;
     this.gender = null;
     this.answers = {};
     this.initializeScores();
+    this.showQuestionContainer(); // Show questionnaire section first
     this.showGenderSelection();
     this.saveProgress();
   }
@@ -129,7 +152,9 @@ class ArchetypeEngine {
         this.analysisData.gender = 'male';
         this.currentPhase = 1;
         this.buildPhase1Sequence();
+        this.showQuestionContainer();
         this.renderCurrentQuestion();
+        this.updateNavigation();
         this.saveProgress();
       });
 
@@ -138,7 +163,9 @@ class ArchetypeEngine {
         this.analysisData.gender = 'female';
         this.currentPhase = 1;
         this.buildPhase1Sequence();
+        this.showQuestionContainer();
         this.renderCurrentQuestion();
+        this.updateNavigation();
         this.saveProgress();
       });
 
