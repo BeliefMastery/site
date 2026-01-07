@@ -583,10 +583,10 @@ section#books .section-inner{
   grid-column:span 2;
 }
 
-/* Tools grid: 3 per row (3x3 grid for 9 tools) */
+/* Tools grid: 4 per row (4-4-3 grid for 11 tools) */
 .image-row.tools-grid{
   display:grid;
-  grid-template-columns:repeat(5, 1fr);
+  grid-template-columns:repeat(4, 1fr);
   gap:2.5rem;
   max-width:1400px;
   margin-left:auto;
@@ -1096,7 +1096,7 @@ blockquote{
 /* ---------- Responsive ---------- */
 @media (min-width:1200px){
   .image-row.tools-grid{
-    grid-template-columns:repeat(5, 1fr);
+    grid-template-columns:repeat(4, 1fr);
   }
 }
 
