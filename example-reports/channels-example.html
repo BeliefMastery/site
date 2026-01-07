@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Report: Channel Taxonomy Analysis - Belief Mastery</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .example-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .example-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+      text-align: center;
+    }
+    .results-content {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .node-summary {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border-left: 4px solid var(--brand);
+    }
+    .channel-result {
+      background: rgba(211, 47, 47, 0.1);
+      border-left: 4px solid #d32f2f;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .remediation-item {
+      background: rgba(255, 255, 255, 0.9);
+      border-left: 3px solid var(--brand);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="example-container">
+    <div class="example-header">
+      <h1>Example Report: Channel Taxonomy Analysis</h1>
+      <p style="color: var(--muted); margin-top: 0.5rem;">This is an example of what your results would look like after completing the assessment.</p>
+      <a href="../channels.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; border-radius: var(--radius); text-decoration: none;">Take the Assessment</a>
+    </div>
+
+    <div class="results-content">
+      <div class="channel-summary">
+        <h3>Your Channel Analysis Results</h3>
+        <p>Based on your responses, here are the channel blockages identified and recommended remediation strategies.</p>
+      </div>
+
+      <div class="node-summary">
+        <h4 style="color: var(--brand); margin-bottom: 1rem;">Node Health Summary</h4>
+        <p style="margin-bottom: 0.5rem;"><strong>Root:</strong> <span style="color: #28a745;">balanced</span></p>
+        <p style="margin-bottom: 0.5rem;"><strong>Sex:</strong> <span style="color: #d32f2f;">lacking</span></p>
+        <p style="margin-bottom: 0.5rem;"><strong>Solar Plexus:</strong> <span style="color: #ffc107;">balanced</span></p>
+        <p style="margin-bottom: 0.5rem;"><strong>Heart:</strong> <span style="color: #28a745;">abundant</span></p>
+        <p style="margin-bottom: 0.5rem;"><strong>Throat:</strong> <span style="color: #ffc107;">balanced</span></p>
+        <p style="margin-bottom: 0.5rem;"><strong>Third Eye:</strong> <span style="color: #28a745;">abundant</span></p>
+        <p style="margin-bottom: 0.5rem;"><strong>Crown:</strong> <span style="color: #ffc107;">balanced</span></p>
+      </div>
+
+      <div class="channel-results">
+        <h4 style="color: var(--brand); margin-bottom: 1rem;">Identified Channel Blockages</h4>
+        
+        <div class="channel-result">
+          <h3>Root → Sex</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">The flow of physical vitality and grounding energy into creative and sexual expression.</p>
+          <p style="margin-bottom: 1rem;"><strong>Blockage symptoms:</strong> Despite feeling physically grounded, you experience creative blocks and difficulty accessing sexual energy. Physical vitality doesn't translate into creative motivation or sensual expression.</p>
+        </div>
+
+        <div class="channel-result">
+          <h3>Sex → Solar Plexus</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">The flow of creative and sexual energy into personal power and will.</p>
+          <p style="margin-bottom: 1rem;"><strong>Blockage symptoms:</strong> Creative projects feel disconnected from personal agency. Sexual energy doesn't fuel confidence or assertiveness. There's a gap between creative expression and personal power.</p>
+        </div>
+
+        <div class="channel-result">
+          <h3>Heart → Throat</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">The flow of love and emotional connection into authentic expression and communication.</p>
+          <p style="margin-bottom: 1rem;"><strong>Blockage symptoms:</strong> You feel deep love and connection but struggle to express it authentically. Emotional experiences don't translate into clear communication. There's a disconnect between feeling and speaking.</p>
+        </div>
+      </div>
+
+      <div class="remediation-section" style="margin-top: 2rem;">
+        <h4 style="color: var(--brand); margin-bottom: 1rem;">Remediation Strategies</h4>
+        
+        <div class="remediation-item">
+          <strong>Root → Sex</strong>
+          <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+            <li>Practice grounding exercises that connect physical sensation to creative expression</li>
+            <li>Engage in movement practices that bridge physical vitality and creative flow</li>
+            <li>Explore somatic practices that help physical energy flow into creative projects</li>
+            <li>Work with breathwork to connect root energy to creative centers</li>
+          </ul>
+        </div>
+
+        <div class="remediation-item">
+          <strong>Sex → Solar Plexus</strong>
+          <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+            <li>Practice exercises that connect creative expression to personal agency</li>
+            <li>Engage in activities that build confidence through creative accomplishment</li>
+            <li>Work with practices that help sexual energy fuel personal power</li>
+            <li>Explore ways to bridge creative projects with personal will and intention</li>
+          </ul>
+        </div>
+
+        <div class="remediation-item">
+          <strong>Heart → Throat</strong>
+          <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+            <li>Practice heart-opening exercises that prepare for authentic expression</li>
+            <li>Engage in journaling practices that translate feelings into words</li>
+            <li>Work with voice practices that help emotional energy flow into speech</li>
+            <li>Explore communication exercises that bridge feeling and expression</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Report: Diagnosis Analysis - Belief Mastery</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../images/diagnosis.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .example-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .example-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid #d32f2f;
+      text-align: center;
+    }
+    .results-content {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .disorder-result {
+      background: rgba(255, 255, 255, 0.9);
+      border-left: 4px solid var(--brand);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .disorder-result.high {
+      border-left: 4px solid #d32f2f;
+      background: rgba(211, 47, 47, 0.1);
+    }
+    .criterion-item {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="example-container">
+    <div class="example-header">
+      <h1>Example Report: DSM-5 Pattern Alignment Assessment</h1>
+      <p style="color: var(--muted); margin-top: 0.5rem;">This is an example of what your results would look like after completing the assessment.</p>
+      <p style="color: #d32f2f; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 600;">For educational and self-reflection purposes only. Not a clinical diagnosis.</p>
+      <a href="../diagnosis.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; border-radius: var(--radius); text-decoration: none;">Take the Assessment</a>
+    </div>
+
+    <div class="results-content">
+      <div style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="color: #d32f2f; margin-bottom: 1rem;">Important Disclaimer</h3>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0.75rem;">This assessment is for educational and self-reflection purposes only. It is not a clinical diagnosis and should not be used as a substitute for professional mental health evaluation.</p>
+        <p style="color: var(--muted); line-height: 1.7;">Pattern alignment scores indicate areas where your experiences may align with DSM-5 criteria, but this does not constitute a diagnosis. Only a qualified mental health professional can provide a clinical diagnosis.</p>
+      </div>
+
+      <h3 style="color: var(--brand); margin-bottom: 1.5rem;">Pattern Alignment Results</h3>
+      <p style="color: var(--muted); margin-bottom: 2rem;">Based on your responses, here are the pattern alignments identified. Higher scores indicate stronger alignment with DSM-5 criteria patterns.</p>
+
+      <div class="disorder-result high">
+        <h4 style="color: #d32f2f; margin-bottom: 1rem;">Generalized Anxiety Disorder</h4>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Pattern Alignment Score: 72%</p>
+        <p style="margin-bottom: 1rem;"><strong>Category:</strong> Anxiety Disorders</p>
+        <div style="margin-top: 1rem;">
+          <h5 style="color: var(--brand); margin-bottom: 0.75rem;">Aligned Criteria:</h5>
+          <div class="criterion-item">
+            <strong>Excessive anxiety and worry:</strong> Present - You experience persistent worry about multiple areas of life
+          </div>
+          <div class="criterion-item">
+            <strong>Difficulty controlling worry:</strong> Present - You find it challenging to stop or control worrying thoughts
+          </div>
+          <div class="criterion-item">
+            <strong>Restlessness or feeling keyed up:</strong> Present - You often feel restless or on edge
+          </div>
+          <div class="criterion-item">
+            <strong>Fatigue:</strong> Present - You experience fatigue related to anxiety
+          </div>
+        </div>
+      </div>
+
+      <div class="disorder-result">
+        <h4 style="color: var(--brand); margin-bottom: 1rem;">Major Depressive Disorder</h4>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Pattern Alignment Score: 58%</p>
+        <p style="margin-bottom: 1rem;"><strong>Category:</strong> Depressive Disorders</p>
+        <div style="margin-top: 1rem;">
+          <h5 style="color: var(--brand); margin-bottom: 0.75rem;">Aligned Criteria:</h5>
+          <div class="criterion-item">
+            <strong>Depressed mood:</strong> Present - You experience persistent feelings of sadness or emptiness
+          </div>
+          <div class="criterion-item">
+            <strong>Loss of interest:</strong> Present - You have lost interest in activities you once enjoyed
+          </div>
+          <div class="criterion-item">
+            <strong>Fatigue or loss of energy:</strong> Present - You experience significant fatigue
+          </div>
+        </div>
+      </div>
+
+      <div class="disorder-result">
+        <h4 style="color: var(--brand); margin-bottom: 1rem;">Social Anxiety Disorder</h4>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Pattern Alignment Score: 45%</p>
+        <p style="margin-bottom: 1rem;"><strong>Category:</strong> Anxiety Disorders</p>
+        <div style="margin-top: 1rem;">
+          <h5 style="color: var(--brand); margin-bottom: 0.75rem;">Aligned Criteria:</h5>
+          <div class="criterion-item">
+            <strong>Fear of social situations:</strong> Present - You experience fear or anxiety in social situations
+          </div>
+          <div class="criterion-item">
+            <strong>Avoidance of social situations:</strong> Present - You avoid or endure social situations with intense anxiety
+          </div>
+        </div>
+      </div>
+
+      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-top: 2rem;">
+        <h4 style="color: var(--brand); margin-bottom: 1rem;">Next Steps</h4>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0.75rem;">If these pattern alignments resonate with your experience, consider:</p>
+        <ul style="margin-left: 1.5rem; line-height: 1.8; color: var(--muted);">
+          <li style="margin-bottom: 0.5rem;">Consulting with a qualified mental health professional for a comprehensive evaluation</li>
+          <li style="margin-bottom: 0.5rem;">Exploring therapeutic interventions that address the patterns identified</li>
+          <li style="margin-bottom: 0.5rem;">Engaging in self-care practices that support your mental health</li>
+          <li style="margin-bottom: 0.5rem;">Building a support network of trusted individuals who understand your experience</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

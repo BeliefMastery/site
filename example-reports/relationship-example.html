@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Report: Relationship Analysis - Belief Mastery</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../images/index-background.JPG');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .example-container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .example-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+      text-align: center;
+    }
+    .results-content {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .weakest-link-item {
+      background: rgba(255, 255, 255, 0.9);
+      border-left: 4px solid var(--brand);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .weakest-link-item.critical {
+      border-left: 4px solid #d32f2f;
+      background: rgba(211, 47, 47, 0.1);
+    }
+    .action-strategies {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="example-container">
+    <div class="example-header">
+      <h1>Example Report: Relationship Analysis</h1>
+      <p style="color: var(--muted); margin-top: 0.5rem;">This is an example of what your results would look like after completing the assessment.</p>
+      <a href="../relationship.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: var(--brand); color: white; border-radius: var(--radius); text-decoration: none;">Take the Assessment</a>
+    </div>
+
+    <div class="results-content">
+      <h3>Current Strain Points:</h3>
+      <p style="color: var(--muted); margin-bottom: 1rem;">These are the areas showing current strain, ranked by weighted impact score.</p>
+      
+      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">
+        <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">Note:</strong> All relationships show strain in at least 3–5 areas. This is normal, not failure. These strain points indicate areas for attention, not verdicts on relationship viability.</p>
+      </div>
+
+      <div class="weakest-link-item critical">
+        <h3>1. Emotional Safety <span style="font-size: 0.9em; color: var(--muted);">(High impact)</span></h3>
+        <p><strong>Score:</strong> 3/10 (Weighted: 2.45)</p>
+        <p><strong>Priority:</strong> Critical | <strong>Severity:</strong> Critical</p>
+        
+        <div class="action-strategies">
+          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
+          
+          <div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Actions you can take independently to improve your experience:</p>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Practice self-soothing techniques when feeling unsafe</li>
+              <li style="margin-bottom: 0.5rem;">Develop internal safety anchors through meditation or grounding practices</li>
+              <li style="margin-bottom: 0.5rem;">Identify and communicate your specific safety needs clearly</li>
+            </ul>
+          </div>
+          
+          <div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Ways to invite mutual participation and improvement:</p>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Invite partner to discuss what safety means to each of you</li>
+              <li style="margin-bottom: 0.5rem;">Create shared agreements about emotional safety practices</li>
+              <li style="margin-bottom: 0.5rem;">Practice vulnerability exercises that build mutual trust</li>
+            </ul>
+          </div>
+          
+          <div style="background: rgba(211, 47, 47, 0.1); border-left: 3px solid #d32f2f; border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: #d32f2f; margin-bottom: 0.5rem;">3. Structural Boundaries (Optional)</h5>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Boundaries to reduce harm if dynamics persist:</p>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Limit exposure to situations that trigger safety concerns</li>
+              <li style="margin-bottom: 0.5rem;">Establish clear boundaries around emotional expression</li>
+              <li style="margin-bottom: 0.5rem;">Consider professional support if safety concerns persist</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="weakest-link-item">
+        <h3>2. Communication Clarity <span style="font-size: 0.9em; color: var(--muted);">(High impact)</span></h3>
+        <p><strong>Score:</strong> 4/10 (Weighted: 3.20)</p>
+        <p><strong>Priority:</strong> High | <strong>Severity:</strong> Moderate</p>
+        
+        <div class="action-strategies">
+          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
+          
+          <div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Practice clear, direct communication in low-stakes situations</li>
+              <li style="margin-bottom: 0.5rem;">Use "I" statements to express needs and feelings</li>
+              <li style="margin-bottom: 0.5rem;">Develop active listening skills</li>
+            </ul>
+          </div>
+          
+          <div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Invite partner to practice structured communication exercises</li>
+              <li style="margin-bottom: 0.5rem;">Create shared communication agreements</li>
+              <li style="margin-bottom: 0.5rem;">Schedule regular check-ins for clarity and understanding</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="weakest-link-item">
+        <h3>3. Conflict Resolution <span style="font-size: 0.9em; color: var(--muted);">(Medium impact)</span></h3>
+        <p><strong>Score:</strong> 5/10 (Weighted: 3.50)</p>
+        <p><strong>Priority:</strong> Moderate | <strong>Severity:</strong> Moderate</p>
+        
+        <div class="action-strategies">
+          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
+          
+          <div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Practice de-escalation techniques when conflicts arise</li>
+              <li style="margin-bottom: 0.5rem;">Develop skills in identifying underlying needs in conflicts</li>
+              <li style="margin-bottom: 0.5rem;">Learn to take breaks when emotions are too high</li>
+            </ul>
+          </div>
+          
+          <div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+            <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
+            <ul style="margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Invite partner to establish conflict resolution protocols</li>
+              <li style="margin-bottom: 0.5rem;">Practice repair conversations after conflicts</li>
+              <li style="margin-bottom: 0.5rem;">Create shared agreements about conflict management</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
