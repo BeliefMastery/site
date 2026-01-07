@@ -271,30 +271,27 @@ export const MAYAN_TONES = {
   }
 };
 
-// Mayan calendar calculation (Tzolkin - 260-day cycle)
-// The Tzolkin combines 20 day signs (seals) with 13 day numbers (tones)
+// Mayan Dreamspell calendar calculation (Tzolkin - 260-day cycle)
+// The Dreamspell Tzolkin combines 20 solar seals with 13 galactic tones
 // This creates a 260-day cycle (20 × 13 = 260)
-// The calculation uses a reference date approach for simplicity
-// For accurate calculations, users should use https://www.starroot.com/cgi/daycalc.pl
+// The Dreamspell epoch is July 26, 1992 (Kin 1 = Red Dragon, Magnetic)
+// For accurate calculations matching starroot.com, use their calculator and input manually
 export function calculateMayanSign(date) {
-  // Use a reference date: July 26, 2024 is Kin 1 (Red Dragon, Magnetic)
-  // This allows us to calculate from a known point
-  const referenceDate = new Date('2024-07-26');
-  const referenceKin = 1; // Red Dragon, Magnetic
-  
+  // Dreamspell epoch: July 26, 1992 is Kin 1 (Red Dragon, Magnetic)
+  const dreamspellEpoch = new Date('1992-07-26');
   const targetDate = new Date(date);
   
   // Calculate days difference
-  const daysDiff = Math.floor((targetDate - referenceDate) / (1000 * 60 * 60 * 24));
+  const daysDiff = Math.floor((targetDate - dreamspellEpoch) / (1000 * 60 * 60 * 24));
   
   // Calculate Tzolkin day (1-260)
   // Add 260 to handle negative differences
-  const tzolkinDay = ((referenceKin - 1 + daysDiff) % 260 + 260) % 260 + 1;
+  const tzolkinDay = ((daysDiff % 260) + 260) % 260 + 1;
   
-  // Seal number (1-20)
+  // Seal number (1-20) - cycles through 20 seals
   const sealNumber = ((tzolkinDay - 1) % 20) + 1;
   
-  // Tone number (1-13)
+  // Tone number (1-13) - cycles through 13 tones
   const toneNumber = ((tzolkinDay - 1) % 13) + 1;
   
   const sealNames = [
@@ -315,5 +312,56 @@ export function calculateMayanSign(date) {
     tone: toneNames[toneNumber - 1],
     kin: tzolkinDay
   };
+}
+
+// Helper function to get Mayan sign display name (e.g., "White Solar Wind")
+export function getMayanSignDisplayName(sealKey, toneKey) {
+  // Handle different input formats
+  let sealData = null;
+  let toneData = null;
+  
+  // Try to find seal by key
+  if (typeof sealKey === 'string') {
+    // Try direct key lookup
+    sealData = MAYAN_SEALS[sealKey];
+    
+    // If not found, try to find by name match
+    if (!sealData) {
+      const normalizedKey = sealKey.toLowerCase().replace(/\s+/g, '_').replace('-', '_');
+      sealData = MAYAN_SEALS[normalizedKey];
+    }
+    
+    // If still not found, search by name
+    if (!sealData) {
+      const found = Object.values(MAYAN_SEALS).find(seal => 
+        seal.name.toLowerCase().includes(sealKey.toLowerCase()) ||
+        seal.glyph.toLowerCase() === sealKey.toLowerCase()
+      );
+      if (found) sealData = found;
+    }
+  }
+  
+  // Try to find tone by key
+  if (typeof toneKey === 'string') {
+    toneData = MAYAN_TONES[toneKey.toLowerCase()];
+    
+    // If not found, search by name
+    if (!toneData) {
+      const found = Object.values(MAYAN_TONES).find(tone => 
+        tone.name.toLowerCase() === toneKey.toLowerCase()
+      );
+      if (found) toneData = found;
+    }
+  }
+  
+  if (!sealData || !toneData) return 'Unknown';
+  
+  // Format: [Color] [Tone] [Seal Name]
+  // Example: "White Solar Wind" = White Wind (seal) + Solar (tone)
+  const sealColor = sealData.name.split(' ')[0]; // "White", "Red", "Blue", "Yellow"
+  const sealName = sealData.name.split(' ').slice(1).join(' '); // "Wind", "Dragon", etc.
+  const toneName = toneData.name.charAt(0).toUpperCase() + toneData.name.slice(1); // "Solar", "Cosmic", etc.
+  
+  return `${sealColor} ${toneName} ${sealName}`;
 }
 

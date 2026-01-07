@@ -3,7 +3,7 @@
 
 import { WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign } from './character-sheet-data/western-astrology.js';
 import { CHINESE_ANIMALS, CHINESE_ELEMENTS, getChineseAnimal, getChineseElement } from './character-sheet-data/chinese-astrology.js';
-import { MAYAN_SEALS, MAYAN_TONES, calculateMayanSign } from './character-sheet-data/mayan-astrology.js';
+import { MAYAN_SEALS, MAYAN_TONES, calculateMayanSign, getMayanSignDisplayName } from './character-sheet-data/mayan-astrology.js';
 
 export class CharacterSheetEngine {
   constructor() {
@@ -83,7 +83,8 @@ export class CharacterSheetEngine {
       birthLocation: document.getElementById('birthLocation')?.value || '',
       sunSign: document.getElementById('sunSign')?.value || '',
       moonSign: document.getElementById('moonSign')?.value || '',
-      ascendantSign: document.getElementById('ascendantSign')?.value || ''
+      ascendantSign: document.getElementById('ascendantSign')?.value || '',
+      mayanSign: document.getElementById('mayanSign')?.value || ''
     };
   }
 
@@ -129,10 +130,28 @@ export class CharacterSheetEngine {
     const chineseAnimalData = CHINESE_ANIMALS[chineseAnimal];
     const chineseElementData = CHINESE_ELEMENTS[chineseElement];
 
-    // Mayan Astrology
-    const mayanData = calculateMayanSign(birthDate);
-    const mayanSeal = MAYAN_SEALS[mayanData.seal];
-    const mayanTone = MAYAN_TONES[mayanData.tone];
+    // Mayan Astrology - check for manual input first
+    let mayanSeal = null;
+    let mayanTone = null;
+    let mayanKin = null;
+    
+    if (formData.mayanSign) {
+      // Parse manual input (e.g., "White Solar Wind")
+      const parsed = this.parseMayanSign(formData.mayanSign);
+      if (parsed) {
+        mayanSeal = parsed.seal;
+        mayanTone = parsed.tone;
+        mayanKin = parsed.kin || 'Unknown';
+      }
+    }
+    
+    // If no manual input or parsing failed, calculate automatically
+    if (!mayanSeal || !mayanTone) {
+      const mayanData = calculateMayanSign(birthDate);
+      mayanSeal = MAYAN_SEALS[mayanData.seal];
+      mayanTone = MAYAN_TONES[mayanData.tone];
+      mayanKin = mayanData.kin;
+    }
 
     return {
       western: {
@@ -147,9 +166,42 @@ export class CharacterSheetEngine {
       mayan: {
         seal: mayanSeal,
         tone: mayanTone,
-        kin: mayanData.kin
+        kin: mayanKin
       }
     };
+  }
+
+  parseMayanSign(input) {
+    // Parse format: "Color Tone Seal" (e.g., "White Solar Wind", "Yellow Cosmic Star")
+    const parts = input.trim().split(/\s+/);
+    if (parts.length < 3) return null;
+    
+    const color = parts[0]; // "White", "Yellow", "Blue", "Red"
+    const toneName = parts[1]; // "Solar", "Cosmic", "Magnetic", etc.
+    const sealName = parts.slice(2).join(' '); // "Wind", "Star", "Hand", etc.
+    
+    // Find matching seal
+    const sealKey = Object.keys(MAYAN_SEALS).find(key => {
+      const seal = MAYAN_SEALS[key];
+      return seal.name.toLowerCase().includes(sealName.toLowerCase()) && 
+             seal.name.toLowerCase().startsWith(color.toLowerCase());
+    });
+    
+    // Find matching tone
+    const toneKey = Object.keys(MAYAN_TONES).find(key => {
+      const tone = MAYAN_TONES[key];
+      return tone.name.toLowerCase() === toneName.toLowerCase();
+    });
+    
+    if (sealKey && toneKey) {
+      return {
+        seal: MAYAN_SEALS[sealKey],
+        tone: MAYAN_TONES[toneKey],
+        kin: null // Kin number not provided in manual input
+      };
+    }
+    
+    return null;
   }
 
   buildCharacterSheet(formData, astrologyData) {
@@ -313,34 +365,52 @@ export class CharacterSheetEngine {
   generateBackstory(formData, astrologyData, race, characterClass) {
     const sunSign = astrologyData.western.sun;
     const moonSign = astrologyData.western.moon;
+    const ascendantSign = astrologyData.western.ascendant;
     const chineseAnimal = astrologyData.chinese.animal;
+    const chineseElement = astrologyData.chinese.element;
     const mayanSeal = astrologyData.mayan.seal;
+    const mayanTone = astrologyData.mayan.tone;
+    const mayanDisplay = getMayanSignDisplayName(astrologyData.mayan.seal?.id || '', astrologyData.mayan.tone?.name || '');
     
-    let backstory = `${formData.name} is a ${race} ${characterClass} `;
+    // Create a more narrative, innovative backstory
+    const narratives = [];
     
-    // Add personality traits from Sun sign
+    // Opening - character origin
+    narratives.push(`${formData.name} emerged into the world as a ${race}, their essence shaped by cosmic forces that converged at the moment of their birth.`);
+    
+    // Sun sign - core identity
     if (sunSign) {
-      backstory += `born under the sign of ${sunSign.name}, known for being ${sunSign.keyTraits.slice(0, 2).join(' and ')}. `;
+      const sunTrait = sunSign.keyTraits[Math.floor(Math.random() * sunSign.keyTraits.length)];
+      narratives.push(`Born under the ${sunSign.name} Sun, their fundamental nature is ${sunTrait.toLowerCase()}, driving them toward ${sunSign.keyTraits.filter(t => t !== sunTrait)[0].toLowerCase()} in all endeavors.`);
     }
     
-    // Add emotional depth from Moon sign
+    // Moon sign - inner world
     if (moonSign) {
-      backstory += `Their inner nature, shaped by the ${moonSign.name} Moon, makes them ${moonSign.keyTraits[0]} and ${moonSign.keyTraits[1]}. `;
+      narratives.push(`Beneath the surface, the ${moonSign.name} Moon illuminates their inner landscape, making them deeply ${moonSign.keyTraits[0].toLowerCase()} and ${moonSign.keyTraits[1].toLowerCase()}, though this emotional depth often remains hidden from casual observers.`);
     }
     
-    // Add Chinese animal influence
-    if (chineseAnimal) {
-      backstory += `In the year of the ${chineseAnimal.name}, they embody ${chineseAnimal.keyTraits[0]} and ${chineseAnimal.keyTraits[1]}. `;
+    // Ascendant - outward expression
+    if (ascendantSign) {
+      narratives.push(`To the world, they present as ${ascendantSign.name} rising—${ascendantSign.keyTraits[0].toLowerCase()} and ${ascendantSign.keyTraits[1].toLowerCase()}, a mask that both protects and reveals their true nature.`);
     }
     
-    // Add Mayan seal influence
-    if (mayanSeal) {
-      backstory += `Their Mayan seal, ${mayanSeal.name} (${mayanSeal.glyph}), grants them the ability to ${mayanSeal.ability.toLowerCase()}. `;
+    // Chinese astrology - earthly influence
+    if (chineseAnimal && chineseElement) {
+      narratives.push(`In the year of the ${chineseElement.name} ${chineseAnimal.name}, earthly forces granted them ${chineseAnimal.keyTraits[0].toLowerCase()} and ${chineseAnimal.keyTraits[1].toLowerCase()}, while the ${chineseElement.name.toLowerCase()} element flows through their ${chineseElement.traits[0].toLowerCase()} nature.`);
     }
     
-    backstory += `This unique combination of astrological influences shapes their journey and destiny.`;
+    // Mayan seal - galactic signature
+    if (mayanSeal && mayanTone) {
+      narratives.push(`Their galactic signature, ${mayanDisplay}, marks them as one who ${mayanSeal.ability.split(' - ')[1]?.toLowerCase() || mayanSeal.ability.toLowerCase()}, while the ${mayanTone.name} tone shapes their approach: ${mayanTone.approach.split(' - ')[1]?.toLowerCase() || mayanTone.approach.toLowerCase()}.`);
+    }
     
-    return backstory;
+    // Class connection
+    narratives.push(`These converging influences naturally led ${formData.name} to the path of the ${characterClass}, where their unique combination of ${sunSign?.keyTraits[0]?.toLowerCase() || 'abilities'} and ${moonSign?.keyTraits[0]?.toLowerCase() || 'insights'} finds its fullest expression.`);
+    
+    // Closing - destiny
+    narratives.push(`Their journey is one of integration—learning to harmonize the ${sunSign?.element?.toLowerCase() || 'elemental'} fire of their Sun with the ${moonSign?.element?.toLowerCase() || 'emotional'} waters of their Moon, while the ${mayanDisplay} signature guides them toward their galactic purpose.`);
+    
+    return narratives.join(' ');
   }
 
   generateProficiencies(astrologyData, characterClass) {
@@ -612,10 +682,36 @@ export class CharacterSheetEngine {
     const resultsContainer = document.getElementById('characterSheetResults');
     if (!resultsContainer) return;
 
+    // Format Mayan sign display
+    const mayanDisplay = getMayanSignDisplayName(
+      character.astrologyData.mayan.seal?.name?.toLowerCase().replace(/\s+/g, '_').replace('-', '_') || '',
+      character.astrologyData.mayan.tone?.name || ''
+    );
+    
+    // Format Chinese sign display
+    const chineseDisplay = character.astrologyData.chinese.element?.name && character.astrologyData.chinese.animal?.name
+      ? `${character.astrologyData.chinese.element.name} ${character.astrologyData.chinese.animal.name}`
+      : 'Unknown';
+    
     let html = `
       <div class="character-sheet">
         <h2>${character.name}</h2>
         <p class="character-subtitle">${character.race} ${character.characterClass}</p>
+        
+        <section class="astrology-summary" style="background: var(--bg); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">
+          <h3 style="margin-top: 0; color: var(--brand);">Astrological Profile</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div>
+              <p style="margin: 0.25rem 0;"><strong>Western:</strong> ${character.astrologyData.western.sun?.name || 'Unknown'} Sun${character.astrologyData.western.moon ? `, ${character.astrologyData.western.moon.name} Moon` : ''}${character.astrologyData.western.ascendant ? `, ${character.astrologyData.western.ascendant.name} Ascendant` : ''}</p>
+            </div>
+            <div>
+              <p style="margin: 0.25rem 0;"><strong>Chinese:</strong> ${chineseDisplay}</p>
+            </div>
+            <div>
+              <p style="margin: 0.25rem 0;"><strong>Mayan:</strong> ${mayanDisplay || 'Unknown'}</p>
+            </div>
+          </div>
+        </section>
         
         <section class="character-overview">
           <h3>Character Overview</h3>
@@ -762,9 +858,8 @@ export class CharacterSheetEngine {
               <p><strong>Element:</strong> ${character.astrologyData.chinese.element?.name || 'Unknown'}</p>
             </div>
             <div class="mayan-astro">
-              <h4>Mayan Astrology</h4>
-              <p><strong>Seal:</strong> ${character.astrologyData.mayan.seal?.name || 'Unknown'} (${character.astrologyData.mayan.seal?.glyph || ''})</p>
-              <p><strong>Tone:</strong> ${character.astrologyData.mayan.tone?.name || 'Unknown'}</p>
+              <h4>Mayan Astrology (Dreamspell)</h4>
+              <p><strong>Galactic Signature:</strong> ${getMayanSignDisplayName(character.astrologyData.mayan.seal?.id || character.astrologyData.mayan.seal?.name?.toLowerCase().replace(/\s+/g, '_') || '', character.astrologyData.mayan.tone?.name || '') || 'Unknown'}</p>
               <p><strong>Kin:</strong> ${character.astrologyData.mayan.kin || 'Unknown'}</p>
             </div>
           </div>
