@@ -85,7 +85,7 @@
   <style>
     /* ---------- Background crossfade layers (index.html specific) ---------- */
     .bg-layer{
-      position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
+      position:fixed;inset:0;z-index:0;background-size:contain;background-position:center;background-repeat:no-repeat;
       transition:opacity .9s ease, filter .9s ease;pointer-events:none;
     }
     .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
@@ -95,8 +95,8 @@
 <body>
 
   <!-- Background layers for crossfade -->
-  <div id="bgA" class="bg-layer" style="background-image:url('./images/index-background.JPG');"></div>
-  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/index-background.JPG');"></div>
+  <div id="bgA" class="bg-layer" style="background-image:url('./images/books-background.jpg');"></div>
+  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/books-background.jpg');"></div>
   <div class="bg-overlay"></div>
 
     <header class="site-header" role="banner">
@@ -136,7 +136,7 @@
     </nav>
   </header>
   <main class="container" id="main">
-    <section id="books-overview" data-bg="./images/index-background.JPG" aria-labelledby="books-intro-title">
+    <section id="books-overview" data-bg="./images/books-background.jpg" aria-labelledby="books-intro-title">
       <div class="section-inner">
         <div style="max-width:72ch;margin:0 auto;text-align:center;padding:3rem 1rem;">
           <h1 id="books-intro-title" style="margin-bottom:2rem;color:var(--brand);">Structure Your Mind. Author Your Life.</h1>
@@ -163,7 +163,7 @@
       </div>
     </section>
 
-    <section id="belief-mastery" data-bg="./images/BM-background.JPG" aria-labelledby="bm-title">
+    <section id="belief-mastery" data-bg="./images/books-background2.jpg" aria-labelledby="bm-title">
       <div class="section-inner">
         <h2 id="bm-title" style="text-align:center;margin:0 0 .4rem 0">Belief Mastery</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">A Structural Method for Rewriting Your Hidden Rules</p>
@@ -247,7 +247,7 @@
     </section>
 
     <!-- SOVEREIGN OF MIND -->
-    <section id="sovereign-of-mind" data-bg="./images/SoM-background.JPG" aria-labelledby="som-title">
+    <section id="sovereign-of-mind" data-bg="./images/books-background3.jpg" aria-labelledby="som-title">
       <div class="section-inner">
         <h2 id="som-title" style="text-align:center;margin:0 0 .4rem 0">Sovereign of Mind</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">Cognitive Sovereignty in a Manipulated World</p>
@@ -348,7 +348,7 @@
     </section>
 
     <!-- DISTORTION CODEX -->
-    <section id="distortion-codex" data-bg="./images/index-background.JPG" aria-labelledby="codex-title">
+    <section id="distortion-codex" data-bg="./images/books-background4.jpg" aria-labelledby="codex-title">
       <div class="section-inner">
         <h2 id="codex-title" style="text-align:center;margin:0 0 .4rem 0">The Sovereignty-Distortion Codex</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">A structural exposure of sovereignty obstruction patterns and archetypal manipulation machinery.</p>
@@ -402,7 +402,7 @@
     </section>
 
     <!-- THE UNSPEAKABLES GRIMOIRE -->
-    <section id="unspeakables-grimoire" data-bg="./images/index-background.JPG" aria-labelledby="grimoire-title">
+    <section id="unspeakables-grimoire" data-bg="./images/books-background.jpg" aria-labelledby="grimoire-title">
       <div class="section-inner">
         <h2 id="grimoire-title" style="text-align:center;margin:0 0 .4rem 0">The Unspeakables Grimoire</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">A Diagnostic Archive of Forbidden Fields</p>
@@ -466,7 +466,7 @@
     </section>
 
     <!-- SOVEREIGN INTEGRAL DEVOTIONALISM -->
-    <section id="sovereign-integral-devotionalism" data-bg="./images/index-background.JPG" aria-labelledby="sid-title">
+    <section id="sovereign-integral-devotionalism" data-bg="./images/books-background2.jpg" aria-labelledby="sid-title">
       <div class="section-inner">
         <h2 id="sid-title" style="text-align:center;margin:0 0 .4rem 0">Sovereign Integral Devotionalism</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">A Post-Doctrinal, Cross-Mystical, Relationally-Rooted Metaphysic of Divine Coherence</p>
@@ -515,7 +515,7 @@
     </section>
 
     <!-- THE PEER-COUNSELING MANUAL -->
-    <section id="peer-counseling-manual" data-bg="./images/index-background.JPG" aria-labelledby="pc-manual-title">
+    <section id="peer-counseling-manual" data-bg="./images/books-background3.jpg" aria-labelledby="pc-manual-title">
       <div class="section-inner">
         <h2 id="pc-manual-title" style="text-align:center;margin:0 0 .4rem 0">The Peer-Counseling Manual</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">A Decentralized Framework for Self-Authorship and Emotional Integration</p>
@@ -562,7 +562,7 @@
         </section>
       </div>
     </section>
-    <section id="purchase" data-bg="./images/index-background.JPG" aria-labelledby="purchase-title">
+    <section id="purchase" data-bg="./images/books-background4.jpg" aria-labelledby="purchase-title">
       <div class="section-inner">
         <h2 id="purchase-title" style="text-align:center;margin:0 0 .4rem 0">Learn & Purchase</h2>
         <p style="text-align:center;color:var(--muted);margin-top:0">Direct links and contact for purchase and enquiries.</p>

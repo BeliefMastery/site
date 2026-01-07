@@ -85,7 +85,7 @@
   <style>
     /* ---------- Background crossfade layers ---------- */
     .bg-layer{
-      position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
+      position:fixed;inset:0;z-index:0;background-size:contain;background-position:center;background-repeat:no-repeat;
       transition:opacity .9s ease, filter .9s ease;pointer-events:none;
     }
     .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
@@ -125,8 +125,8 @@
 <body>
 
   <!-- Background layers for crossfade -->
-  <div id="bgA" class="bg-layer" style="background-image:url('./images/index-background.JPG');"></div>
-  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/index-background.JPG');"></div>
+  <div id="bgA" class="bg-layer" style="background-image:url('./images/all-tools-background.jpg');"></div>
+  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/all-tools-background.jpg');"></div>
   <div class="bg-overlay"></div>
 
     <header class="site-header" role="banner">
