@@ -297,10 +297,8 @@ export const ARCHETYPES = {
     growthEdge: 'Continuing integration, serving others',
     isRare: true,
     explanation: 'The Phi archetype represents transcendent, fully integrated behavioral patterns that operate beyond typical social hierarchies. The term "Phi" refers to a state of integration and transcendence, representing someone who has moved beyond typical archetypal patterns into a more integrated expression.'
-  }
-};
+  },
 
-// Core archetype groups for Phase 1 identification
   // FEMALE ARCHETYPES - Distinct characteristics from male archetypes
   alpha_female: {
     id: 'alpha_female',
