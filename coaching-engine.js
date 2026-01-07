@@ -177,7 +177,7 @@ class CoachingEngine {
               section: 'domains',
               domain: domainKey,
               aspect: aspect,
-              question: `How satisfied are you with: ${aspect}?`,
+              question: this.generateAspectQuestion(domainKey, aspect, domain.name),
               name: domain.name,
               weight: QUESTION_WEIGHTINGS.aspect_default
             });
@@ -192,6 +192,135 @@ class CoachingEngine {
     
     this.renderCurrentQuestion();
     this.saveProgress();
+  }
+
+  generateAspectQuestion(domainKey, aspect, domainName) {
+    // Generate clearer, more complete questions based on domain and aspect
+    const questionTemplates = {
+      family: {
+        'Time with Family': `When it comes to time spent with your family, how do you feel about how much time you are getting?`,
+        'Wisdom and Stories Transferred': `When it comes to your family, how do you feel about the wisdom and stories being passed down between generations?`,
+        'Size and Dynamic of Family': `When it comes to your family, how do you feel about the size and dynamic of your family relationships?`,
+        'Health of Family Members': `When it comes to your family, how do you feel about the health and well-being of your family members?`,
+        'Cultural Harmony': `When it comes to your family, how do you feel about the cultural harmony and shared values?`,
+        'Reconciliation of Grievances': `When it comes to your family, how do you feel about the reconciliation and resolution of past grievances?`,
+        'Quality of Communication': `When it comes to your family, how do you feel about the quality of communication you have?`,
+        'Regularity of Communication': `When it comes to your family, how do you feel about how often you communicate with each other?`
+      },
+      social_life: {
+        'Real Friends (not just acquaintances)': `When it comes to your social life, how do you feel about having real friends (not just acquaintances) in your life?`,
+        'Variety of Activities': `When it comes to your social life, how do you feel about the variety of activities you do with others?`,
+        'Frequency of Meet-ups': `When it comes to your social life, how do you feel about how often you meet up with friends?`,
+        'Confidence in Groups': `When it comes to your social life, how do you feel about your confidence when you're in groups?`,
+        'Opportunities to Meet New People (without substance use)': `When it comes to your social life, how do you feel about opportunities to meet new people in healthy ways?`,
+        'Time Available for Social Life': `When it comes to your social life, how do you feel about how much time you have available for social activities?`,
+        'Intimate Environments (your small, close gatherings)': `When it comes to your social life, how do you feel about intimate environments (small, close gatherings)?`,
+        'Public Environments (events, parties, large groups)': `When it comes to your social life, how do you feel about public environments (events, parties, large groups)?`,
+        'Diverse Friendships (variety of perspectives, ages, cultures)': `When it comes to your social life, how do you feel about having diverse friendships (variety of perspectives, ages, cultures)?`
+      },
+      intimate_relationship: {
+        'Time Together': `When it comes to your intimate relationship, how do you feel about how much time you spend together?`,
+        'Dreams & Desires Prioritized': `When it comes to your intimate relationship, how do you feel about whether your dreams and desires are being prioritized?`,
+        'Addressing & Acknowledging Depression & Addiction': `When it comes to your intimate relationship, how do you feel about how depression and addiction are being addressed and acknowledged?`,
+        'Non-Violent Communication': `When it comes to your intimate relationship, how do you feel about the quality of communication (non-violent, respectful)?`,
+        'Shared/Agreed Upon Roles, Chores, Responsibilities': `When it comes to your intimate relationship, how do you feel about how roles, chores, and responsibilities are shared and agreed upon?`,
+        'Relationship Prioritized': `When it comes to your intimate relationship, how do you feel about whether the relationship is being prioritized?`,
+        'Emotional Support': `When it comes to your intimate relationship, how do you feel about the emotional support you receive?`,
+        'Sexual Satisfaction': `When it comes to your intimate relationship, how do you feel about your sexual satisfaction?`,
+        'Emotional Intimacy (depth of connection)': `When it comes to your intimate relationship, how do you feel about the depth of emotional intimacy and connection?`,
+        'Space & Boundaries (respecting autonomy)': `When it comes to your intimate relationship, how do you feel about having space and boundaries that respect your autonomy?`
+      },
+      growth_learning_spirituality: {
+        'Stimulation (Reading, Lectures, Audio-books)': `When it comes to growth, learning, and spirituality, how do you feel about the intellectual stimulation you get (reading, lectures, audio-books)?`,
+        'Contemplation & Discussion (not entertainment-focused)': `When it comes to growth, learning, and spirituality, how do you feel about opportunities for contemplation and meaningful discussion?`,
+        'Attempting New Things around Others': `When it comes to growth, learning, and spirituality, how do you feel about opportunities to attempt new things around others?`,
+        'Access to \'Sacred\' Space (other than bedroom)': `When it comes to growth, learning, and spirituality, how do you feel about having access to sacred or contemplative space?`,
+        'Communion with Others in Shared Focus': `When it comes to growth, learning, and spirituality, how do you feel about opportunities for communion with others in shared focus?`,
+        'Exploration of the Natural World': `When it comes to growth, learning, and spirituality, how do you feel about opportunities to explore the natural world?`,
+        'Awareness, Comfort & Stability of Internal World': `When it comes to growth, learning, and spirituality, how do you feel about your awareness, comfort, and stability in your internal world?`,
+        'Confidence & Inclination for Challenge': `When it comes to growth, learning, and spirituality, how do you feel about your confidence and inclination to take on challenges?`,
+        'Creativity & Self-Initiated Learning (drive to explore without external pressure)': `When it comes to growth, learning, and spirituality, how do you feel about your creativity and self-initiated learning (drive to explore without external pressure)?`
+      },
+      freedom_passions_creativity: {
+        'Totally Free Time without Responsibility & Expectations': `When it comes to freedom, passions, and creativity, how do you feel about having totally free time without responsibilities and expectations?`,
+        'Excitability & Enthusiasm (not reluctant or resigned)': `When it comes to freedom, passions, and creativity, how do you feel about your excitability and enthusiasm (not feeling reluctant or resigned)?`,
+        'Comfort Holding Eye-Contact': `When it comes to freedom, passions, and creativity, how do you feel about your comfort holding eye contact with others?`,
+        'Pride in Activity & Accomplishment': `When it comes to freedom, passions, and creativity, how do you feel about your pride in your activities and accomplishments?`,
+        'Hobbies': `When it comes to freedom, passions, and creativity, how do you feel about your hobbies?`,
+        'Art': `When it comes to freedom, passions, and creativity, how do you feel about your engagement with art?`,
+        'Authenticity (not concealing, faking, or pretending)': `When it comes to freedom, passions, and creativity, how do you feel about your ability to be authentic (not concealing, faking, or pretending)?`,
+        'Confidence, Flow': `When it comes to freedom, passions, and creativity, how do you feel about your confidence and ability to experience flow?`,
+        'Risk-taking in Expression (pushing creative boundaries)': `When it comes to freedom, passions, and creativity, how do you feel about taking risks in expression (pushing creative boundaries)?`
+      },
+      work_life_balance: {
+        'Service, Products, Offerings': `When it comes to work-life balance, how do you feel about the service, products, or offerings you provide?`,
+        'Pricing': `When it comes to work-life balance, how do you feel about your pricing?`,
+        'Confident Communication & Embodiment': `When it comes to work-life balance, how do you feel about your confident communication and embodiment in your work?`,
+        'Advertising, Sales, Promotion': `When it comes to work-life balance, how do you feel about your advertising, sales, and promotion?`,
+        'Client Care': `When it comes to work-life balance, how do you feel about your client care?`,
+        'Industry/Business Relations': `When it comes to work-life balance, how do you feel about your industry and business relations?`,
+        'Organization, Discipline, Scheduling': `When it comes to work-life balance, how do you feel about your organization, discipline, and scheduling?`,
+        'Bookkeeping': `When it comes to work-life balance, how do you feel about your bookkeeping and financial management?`,
+        'Delegation & Support Systems (ability to rely on others)': `When it comes to work-life balance, how do you feel about your ability to delegate and rely on support systems?`
+      },
+      mental_health: {
+        'Meaningfulness in Daily Life': `When it comes to mental health, how do you feel about the meaningfulness in your daily life?`,
+        'Sleep Routine': `When it comes to mental health, how do you feel about your sleep routine?`,
+        'Clean Diet': `When it comes to mental health, how do you feel about your diet?`,
+        'Regular Exercise': `When it comes to mental health, how do you feel about your regular exercise?`,
+        'Time with the Natural World': `When it comes to mental health, how do you feel about how much time you spend with the natural world?`,
+        'Time with Others': `When it comes to mental health, how do you feel about how much time you spend with others?`,
+        'Emotional Integration & Expression': `When it comes to mental health, how do you feel about your emotional integration and expression?`,
+        'Clarity on Your Patterns & Strategy for Managing': `When it comes to mental health, how do you feel about your clarity on your patterns and strategies for managing them?`,
+        'Support Systems (therapy, counselling, or peer support)': `When it comes to mental health, how do you feel about your support systems (therapy, counselling, or peer support)?`
+      },
+      physical_health: {
+        'Hygiene': `When it comes to physical health, how do you feel about your hygiene?`,
+        'Optimal Rest': `When it comes to physical health, how do you feel about getting optimal rest?`,
+        'Optimal Diet & Hydration': `When it comes to physical health, how do you feel about your diet and hydration?`,
+        'Air Quality & Breathing': `When it comes to physical health, how do you feel about the air quality and your breathing?`,
+        'Strength Training & Regular Exercise': `When it comes to physical health, how do you feel about your strength training and regular exercise?`,
+        'Structure, Alignment, Technique': `When it comes to physical health, how do you feel about your body structure, alignment, and movement technique?`,
+        'Flexibility, Stretching, Freedom from Tightness or Stiffness': `When it comes to physical health, how do you feel about your flexibility, stretching, and freedom from tightness or stiffness?`,
+        'Optimal Tech Interfacing, Eye Health, Avoiding RSI': `When it comes to physical health, how do you feel about your tech use, eye health, and avoiding repetitive strain?`,
+        'Mobility (freedom of movement, absence of chronic pain)': `When it comes to physical health, how do you feel about your mobility (freedom of movement, absence of chronic pain)?`
+      },
+      emotional_health: {
+        'Emotional Intensity (ability to feel deeply and openly)': `When it comes to emotional health, how do you feel about your emotional intensity (ability to feel deeply and openly)?`,
+        'Capacity for Forgiveness': `When it comes to emotional health, how do you feel about your capacity for forgiveness?`,
+        'Self-Compassion': `When it comes to emotional health, how do you feel about your self-compassion?`,
+        'Navigating Conflict': `When it comes to emotional health, how do you feel about how you navigate conflict?`,
+        'Resilience in Stressful Situations': `When it comes to emotional health, how do you feel about your resilience in stressful situations?`,
+        'Intimacy & Connection': `When it comes to emotional health, how do you feel about your intimacy and connection with others?`,
+        'Recognition of Unmet Emotional Needs': `When it comes to emotional health, how do you feel about your recognition of unmet emotional needs?`,
+        'Balance between Emotional Expression and Rational Thought': `When it comes to emotional health, how do you feel about the balance between your emotional expression and rational thought?`
+      },
+      environmental: {
+        'Organization & Cleanliness of Living Space': `When it comes to your environment and living space, how do you feel about the organization and cleanliness of your living space?`,
+        'Access to Nature or Green Spaces': `When it comes to your environment and living space, how do you feel about your access to nature or green spaces?`,
+        'Personal Space (free from clutter, chaos)': `When it comes to your environment and living space, how do you feel about having personal space (free from clutter and chaos)?`,
+        'Light, Air Quality, and Temperature Control': `When it comes to your environment and living space, how do you feel about the light, air quality, and temperature control?`,
+        'Space to Practice Hobbies/Creativity': `When it comes to your environment and living space, how do you feel about having space to practice hobbies and creativity?`,
+        'Workspace Comfort (ergonomics, aesthetics)': `When it comes to your environment and living space, how do you feel about your workspace comfort (ergonomics, aesthetics)?`,
+        'Connection to Community': `When it comes to your environment and living space, how do you feel about your connection to community?`,
+        'Sense of Security and Safety in Environment': `When it comes to your environment and living space, how do you feel about your sense of security and safety in your environment?`
+      }
+    };
+    
+    // Check if we have a specific template for this domain and aspect
+    if (questionTemplates[domainKey] && questionTemplates[domainKey][aspect]) {
+      return questionTemplates[domainKey][aspect];
+    }
+    
+    // Fallback: Generate a clearer question using the domain name and aspect
+    const aspectLower = aspect.toLowerCase();
+    if (aspectLower.includes('time') || aspectLower.includes('how much')) {
+      return `When it comes to ${domainName.toLowerCase()}, how do you feel about ${aspectLower}?`;
+    } else if (aspectLower.includes('quality') || aspectLower.includes('how well')) {
+      return `When it comes to ${domainName.toLowerCase()}, how do you feel about the quality of ${aspectLower}?`;
+    } else {
+      return `When it comes to ${domainName.toLowerCase()}, how do you feel about ${aspectLower}?`;
+    }
   }
 
   renderCurrentQuestion() {
@@ -1049,7 +1178,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
                     section: 'domains',
                     domain: domainKey,
                     aspect: aspect,
-                    question: `How satisfied are you with: ${aspect}?`,
+                    question: this.generateAspectQuestion(domainKey, aspect, domain.name),
                     name: domain.name,
                     weight: QUESTION_WEIGHTINGS.aspect_default
                   });
