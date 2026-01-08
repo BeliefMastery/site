@@ -1843,10 +1843,16 @@ export class SovereigntyEngine {
           // Show IQ bracket selection if not yet selected
           this.showIQBracketSelection();
         } else if (this.currentSection > 0 && this.currentSection <= 4) {
-          this.buildSectionSequence(this.currentSection);
-          this.showQuestionContainer();
-          this.renderCurrentQuestion();
-          this.updateNavigation();
+          // Load data and rebuild sequence
+          this.ensureDataLoaded().then(() => {
+            return this.buildSectionSequence(this.currentSection);
+          }).then(() => {
+            this.showQuestionContainer();
+            this.renderCurrentQuestion();
+            this.updateNavigation();
+          }).catch(error => {
+            ErrorHandler.logError(error, 'SovereigntyEngine.loadStoredData.buildSequence');
+          });
         }
       }
     } catch (e) {
