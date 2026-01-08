@@ -1480,6 +1480,10 @@ export class SovereigntyEngine {
     if (sovereigntyScore >= 75) {
       return SOVEREIGN_SPLIT_POSITIONS.core_4;
     } else if (sovereigntyScore >= 40) {
+      if (!SOVEREIGN_SPLIT_POSITIONS) {
+        console.warn('SOVEREIGN_SPLIT_POSITIONS not loaded');
+        return null;
+      }
       return SOVEREIGN_SPLIT_POSITIONS.compromising_16;
     } else {
       return SOVEREIGN_SPLIT_POSITIONS.queue_80;
