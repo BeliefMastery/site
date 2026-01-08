@@ -8,9 +8,10 @@ import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-util
 
 export class ArchetypeEngine {
   constructor() {
-    this.currentPhase = 0; // 0 = gender selection, 1-4 = assessment phases
+    this.currentPhase = 0; // 0 = gender selection, 0.5 = IQ bracket, 1-4 = assessment phases
     this.currentQuestionIndex = 0;
     this.gender = null; // 'male' or 'female'
+    this.iqBracket = null; // IQ bracket for faster funneling
     this.answers = {};
     this.aspirationAnswers = {}; // Track aspiration test responses separately
     this.questionSequence = [];
@@ -18,6 +19,7 @@ export class ArchetypeEngine {
     this.analysisData = {
       timestamp: new Date().toISOString(),
       gender: null,
+      iqBracket: null,
       phase1Results: {},
       phase2Results: {},
       phase3Results: {},
@@ -152,22 +154,16 @@ export class ArchetypeEngine {
       document.getElementById('selectMale')?.addEventListener('click', () => {
         this.gender = 'male';
         this.analysisData.gender = 'male';
-        this.currentPhase = 1;
-        this.buildPhase1Sequence();
-        this.showQuestionContainer();
-        this.renderCurrentQuestion();
-        this.updateNavigation();
+        this.currentPhase = 0.5; // Move to IQ bracket selection
+        this.showIQBracketSelection();
         this.saveProgress();
       });
 
       document.getElementById('selectFemale')?.addEventListener('click', () => {
         this.gender = 'female';
         this.analysisData.gender = 'female';
-        this.currentPhase = 1;
-        this.buildPhase1Sequence();
-        this.showQuestionContainer();
-        this.renderCurrentQuestion();
-        this.updateNavigation();
+        this.currentPhase = 0.5; // Move to IQ bracket selection
+        this.showIQBracketSelection();
         this.saveProgress();
       });
 
@@ -188,29 +184,234 @@ export class ArchetypeEngine {
     this.showQuestionContainer();
   }
 
+  showIQBracketSelection() {
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
+        <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket</h2>
+        <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">
+          Providing your IQ bracket helps us prioritize relevant questions and accelerate the assessment. 
+          If you don't know your IQ, estimate based on standardized tests (SAT, ACT, WAIS, etc.) or educational/career patterns.
+        </p>
+        <div style="display: grid; gap: 1rem; max-width: 600px; margin: 0 auto;">
+          <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>80-100 IQ</strong> - Routine Guided Thinkers (~34% of population)
+          </button>
+          <button id="selectIQ100_115" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>100-115 IQ</strong> - Practical Adaptive Thinkers (~34% of population)
+          </button>
+          <button id="selectIQ115_130" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>115-130 IQ</strong> - Strategic Analytical Thinkers (~14% of population)
+          </button>
+          <button id="selectIQ130_145" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>130-145 IQ</strong> - Creative Synthesizing Thinkers (~2% of population)
+          </button>
+          <button id="selectIQ145_plus" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>145+ IQ</strong> - Meta-Recursive Thinkers (&lt;1% of population)
+          </button>
+          <button id="selectIQUnknown" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(200, 200, 200, 0.1); border: 2px solid #888; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: #666; font-weight: 600; text-align: left; margin-top: 1rem;">
+            <strong>I don't know / Prefer not to specify</strong> - Full assessment will be provided
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Add click handlers
+    setTimeout(() => {
+      const iqBrackets = {
+        'selectIQ80_100': '80_100',
+        'selectIQ100_115': '100_115',
+        'selectIQ115_130': '115_130',
+        'selectIQ130_145': '130_145',
+        'selectIQ145_plus': '145_plus',
+        'selectIQUnknown': 'unknown'
+      };
+
+      Object.keys(iqBrackets).forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+          button.addEventListener('click', () => {
+            this.iqBracket = iqBrackets[buttonId];
+            this.analysisData.iqBracket = iqBrackets[buttonId];
+            this.currentPhase = 1;
+            this.buildPhase1Sequence();
+            this.showQuestionContainer();
+            this.renderCurrentQuestion();
+            this.updateNavigation();
+            this.saveProgress();
+          });
+
+          // Add hover effects
+          button.addEventListener('mouseenter', () => {
+            if (buttonId !== 'selectIQUnknown') {
+              button.style.background = 'rgba(255, 184, 0, 0.2)';
+              button.style.transform = 'translateY(-2px)';
+            } else {
+              button.style.background = 'rgba(200, 200, 200, 0.2)';
+            }
+          });
+          button.addEventListener('mouseleave', () => {
+            if (buttonId !== 'selectIQUnknown') {
+              button.style.background = 'rgba(255, 184, 0, 0.1)';
+              button.style.transform = 'translateY(0)';
+            } else {
+              button.style.background = 'rgba(200, 200, 200, 0.1)';
+            }
+          });
+        }
+      });
+    }, 100);
+    
+    this.showQuestionContainer();
+  }
+
   buildPhase1Sequence() {
-    // Phase 1: Core Orientation (15 forced-choice questions)
-    this.questionSequence = [...PHASE_1_QUESTIONS];
+    // Phase 1: Core Orientation - Filter/prioritize based on IQ bracket
+    let questions = [...PHASE_1_QUESTIONS];
+    
+    // If IQ bracket known, prioritize relevant questions and reduce total
+    if (this.iqBracket && this.iqBracket !== 'unknown') {
+      questions = this.filterQuestionsByIQ(questions, 12); // Reduce to 12 questions for faster assessment
+    }
+    
+    this.questionSequence = questions;
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
   buildPhase2Sequence() {
-    // Phase 2: Dimensional Refinement (25 Likert questions)
+    // Phase 2: Dimensional Refinement - Filter/prioritize based on IQ bracket
     this.currentPhase = 2;
     this.currentQuestionIndex = 0;
-    this.questionSequence = [...PHASE_2_QUESTIONS];
+    let questions = [...PHASE_2_QUESTIONS];
+    
+    // If IQ bracket known, reduce questions for faster assessment
+    if (this.iqBracket && this.iqBracket !== 'unknown') {
+      questions = this.filterQuestionsByIQ(questions, 15); // Reduce to 15 questions
+    }
+    
+    this.questionSequence = questions;
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
   buildPhase3Sequence() {
-    // Phase 3: Shadow/Integration Assessment (10 contextual questions)
+    // Phase 3: Shadow/Integration Assessment - Keep aspiration questions, filter others
     this.currentPhase = 3;
     this.currentQuestionIndex = 0;
-    this.questionSequence = [...PHASE_3_QUESTIONS];
+    let questions = [...PHASE_3_QUESTIONS];
+    
+    // Always keep aspiration questions (critical for bias mitigation)
+    const aspirationQuestions = questions.filter(q => q.isAspiration);
+    const otherQuestions = questions.filter(q => !q.isAspiration);
+    
+    // If IQ bracket known, reduce non-aspiration questions
+    if (this.iqBracket && this.iqBracket !== 'unknown') {
+      const filteredOthers = this.filterQuestionsByIQ(otherQuestions, 6); // Reduce to 6
+      questions = [...aspirationQuestions, ...filteredOthers];
+    }
+    
+    this.questionSequence = questions;
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
+  }
+  
+  filterQuestionsByIQ(questions, targetCount) {
+    // Prioritize questions based on IQ bracket and archetype correlations
+    // IQ bands correlate with certain archetypes:
+    // Lower IQ (80-115): More likely Beta, Delta, Omega
+    // Mid IQ (115-130): More likely Alpha, Beta, Delta
+    // Higher IQ (130+): More likely Gamma, Sigma, Phi
+    
+    if (this.iqBracket === 'unknown') {
+      return questions.slice(0, targetCount); // Just take first N if unknown
+    }
+    
+    // Score each question by relevance to IQ bracket
+    const scoredQuestions = questions.map(q => {
+      let relevanceScore = 0;
+      
+      // Check which archetypes this question maps to
+      const archetypeIds = [];
+      if (q.options) {
+        q.options.forEach(opt => {
+          if (opt.archetypes) {
+            archetypeIds.push(...opt.archetypes);
+          }
+        });
+      }
+      if (q.archetypes) {
+        archetypeIds.push(...q.archetypes.map(a => a.id || a));
+      }
+      
+      // IQ-Archetype correlations
+      if (this.iqBracket === '80_100' || this.iqBracket === '100_115') {
+        // Lower IQ brackets correlate with Beta, Delta, Omega
+        const lowerIQArchetypes = ['beta', 'delta', 'omega', 'beta_iota', 'beta_nu', 'delta_mu'];
+        relevanceScore = archetypeIds.filter(id => lowerIQArchetypes.includes(id)).length * 3;
+        // Also relevant but less: Alpha (some), Gamma/Sigma less likely
+        if (archetypeIds.some(id => id === 'alpha' || id === 'alpha_xi')) relevanceScore += 1;
+      } else if (this.iqBracket === '115_130') {
+        // Mid IQ correlates with Alpha, Beta, Delta
+        const midIQArchetypes = ['alpha', 'beta', 'delta', 'alpha_xi', 'beta_nu', 'delta_mu'];
+        relevanceScore = archetypeIds.filter(id => midIQArchetypes.includes(id)).length * 3;
+        // Gamma/Sigma also possible
+        if (archetypeIds.some(id => id === 'gamma' || id === 'sigma')) relevanceScore += 2;
+      } else if (this.iqBracket === '130_145' || this.iqBracket === '145_plus') {
+        // Higher IQ correlates with Gamma, Sigma, Phi, Alpha
+        const higherIQArchetypes = ['gamma', 'sigma', 'phi', 'alpha', 'gamma_theta', 'sigma_kappa'];
+        relevanceScore = archetypeIds.filter(id => higherIQArchetypes.includes(id)).length * 3;
+        // Beta/Delta less likely but still possible
+        if (archetypeIds.some(id => id === 'beta' || id === 'delta')) relevanceScore += 1;
+        // Omega unlikely
+        if (archetypeIds.some(id => id === 'omega')) relevanceScore -= 1;
+      }
+      
+      return { question: q, score: relevanceScore };
+    });
+    
+    // Sort by relevance, then randomize top questions
+    scoredQuestions.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return Math.random() - 0.5; // Randomize ties
+    });
+    
+    // Take top N questions, ensuring we get variety
+    const selected = [];
+    const seenArchetypes = new Set();
+    
+    // First pass: high relevance questions
+    for (const item of scoredQuestions) {
+      if (selected.length >= targetCount) break;
+      
+      // Check if this adds archetype diversity
+      const questionArchetypes = [];
+      if (item.question.options) {
+        item.question.options.forEach(opt => {
+          if (opt.archetypes) questionArchetypes.push(...opt.archetypes);
+        });
+      }
+      
+      const addsDiversity = questionArchetypes.some(id => !seenArchetypes.has(id));
+      if (item.score > 0 || addsDiversity || selected.length < targetCount * 0.7) {
+        selected.push(item.question);
+        questionArchetypes.forEach(id => seenArchetypes.add(id));
+      }
+    }
+    
+    // Second pass: fill remaining slots if needed
+    if (selected.length < targetCount) {
+      for (const item of scoredQuestions) {
+        if (selected.length >= targetCount) break;
+        if (!selected.includes(item.question)) {
+          selected.push(item.question);
+        }
+      }
+    }
+    
+    return selected.slice(0, targetCount);
   }
 
   buildPhase4Sequence() {
@@ -1263,6 +1464,7 @@ export class ArchetypeEngine {
       currentPhase: this.currentPhase,
       currentQuestionIndex: this.currentQuestionIndex,
       gender: this.gender,
+      iqBracket: this.iqBracket,
       answers: this.answers,
       aspirationAnswers: this.aspirationAnswers,
       archetypeScores: this.archetypeScores,
@@ -1279,6 +1481,7 @@ export class ArchetypeEngine {
         this.currentPhase = progress.currentPhase || 0;
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
         this.gender = progress.gender || null;
+        this.iqBracket = progress.iqBracket || progress.analysisData?.iqBracket || null;
         this.answers = progress.answers || {};
         this.aspirationAnswers = progress.aspirationAnswers || {};
         this.archetypeScores = progress.archetypeScores || {};
@@ -1290,8 +1493,15 @@ export class ArchetypeEngine {
           return;
         }
         
+        // If IQ bracket not selected, show IQ bracket selection
+        if (!this.iqBracket || this.currentPhase === 0.5) {
+          this.showIQBracketSelection();
+          return;
+        }
+        
         // Rebuild question sequence based on phase
-        if (this.currentPhase === 1) {
+        if (this.currentPhase === 1 || (this.currentPhase > 0 && this.currentPhase < 2)) {
+          this.currentPhase = 1;
           this.buildPhase1Sequence();
         } else if (this.currentPhase === 2) {
           this.buildPhase2Sequence();
