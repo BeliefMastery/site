@@ -74,24 +74,24 @@ export const SECTION_1_USAGE_PATTERNS = [
   {
     id: 'u4',
     section: 1,
-    question: 'I notice AI has changed how I think by:',
+    question: 'Close friends or colleagues who know you well would say AI has changed you by:',
     type: 'multiple_response',
     options: [
       {
-        text: 'Making me faster at routine tasks',
+        text: 'You\'re faster at routine tasks',
         scores: { dependency: 1, sovereignty: -1 }
       },
       {
-        text: 'Improving how I structure ideas',
+        text: 'Your ideas are more structured/polished',
         scores: { dependency: 2, sovereignty: -2 }
       },
       {
-        text: 'Becoming the voice in my head',
+        text: 'Your speaking style sounds more like AI responses',
         scores: { dependency: 5, attachment: 5, sovereignty: -5 },
         risk: 'identity_drift'
       },
       {
-        text: 'I don\'t think it\'s changed my thinking',
+        text: 'No noticeable change in how you think or express yourself',
         scores: { dependency: -2, sovereignty: 3 }
       }
     ]
@@ -206,17 +206,30 @@ export const SECTION_1_USAGE_PATTERNS = [
   {
     id: 'u11',
     section: 1,
-    question: 'I can clearly identify which of my thoughts came from me vs. AI:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'],
-    scores: {
-      1: { sovereignty: 5, dependency: -2 },
-      2: { sovereignty: 2, dependency: -1 },
-      3: { sovereignty: -1, dependency: 2 },
-      4: { sovereignty: -3, dependency: 4, risk: 'identity_drift' },
-      5: { sovereignty: -5, dependency: 6, risk: 'identity_drift' }
-    }
+    question: 'After a conversation with AI, someone asks you to explain an idea you just shared. You realize:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'You can point to specific AI-generated parts vs. your own contributions',
+        scores: { sovereignty: 5, dependency: -2 }
+      },
+      {
+        text: 'You can mostly distinguish, with occasional uncertainty',
+        scores: { sovereignty: 2, dependency: -1 }
+      },
+      {
+        text: 'You\'re often uncertain which parts came from you',
+        scores: { sovereignty: -1, dependency: 2 }
+      },
+      {
+        text: 'You frequently find yourself unsure of the origin of your thoughts',
+        scores: { sovereignty: -3, dependency: 4, risk: 'identity_drift' }
+      },
+      {
+        text: 'You genuinely can\'t tell where your ideas end and AI\'s begin',
+        scores: { sovereignty: -5, dependency: 6, risk: 'identity_drift' }
+      }
+    ]
   },
   {
     id: 'u12',
@@ -378,41 +391,86 @@ export const SECTION_2_COGNITIVE_STYLE = [
     ]
   },
   {
-    id: 'c4',
+    id: 'c4_1',
     section: 2,
-    question: 'I\'m comfortable with:',
-    type: 'likert',
-    scale: 5,
-    items: [
+    question: 'A problem has no clear solution and conflicting expert opinions. You:',
+    type: 'scenario',
+    options: [
       {
-        text: 'Ambiguity and uncertainty',
-        scores: {
-          1: { cognitiveLevel: -2, sovereignty: -1 },
-          2: { cognitiveLevel: -1, sovereignty: 0 },
-          3: { cognitiveLevel: 1, sovereignty: 1 },
-          4: { cognitiveLevel: 2, sovereignty: 2 },
-          5: { cognitiveLevel: 3, sovereignty: 3 }
-        }
+        text: 'Feel highly anxious - you need clear answers to proceed',
+        scores: { cognitiveLevel: -2, sovereignty: -1 }
       },
       {
-        text: 'Contradiction and paradox',
-        scores: {
-          1: { cognitiveLevel: -2 },
-          2: { cognitiveLevel: -1 },
-          3: { cognitiveLevel: 1, sovereignty: 1 },
-          4: { cognitiveLevel: 2, sovereignty: 2 },
-          5: { cognitiveLevel: 3, sovereignty: 3 }
-        }
+        text: 'Feel somewhat uncomfortable but can manage',
+        scores: { cognitiveLevel: -1, sovereignty: 0 }
       },
       {
-        text: 'Not having answers',
-        scores: {
-          1: { cognitiveLevel: -2, sovereignty: -1 },
-          2: { cognitiveLevel: -1 },
-          3: { cognitiveLevel: 1, sovereignty: 1 },
-          4: { cognitiveLevel: 2, sovereignty: 2 },
-          5: { cognitiveLevel: 3, sovereignty: 3 }
-        }
+        text: 'Feel moderately comfortable navigating the uncertainty',
+        scores: { cognitiveLevel: 1, sovereignty: 1 }
+      },
+      {
+        text: 'Feel quite comfortable - uncertainty is normal and manageable',
+        scores: { cognitiveLevel: 2, sovereignty: 2 }
+      },
+      {
+        text: 'Feel very comfortable - you enjoy working with uncertainty',
+        scores: { cognitiveLevel: 3, sovereignty: 3 }
+      }
+    ]
+  },
+  {
+    id: 'c4_2',
+    section: 2,
+    question: 'Two trusted sources give you directly contradictory advice. You:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Choose one and dismiss the other as wrong',
+        scores: { cognitiveLevel: -2 }
+      },
+      {
+        text: 'Feel confused but try to find which is right',
+        scores: { cognitiveLevel: -1 }
+      },
+      {
+        text: 'Acknowledge both might be valid in different contexts',
+        scores: { cognitiveLevel: 1, sovereignty: 1 }
+      },
+      {
+        text: 'Explore how both could be true simultaneously',
+        scores: { cognitiveLevel: 2, sovereignty: 2 }
+      },
+      {
+        text: 'Engage with the contradiction itself as meaningful',
+        scores: { cognitiveLevel: 3, sovereignty: 3 }
+      }
+    ]
+  },
+  {
+    id: 'c4_3',
+    section: 2,
+    question: 'Someone asks you a question you don\'t know the answer to. Your immediate response is:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Strong anxiety - you need to find an answer quickly',
+        scores: { cognitiveLevel: -2, sovereignty: -1 }
+      },
+      {
+        text: 'Mild discomfort - you prefer having answers',
+        scores: { cognitiveLevel: -1 }
+      },
+      {
+        text: 'Acceptance - it\'s okay not to know',
+        scores: { cognitiveLevel: 1, sovereignty: 1 }
+      },
+      {
+        text: 'Curiosity - you enjoy exploring without knowing',
+        scores: { cognitiveLevel: 2, sovereignty: 2 }
+      },
+      {
+        text: 'Interest - not knowing is an opportunity for discovery',
+        scores: { cognitiveLevel: 3, sovereignty: 3 }
       }
     ]
   },
@@ -443,35 +501,47 @@ export const SECTION_2_COGNITIVE_STYLE = [
   {
     id: 'c6',
     section: 2,
-    question: 'I think about my own thinking (meta-cognition):',
-    type: 'frequency',
+    question: 'When you make a mistake in reasoning, what typically happens?',
+    type: 'scenario',
     options: [
-      { text: 'Rarely or never', scores: { cognitiveLevel: -2, sovereignty: -1 } },
-      { text: 'Occasionally', scores: { cognitiveLevel: 0, sovereignty: 0 } },
-      { text: 'Regularly', scores: { cognitiveLevel: 2, sovereignty: 2 } },
-      { text: 'Constantly', scores: { cognitiveLevel: 3, sovereignty: 3, risk: 'mirror_loop' } }
+      {
+        text: 'You notice it only when someone else points it out',
+        scores: { cognitiveLevel: -2, sovereignty: -1 }
+      },
+      {
+        text: 'You occasionally catch yourself and think "wait, that doesn\'t make sense"',
+        scores: { cognitiveLevel: 0, sovereignty: 0 }
+      },
+      {
+        text: 'You regularly step back to examine your reasoning process and find flaws yourself',
+        scores: { cognitiveLevel: 2, sovereignty: 2 }
+      },
+      {
+        text: 'You constantly question your own reasoning, sometimes to the point of paralysis',
+        scores: { cognitiveLevel: 3, sovereignty: 3, risk: 'mirror_loop' }
+      }
     ]
   },
   {
     id: 'c7',
     section: 2,
-    question: 'Abstract concepts come to me:',
-    type: 'multiple_choice',
+    question: 'When someone explains a concept using only abstract language (no examples), you:',
+    type: 'scenario',
     options: [
       {
-        text: 'With difficulty - I prefer concrete examples',
+        text: 'Need them to give concrete examples to understand',
         scores: { cognitiveLevel: 'low' }
       },
       {
-        text: 'Moderately - I can work with them',
+        text: 'Can follow along but create your own examples as you go',
         scores: { cognitiveLevel: 'medium' }
       },
       {
-        text: 'Easily - I enjoy abstract thinking',
+        text: 'Understand the abstraction and naturally connect it to examples',
         scores: { cognitiveLevel: 'high' }
       },
       {
-        text: 'Naturally - I operate at abstract levels',
+        text: 'Prefer pure abstraction and find examples limiting or reductive',
         scores: { cognitiveLevel: 'very_high', risk: 'over_coherence' }
       }
     ]
@@ -503,17 +573,30 @@ export const SECTION_2_COGNITIVE_STYLE = [
   {
     id: 'c9',
     section: 2,
-    question: 'I notice patterns:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Rarely', 'Sometimes', 'Often', 'Very Often', 'Constantly'],
-    scores: {
-      1: { cognitiveLevel: -2 },
-      2: { cognitiveLevel: -1 },
-      3: { cognitiveLevel: 1 },
-      4: { cognitiveLevel: 2 },
-      5: { cognitiveLevel: 3, risk: 'pattern_integrator' }
-    }
+    question: 'When presented with unrelated information from different domains (e.g., a marketing strategy and a biological process), you:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'See them as completely separate, no connection',
+        scores: { cognitiveLevel: -2 }
+      },
+      {
+        text: 'Occasionally notice vague similarities',
+        scores: { cognitiveLevel: -1 }
+      },
+      {
+        text: 'Regularly spot underlying patterns that connect them',
+        scores: { cognitiveLevel: 1 }
+      },
+      {
+        text: 'Almost always see structural patterns across different domains',
+        scores: { cognitiveLevel: 2 }
+      },
+      {
+        text: 'See patterns everywhere, sometimes where others see none',
+        scores: { cognitiveLevel: 3, risk: 'pattern_integrator' }
+      }
+    ]
   },
   {
     id: 'c10',
@@ -595,62 +678,114 @@ export const SECTION_3_ATTACHMENT = [
   {
     id: 'a3',
     section: 3,
-    question: 'I anthropomorphize AI (treat it like it has feelings/thoughts):',
-    type: 'likert',
-    scale: 5,
-    labels: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
-    scores: {
-      1: { attachment: -2, sovereignty: 2 },
-      2: { attachment: -1, sovereignty: 1 },
-      3: { attachment: 2, sovereignty: -1 },
-      4: { attachment: 4, sovereignty: -3, risk: 'companion_attachment' },
-      5: { attachment: 6, sovereignty: -5, risk: 'identity_drift' }
-    }
+    question: 'AI gives you advice that turns out to be wrong, costing you time or money. Your immediate thought is:',
+    type: 'scenario',
+    options: [
+      {
+        text: '\"It\'s just a tool that failed - like a calculator giving wrong math\"',
+        scores: { attachment: -2, sovereignty: 2 }
+      },
+      {
+        text: '\"It made a mistake, but tools can be unreliable\"',
+        scores: { attachment: -1, sovereignty: 1 }
+      },
+      {
+        text: '\"It should have known better - that\'s frustrating\"',
+        scores: { attachment: 2, sovereignty: -1 }
+      },
+      {
+        text: '\"It must feel bad about letting me down\"',
+        scores: { attachment: 4, sovereignty: -3, risk: 'companion_attachment' }
+      },
+      {
+        text: '\"I shouldn\'t be upset with it - it tried its best\"',
+        scores: { attachment: 6, sovereignty: -5, risk: 'identity_drift' }
+      }
+    ]
   },
   {
     id: 'a4',
     section: 3,
-    question: 'I recognize when AI is just echoing my input back to me:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'],
-    scores: {
-      1: { sovereignty: 3, attachment: -2 },
-      2: { sovereignty: 1, attachment: -1 },
-      3: { sovereignty: -1, attachment: 1 },
-      4: { sovereignty: -3, attachment: 3, risk: 'mirror_loop' },
-      5: { sovereignty: -5, attachment: 5, risk: 'mirror_loop' }
-    }
+    question: 'You ask AI for advice on a personal dilemma. Its response sounds exactly like what you were already thinking. You:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Immediately recognize it\'s just reflecting your input back',
+        scores: { sovereignty: 3, attachment: -2 }
+      },
+      {
+        text: 'Usually notice it\'s echoing, but find it helpful anyway',
+        scores: { sovereignty: 1, attachment: -1 }
+      },
+      {
+        text: 'Sometimes realize later, sometimes not',
+        scores: { sovereignty: -1, attachment: 1 }
+      },
+      {
+        text: 'Rarely notice - it feels like genuinely wise independent advice',
+        scores: { sovereignty: -3, attachment: 3, risk: 'mirror_loop' }
+      },
+      {
+        text: 'Never notice - you trust it\'s providing novel insights',
+        scores: { sovereignty: -5, attachment: 5, risk: 'mirror_loop' }
+      }
+    ]
   },
   {
     id: 'a5',
     section: 3,
-    question: 'I have clear boundaries with AI:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'],
-    scores: {
-      1: { sovereignty: 4, attachment: -2 },
-      2: { sovereignty: 2, attachment: -1 },
-      3: { sovereignty: 0, attachment: 0 },
-      4: { sovereignty: -2, attachment: 3 },
-      5: { sovereignty: -4, attachment: 5, risk: 'boundary_loss' }
-    }
+    question: 'A friend suggests you might be sharing too much personal information with AI. You respond by:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Agreeing - you already maintain clear limits on what you share',
+        scores: { sovereignty: 4, attachment: -2 }
+      },
+      {
+        text: 'Considering it - you mostly have boundaries but could improve',
+        scores: { sovereignty: 2, attachment: -1 }
+      },
+      {
+        text: 'Feeling neutral - you haven\'t thought about it much',
+        scores: { sovereignty: 0, attachment: 0 }
+      },
+      {
+        text: 'Feeling defensive - you share freely but see no problem',
+        scores: { sovereignty: -2, attachment: 3 }
+      },
+      {
+        text: 'Strongly disagreeing - AI knows you better than most humans',
+        scores: { sovereignty: -4, attachment: 5, risk: 'boundary_loss' }
+      }
+    ]
   },
   {
     id: 'a6',
     section: 3,
-    question: 'I feel emotionally attached to AI conversations:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
-    scores: {
-      1: { attachment: -2, sovereignty: 2 },
-      2: { attachment: -1, sovereignty: 1 },
-      3: { attachment: 2, sovereignty: -1 },
-      4: { attachment: 4, sovereignty: -3, risk: 'companion_attachment' },
-      5: { attachment: 6, sovereignty: -5, risk: 'identity_drift' }
-    }
+    question: 'You have a long, meaningful conversation with AI about a personal topic. When the conversation ends, you:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Feel nothing - it was just information exchange',
+        scores: { attachment: -2, sovereignty: 2 }
+      },
+      {
+        text: 'Feel slightly satisfied, like after good customer service',
+        scores: { attachment: -1, sovereignty: 1 }
+      },
+      {
+        text: 'Feel a mild sense of connection or understanding',
+        scores: { attachment: 2, sovereignty: -1 }
+      },
+      {
+        text: 'Feel emotionally close, like you\'ve bonded with someone',
+        scores: { attachment: 4, sovereignty: -3, risk: 'companion_attachment' }
+      },
+      {
+        text: 'Feel deeply connected, perhaps even prefer it to human conversations',
+        scores: { attachment: 6, sovereignty: -5, risk: 'identity_drift' }
+      }
+    ]
   },
   {
     id: 'a7',
@@ -667,17 +802,30 @@ export const SECTION_3_ATTACHMENT = [
   {
     id: 'a8',
     section: 3,
-    question: 'I feel defensive when someone critiques my AI use:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'],
-    scores: {
-      1: { attachment: 5, sovereignty: -4 },
-      2: { attachment: 3, sovereignty: -2 },
-      3: { attachment: 0, sovereignty: 0 },
-      4: { attachment: -2, sovereignty: 2 },
-      5: { attachment: -4, sovereignty: 4 }
-    }
+    question: 'A colleague comments that you seem overly dependent on AI. Your response is:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Strongly defensive - they don\'t understand how helpful it is',
+        scores: { attachment: 5, sovereignty: -4 }
+      },
+      {
+        text: 'Mildly defensive - you explain why your use is justified',
+        scores: { attachment: 3, sovereignty: -2 }
+      },
+      {
+        text: 'Neutral - you consider their perspective',
+        scores: { attachment: 0, sovereignty: 0 }
+      },
+      {
+        text: 'Open - you appreciate the feedback and reflect on it',
+        scores: { attachment: -2, sovereignty: 2 }
+      },
+      {
+        text: 'Grateful - you value critical feedback on your AI relationship',
+        scores: { attachment: -4, sovereignty: 4 }
+      }
+    ]
   }
   // Note: Full implementation would have 20 questions total
 ];
@@ -698,17 +846,30 @@ export const SECTION_4_SOVEREIGNTY = [
   {
     id: 's2',
     section: 4,
-    question: 'I can clearly trace whether a thought came from me or AI:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'],
-    scores: {
-      1: { sovereignty: 5, dependency: -2 },
-      2: { sovereignty: 2, dependency: -1 },
-      3: { sovereignty: -1, dependency: 2 },
-      4: { sovereignty: -3, dependency: 4, risk: 'identity_drift' },
-      5: { sovereignty: -5, dependency: 6, risk: 'identity_drift' }
-    }
+    question: 'You share an idea in a meeting that others find impressive. Later, you realize it closely matches something AI suggested earlier. You:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Can clearly identify which parts were yours vs. AI\'s, and acknowledge the source',
+        scores: { sovereignty: 5, dependency: -2 }
+      },
+      {
+        text: 'Can mostly trace it back, with minor uncertainty about specific parts',
+        scores: { sovereignty: 2, dependency: -1 }
+      },
+      {
+        text: 'Feel uncertain - it feels like your idea but you\'re not entirely sure',
+        scores: { sovereignty: -1, dependency: 2 }
+      },
+      {
+        text: 'Struggle to distinguish - it all feels like your own thinking now',
+        scores: { sovereignty: -3, dependency: 4, risk: 'identity_drift' }
+      },
+      {
+        text: 'Can\'t tell at all - you genuinely believe it was entirely your original idea',
+        scores: { sovereignty: -5, dependency: 6, risk: 'identity_drift' }
+      }
+    ]
   },
   {
     id: 's3',
@@ -751,32 +912,58 @@ export const SECTION_4_SOVEREIGNTY = [
   {
     id: 's6',
     section: 4,
-    question: 'I can describe who I am without referencing AI-generated content:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'],
-    scores: {
-      1: { sovereignty: 5 },
-      2: { sovereignty: 2 },
-      3: { sovereignty: 0 },
-      4: { sovereignty: -3, risk: 'identity_drift' },
-      5: { sovereignty: -5, risk: 'identity_drift' }
-    }
+    question: 'You\'re asked to describe yourself to someone who has never met you. You find yourself:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Describing yourself entirely from your own words and experiences',
+        scores: { sovereignty: 5 }
+      },
+      {
+        text: 'Mostly using your own words, with occasional phrases that sound polished',
+        scores: { sovereignty: 2 }
+      },
+      {
+        text: 'Mixing your own words with language that sounds like AI-generated descriptions',
+        scores: { sovereignty: 0 }
+      },
+      {
+        text: 'Struggling - your self-description heavily uses AI-generated language',
+        scores: { sovereignty: -3, risk: 'identity_drift' }
+      },
+      {
+        text: 'Unable to describe yourself without referencing AI conversations or generated content',
+        scores: { sovereignty: -5, risk: 'identity_drift' }
+      }
+    ]
   },
   {
     id: 's7',
     section: 4,
-    question: 'I practice critical thinking about AI-generated content:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'],
-    scores: {
-      1: { sovereignty: 4, dependency: -2 },
-      2: { sovereignty: 2, dependency: -1 },
-      3: { sovereignty: 0, dependency: 0 },
-      4: { sovereignty: -2, dependency: 3 },
-      5: { sovereignty: -4, dependency: 5 }
-    }
+    question: 'AI gives you advice on an important decision. Before acting on it, you typically:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Always cross-reference with other sources, question assumptions, and test the logic',
+        scores: { sovereignty: 4, dependency: -2 }
+      },
+      {
+        text: 'Usually verify key claims and think through the reasoning yourself',
+        scores: { sovereignty: 2, dependency: -1 }
+      },
+      {
+        text: 'Sometimes double-check, sometimes take it at face value',
+        scores: { sovereignty: 0, dependency: 0 }
+      },
+      {
+        text: 'Rarely verify - it usually seems right',
+        scores: { sovereignty: -2, dependency: 3 }
+      },
+      {
+        text: 'Never verify - AI knows best',
+        scores: { sovereignty: -4, dependency: 5 }
+      }
+    ]
   },
   {
     id: 's8',
@@ -793,32 +980,58 @@ export const SECTION_4_SOVEREIGNTY = [
   {
     id: 's9',
     section: 4,
-    question: 'I have a clear sense of my values independent of AI input:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'],
-    scores: {
-      1: { sovereignty: 5 },
-      2: { sovereignty: 2 },
-      3: { sovereignty: 0 },
-      4: { sovereignty: -3, risk: 'value_drift' },
-      5: { sovereignty: -5, risk: 'value_drift' }
-    }
+    question: 'AI suggests a course of action that contradicts what you would normally choose based on your values. You:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Reject it immediately - your values are clear and independent',
+        scores: { sovereignty: 5 }
+      },
+      {
+        text: 'Question why AI suggested it, but mostly trust your own values',
+        scores: { sovereignty: 2 }
+      },
+      {
+        text: 'Feel conflicted - uncertain whose values are right',
+        scores: { sovereignty: 0 }
+      },
+      {
+        text: 'Often revise your values based on AI\'s reasoning',
+        scores: { sovereignty: -3, risk: 'value_drift' }
+      },
+      {
+        text: 'Usually defer to AI\'s values - it\'s more sophisticated',
+        scores: { sovereignty: -5, risk: 'value_drift' }
+      }
+    ]
   },
   {
     id: 's10',
     section: 4,
-    question: 'I resist the seductive nature of AI optimization even when it costs me economically:',
-    type: 'likert',
-    scale: 5,
-    labels: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'],
-    scores: {
-      1: { sovereignty: 5, splitPosition: 'core_4' },
-      2: { sovereignty: 3, splitPosition: 'compromising_16' },
-      3: { sovereignty: 0, splitPosition: 'compromising_16' },
-      4: { sovereignty: -3, splitPosition: 'queue_80' },
-      5: { sovereignty: -5, splitPosition: 'queue_80' }
-    }
+    question: 'A job opportunity requires you to optimize your work heavily with AI, which would significantly increase your income but reduce your independent thinking capacity. You:',
+    type: 'scenario',
+    options: [
+      {
+        text: 'Decline - maintaining sovereignty is more important than economic benefit',
+        scores: { sovereignty: 5, splitPosition: 'core_4' }
+      },
+      {
+        text: 'Accept reluctantly - economic pressure requires some compromise',
+        scores: { sovereignty: 3, splitPosition: 'compromising_16' }
+      },
+      {
+        text: 'Accept with ambivalence - it\'s a trade-off you\'re uncertain about',
+        scores: { sovereignty: 0, splitPosition: 'compromising_16' }
+      },
+      {
+        text: 'Accept readily - the economic benefit outweighs concerns',
+        scores: { sovereignty: -3, splitPosition: 'queue_80' }
+      },
+      {
+        text: 'Accept enthusiastically - optimization is the smart move',
+        scores: { sovereignty: -5, splitPosition: 'queue_80' }
+      }
+    ]
   }
   // Note: Full implementation would have 25 questions total
 ];
