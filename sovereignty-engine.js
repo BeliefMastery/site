@@ -125,13 +125,35 @@ export class SovereigntyEngine {
     container.innerHTML = `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
         <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket (Optional)</h2>
-        <p style="color: var(--muted); margin-bottom: 1rem; line-height: 1.6;">
-          Providing your IQ bracket helps us prioritize relevant questions and accelerate the assessment. 
+        <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6;">
+          Providing your IQ helps us prioritize relevant questions and accelerate the assessment. 
           If you don't know your IQ, you can skip this step. Estimate based on standardized tests (SAT, ACT, WAIS, etc.) or educational/career patterns.
         </p>
-        <p style="color: var(--brand); margin-bottom: 2rem; line-height: 1.6; font-size: 0.9rem; font-style: italic;">
-          <strong>Note:</strong> IQ brackets have crossover at boundaries. If you're near the edge of a bracket (e.g., IQ 98 or 117), 
-          select "On Border" to include patterns from adjacent brackets for more accurate assessment.
+        
+        <!-- IQ Input Option -->
+        <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(255, 184, 0, 0.05); border: 2px solid var(--brand); border-radius: var(--radius); max-width: 400px; margin-left: auto; margin-right: auto;">
+          <label for="iqInput" style="display: block; color: var(--brand); font-weight: 600; margin-bottom: 0.75rem; font-size: 1.1rem;">
+            Enter Your IQ (Auto-detects bracket):
+          </label>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="number" id="iqInput" min="70" max="200" step="1" 
+                   placeholder="e.g., 98, 117, 125" 
+                   style="flex: 1; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid var(--brand); border-radius: var(--radius); background: white; color: var(--text);">
+            <button id="submitIQ" style="padding: 0.75rem 1.5rem; font-size: 1rem; background: var(--brand); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600; transition: all 0.2s;">
+              Submit
+            </button>
+          </div>
+          <div id="iqBracketDisplay" style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); display: none;">
+            <p style="margin: 0; color: var(--brand); font-weight: 600; font-size: 0.9rem;" id="iqBracketText"></p>
+          </div>
+        </div>
+        
+        <div style="margin: 2rem 0; text-align: center; color: var(--muted); font-size: 0.9rem;">
+          <strong>OR</strong> select manually below:
+        </div>
+        
+        <p style="color: var(--brand); margin-bottom: 1.5rem; line-height: 1.6; font-size: 0.9rem; font-style: italic;">
+          <strong>Note:</strong> IQ brackets have crossover at boundaries (±5 points). The system automatically detects border positions and includes patterns from adjacent brackets.
         </p>
         <div style="display: grid; gap: 1rem; max-width: 600px; margin: 0 auto;">
           <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
@@ -180,8 +202,58 @@ export class SovereigntyEngine {
       </div>
     `;
 
-    // Add click handlers
+    // Add IQ input handler
     setTimeout(() => {
+      const iqInput = document.getElementById('iqInput');
+      const submitIQBtn = document.getElementById('submitIQ');
+      const iqBracketDisplay = document.getElementById('iqBracketDisplay');
+      const iqBracketText = document.getElementById('iqBracketText');
+      
+      const handleIQSubmit = () => {
+        const iqValue = parseInt(iqInput.value);
+        if (isNaN(iqValue) || iqValue < 70 || iqValue > 200) {
+          alert('Please enter a valid IQ between 70 and 200.');
+          return;
+        }
+        
+        // Auto-determine bracket(s) based on IQ value
+        const bracketInfo = this.determineIQBrackets(iqValue);
+        this.iqBracket = bracketInfo.primary;
+        this.iqBracketSecondary = bracketInfo.secondary;
+        this.analysisData.iqBracket = bracketInfo.primary;
+        this.analysisData.iqBracketSecondary = bracketInfo.secondary;
+        
+        // Display detected bracket(s)
+        let displayText = `Detected: ${this.getBracketName(bracketInfo.primary)}`;
+        if (bracketInfo.secondary) {
+          displayText += ` (with crossover from ${this.getBracketName(bracketInfo.secondary)})`;
+        }
+        iqBracketText.textContent = displayText;
+        iqBracketDisplay.style.display = 'block';
+        
+        // Auto-proceed after brief display
+        setTimeout(() => {
+          this.currentSection = 1;
+          this.buildSectionSequence(1);
+          this.renderCurrentQuestion();
+          this.updateNavigation();
+          this.saveProgress();
+        }, 1000);
+      };
+      
+      if (submitIQBtn) {
+        submitIQBtn.addEventListener('click', handleIQSubmit);
+      }
+      
+      if (iqInput) {
+        iqInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            handleIQSubmit();
+          }
+        });
+      }
+      
+      // Manual bracket selection handlers
       const iqBrackets = {
         // Core brackets
         'selectIQ80_100': { primary: '80_100', secondary: null },
@@ -237,6 +309,68 @@ export class SovereigntyEngine {
         }
       });
     }, 100);
+  }
+
+  determineIQBrackets(iq) {
+    // Automatically determine primary and secondary (crossover) brackets based on IQ value
+    // Border crossover zone: ±5 points from bracket boundaries
+    
+    let primary = null;
+    let secondary = null;
+    
+    if (iq < 80) {
+      // Below 80 - use 80-100 bracket
+      primary = '80_100';
+    } else if (iq >= 80 && iq < 100) {
+      primary = '80_100';
+      // Check if near 100 boundary (95-105 crossover zone)
+      if (iq >= 95 && iq < 100) {
+        secondary = '100_115';
+      }
+    } else if (iq >= 100 && iq < 115) {
+      primary = '100_115';
+      // Check if near boundaries
+      if (iq >= 100 && iq <= 102) {
+        secondary = '80_100'; // Lower border
+      } else if (iq >= 113 && iq < 115) {
+        secondary = '115_130'; // Upper border
+      }
+    } else if (iq >= 115 && iq < 130) {
+      primary = '115_130';
+      // Check if near boundaries
+      if (iq >= 115 && iq <= 117) {
+        secondary = '100_115'; // Lower border
+      } else if (iq >= 128 && iq < 130) {
+        secondary = '130_145'; // Upper border
+      }
+    } else if (iq >= 130 && iq < 145) {
+      primary = '130_145';
+      // Check if near boundaries
+      if (iq >= 130 && iq <= 132) {
+        secondary = '115_130'; // Lower border
+      } else if (iq >= 143 && iq < 145) {
+        secondary = '145_plus'; // Upper border
+      }
+    } else if (iq >= 145) {
+      primary = '145_plus';
+      // Check if near lower boundary
+      if (iq >= 145 && iq <= 147) {
+        secondary = '130_145';
+      }
+    }
+    
+    return { primary, secondary };
+  }
+
+  getBracketName(bracketId) {
+    const names = {
+      '80_100': '80-100 IQ (Routine Guided Thinkers)',
+      '100_115': '100-115 IQ (Practical Adaptive Thinkers)',
+      '115_130': '115-130 IQ (Strategic Analytical Thinkers)',
+      '130_145': '130-145 IQ (Creative Synthesizing Thinkers)',
+      '145_plus': '145+ IQ (Meta-Recursive Thinkers)'
+    };
+    return names[bracketId] || bracketId;
   }
 
   buildSectionSequence(section) {
