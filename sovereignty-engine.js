@@ -149,7 +149,14 @@ export class SovereigntyEngine {
     }
 
     // Determine if this question has already been answered (locked)
-    const isAnswered = this.answers[question.id] !== undefined;
+    let isAnswered = this.answers[question.id] !== undefined;
+    // For frequency_grid, check if all contexts are answered
+    if (question.type === 'frequency_grid' && isAnswered) {
+      const contexts = question.contexts || [];
+      const answer = this.answers[question.id];
+      const values = answer && answer.values ? answer.values : {};
+      isAnswered = contexts.every((context, idx) => values[idx] !== undefined);
+    }
     const isLocked = isAnswered;
 
     // Render the current question only (replace previous content)
@@ -161,8 +168,17 @@ export class SovereigntyEngine {
       html += this.renderMultipleResponse(question, isLocked);
     } else if (question.type === 'frequency') {
       html += this.renderFrequency(question, isLocked);
+    } else if (question.type === 'frequency_grid') {
+      html += this.renderFrequencyGrid(question, isLocked);
     } else if (question.type === 'scenario') {
       html += this.renderScenario(question, isLocked);
+    } else {
+      // Fallback for unhandled question types
+      html += `<div class="question-card" style="background: rgba(255, 0, 0, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
+        <h3 style="color: #ff4444; margin-top: 0;">Error: Unknown question type "${question.type}"</h3>
+        <p style="color: var(--muted);">Question ID: ${question.id}</p>
+        <p style="color: var(--muted);">${question.question || 'No question text available'}</p>
+      </div>`;
     }
 
     container.innerHTML = html;
@@ -400,8 +416,136 @@ export class SovereigntyEngine {
     return this.renderMultipleChoice(question, isLocked); // Same rendering as multiple choice
   }
 
+  renderFrequencyGrid(question, isLocked) {
+    const currentAnswer = this.answers[question.id];
+    const contexts = question.contexts || [];
+    const scale = question.scale || ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'];
+    const answers = currentAnswer ? (currentAnswer.values || {}) : {};
+
+    let gridHTML = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">';
+    gridHTML += '<thead><tr><th style="text-align: left; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand);">Context</th>';
+    scale.forEach((scaleLabel, idx) => {
+      gridHTML += `<th style="text-align: center; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand); min-width: 100px;">${scaleLabel}</th>`;
+    });
+    gridHTML += '</tr></thead><tbody>';
+
+    contexts.forEach((context, contextIdx) => {
+      const contextAnswer = answers[contextIdx] !== undefined ? answers[contextIdx] : null;
+      const isContextLocked = isLocked && contextAnswer !== null;
+      
+      gridHTML += `<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">`;
+      gridHTML += `<td style="padding: 0.75rem; font-weight: 600;">${context}</td>`;
+      
+      scale.forEach((scaleLabel, scaleIdx) => {
+        const isSelected = contextAnswer === scaleIdx;
+        const lockedStyle = isContextLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
+        const selectedStyle = isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 2px solid var(--brand) !important;' : '';
+        
+        gridHTML += `<td style="text-align: center; padding: 0.5rem;">
+          <label class="frequency-grid-option ${isSelected ? 'selected' : ''} ${isContextLocked ? 'locked' : ''}" 
+                 style="display: inline-block; padding: 0.5rem 0.75rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isContextLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedStyle}">
+            <input type="radio" name="question_${question.id}_context_${contextIdx}" value="${scaleIdx}" ${isSelected ? 'checked' : ''} ${isContextLocked ? 'disabled' : ''} style="display: none;">
+            <span>${scaleIdx + 1}</span>
+          </label>
+        </td>`;
+      });
+      
+      gridHTML += '</tr>';
+    });
+
+    gridHTML += '</tbody></table></div>';
+
+    // Add click handlers only if not locked
+    if (!isLocked) {
+      setTimeout(() => {
+        contexts.forEach((context, contextIdx) => {
+          const inputs = document.querySelectorAll(`input[name="question_${question.id}_context_${contextIdx}"]:not([disabled])`);
+          inputs.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+              const scaleIdx = parseInt(e.target.value);
+              this.processFrequencyGridAnswer(question, contextIdx, scaleIdx);
+              
+              // Update visual selection immediately for this row
+              const row = e.target.closest('tr');
+              if (row) {
+                row.querySelectorAll('label.frequency-grid-option').forEach(label => {
+                  label.classList.remove('selected');
+                  label.style.background = 'rgba(255, 255, 255, 0.1)';
+                  label.style.border = '2px solid transparent';
+                });
+                const selectedLabel = e.target.closest('label');
+                if (selectedLabel) {
+                  selectedLabel.classList.add('selected');
+                  selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
+                  selectedLabel.style.border = '2px solid var(--brand)';
+                }
+              }
+            });
+          });
+          
+          // Also add click handlers to labels
+          const labels = document.querySelectorAll(`label.frequency-grid-option:not(.locked)`);
+          labels.forEach(label => {
+            const input = label.querySelector('input');
+            if (input && input.name.includes(`question_${question.id}_context_${contextIdx}`)) {
+              label.addEventListener('click', (e) => {
+                if (input && !input.disabled && e.target.tagName !== 'INPUT') {
+                  input.checked = true;
+                  input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              });
+            }
+          });
+        });
+      }, 100);
+    }
+
+    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+
+    return `
+      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Select a frequency for each context:</p>
+        ${gridHTML}
+        ${lockedNotice}
+      </div>
+    `;
+  }
+
   renderScenario(question, isLocked) {
     return this.renderMultipleChoice(question, isLocked); // Same rendering as multiple choice
+  }
+
+  processFrequencyGridAnswer(question, contextIdx, scaleIdx) {
+    // Handle frequency grid answers - each context gets a scale value
+    const currentAnswer = this.answers[question.id];
+    const values = currentAnswer && currentAnswer.values ? { ...currentAnswer.values } : {};
+    const previousValue = values[contextIdx];
+    values[contextIdx] = scaleIdx;
+
+    this.answers[question.id] = {
+      questionId: question.id,
+      values: values,
+      timestamp: new Date().toISOString()
+    };
+
+    // Calculate scores based on frequency grid answers
+    // Higher frequency = higher dependency, lower sovereignty
+    const scaleLength = (question.scale || []).length;
+    
+    // If there was a previous answer, subtract its contribution
+    if (previousValue !== undefined) {
+      const prevDependencyScore = (previousValue / (scaleLength - 1)) * 3;
+      this.scores.dependency -= prevDependencyScore;
+      this.scores.sovereignty += prevDependencyScore * 0.5;
+    }
+    
+    // Add the new score contribution
+    const dependencyScore = (scaleIdx / (scaleLength - 1)) * 3; // 0 to 3 points
+    this.scores.dependency += dependencyScore;
+    this.scores.sovereignty -= dependencyScore * 0.5;
+    
+    this.saveProgress();
   }
 
   processAnswer(question, answerValue) {
@@ -457,9 +601,20 @@ export class SovereigntyEngine {
     // Check if current question has been answered
     const currentQuestion = this.questionSequence[this.currentQuestionIndex];
     if (currentQuestion && !this.answers[currentQuestion.id]) {
-      // For multiple response questions, check if at least one option selected
+      // For multiple response questions, allow skipping
       if (currentQuestion.type === 'multiple_response') {
         // Allow progression even if none selected (user can skip)
+      } 
+      // For frequency_grid questions, check if all contexts have been answered
+      else if (currentQuestion.type === 'frequency_grid') {
+        const contexts = currentQuestion.contexts || [];
+        const answer = this.answers[currentQuestion.id];
+        const values = answer && answer.values ? answer.values : {};
+        const allAnswered = contexts.every((context, idx) => values[idx] !== undefined);
+        if (!allAnswered) {
+          alert('Please select a frequency for all contexts before proceeding.');
+          return;
+        }
       } else {
         alert('Please select an answer before proceeding.');
         return;
