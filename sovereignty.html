@@ -297,15 +297,44 @@
     </section>
   </div>
 
-  <script type="module">
+  <!-- Performance: Preload critical resources -->
+  <link rel="preload" href="./sovereignty-engine.js" as="script" crossorigin>
+  <link rel="preload" href="./sovereignty-data/cognitive-bands.js" as="script" crossorigin>
+  
+  <script type="module" defer>
     import { SovereigntyEngine } from './sovereignty-engine.js';
+    import { PerformanceMonitor } from './shared/performance-monitor.js';
+    
+    // Initialize performance monitoring
+    const perfMonitor = new PerformanceMonitor('SovereigntyEngine');
     
     // Initialize engine when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
-      window.sovereigntyEngine = new SovereigntyEngine();
+      try {
+        perfMonitor.markInit();
+        window.sovereigntyEngine = new SovereigntyEngine();
+        
+        // Track first question render
+        const originalRender = window.sovereigntyEngine.renderCurrentQuestion;
+        if (originalRender) {
+          window.sovereigntyEngine.renderCurrentQuestion = function() {
+            const start = performance.now();
+            const result = originalRender.call(this);
+            const duration = performance.now() - start;
+            perfMonitor.trackQuestionRender(duration);
+            if (!perfMonitor.metrics.firstQuestionTime) {
+              perfMonitor.markFirstQuestion();
+            }
+            return result;
+          };
+        }
+        
+        // Store monitor for completion tracking
+        window.sovereigntyEngine.perfMonitor = perfMonitor;
+      } catch (error) {
+        console.error('Failed to initialize SovereigntyEngine:', error);
+      }
     });
-  </script>
-  <script>
   </script>
 </body>
 </html>

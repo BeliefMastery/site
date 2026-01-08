@@ -1,10 +1,13 @@
 // AI Sovereignty Analysis Engine
 // Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and sovereignty capacity
 
-import { COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS } from './sovereignty-data/cognitive-bands.js';
-import { SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY } from './sovereignty-data/sovereignty-questions.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
+import { loadDataModule } from './shared/data-loader.js';
+
+// Lazy load data modules - only load when needed
+let COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS;
+let SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY;
 import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
 
 export class SovereigntyEngine {
@@ -400,27 +403,34 @@ export class SovereigntyEngine {
     return names[bracketId] || bracketId;
   }
 
-  buildSectionSequence(section) {
+  /**
+   * Build question sequence for a section
+   * @param {number} section - Section number (1-4)
+   */
+  async buildSectionSequence(section) {
+    // Ensure data is loaded
+    await this.ensureDataLoaded();
+    
     let questions = [];
     
     switch(section) {
       case 1:
-        questions = [...SECTION_1_USAGE_PATTERNS];
+        questions = [...(SECTION_1_USAGE_PATTERNS || [])];
         // Apply IQ bracket and usage frequency filters
         questions = this.filterSection1Questions(questions);
         break;
       case 2:
-        questions = [...SECTION_2_COGNITIVE_STYLE];
+        questions = [...(SECTION_2_COGNITIVE_STYLE || [])];
         // Apply IQ bracket filter
         questions = this.filterSection2Questions(questions);
         break;
       case 3:
-        questions = [...SECTION_3_ATTACHMENT];
+        questions = [...(SECTION_3_ATTACHMENT || [])];
         // Apply IQ bracket, dependency level, and cognitive level filters
         questions = this.filterSection3Questions(questions);
         break;
       case 4:
-        questions = [...SECTION_4_SOVEREIGNTY];
+        questions = [...(SECTION_4_SOVEREIGNTY || [])];
         // Apply IQ bracket, dependency level, and cognitive level filters
         questions = this.filterSection4Questions(questions);
         break;
