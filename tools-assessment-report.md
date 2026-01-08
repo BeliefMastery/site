@@ -10,15 +10,20 @@ This report provides a comprehensive overview of all assessment tools in the Bel
 ## TOOLS BY QUESTION COUNT (HIGHEST TO LOWEST)
 
 ### 1. AI SOVEREIGNTY ANALYSIS
-- **Total Questions:** ~100+ questions (estimated: 45 base + dynamic sections)
-  - Section 1: Usage Patterns - 15 questions
-  - Section 2: Cognitive Style - 30 questions  
-  - Section 3: Attachment - 20 questions
-  - Section 4: Sovereignty Indicators - 25 questions
-- **Assessment Type:** Multi-section, all questions required
+- **Total Questions:** ~45 questions base (reduced to ~30-35 with IQ bracket + relevance filters)
+  - Section 1: Usage Patterns - 15 questions (reduced to 10-12 with filters)
+  - Section 2: Cognitive Style - ~12 questions (reduced to 10 with IQ bracket)
+  - Section 3: Attachment - 8 questions (reduced to 5-6 with filters)
+  - Section 4: Sovereignty Indicators - 10 questions (reduced to 7-8 with filters)
+- **Assessment Type:** Multi-section with adaptive filtering
 - **HTML:** `sovereignty.html`
-- **Status:** ⚠️ **VERY LONG** - May benefit from IQ bracket filtering (already implemented for archetypes)
-- **Recommendation:** Consider implementing progressive disclosure or IQ-based filtering similar to archetype tool
+- **Status:** ✅ **OPTIMIZED** - IQ bracket filtering + usage frequency + dependency level + cognitive level filters implemented
+- **Filters Implemented:**
+  - **IQ Bracket Filter:** Prioritizes questions relevant to cognitive band (reduces ~20-30% questions)
+  - **Usage Frequency Filter:** If user rarely/never uses AI, skips detailed usage scenarios (reduces Section 1 to 10 questions)
+  - **Dependency Level Filter:** After Section 1, filters Section 3 & 4 based on dependency score
+  - **Cognitive Level Filter:** After Section 2, further refines Section 3 & 4 filtering
+- **Note:** With all filters active: ~30-35 questions (22-33% reduction from baseline)
 
 ---
 
