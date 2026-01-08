@@ -262,9 +262,9 @@ export class SovereigntyEngine {
         iqBracketDisplay.style.display = 'block';
         
         // Auto-proceed after brief display
-        setTimeout(() => {
+        setTimeout(async () => {
           this.currentSection = 1;
-          this.buildSectionSequence(1);
+          await this.buildSectionSequence(1);
           this.renderCurrentQuestion();
           this.updateNavigation();
           this.saveProgress();
@@ -313,10 +313,11 @@ export class SovereigntyEngine {
             this.analysisData.iqBracket = bracket.primary;
             this.analysisData.iqBracketSecondary = bracket.secondary;
             this.currentSection = 1;
-            this.buildSectionSequence(1);
-            this.renderCurrentQuestion();
-            this.updateNavigation();
-            this.saveProgress();
+            this.buildSectionSequence(1).then(() => {
+              this.renderCurrentQuestion();
+              this.updateNavigation();
+              this.saveProgress();
+            });
           });
 
           // Add hover effects
@@ -1217,7 +1218,9 @@ export class SovereigntyEngine {
         }
       } else {
         // End of current section
-        this.completeSection();
+        this.completeSection().catch(error => {
+          ErrorHandler.logError(error, 'SovereigntyEngine.nextQuestion.completeSection');
+        });
       }
     } catch (error) {
       ErrorHandler.logError(error, 'SovereigntyEngine.nextQuestion');
@@ -1232,14 +1235,21 @@ export class SovereigntyEngine {
     }
   }
 
-  completeSection() {
+  /**
+   * Complete current section and move to next or show results
+   * @returns {Promise<void>}
+   */
+  async completeSection() {
+    // Ensure data is loaded before analysis
+    await this.ensureDataLoaded();
+    
     if (this.currentSection === 1) {
       this.analyzeSection1Results();
       // Update dependency level filter after Section 1
       this.updatePreliminaryFilters(null, null);
       this.currentSection = 2;
       this.currentQuestionIndex = 0;
-      this.buildSectionSequence(2); // Will apply IQ bracket filter + dependency level
+      await this.buildSectionSequence(2); // Will apply IQ bracket filter + dependency level
       this.renderCurrentQuestion();
     } else if (this.currentSection === 2) {
       this.analyzeSection2Results();
@@ -1247,13 +1257,13 @@ export class SovereigntyEngine {
       this.updatePreliminaryFilters(null, null);
       this.currentSection = 3;
       this.currentQuestionIndex = 0;
-      this.buildSectionSequence(3); // Will apply IQ bracket + dependency + cognitive filters
+      await this.buildSectionSequence(3); // Will apply IQ bracket + dependency + cognitive filters
       this.renderCurrentQuestion();
     } else if (this.currentSection === 3) {
       this.analyzeSection3Results();
       this.currentSection = 4;
       this.currentQuestionIndex = 0;
-      this.buildSectionSequence(4);
+      await this.buildSectionSequence(4);
       this.renderCurrentQuestion();
     } else if (this.currentSection === 4) {
       this.analyzeSection4Results();
@@ -1392,6 +1402,10 @@ export class SovereigntyEngine {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([subclassId]) => {
+        if (!SUBCLASSES) {
+          console.warn('SUBCLASSES not loaded');
+          return null;
+        }
         const subclass = SUBCLASSES[subclassId];
         return subclass ? { ...subclass, matchScore: subclassScores[subclassId] } : null;
       })
