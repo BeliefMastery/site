@@ -22,6 +22,8 @@ export const ARCHETYPES = {
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'medium_high', // High seed spread, but not loyal long-term; reproduction happens but relationships don't last
     reproductiveDescription: 'Achieves reproduction through high mate access and seed spread, but typically lacks long-term relationship loyalty. High initial attraction but poor retention.',
+    // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
+    archetypalNarrative: 'You command attention and respect naturally. People look to you for leadership, and you deliver. You achieve reproduction through multiple partners and high mate access, but struggle with long-term loyalty. Relationships start strong with your charisma and authority, then fail when your need for control or variety creates conflict. You may have multiple children from different partners, but lack deep family bonds. Your status keeps you in the game, but your inability to maintain commitment means you age alone despite early success. You trade depth for breadth, intimacy for influence. The truth: you lead but rarely connect, conquer but seldom build.',
     explanation: 'The Alpha archetype represents natural leadership and authority. In psychological terms, this aligns with mature masculine energy that takes responsibility and commands respect through competence rather than force. The term "Alpha" in this context refers to social positioning and behavioral patterns, not biological dominance.'
   },
   alpha_xi: {
@@ -73,6 +75,8 @@ export const ARCHETYPES = {
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'medium', // Lower status and submissive, often resentful, gets used as second choice to "Alpha-widows" but still achieves reproduction
     reproductiveDescription: 'Typically achieves reproduction but as second choice or "backup" after Alpha relationships fail. Lower status and submissive positioning leads to resentful dynamics. Still manages reproduction despite being the fallback option.',
+    // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
+    archetypalNarrative: 'You are the reliable second choice. Your partner chose you after their Alpha relationship failed - they wanted the security and devotion you provide, but you know you were not their first choice. You achieve reproduction, but in a resentful dynamic where you give more than you receive. You suppress your needs to maintain harmony, accumulating resentment over years. Your children see your submission and internalize that pattern. You may succeed in reproduction, but you fail in self-respect. The truth: you serve those who don\'t fully desire you, loyal to people who settled for you, building a life on the foundation of being "good enough" rather than truly wanted.',
     explanation: 'The Beta archetype represents supportive, reliable behavioral patterns focused on harmony and cooperation. The term "Beta" refers to social positioning and behavioral tendencies toward support and service, not a ranking of value or worth.'
   },
   beta_iota: {
@@ -197,6 +201,8 @@ export const ARCHETYPES = {
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'high', // Super practical and highly suitable for provisioning as a mate choice; achieves reproduction through practical value and reliability
     reproductiveDescription: 'Achieves reproduction through high practical value and provisioning capacity. Highly suitable as a mate choice due to reliability, practical competence, and provider qualities. Best long-term relationship potential.',
+    // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
+    archetypalNarrative: 'You are the practical choice - reliable, stable, and good at provisioning. You achieve reproduction because you represent security and competence. Your partner chose you for your practical value, not your charisma or status. You work hard, provide well, and build stable families. But you may always wonder if your partner would have preferred an Alpha if one had been available. Your children respect you for your reliability but may not be inspired by your lack of dominance. You succeed where others fail: long-term relationships, stable families, consistent provision. The truth: you won through competence and reliability, trading excitement for stability, charisma for dependability. You are valued but perhaps not desired, respected but rarely envied.',
     explanation: 'The Delta archetype represents hardworking, practical behavioral patterns focused on duty and service. The term "Delta" refers to social positioning and behavioral tendencies toward practical work and reliability, not a ranking of value.'
   },
   delta_mu: {
@@ -237,6 +243,8 @@ export const ARCHETYPES = {
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'low', // Usually misses out on reproduction due to independence and isolation; values autonomy over social connection
     reproductiveDescription: 'Typically misses out on reproduction. Independence, isolation, and operating outside social hierarchies limit mate access. Values autonomy and self-reliance over reproductive opportunities.',
+    // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
+    archetypalNarrative: 'You chose independence over connection, and now you have it. You operate outside social hierarchies, valuing your autonomy above all else. This freedom comes at the cost of reproduction - you miss out because you refuse to play the mating game, to compete for status, to compromise your independence for partnership. You may rationalize this as "choosing freedom," but the reality is you chose isolation over reproduction. As you age alone, you may find your independence less satisfying than you imagined. Your genes end with you. The truth: you prioritized autonomy and achieved it completely - you answer to no one, belong nowhere, and reproduce with no one. Freedom without legacy, independence without continuation.',
     explanation: 'The Sigma archetype represents independent, self-sufficient behavioral patterns that operate outside traditional social hierarchies. The term "Sigma" refers to autonomous positioning and behavioral tendencies toward self-reliance, not a ranking system.'
   },
   sigma_kappa: {
@@ -291,6 +299,8 @@ export const ARCHETYPES = {
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'low', // Usually misses out on reproduction due to social disconnection and passivity
     reproductiveDescription: 'Typically misses out on reproduction. Social disconnection, passivity, and low social power prevent mate access. Lack of assertiveness and social skills limit reproductive opportunities.',
+    // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
+    archetypalNarrative: 'You are at the bottom of the social hierarchy. You lack the charisma of Alpha, the reliability of Delta, even the resentment-fueled persistence of Beta. You watch from the sidelines as others achieve what you cannot. Reproduction largely eludes you - your passivity, social disconnection, and lack of assertiveness prevent you from competing. You may rationalize this with various coping mechanisms, but the truth is clear: you have lost the reproductive game before it even began. Your genes likely end with you. As you age alone, you may become bitter about opportunities missed, or you may retreat further into isolation. The truth: you are the social reject, the one who doesn\'t compete, can\'t win, and won\'t reproduce. The system has sorted you to the bottom, and there you remain.',
     explanation: 'The Omega archetype represents passive, socially disconnected behavioral patterns. The term "Omega" refers to social positioning and behavioral tendencies toward isolation or withdrawal, not a judgment of worth. This pattern may reflect current circumstances rather than fixed identity.'
   },
   dark_omega: {

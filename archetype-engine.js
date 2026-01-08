@@ -1075,6 +1075,18 @@ export class ArchetypeEngine {
             <p style="color: var(--muted); line-height: 1.7;">${primary.growthEdge}</p>
           </div>
 
+          ${primary.archetypalNarrative ? `
+          <div style="margin-top: 1.5rem; background: rgba(100, 0, 0, 0.15); border-left: 4px solid #cc0000; border-radius: var(--radius); padding: 1.5rem;">
+            <h4 style="color: #cc0000; margin-top: 0; margin-bottom: 1rem;">Archetypal Narrative: The Brutal Truth</h4>
+            <p style="color: var(--muted); line-height: 1.8; font-size: 1rem; margin: 0; font-style: italic;">
+              ${primary.archetypalNarrative}
+            </p>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 1rem; margin-bottom: 0; line-height: 1.6; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+              <em>Note: This is an archetypal narrative - a generic but honest representation of the typical life pattern for this classification. It reflects common trajectories, not personal destiny. Archetypes describe patterns, not fixed fate. Understanding your pattern is the first step toward conscious change if you choose it.</em>
+            </p>
+          </div>
+          ` : ''}
+
           ${primary.reproductiveSuccess && primary.reproductiveDescription ? `
           <div style="margin-top: 1.5rem; background: rgba(0, 100, 200, 0.1); border-left: 3px solid #0066cc; border-radius: var(--radius); padding: 1rem;">
             <h4 style="color: #0066cc; margin-bottom: 0.75rem;">Reproductive/Mating Success Profile</h4>
