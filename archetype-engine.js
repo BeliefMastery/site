@@ -12,6 +12,7 @@ export class ArchetypeEngine {
     this.currentQuestionIndex = 0;
     this.gender = null; // 'male' or 'female'
     this.answers = {};
+    this.aspirationAnswers = {}; // Track aspiration test responses separately
     this.questionSequence = [];
     this.archetypeScores = {};
     this.analysisData = {
@@ -21,6 +22,7 @@ export class ArchetypeEngine {
       phase2Results: {},
       phase3Results: {},
       phase4Results: {},
+      aspirationAnalysis: {},
       primaryArchetype: null,
       secondaryArchetype: null,
       tertiaryArchetype: null,
@@ -538,6 +540,16 @@ export class ArchetypeEngine {
     const selectedOption = question.options[selectedIndex];
     if (!selectedOption) return;
 
+    // Track aspiration answers separately for bias mitigation
+    if (question.isAspiration && selectedOption.aspirationTarget) {
+      if (!this.aspirationAnswers[question.id]) {
+        this.aspirationAnswers[question.id] = [];
+      }
+      this.aspirationAnswers[question.id].push(selectedOption.aspirationTarget);
+      // Don't apply direct scoring for aspiration questions - they're used for reverse psychology
+      return;
+    }
+
     selectedOption.archetypes.forEach(archId => {
       // Map to gender-specific archetype if gender is selected
       let targetArchId = archId;
@@ -596,6 +608,18 @@ export class ArchetypeEngine {
   }
 
   calculateFinalScores() {
+    // Apply aspiration-based adjustments BEFORE final calculation
+    if (this.analysisData.aspirationAnalysis && this.analysisData.aspirationAnalysis.adjustments) {
+      const adjustments = this.analysisData.aspirationAnalysis.adjustments;
+      Object.keys(adjustments).forEach(archId => {
+        if (this.archetypeScores[archId]) {
+          // Apply adjustment to phase 1 and 2 scores (behavioral evidence)
+          this.archetypeScores[archId].phase1 *= adjustments[archId];
+          this.archetypeScores[archId].phase2 *= adjustments[archId];
+        }
+      });
+    }
+    
     // Apply phase weights: Phase 1 (50%), Phase 2 (30%), Phase 3 (15%), Phase 4 (5%)
     Object.keys(this.archetypeScores).forEach(archId => {
       const scores = this.archetypeScores[archId];
@@ -748,6 +772,150 @@ export class ArchetypeEngine {
       aspirationalTraits: this.identifyAspirationalTraits(),
       timestamp: new Date().toISOString()
     };
+    
+    // Analyze aspirations for bias mitigation
+    this.analysisData.aspirationAnalysis = this.analyzeAspirations();
+  }
+  
+  analyzeAspirations() {
+    // Collect all aspiration targets from aspiration questions
+    const aspirationTargets = [];
+    Object.values(this.aspirationAnswers).forEach(answerArray => {
+      aspirationTargets.push(...answerArray);
+    });
+    
+    // Count frequency of each aspiration
+    const aspirationCounts = {};
+    aspirationTargets.forEach(target => {
+      aspirationCounts[target] = (aspirationCounts[target] || 0) + 1;
+    });
+    
+    // Find most frequently aspired-to archetype
+    const topAspiration = Object.keys(aspirationCounts)
+      .sort((a, b) => aspirationCounts[b] - aspirationCounts[a])[0];
+    
+    // Get current top behavioral archetypes (before aspiration adjustment)
+    const behavioralTop3 = Object.keys(this.archetypeScores)
+      .map(archId => ({
+        id: archId,
+        score: this.archetypeScores[archId].phase1 + this.archetypeScores[archId].phase2
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(a => a.id);
+    
+    const topBehavioral = behavioralTop3[0];
+    
+    // Apply reverse psychology logic based on gender
+    const adjustments = this.calculateAspirationAdjustments(topAspiration, topBehavioral, aspirationCounts);
+    
+    return {
+      topAspiration: topAspiration,
+      topBehavioral: topBehavioral,
+      aspirationCounts: aspirationCounts,
+      adjustments: adjustments,
+      explanation: this.generateAspirationExplanation(topAspiration, topBehavioral, adjustments)
+    };
+  }
+  
+  calculateAspirationAdjustments(aspiredTo, topBehavioral, aspirationCounts) {
+    const adjustments = {};
+    
+    // Reverse psychology patterns (strongest for males, but apply to all)
+    if (this.gender === 'male') {
+      // Male-specific patterns (stronger reverse psychology)
+      
+      // Pattern 1: Desiring Alpha → likely Beta (aspiring to what they lack)
+      if (aspiredTo === 'alpha' && topBehavioral !== 'alpha' && aspirationCounts['alpha'] >= 2) {
+        adjustments['beta'] = 1.25; // Boost beta score by 25%
+        adjustments['alpha'] = 0.9; // Reduce alpha score by 10% (they're over-reporting)
+        if (topBehavioral === 'omega') {
+          adjustments['beta'] = 1.35; // Even stronger if currently omega
+        }
+      }
+      
+      // Pattern 2: Comfortable with Beta → possibly Sigma (okay with what others reject)
+      if (aspirationCounts['beta'] >= 2 && topBehavioral !== 'beta' && topBehavioral !== 'alpha') {
+        adjustments['sigma'] = 1.2; // Boost sigma by 20%
+        adjustments['beta'] = 0.85; // Reduce beta reporting
+      }
+      
+      // Pattern 3: Desiring Sigma → possibly Beta/Omega trying to escape
+      if (aspiredTo === 'sigma' && (topBehavioral === 'beta' || topBehavioral === 'omega')) {
+        adjustments['beta'] = 1.15; // Likely beta wanting escape
+        adjustments['omega'] = topBehavioral === 'omega' ? 1.1 : 0.95;
+        adjustments['sigma'] = 0.9; // Reduce sigma (it's aspirational, not actual)
+      }
+      
+      // Pattern 4: Desiring Beta → possibly Alpha feeling burdened
+      if (aspiredTo === 'beta' && topBehavioral === 'alpha') {
+        adjustments['alpha'] = 1.1; // Confirm alpha, but feeling burdened
+        adjustments['beta'] = 0.8; // Beta is aspirational escape, not actual
+      }
+      
+      // Pattern 5: Admiring/Envious of Alpha → likely Beta or Omega
+      if (aspirationCounts['alpha'] >= 2 && (topBehavioral === 'beta' || topBehavioral === 'omega')) {
+        adjustments[topBehavioral] = 1.2; // Confirm current position
+        adjustments['alpha'] = 0.85; // Reduce alpha (aspirational, not actual)
+      }
+      
+      // Pattern 6: Admiring Gamma → possibly Delta wanting recognition
+      if (aspirationCounts['gamma'] >= 2 && topBehavioral === 'delta') {
+        adjustments['delta'] = 1.1; // Confirm delta
+        adjustments['gamma'] = 0.9; // Gamma is aspirational
+      }
+      
+      // Pattern 7: Multiple aspirations → likely Beta (unclear identity)
+      const uniqueAspirations = Object.keys(aspirationCounts).length;
+      if (uniqueAspirations >= 3 && topBehavioral !== 'gamma' && topBehavioral !== 'sigma') {
+        adjustments['beta'] = 1.15; // Scattered aspirations suggest beta
+      }
+    } else {
+      // Female-specific patterns (less pronounced reverse psychology, but still present)
+      
+      // Pattern 1: Desiring Alpha-Female → possibly Beta-Female
+      if (aspiredTo === 'alpha' && topBehavioral !== 'alpha' && aspirationCounts['alpha'] >= 2) {
+        adjustments['beta'] = 1.15; // Boost beta
+        adjustments['alpha'] = 0.9;
+      }
+      
+      // Pattern 2: Comfortable with Beta → possibly Sigma-Female
+      if (aspirationCounts['beta'] >= 2 && topBehavioral !== 'beta') {
+        adjustments['sigma'] = 1.1;
+      }
+      
+      // Pattern 3: Multiple aspirations → likely Beta-Female
+      const uniqueAspirations = Object.keys(aspirationCounts).length;
+      if (uniqueAspirations >= 3) {
+        adjustments['beta'] = 1.1;
+      }
+    }
+    
+    return adjustments;
+  }
+  
+  generateAspirationExplanation(aspiredTo, topBehavioral, adjustments) {
+    if (!aspiredTo || Object.keys(adjustments).length === 0) {
+      return null;
+    }
+    
+    const aspirationAnalysis = this.analysisData.aspirationAnalysis;
+    const aspirationCounts = aspirationAnalysis ? aspirationAnalysis.aspirationCounts : {};
+    
+    const genderText = this.gender === 'male' ? 'For males' : 'For females';
+    let explanation = `${genderText}, aspiration patterns can reveal self-reporting bias. `;
+    
+    if (aspiredTo === 'alpha' && adjustments['beta']) {
+      explanation += `You aspire to Alpha qualities, which often indicates you're actually Beta - we desire what we lack. Your behavioral patterns suggest ${topBehavioral}, but your aspirations point to Beta.`;
+    } else if (adjustments['sigma'] && Object.keys(aspirationCounts).some(k => k === 'beta' && aspirationCounts[k] >= 2)) {
+      explanation += `Being comfortable with Beta identification suggests you may actually be Sigma - comfortable with what others reject indicates independence.`;
+    } else if (aspiredTo === 'sigma' && adjustments['beta']) {
+      explanation += `Desiring Sigma independence often indicates Beta or Omega trying to escape social positioning, rather than genuine Sigma orientation.`;
+    } else {
+      explanation += `Your aspirations for ${aspiredTo} differ from your behavioral patterns (${topBehavioral}), suggesting some self-reporting bias.`;
+    }
+    
+    return explanation;
   }
 
   calculateCoreGroupScores() {
@@ -942,6 +1110,28 @@ export class ArchetypeEngine {
       `;
     }
 
+    // Aspiration Analysis & Bias Mitigation
+    const aspirationAnalysis = this.analysisData.aspirationAnalysis;
+    if (aspirationAnalysis && aspirationAnalysis.explanation) {
+      resultsHTML += `
+        <div class="aspiration-analysis-section" style="background: rgba(255, 184, 0, 0.15); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">
+          <h3 style="color: var(--brand); margin-top: 0;">Aspiration Analysis (Bias Mitigation)</h3>
+          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">
+            <strong>Top Aspiration:</strong> ${aspirationAnalysis.topAspiration || 'None identified'}<br>
+            <strong>Top Behavioral Pattern:</strong> ${aspirationAnalysis.topBehavioral || 'None identified'}
+          </p>
+          <div style="background: rgba(255, 255, 255, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">
+            <p style="color: var(--muted); line-height: 1.7; margin: 0; font-style: italic;">
+              ${aspirationAnalysis.explanation}
+            </p>
+          </div>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1rem; margin-bottom: 0; line-height: 1.6;">
+            <em>Note: Your archetype classification has been adjusted based on aspiration patterns to mitigate self-reporting bias. This reverse psychology methodology helps reveal actual archetype positioning versus aspirational reporting.</em>
+          </p>
+        </div>
+      `;
+    }
+
     // Aspirational Traits
     const aspirational = this.analysisData.phase3Results?.aspirationalTraits || [];
     if (aspirational.length > 0) {
@@ -1018,6 +1208,7 @@ export class ArchetypeEngine {
       currentQuestionIndex: this.currentQuestionIndex,
       gender: this.gender,
       answers: this.answers,
+      aspirationAnswers: this.aspirationAnswers,
       archetypeScores: this.archetypeScores,
       analysisData: this.analysisData
     };
@@ -1033,6 +1224,7 @@ export class ArchetypeEngine {
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
         this.gender = progress.gender || null;
         this.answers = progress.answers || {};
+        this.aspirationAnswers = progress.aspirationAnswers || {};
         this.archetypeScores = progress.archetypeScores || {};
         this.analysisData = progress.analysisData || this.analysisData;
         
