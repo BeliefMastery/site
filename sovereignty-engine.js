@@ -1448,12 +1448,32 @@ export class SovereigntyEngine {
   getCurrentQuestionNumber() {
     let questionNum = 0;
     for (let s = 1; s < this.currentSection; s++) {
-      if (s === 1) questionNum += SECTION_1_USAGE_PATTERNS.length;
-      if (s === 2) questionNum += SECTION_2_COGNITIVE_STYLE.length;
-      if (s === 3) questionNum += SECTION_3_ATTACHMENT.length;
+      // Use actual filtered question sequence lengths
+      if (s === 1) {
+        const section1Questions = this.filterSection1Questions([...SECTION_1_USAGE_PATTERNS]);
+        questionNum += section1Questions.length;
+      } else if (s === 2) {
+        const section2Questions = this.filterSection2Questions([...SECTION_2_COGNITIVE_STYLE]);
+        questionNum += section2Questions.length;
+      } else if (s === 3) {
+        const section3Questions = this.filterSection3Questions([...SECTION_3_ATTACHMENT]);
+        questionNum += section3Questions.length;
+      }
     }
     questionNum += this.currentQuestionIndex + 1;
     return questionNum;
+  }
+  
+  getTotalQuestionsEstimate() {
+    // Estimate total questions based on filters
+    let total = 0;
+    const section1Questions = this.filterSection1Questions([...SECTION_1_USAGE_PATTERNS]);
+    const section2Questions = this.filterSection2Questions([...SECTION_2_COGNITIVE_STYLE]);
+    const section3Questions = this.filterSection3Questions([...SECTION_3_ATTACHMENT]);
+    const section4Questions = this.filterSection4Questions([...SECTION_4_SOVEREIGNTY]);
+    total = section1Questions.length + section2Questions.length + 
+            section3Questions.length + section4Questions.length;
+    return total;
   }
 
   resetAssessment() {
@@ -1466,10 +1486,17 @@ export class SovereigntyEngine {
         cognitiveComplexity: 0,
         driftRisk: 0
       };
-      this.currentSection = 1;
+      this.iqBracket = null;
+      this.currentSection = 0; // Reset to IQ selection
       this.currentQuestionIndex = 0;
+      this.preliminaryFilters = {
+        aiUsageFrequency: null,
+        dependencyLevel: null,
+        cognitiveLevel: null
+      };
       this.analysisData = {
         timestamp: new Date().toISOString(),
+        iqBracket: null,
         section1Results: {},
         section2Results: {},
         section3Results: {},
@@ -1493,6 +1520,9 @@ export class SovereigntyEngine {
       if (introSection) introSection.style.display = 'block';
       if (questionnaireSection) questionnaireSection.style.display = 'none';
       if (resultsContainer) resultsContainer.style.display = 'none';
+      
+      // Show IQ bracket selection
+      this.showIQBracketSelection();
     }
   }
 
@@ -1525,9 +1555,23 @@ export class SovereigntyEngine {
           cognitiveComplexity: 0,
           driftRisk: 0
         };
+        this.preliminaryFilters = progress.preliminaryFilters || {
+          aiUsageFrequency: null,
+          dependencyLevel: null,
+          cognitiveLevel: null
+        };
         this.analysisData = progress.analysisData || this.analysisData;
         
-        if (this.currentSection > 1 || this.currentQuestionIndex > 0) {
+        // Restore IQ bracket if set
+        if (this.iqBracket) {
+          this.analysisData.iqBracket = this.iqBracket;
+        }
+        
+        // Restore state
+        if (this.currentSection === 0) {
+          // Show IQ bracket selection if not yet selected
+          this.showIQBracketSelection();
+        } else if (this.currentSection > 0 && this.currentSection <= 4) {
           this.buildSectionSequence(this.currentSection);
           this.showQuestionContainer();
           this.renderCurrentQuestion();
