@@ -1,17 +1,26 @@
-// Manipulation Engine - Version 2
+// Manipulation Engine - Version 2.1
 // Multi-Phase Questionnaire Architecture
 // Optimized for strategic prioritization and experiential assessment
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { MANIPULATION_VECTORS } from './manipulation-data/manipulation-vectors.js';
-import { MANIPULATION_TACTICS } from './manipulation-data/manipulation-tactics.js';
-import { SYMPTOM_QUESTIONS } from './manipulation-data/symptom-questions.js';
-import { EFFECT_QUESTIONS } from './manipulation-data/effect-questions.js';
-import { CONSEQUENCE_QUESTIONS } from './manipulation-data/consequence-questions.js';
-import { VECTOR_MAPPING } from './manipulation-data/vector-mapping.js';
-import { PHASE_1_VECTOR_SCREENING, generatePhase3VectorQuestions } from './manipulation-data/manipulation-questions-v2.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
+// Data modules - will be loaded lazily
+let MANIPULATION_VECTORS, MANIPULATION_TACTICS;
+let SYMPTOM_QUESTIONS, EFFECT_QUESTIONS, CONSEQUENCE_QUESTIONS;
+let VECTOR_MAPPING;
+let PHASE_1_VECTOR_SCREENING, generatePhase3VectorQuestions;
+
+/**
+ * Manipulation Engine - Identifies manipulation vectors through multi-phase assessment
+ */
 class ManipulationEngine {
+  /**
+   * Initialize the manipulation assessment engine
+   */
   constructor() {
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
@@ -35,13 +44,91 @@ class ManipulationEngine {
       questionSequence: []
     };
     
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('ManipulationEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('manipulation-assessment', '1.0.0');
+    
     this.init();
   }
 
+  /**
+   * Initialize the engine - attach listeners and load stored data
+   */
   init() {
     this.attachEventListeners();
-    this.loadStoredData();
-    this.buildPhase1Sequence();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
+  }
+
+  /**
+   * Load manipulation data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadManipulationData() {
+    if (MANIPULATION_VECTORS && PHASE_1_VECTOR_SCREENING) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load vectors data
+      const vectorsModule = await loadDataModule(
+        './manipulation-data/manipulation-vectors.js',
+        'Manipulation Vectors'
+      );
+      MANIPULATION_VECTORS = vectorsModule.MANIPULATION_VECTORS;
+
+      // Load tactics data
+      const tacticsModule = await loadDataModule(
+        './manipulation-data/manipulation-tactics.js',
+        'Manipulation Tactics'
+      );
+      MANIPULATION_TACTICS = tacticsModule.MANIPULATION_TACTICS;
+
+      // Load questions data
+      const symptomModule = await loadDataModule(
+        './manipulation-data/symptom-questions.js',
+        'Symptom Questions'
+      );
+      SYMPTOM_QUESTIONS = symptomModule.SYMPTOM_QUESTIONS;
+
+      const effectModule = await loadDataModule(
+        './manipulation-data/effect-questions.js',
+        'Effect Questions'
+      );
+      EFFECT_QUESTIONS = effectModule.EFFECT_QUESTIONS;
+
+      const consequenceModule = await loadDataModule(
+        './manipulation-data/consequence-questions.js',
+        'Consequence Questions'
+      );
+      CONSEQUENCE_QUESTIONS = consequenceModule.CONSEQUENCE_QUESTIONS;
+
+      // Load mapping data
+      const mappingModule = await loadDataModule(
+        './manipulation-data/vector-mapping.js',
+        'Vector Mapping'
+      );
+      VECTOR_MAPPING = mappingModule.VECTOR_MAPPING;
+
+      // Load phase 1 questions and generator
+      const questionsModule = await loadDataModule(
+        './manipulation-data/manipulation-questions-v2.js',
+        'Manipulation Questions'
+      );
+      PHASE_1_VECTOR_SCREENING = questionsModule.PHASE_1_VECTOR_SCREENING;
+      generatePhase3VectorQuestions = questionsModule.generatePhase3VectorQuestions;
+
+      this.debugReporter.recordSection('Phase 1', PHASE_1_VECTOR_SCREENING?.length || 0);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadManipulationData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
   }
 
   attachEventListeners() {
@@ -83,15 +170,37 @@ class ManipulationEngine {
         }
       });
     }
+    
+    // Keyboard navigation support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.matches('button, input[type="radio"], input[type="checkbox"]')) {
+        // Let default behavior handle it
+        return;
+      }
+      if (e.key === 'ArrowRight' || (e.key === 'Enter' && e.ctrlKey)) {
+        e.preventDefault();
+        this.nextQuestion();
+      } else if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && e.ctrlKey)) {
+        e.preventDefault();
+        this.prevQuestion();
+      }
+    });
   }
 
-  buildPhase1Sequence() {
+  /**
+   * Build Phase 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase1Sequence() {
+    await this.loadManipulationData();
+    
     // Phase 1: Vector Screening (6-8 questions)
     this.questionSequence = [];
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     
     this.questionSequence.push(...PHASE_1_VECTOR_SCREENING);
+    this.debugReporter.recordQuestionCount(this.questionSequence.length);
     
     // Show questionnaire if not already shown
     const questionnaireSection = document.getElementById('questionnaireSection');
@@ -102,99 +211,138 @@ class ManipulationEngine {
     this.renderCurrentQuestion();
   }
 
-  analyzePhase1Results() {
-    // Calculate vector scores from Phase 1 answers
-    this.vectorScores = {};
+  /**
+   * Analyze Phase 1 results and calculate vector scores
+   * @returns {Promise<void>}
+   */
+  async analyzePhase1Results() {
+    await this.loadManipulationData();
     
-    Object.keys(MANIPULATION_VECTORS).forEach(vectorKey => {
-      const vector = MANIPULATION_VECTORS[vectorKey];
-      let totalScore = 0;
-      let totalWeight = 0;
+    try {
+      // Calculate vector scores from Phase 1 answers
+      this.vectorScores = {};
       
-      // Find questions that map to this vector
-      PHASE_1_VECTOR_SCREENING.forEach(question => {
-        const answer = this.answers[question.id];
-        if (answer && answer.mapsTo && answer.mapsTo.vector === vectorKey) {
-          const state = answer.mapsTo.state;
-          const weight = answer.mapsTo.weight || 1;
-          
-          // Score: high = 3, medium = 1, low = 0
-          const score = state === 'high' ? 3 : state === 'medium' ? 1 : 0;
-          totalScore += score * weight;
-          totalWeight += weight;
-        }
+      Object.keys(MANIPULATION_VECTORS).forEach(vectorKey => {
+        const vector = MANIPULATION_VECTORS[vectorKey];
+        let totalScore = 0;
+        let totalWeight = 0;
+        
+        // Find questions that map to this vector
+        PHASE_1_VECTOR_SCREENING.forEach(question => {
+          const answer = this.answers[question.id];
+          if (answer && answer.mapsTo && answer.mapsTo.vector === vectorKey) {
+            const state = answer.mapsTo.state;
+            const weight = answer.mapsTo.weight || 1;
+            
+            // Score: high = 3, medium = 1, low = 0
+            const score = state === 'high' ? 3 : state === 'medium' ? 1 : 0;
+            totalScore += score * weight;
+            totalWeight += weight;
+          }
+        });
+        
+        const avgScore = totalWeight > 0 ? totalScore / totalWeight : 0;
+        const state = avgScore >= 2 ? 'high' : avgScore >= 0.5 ? 'medium' : 'low';
+        
+        this.vectorScores[vectorKey] = {
+          state: state,
+          score: avgScore,
+          vector: vector
+        };
       });
       
-      const avgScore = totalWeight > 0 ? totalScore / totalWeight : 0;
-      const state = avgScore >= 2 ? 'high' : avgScore >= 0.5 ? 'medium' : 'low';
+      this.analysisData.phase1Results = this.vectorScores;
       
-      this.vectorScores[vectorKey] = {
-        state: state,
-        score: avgScore,
-        vector: vector
-      };
-    });
-    
-    this.analysisData.phase1Results = this.vectorScores;
-    
-    // Build Phase 2 sequence
-    this.buildPhase2Sequence();
-  }
-
-  buildPhase2Sequence() {
-    // Phase 2: Vector Prioritization
-    // Show Phase 1 results and ask user to prioritize 2-3 vectors
-    this.questionSequence = [];
-    this.currentPhase = 2;
-    this.currentQuestionIndex = 0;
-    
-    // Identify likely vectors (high or medium state)
-    const likelyVectors = Object.keys(this.vectorScores)
-      .filter(key => this.vectorScores[key].state === 'high' || this.vectorScores[key].state === 'medium')
-      .map(key => ({
-        id: key,
-        vector: MANIPULATION_VECTORS[key],
-        score: this.vectorScores[key].score,
-        state: this.vectorScores[key].state
-      }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 6); // Top 6 for selection
-    
-    // Create prioritization question
-    this.questionSequence.push({
-      id: 'p2_prioritization',
-      question: 'Based on your initial screening, which manipulation vectors would you like to explore in depth?',
-      type: 'multiselect',
-      maxSelections: 3,
-      options: likelyVectors.map(v => ({
-        text: `${v.vector.name}: ${v.vector.description}`,
-        mapsTo: { vector: v.id, priority: v.state === 'high' ? 'high' : 'medium' },
-        vector: v.id
-      })),
-      phase: 2,
-      likelyVectors: likelyVectors
-    });
-    
-    this.renderCurrentQuestion();
-  }
-
-  processPhase2Results() {
-    // Get user's prioritized vectors
-    const prioritizationAnswer = this.answers['p2_prioritization'];
-    if (Array.isArray(prioritizationAnswer)) {
-      this.prioritizedVectors = prioritizationAnswer.map(item => item.mapsTo.vector);
-      this.analysisData.prioritizedVectors = this.prioritizedVectors;
+      // Build Phase 2 sequence
+      await this.buildPhase2Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzePhase1Results');
+      ErrorHandler.showUserError('Failed to analyze Phase 1 results. Please try again.');
     }
-    
-    // Build Phase 3 sequence
-    this.buildPhase3Sequence();
   }
 
-  buildPhase3Sequence() {
-    // Phase 3: Deep Assessment
-    this.questionSequence = [];
-    this.currentPhase = 3;
-    this.currentQuestionIndex = 0;
+  /**
+   * Build Phase 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase2Sequence() {
+    await this.loadManipulationData();
+    
+    try {
+      // Phase 2: Vector Prioritization
+      // Show Phase 1 results and ask user to prioritize 2-3 vectors
+      this.questionSequence = [];
+      this.currentPhase = 2;
+      this.currentQuestionIndex = 0;
+      
+      // Identify likely vectors (high or medium state)
+      const likelyVectors = Object.keys(this.vectorScores)
+        .filter(key => this.vectorScores[key].state === 'high' || this.vectorScores[key].state === 'medium')
+        .map(key => ({
+          id: key,
+          vector: MANIPULATION_VECTORS[key],
+          score: this.vectorScores[key].score,
+          state: this.vectorScores[key].state
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 6); // Top 6 for selection
+      
+      // Create prioritization question
+      this.questionSequence.push({
+        id: 'p2_prioritization',
+        question: 'Based on your initial screening, which manipulation vectors would you like to explore in depth?',
+        type: 'multiselect',
+        maxSelections: 3,
+        options: likelyVectors.map(v => ({
+          text: `${v.vector.name}: ${v.vector.description}`,
+          mapsTo: { vector: v.id, priority: v.state === 'high' ? 'high' : 'medium' },
+          vector: v.id
+        })),
+        phase: 2,
+        likelyVectors: likelyVectors
+      });
+      
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase2Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 2. Please refresh the page.');
+    }
+  }
+
+  /**
+   * Process Phase 2 results and proceed to Phase 3
+   * @returns {Promise<void>}
+   */
+  async processPhase2Results() {
+    try {
+      // Get user's prioritized vectors
+      const prioritizationAnswer = this.answers['p2_prioritization'];
+      if (Array.isArray(prioritizationAnswer)) {
+        this.prioritizedVectors = prioritizationAnswer.map(item => item.mapsTo.vector);
+        this.analysisData.prioritizedVectors = this.prioritizedVectors;
+      }
+      
+      // Build Phase 3 sequence
+      await this.buildPhase3Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'processPhase2Results');
+      ErrorHandler.showUserError('Failed to process Phase 2 results.');
+    }
+  }
+
+  /**
+   * Build Phase 3 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase3Sequence() {
+    await this.loadManipulationData();
+    
+    try {
+      // Phase 3: Deep Assessment
+      this.questionSequence = [];
+      this.currentPhase = 3;
+      this.currentQuestionIndex = 0;
     
     // Collect all existing questions organized by category
     const existingQuestions = {
@@ -994,35 +1142,48 @@ class ManipulationEngine {
     }
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      currentPhase: this.currentPhase,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      vectorScores: this.vectorScores,
-      prioritizedVectors: this.prioritizedVectors,
-      assessedVectors: this.assessedVectors,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('manipulationProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        currentPhase: this.currentPhase,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        vectorScores: this.vectorScores,
+        prioritizedVectors: this.prioritizedVectors,
+        assessedVectors: this.assessedVectors,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('manipulationProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.currentPhase = data.currentPhase || 1;
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
-        this.vectorScores = data.vectorScores || {};
-        this.prioritizedVectors = data.prioritizedVectors || [];
-        this.assessedVectors = data.assessedVectors || [];
-        
-        // Restore questionnaire state
-        if (this.currentQuestionIndex > 0) {
-          if (this.currentPhase === 1) {
-            this.buildPhase1Sequence();
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.currentPhase = data.currentPhase || 1;
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.vectorScores = data.vectorScores || {};
+      this.prioritizedVectors = data.prioritizedVectors || [];
+      this.assessedVectors = data.assessedVectors || [];
+      this.analysisData = data.analysisData || this.analysisData;
+      
+      // Restore questionnaire state
+      if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
+        if (this.currentPhase === 1) {
+          await this.buildPhase1Sequence();
           } else if (this.currentPhase === 2) {
             this.analyzePhase1Results();
             this.buildPhase2Sequence();

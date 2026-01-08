@@ -1,6 +1,7 @@
 /**
  * Lazy data loading utility for assessment engines
  * Loads large data files only when needed to improve initial page load
+ * Integrates with DebugReporter for comprehensive tracking
  */
 
 /**
@@ -9,13 +10,36 @@
 const dataCache = new Map();
 
 /**
+ * Optional debug reporter instance for tracking
+ */
+let debugReporter = null;
+
+/**
+ * Set the debug reporter instance for tracking data loading
+ * @param {Object} reporter - DebugReporter instance
+ */
+export function setDebugReporter(reporter) {
+  debugReporter = reporter;
+}
+
+/**
  * Load a data module dynamically
  * @param {string} modulePath - Path to the data module
+ * @param {string} moduleName - Optional human-readable name for debugging
  * @returns {Promise<any>} - The exported data from the module
  */
-export async function loadDataModule(modulePath) {
+export async function loadDataModule(modulePath, moduleName = null) {
+  // Register with debug reporter if available
+  if (debugReporter) {
+    debugReporter.registerDataModule(modulePath, moduleName || modulePath);
+    debugReporter.markModuleLoading(modulePath);
+  }
+
   // Check cache first
   if (dataCache.has(modulePath)) {
+    if (debugReporter) {
+      debugReporter.markModuleLoaded(modulePath, dataCache.get(modulePath));
+    }
     return dataCache.get(modulePath);
   }
 
@@ -26,8 +50,17 @@ export async function loadDataModule(modulePath) {
     // Cache the module
     dataCache.set(modulePath, module);
     
+    // Mark as loaded in debug reporter
+    if (debugReporter) {
+      debugReporter.markModuleLoaded(modulePath, module);
+    }
+    
     return module;
   } catch (error) {
+    // Mark as failed in debug reporter
+    if (debugReporter) {
+      debugReporter.markModuleFailed(modulePath, error);
+    }
     console.error(`Failed to load data module: ${modulePath}`, error);
     throw error;
   }

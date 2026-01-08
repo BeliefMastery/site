@@ -1,10 +1,15 @@
 // Archetype Analysis Engine
 // Multi-Tier Assessment System for identifying primary, secondary, and tertiary archetypes
-// Version 1.0 - Following bias-mitigation principles
+// Version 1.1 - Optimized with lazy loading and debug reporting
 
-import { ARCHETYPES, CORE_GROUPS } from './archetype-data/archetypes.js';
-import { PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS } from './archetype-data/archetype-questions.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+
+// Data modules - will be loaded lazily
+let ARCHETYPES, CORE_GROUPS;
+let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
 
 export class ArchetypeEngine {
   constructor() {
@@ -33,20 +38,30 @@ export class ArchetypeEngine {
       questionSequence: []
     };
 
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('ArchetypeEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+
+    // Initialize data store
+    this.dataStore = new DataStore('archetype-assessment', '1.0.0');
+
     this.init();
   }
 
   init() {
     // Ensure DOM is ready before attaching event listeners
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('DOMContentLoaded', async () => {
         this.attachEventListeners();
-        this.loadStoredData();
+        await this.loadStoredData();
         this.initializeScores();
       });
     } else {
       this.attachEventListeners();
-      this.loadStoredData();
+      this.loadStoredData().catch(error => {
+        this.debugReporter.logError(error, 'init');
+      });
       this.initializeScores();
     }
   }
@@ -232,15 +247,19 @@ export class ArchetypeEngine {
       Object.keys(iqBrackets).forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
-          button.addEventListener('click', () => {
+          button.addEventListener('click', async () => {
             this.iqBracket = iqBrackets[buttonId];
             this.analysisData.iqBracket = iqBrackets[buttonId];
             this.currentPhase = 1;
-            this.buildPhase1Sequence();
-            this.showQuestionContainer();
-            this.renderCurrentQuestion();
-            this.updateNavigation();
-            this.saveProgress();
+            try {
+              await this.buildPhase1Sequence();
+              this.showQuestionContainer();
+              this.renderCurrentQuestion();
+              this.updateNavigation();
+              this.saveProgress();
+            } catch (error) {
+              this.debugReporter.logError(error, 'IQ bracket selection');
+            }
           });
 
           // Add hover effects
@@ -267,7 +286,52 @@ export class ArchetypeEngine {
     this.showQuestionContainer();
   }
 
-  buildPhase1Sequence() {
+  /**
+   * Load archetype data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadArchetypeData() {
+    if (ARCHETYPES && PHASE_1_QUESTIONS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load archetypes data
+      const archetypesModule = await loadDataModule(
+        './archetype-data/archetypes.js',
+        'Archetypes Data'
+      );
+      ARCHETYPES = archetypesModule.ARCHETYPES;
+      CORE_GROUPS = archetypesModule.CORE_GROUPS;
+
+      // Load questions data
+      const questionsModule = await loadDataModule(
+        './archetype-data/archetype-questions.js',
+        'Archetype Questions'
+      );
+      PHASE_1_QUESTIONS = questionsModule.PHASE_1_QUESTIONS;
+      PHASE_2_QUESTIONS = questionsModule.PHASE_2_QUESTIONS;
+      PHASE_3_QUESTIONS = questionsModule.PHASE_3_QUESTIONS;
+      PHASE_4_QUESTIONS = questionsModule.PHASE_4_QUESTIONS;
+
+      this.debugReporter.recordSection('Phase 1', PHASE_1_QUESTIONS?.length || 0);
+      this.debugReporter.recordSection('Phase 2', PHASE_2_QUESTIONS?.length || 0);
+      this.debugReporter.recordSection('Phase 3', PHASE_3_QUESTIONS?.length || 0);
+      this.debugReporter.recordSection('Phase 4', PHASE_4_QUESTIONS?.length || 0);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadArchetypeData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
+  }
+
+  /**
+   * Build Phase 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase1Sequence() {
+    await this.loadArchetypeData();
+    
     // Phase 1: Core Orientation - Filter/prioritize based on IQ bracket
     let questions = [...PHASE_1_QUESTIONS];
     
@@ -277,11 +341,18 @@ export class ArchetypeEngine {
     }
     
     this.questionSequence = questions;
+    this.debugReporter.recordQuestionCount(questions.length);
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
-  buildPhase2Sequence() {
+  /**
+   * Build Phase 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase2Sequence() {
+    await this.loadArchetypeData();
+    
     // Phase 2: Dimensional Refinement - Filter/prioritize based on IQ bracket
     this.currentPhase = 2;
     this.currentQuestionIndex = 0;
@@ -293,11 +364,18 @@ export class ArchetypeEngine {
     }
     
     this.questionSequence = questions;
+    this.debugReporter.recordQuestionCount(questions.length);
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
-  buildPhase3Sequence() {
+  /**
+   * Build Phase 3 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase3Sequence() {
+    await this.loadArchetypeData();
+    
     // Phase 3: Shadow/Integration Assessment - Keep aspiration questions, filter others
     this.currentPhase = 3;
     this.currentQuestionIndex = 0;
@@ -314,6 +392,7 @@ export class ArchetypeEngine {
     }
     
     this.questionSequence = questions;
+    this.debugReporter.recordQuestionCount(questions.length);
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
@@ -414,16 +493,25 @@ export class ArchetypeEngine {
     return selected.slice(0, targetCount);
   }
 
-  buildPhase4Sequence() {
+  /**
+   * Build Phase 4 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase4Sequence() {
+    await this.loadArchetypeData();
+    
     // Phase 4: Validation & Narrative Matching (5 narrative vignettes)
     this.currentPhase = 4;
     this.currentQuestionIndex = 0;
     this.questionSequence = [...PHASE_4_QUESTIONS];
+    this.debugReporter.recordQuestionCount(this.questionSequence.length);
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
   renderCurrentQuestion() {
+    const renderStart = performance.now();
+    
     if (this.questionSequence.length === 0) {
       this.finalizeResults();
       return;
@@ -456,6 +544,16 @@ export class ArchetypeEngine {
     // Replace content instead of appending - only show current question
     container.innerHTML = html;
     this.updateNavigation();
+    
+    // Track render performance
+    const renderDuration = performance.now() - renderStart;
+    this.debugReporter.recordRender('question', renderDuration);
+    
+    // Focus management for accessibility
+    const firstInput = container.querySelector('input, button, select, textarea');
+    if (firstInput) {
+      DOMUtils.focusElement(firstInput);
+    }
   }
 
   getPhaseExplanation(phase) {
@@ -910,11 +1008,11 @@ export class ArchetypeEngine {
     };
   }
 
-  nextQuestion() {
+  async nextQuestion() {
     // Check if current question has been answered
     const currentQuestion = this.questionSequence[this.currentQuestionIndex];
     if (currentQuestion && !this.answers[currentQuestion.id]) {
-      alert('Please select an answer before proceeding.');
+      ErrorHandler.showUserError('Please select an answer before proceeding.');
       return;
     }
 
@@ -924,7 +1022,7 @@ export class ArchetypeEngine {
       this.saveProgress();
     } else {
       // End of current phase
-      this.completePhase();
+      await this.completePhase();
     }
   }
 
@@ -935,21 +1033,26 @@ export class ArchetypeEngine {
     }
   }
 
-  completePhase() {
-    if (this.currentPhase === 1) {
-      this.analyzePhase1Results();
-      this.buildPhase2Sequence();
-      this.renderCurrentQuestion();
-    } else if (this.currentPhase === 2) {
-      this.analyzePhase2Results();
-      this.buildPhase3Sequence();
-      this.renderCurrentQuestion();
-    } else if (this.currentPhase === 3) {
-      this.analyzePhase3Results();
-      this.buildPhase4Sequence();
-      this.renderCurrentQuestion();
-    } else if (this.currentPhase === 4) {
-      this.finalizeResults();
+  async completePhase() {
+    try {
+      if (this.currentPhase === 1) {
+        this.analyzePhase1Results();
+        await this.buildPhase2Sequence();
+        this.renderCurrentQuestion();
+      } else if (this.currentPhase === 2) {
+        this.analyzePhase2Results();
+        await this.buildPhase3Sequence();
+        this.renderCurrentQuestion();
+      } else if (this.currentPhase === 3) {
+        this.analyzePhase3Results();
+        await this.buildPhase4Sequence();
+        this.renderCurrentQuestion();
+      } else if (this.currentPhase === 4) {
+        this.finalizeResults();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'completePhase');
+      ErrorHandler.showUserError('Failed to load next phase. Please refresh the page.');
     }
   }
 
@@ -1204,12 +1307,18 @@ export class ArchetypeEngine {
     return aspirationalArchetypes;
   }
 
-  finalizeResults() {
+  async finalizeResults() {
+    await this.loadArchetypeData(); // Ensure data is loaded
     this.identifyArchetypes();
     this.analysisData.allAnswers = this.answers;
     this.analysisData.questionSequence = this.questionSequence.map(q => q.id);
     this.renderResults();
     this.saveProgress();
+    
+    // Display debug report if in development mode
+    if (window.location.search.includes('debug=true')) {
+      this.debugReporter.displayReport('debug-report');
+    }
   }
 
   renderResults() {
@@ -1460,68 +1569,72 @@ export class ArchetypeEngine {
   }
 
   saveProgress() {
-    const progress = {
-      currentPhase: this.currentPhase,
-      currentQuestionIndex: this.currentQuestionIndex,
-      gender: this.gender,
-      iqBracket: this.iqBracket,
-      answers: this.answers,
-      aspirationAnswers: this.aspirationAnswers,
-      archetypeScores: this.archetypeScores,
-      analysisData: this.analysisData
-    };
-    sessionStorage.setItem('archetypeAssessmentProgress', JSON.stringify(progress));
+    try {
+      const progress = {
+        currentPhase: this.currentPhase,
+        currentQuestionIndex: this.currentQuestionIndex,
+        gender: this.gender,
+        iqBracket: this.iqBracket,
+        answers: this.answers,
+        aspirationAnswers: this.aspirationAnswers,
+        archetypeScores: this.archetypeScores,
+        analysisData: this.analysisData
+      };
+      this.dataStore.save('progress', progress);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('archetypeAssessmentProgress');
-    if (stored) {
-      try {
-        const progress = JSON.parse(stored);
-        this.currentPhase = progress.currentPhase || 0;
-        this.currentQuestionIndex = progress.currentQuestionIndex || 0;
-        this.gender = progress.gender || null;
-        this.iqBracket = progress.iqBracket || progress.analysisData?.iqBracket || null;
-        this.answers = progress.answers || {};
-        this.aspirationAnswers = progress.aspirationAnswers || {};
-        this.archetypeScores = progress.archetypeScores || {};
-        this.analysisData = progress.analysisData || this.analysisData;
-        
-        // If gender not selected, show gender selection
-        if (!this.gender || this.currentPhase === 0) {
-          this.showGenderSelection();
-          return;
-        }
-        
-        // If IQ bracket not selected, show IQ bracket selection
-        if (!this.iqBracket || this.currentPhase === 0.5) {
-          this.showIQBracketSelection();
-          return;
-        }
-        
-        // Rebuild question sequence based on phase
-        if (this.currentPhase === 1 || (this.currentPhase > 0 && this.currentPhase < 2)) {
-          this.currentPhase = 1;
-          this.buildPhase1Sequence();
-        } else if (this.currentPhase === 2) {
-          this.buildPhase2Sequence();
-        } else if (this.currentPhase === 3) {
-          this.buildPhase3Sequence();
-        } else if (this.currentPhase === 4) {
-          this.buildPhase4Sequence();
-        }
+  async loadStoredData() {
+    try {
+      const progress = this.dataStore.load('progress');
+      if (!progress) return;
 
-        // If assessment is in progress, show question container
-        if (this.currentPhase <= 4 && this.questionSequence.length > 0) {
-          this.renderCurrentQuestion();
-          this.showQuestionContainer();
-        } else if (this.analysisData.primaryArchetype) {
-          this.renderResults();
-          this.showResultsContainer();
-        }
-      } catch (e) {
-        console.error('Error loading stored progress:', e);
+      this.currentPhase = progress.currentPhase || 0;
+      this.currentQuestionIndex = progress.currentQuestionIndex || 0;
+      this.gender = progress.gender || null;
+      this.iqBracket = progress.iqBracket || progress.analysisData?.iqBracket || null;
+      this.answers = progress.answers || {};
+      this.aspirationAnswers = progress.aspirationAnswers || {};
+      this.archetypeScores = progress.archetypeScores || {};
+      this.analysisData = progress.analysisData || this.analysisData;
+      
+      // If gender not selected, show gender selection
+      if (!this.gender || this.currentPhase === 0) {
+        this.showGenderSelection();
+        return;
       }
+      
+      // If IQ bracket not selected, show IQ bracket selection
+      if (!this.iqBracket || this.currentPhase === 0.5) {
+        this.showIQBracketSelection();
+        return;
+      }
+      
+      // Rebuild question sequence based on phase
+      if (this.currentPhase === 1 || (this.currentPhase > 0 && this.currentPhase < 2)) {
+        this.currentPhase = 1;
+        await this.buildPhase1Sequence();
+      } else if (this.currentPhase === 2) {
+        await this.buildPhase2Sequence();
+      } else if (this.currentPhase === 3) {
+        await this.buildPhase3Sequence();
+      } else if (this.currentPhase === 4) {
+        await this.buildPhase4Sequence();
+      }
+
+      // If assessment is in progress, show question container
+      if (this.currentPhase <= 4 && this.questionSequence.length > 0) {
+        this.renderCurrentQuestion();
+        this.showQuestionContainer();
+      } else if (this.analysisData.primaryArchetype) {
+        this.renderResults();
+        this.showResultsContainer();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 

@@ -21,6 +21,13 @@
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/redpill-cover.jpg">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Resource hints for performance -->
+  <link rel="preload" href="./archetype-engine.js" as="script">
+  <link rel="preload" href="./shared/data-loader.js" as="script">
+  <link rel="preload" href="./shared/debug-reporter.js" as="script">
+  <link rel="preload" href="./shared/utils.js" as="script">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
     /* Page-specific styles for archetype.html */
     body {
@@ -264,6 +271,8 @@
             <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
           </div>
         </div>
+        <!-- Debug Report Container (visible when ?debug=true in URL) -->
+        <div id="debug-report" style="display: none;"></div>
       </section>
     </div>
   </main>
@@ -273,6 +282,18 @@
   </footer>
 
   <script type="module">
+    // Import performance monitoring and utilities
+    import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
+    
+    // Initialize performance monitoring
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initializePerformanceMonitoring();
+      });
+    } else {
+      initializePerformanceMonitoring();
+    }
+    
     // Debug: Comprehensive debugging for archetype assessment button
     console.log('=== ARCHETYPE ASSESSMENT DEBUG ===');
     console.log('Document ready state:', document.readyState);
@@ -281,6 +302,14 @@
     // Import the engine class
     import { ArchetypeEngine } from './archetype-engine.js';
     console.log('ArchetypeEngine imported:', typeof ArchetypeEngine);
+    
+    // Show debug report container if debug mode is enabled
+    if (window.location.search.includes('debug=true')) {
+      const debugContainer = document.getElementById('debug-report');
+      if (debugContainer) {
+        debugContainer.style.display = 'block';
+      }
+    }
     
     // Wait for DOM to be fully ready
     function initializeAssessment() {
