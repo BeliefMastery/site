@@ -19,6 +19,9 @@ export const ARCHETYPES = {
     greekPantheon: 'Zeus (King, Authority), Ares (Aggressive Leader)',
     tarotCard: 'The Emperor',
     socialProportion: 2.0,
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'medium_high', // High seed spread, but not loyal long-term; reproduction happens but relationships don't last
+    reproductiveDescription: 'Achieves reproduction through high mate access and seed spread, but typically lacks long-term relationship loyalty. High initial attraction but poor retention.',
     explanation: 'The Alpha archetype represents natural leadership and authority. In psychological terms, this aligns with mature masculine energy that takes responsibility and commands respect through competence rather than force. The term "Alpha" in this context refers to social positioning and behavioral patterns, not biological dominance.'
   },
   alpha_xi: {
@@ -67,6 +70,9 @@ export const ARCHETYPES = {
     stressResponse: 'Seeks support, becomes more passive, avoids conflict',
     growthEdge: 'Developing assertiveness, setting boundaries',
     subtypes: ['beta_iota', 'beta_nu', 'beta_manipulator', 'beta_kappa'],
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'medium', // Lower status and submissive, often resentful, gets used as second choice to "Alpha-widows" but still achieves reproduction
+    reproductiveDescription: 'Typically achieves reproduction but as second choice or "backup" after Alpha relationships fail. Lower status and submissive positioning leads to resentful dynamics. Still manages reproduction despite being the fallback option.',
     explanation: 'The Beta archetype represents supportive, reliable behavioral patterns focused on harmony and cooperation. The term "Beta" refers to social positioning and behavioral tendencies toward support and service, not a ranking of value or worth.'
   },
   beta_iota: {
@@ -126,6 +132,9 @@ export const ARCHETYPES = {
     stressResponse: 'Withdraws, becomes more isolated, questions everything',
     growthEdge: 'Developing social skills, learning to connect',
     subtypes: ['gamma_nu', 'gamma_theta', 'gamma_pi', 'dark_gamma'],
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'low', // Usually misses out on reproduction due to outsider positioning and intellectual focus over social connection
+    reproductiveDescription: 'Typically misses out on reproduction. Intellectual focus, outsider positioning, and rebellion against social norms limit mate access. Values knowledge and authenticity over reproductive opportunities.',
     explanation: 'The Gamma archetype represents intellectual independence and questioning of social norms. The term "Gamma" refers to behavioral patterns of intellectual rebellion and outsider positioning, not a social hierarchy ranking. This archetype values knowledge, freedom, and authenticity over social acceptance.'
   },
   gamma_nu: {
@@ -185,6 +194,9 @@ export const ARCHETYPES = {
     stressResponse: 'Works harder, becomes more dutiful, may burn out',
     growthEdge: 'Developing leadership, learning to delegate',
     subtypes: ['delta_mu', 'dark_delta'],
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'high', // Super practical and highly suitable for provisioning as a mate choice; achieves reproduction through practical value and reliability
+    reproductiveDescription: 'Achieves reproduction through high practical value and provisioning capacity. Highly suitable as a mate choice due to reliability, practical competence, and provider qualities. Best long-term relationship potential.',
     explanation: 'The Delta archetype represents hardworking, practical behavioral patterns focused on duty and service. The term "Delta" refers to social positioning and behavioral tendencies toward practical work and reliability, not a ranking of value.'
   },
   delta_mu: {
@@ -222,6 +234,9 @@ export const ARCHETYPES = {
     stressResponse: 'Becomes more isolated, increases independence',
     growthEdge: 'Learning to connect, developing interdependence',
     subtypes: ['sigma_kappa', 'sigma_lambda', 'dark_sigma_zeta'],
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'low', // Usually misses out on reproduction due to independence and isolation; values autonomy over social connection
+    reproductiveDescription: 'Typically misses out on reproduction. Independence, isolation, and operating outside social hierarchies limit mate access. Values autonomy and self-reliance over reproductive opportunities.',
     explanation: 'The Sigma archetype represents independent, self-sufficient behavioral patterns that operate outside traditional social hierarchies. The term "Sigma" refers to autonomous positioning and behavioral tendencies toward self-reliance, not a ranking system.'
   },
   sigma_kappa: {
@@ -233,7 +248,10 @@ export const ARCHETYPES = {
     motivations: ['influence', 'innovation', 'strategy', 'autonomy'],
     stressResponse: 'Becomes more strategic, increases manipulation',
     growthEdge: 'Developing direct communication, authentic connection',
-    parentType: 'sigma'
+    parentType: 'sigma',
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'low', // Usually misses out on reproduction (Kappa category)
+    reproductiveDescription: 'Typically misses out on reproduction. Eccentricity, unpredictability, and strategic indirect influence limit mate access. Values strategy and autonomy over reproductive opportunities.'
   },
   sigma_lambda: {
     id: 'sigma_lambda',
@@ -270,6 +288,9 @@ export const ARCHETYPES = {
     stressResponse: 'Withdraws further, becomes more passive',
     growthEdge: 'Developing social skills, building confidence',
     subtypes: ['dark_omega'],
+    // Reproductive/Mating Success Metadata
+    reproductiveSuccess: 'low', // Usually misses out on reproduction due to social disconnection and passivity
+    reproductiveDescription: 'Typically misses out on reproduction. Social disconnection, passivity, and low social power prevent mate access. Lack of assertiveness and social skills limit reproductive opportunities.',
     explanation: 'The Omega archetype represents passive, socially disconnected behavioral patterns. The term "Omega" refers to social positioning and behavioral tendencies toward isolation or withdrawal, not a judgment of worth. This pattern may reflect current circumstances rather than fixed identity.'
   },
   dark_omega: {

@@ -821,62 +821,91 @@ export class ArchetypeEngine {
   calculateAspirationAdjustments(aspiredTo, topBehavioral, aspirationCounts) {
     const adjustments = {};
     
+    // Get reproductive success levels for aspiration analysis
+    const getReproductiveSuccess = (archId) => {
+      const archetype = ARCHETYPES[archId] || ARCHETYPES[this.gender === 'female' ? `${archId}_female` : archId];
+      return archetype?.reproductiveSuccess || 'unknown';
+    };
+    
+    const aspiredSuccess = aspiredTo ? getReproductiveSuccess(aspiredTo) : 'unknown';
+    const behavioralSuccess = topBehavioral ? getReproductiveSuccess(topBehavioral) : 'unknown';
+    
     // Reverse psychology patterns (strongest for males, but apply to all)
     if (this.gender === 'male') {
-      // Male-specific patterns (stronger reverse psychology)
+      // Male-specific patterns (stronger reverse psychology, weighted by reproductive success)
       
-      // Pattern 1: Desiring Alpha → likely Beta (aspiring to what they lack)
-      if (aspiredTo === 'alpha' && topBehavioral !== 'alpha' && aspirationCounts['alpha'] >= 2) {
-        adjustments['beta'] = 1.25; // Boost beta score by 25%
-        adjustments['alpha'] = 0.9; // Reduce alpha score by 10% (they're over-reporting)
+      // Pattern 1: Desiring HIGH reproductive success (Alpha) → likely Beta (aspiring to what they lack)
+      // Status impact: High status, but Beta lacks it and desires it
+      if (aspiredTo === 'alpha' && aspiredSuccess === 'medium_high' && topBehavioral !== 'alpha' && aspirationCounts['alpha'] >= 2) {
+        adjustments['beta'] = 1.3; // Boost beta score by 30% (status/status impact)
+        adjustments['alpha'] = 0.85; // Reduce alpha score by 15% (they're over-reporting)
         if (topBehavioral === 'omega') {
-          adjustments['beta'] = 1.35; // Even stronger if currently omega
+          adjustments['beta'] = 1.4; // Even stronger if currently omega
         }
       }
       
-      // Pattern 2: Comfortable with Beta → possibly Sigma (okay with what others reject)
-      if (aspirationCounts['beta'] >= 2 && topBehavioral !== 'beta' && topBehavioral !== 'alpha') {
-        adjustments['sigma'] = 1.2; // Boost sigma by 20%
-        adjustments['beta'] = 0.85; // Reduce beta reporting
+      // Pattern 2: Desiring HIGH reproductive success (Delta) → likely Beta wanting security
+      // Delta is highest reproductive success, so aspiring to it from lower positions suggests Beta
+      if (aspiredTo === 'delta' && aspiredSuccess === 'high' && topBehavioral !== 'delta' && behavioralSuccess !== 'high') {
+        adjustments['beta'] = 1.2; // Beta wants Delta's practical provisioning value
+        adjustments['delta'] = 0.9; // Delta is aspirational, not actual
       }
       
-      // Pattern 3: Desiring Sigma → possibly Beta/Omega trying to escape
-      if (aspiredTo === 'sigma' && (topBehavioral === 'beta' || topBehavioral === 'omega')) {
-        adjustments['beta'] = 1.15; // Likely beta wanting escape
-        adjustments['omega'] = topBehavioral === 'omega' ? 1.1 : 0.95;
-        adjustments['sigma'] = 0.9; // Reduce sigma (it's aspirational, not actual)
+      // Pattern 3: Comfortable with MEDIUM reproductive success (Beta) → possibly Sigma
+      // Sigma is okay with low status, so being okay with Beta suggests actual independence
+      if (aspirationCounts['beta'] >= 2 && aspiredSuccess === 'medium' && topBehavioral !== 'beta' && topBehavioral !== 'alpha') {
+        adjustments['sigma'] = 1.25; // Boost sigma by 25% (okay with lower status = independence)
+        adjustments['beta'] = 0.8; // Reduce beta reporting
       }
       
-      // Pattern 4: Desiring Beta → possibly Alpha feeling burdened
+      // Pattern 4: Desiring LOW reproductive success (Sigma, Gamma, Omega) → likely actual positioning
+      // If aspiring to LOW success, they might actually be there (less reverse psychology)
+      if ((aspiredTo === 'sigma' || aspiredTo === 'gamma' || aspiredTo === 'omega') && aspiredSuccess === 'low') {
+        // But if behavioral pattern suggests higher, they might be Beta/Omega trying to rationalize
+        if (topBehavioral === 'beta' || topBehavioral === 'omega') {
+          // Still likely Beta/Omega, not actual Sigma/Gamma
+          adjustments[topBehavioral] = 1.15;
+          adjustments[aspiredTo] = 0.85; // Aspirational rationalization
+        } else {
+          // Might actually be the low-success archetype
+          adjustments[aspiredTo] = 1.1; // Less reverse psychology for low-success aspirations
+        }
+      }
+      
+      // Pattern 5: Desiring Beta → possibly Alpha feeling burdened OR Delta wanting harmony
       if (aspiredTo === 'beta' && topBehavioral === 'alpha') {
-        adjustments['alpha'] = 1.1; // Confirm alpha, but feeling burdened
-        adjustments['beta'] = 0.8; // Beta is aspirational escape, not actual
+        adjustments['alpha'] = 1.1; // Confirm alpha, but feeling burdened by leadership
+        adjustments['beta'] = 0.75; // Beta is aspirational escape, not actual
+      } else if (aspiredTo === 'beta' && topBehavioral === 'delta') {
+        // Delta might want Beta's harmony, but Delta is better positioned
+        adjustments['delta'] = 1.05; // Confirm delta
+        adjustments['beta'] = 0.9;
       }
       
-      // Pattern 5: Admiring/Envious of Alpha → likely Beta or Omega
-      if (aspirationCounts['alpha'] >= 2 && (topBehavioral === 'beta' || topBehavioral === 'omega')) {
-        adjustments[topBehavioral] = 1.2; // Confirm current position
-        adjustments['alpha'] = 0.85; // Reduce alpha (aspirational, not actual)
+      // Pattern 6: Admiring/Envious of HIGH success → likely Beta or Omega (status seeking)
+      if (aspirationCounts['alpha'] >= 2 && aspiredSuccess === 'medium_high' && (topBehavioral === 'beta' || topBehavioral === 'omega')) {
+        adjustments[topBehavioral] = 1.25; // Strong confirmation - status seeking behavior
+        adjustments['alpha'] = 0.8; // Reduce alpha (aspirational status seeking)
       }
       
-      // Pattern 6: Admiring Gamma → possibly Delta wanting recognition
-      if (aspirationCounts['gamma'] >= 2 && topBehavioral === 'delta') {
-        adjustments['delta'] = 1.1; // Confirm delta
-        adjustments['gamma'] = 0.9; // Gamma is aspirational
+      // Pattern 7: Admiring Gamma (LOW success) → possibly Delta wanting intellectual recognition
+      if (aspirationCounts['gamma'] >= 2 && aspiredSuccess === 'low' && topBehavioral === 'delta') {
+        adjustments['delta'] = 1.15; // Confirm delta - wants recognition for practical work
+        adjustments['gamma'] = 0.85; // Gamma is aspirational, not actual
       }
       
-      // Pattern 7: Multiple aspirations → likely Beta (unclear identity)
+      // Pattern 8: Multiple scattered aspirations → likely Beta (unclear identity, status confusion)
       const uniqueAspirations = Object.keys(aspirationCounts).length;
       if (uniqueAspirations >= 3 && topBehavioral !== 'gamma' && topBehavioral !== 'sigma') {
-        adjustments['beta'] = 1.15; // Scattered aspirations suggest beta
+        adjustments['beta'] = 1.2; // Scattered aspirations suggest Beta confusion about status
       }
     } else {
       // Female-specific patterns (less pronounced reverse psychology, but still present)
       
-      // Pattern 1: Desiring Alpha-Female → possibly Beta-Female
+      // Pattern 1: Desiring Alpha-Female (HIGH status) → possibly Beta-Female
       if (aspiredTo === 'alpha' && topBehavioral !== 'alpha' && aspirationCounts['alpha'] >= 2) {
-        adjustments['beta'] = 1.15; // Boost beta
-        adjustments['alpha'] = 0.9;
+        adjustments['beta'] = 1.2; // Boost beta
+        adjustments['alpha'] = 0.85;
       }
       
       // Pattern 2: Comfortable with Beta → possibly Sigma-Female
@@ -1045,6 +1074,21 @@ export class ArchetypeEngine {
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Growth Edge:</h4>
             <p style="color: var(--muted); line-height: 1.7;">${primary.growthEdge}</p>
           </div>
+
+          ${primary.reproductiveSuccess && primary.reproductiveDescription ? `
+          <div style="margin-top: 1.5rem; background: rgba(0, 100, 200, 0.1); border-left: 3px solid #0066cc; border-radius: var(--radius); padding: 1rem;">
+            <h4 style="color: #0066cc; margin-bottom: 0.75rem;">Reproductive/Mating Success Profile</h4>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0.5rem 0;">
+              <strong>Level:</strong> ${primary.reproductiveSuccess === 'high' ? 'High' : primary.reproductiveSuccess === 'medium_high' ? 'Medium-High' : primary.reproductiveSuccess === 'medium' ? 'Medium' : primary.reproductiveSuccess === 'low' ? 'Low' : primary.reproductiveSuccess}
+            </p>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0.5rem 0; font-size: 0.95rem;">
+              ${primary.reproductiveDescription}
+            </p>
+            <p style="color: var(--muted); font-size: 0.85rem; font-style: italic; margin-top: 0.75rem; margin-bottom: 0;">
+              Note: Reproductive success patterns reflect typical mate access and relationship dynamics for this archetype, not a judgment of value. Each archetype has unique contributions and challenges.
+            </p>
+          </div>
+          ` : ''}
 
           ${primary.jungianEquivalent || primary.vedicEquivalent || primary.greekPantheon || primary.tarotCard ? `
           <div style="margin-top: 1.5rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem;">
