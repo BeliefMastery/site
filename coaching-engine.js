@@ -1,15 +1,24 @@
-// Coaching Engine
+// Coaching Engine - Version 2.0
 // Manages questionnaire flow, weighting, and profile generation for AI coaching agent
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { SOVEREIGNTY_OBSTACLES } from './coaching-data/sovereignty-obstacles.js';
-import { SATISFACTION_DOMAINS } from './coaching-data/satisfaction-domains.js';
-import { SATISFACTION_DOMAIN_EXAMPLES } from './coaching-data/satisfaction-domain-examples.js';
-import { QUESTION_WEIGHTINGS } from './coaching-data/question-weightings.js';
-import { COACHING_PROMPTS } from './coaching-data/coaching-prompts.js';
-import { DEEPER_INQUIRY, ACTION_PLANNING } from './coaching-data/deeper-inquiry.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class CoachingEngine {
+// Data modules - will be loaded lazily
+let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
+let SATISFACTION_DOMAIN_EXAMPLES, QUESTION_WEIGHTINGS;
+let COACHING_PROMPTS, DEEPER_INQUIRY, ACTION_PLANNING;
+
+/**
+ * Coaching Engine - Generates coaching profiles through section-based assessment
+ */
+export class CoachingEngine {
+  /**
+   * Initialize the coaching engine
+   */
   constructor() {
     this.selectedSections = [];
     this.currentQuestionIndex = 0;
@@ -29,16 +38,91 @@ class CoachingEngine {
       deploymentContext: null
     };
     
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('CoachingEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('coaching-assessment', '1.0.0');
+    
     // Make instance accessible globally for deployment context selection
     window.coachingEngine = this;
     
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
     this.renderSectionSelection();
     this.attachEventListeners();
-    this.loadStoredData();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
+  }
+
+  /**
+   * Load coaching data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadCoachingData() {
+    if (SOVEREIGNTY_OBSTACLES && SATISFACTION_DOMAINS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load obstacles data
+      const obstaclesModule = await loadDataModule(
+        './coaching-data/sovereignty-obstacles.js',
+        'Sovereignty Obstacles'
+      );
+      SOVEREIGNTY_OBSTACLES = obstaclesModule.SOVEREIGNTY_OBSTACLES;
+
+      // Load satisfaction domains data
+      const domainsModule = await loadDataModule(
+        './coaching-data/satisfaction-domains.js',
+        'Satisfaction Domains'
+      );
+      SATISFACTION_DOMAINS = domainsModule.SATISFACTION_DOMAINS;
+
+      // Load examples data
+      const examplesModule = await loadDataModule(
+        './coaching-data/satisfaction-domain-examples.js',
+        'Domain Examples'
+      );
+      SATISFACTION_DOMAIN_EXAMPLES = examplesModule.SATISFACTION_DOMAIN_EXAMPLES;
+
+      // Load weightings data
+      const weightingsModule = await loadDataModule(
+        './coaching-data/question-weightings.js',
+        'Question Weightings'
+      );
+      QUESTION_WEIGHTINGS = weightingsModule.QUESTION_WEIGHTINGS;
+
+      // Load prompts data
+      const promptsModule = await loadDataModule(
+        './coaching-data/coaching-prompts.js',
+        'Coaching Prompts'
+      );
+      COACHING_PROMPTS = promptsModule.COACHING_PROMPTS;
+
+      // Load inquiry data
+      const inquiryModule = await loadDataModule(
+        './coaching-data/deeper-inquiry.js',
+        'Deeper Inquiry'
+      );
+      DEEPER_INQUIRY = inquiryModule.DEEPER_INQUIRY;
+      ACTION_PLANNING = inquiryModule.ACTION_PLANNING;
+
+      this.debugReporter.recordSection('Obstacles', Object.keys(SOVEREIGNTY_OBSTACLES || {}).length);
+      this.debugReporter.recordSection('Domains', Object.keys(SATISFACTION_DOMAINS || {}).length);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadCoachingData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
   }
 
   renderSectionSelection() {
@@ -131,17 +215,27 @@ class CoachingEngine {
     }
   }
 
-  startAssessment() {
-    if (this.selectedSections.length === 0) return;
+  /**
+   * Start the assessment with selected sections
+   * @returns {Promise<void>}
+   */
+  async startAssessment() {
+    if (this.selectedSections.length === 0) {
+      ErrorHandler.showUserError('Please select at least one section to assess.');
+      return;
+    }
     
-    // Build question sequence
-    this.questionSequence = [];
-    this.currentQuestionIndex = 0;
-    this.answers = {};
-    
-    this.selectedSections.forEach(sectionId => {
-      if (sectionId === 'obstacles') {
-        Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
+    try {
+      await this.loadCoachingData();
+      
+      // Build question sequence
+      this.questionSequence = [];
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      
+      this.selectedSections.forEach(sectionId => {
+        if (sectionId === 'obstacles') {
+          Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
           const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
           this.questionSequence.push({
             id: `obstacle_${obstacleKey}`,
@@ -186,12 +280,17 @@ class CoachingEngine {
       }
     });
     
-    // Hide selection, show questionnaire
-    document.getElementById('sectionSelection').style.display = 'none';
-    document.getElementById('questionnaireSection').classList.add('active');
-    
-    this.renderCurrentQuestion();
-    this.saveProgress();
+      // Hide selection, show questionnaire
+      document.getElementById('sectionSelection').style.display = 'none';
+      document.getElementById('questionnaireSection').classList.add('active');
+      
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      this.renderCurrentQuestion();
+      this.saveProgress();
+    } catch (error) {
+      this.debugReporter.logError(error, 'startAssessment');
+      ErrorHandler.showUserError('Failed to start assessment. Please try again.');
+    }
   }
 
   generateAspectQuestion(domainKey, aspect, domainName) {
@@ -1110,90 +1209,108 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     URL.revokeObjectURL(url);
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      selectedSections: this.selectedSections,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('coachingProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        selectedSections: this.selectedSections,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        profileData: this.profileData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('coachingProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.selectedSections = data.selectedSections || [];
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.selectedSections = data.selectedSections || [];
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.profileData = data.profileData || this.profileData;
+      
+      // Restore section selections
+      this.selectedSections.forEach(sectionId => {
+        const card = document.querySelector(`[data-section="${sectionId}"]`);
+        if (card) card.classList.add('selected');
+      });
+      
+      if (this.selectedSections.length > 0) {
+        const startBtn = document.getElementById('startAssessment');
+        if (startBtn) startBtn.disabled = false;
+      }
+      
+      // If in progress, rebuild question sequence and restore questionnaire state
+      if (this.currentQuestionIndex > 0 && this.selectedSections.length > 0) {
+        await this.loadCoachingData(); // Ensure data is loaded
         
-        // Restore section selections
+        // Rebuild question sequence (same logic as startAssessment)
+        this.questionSequence = [];
         this.selectedSections.forEach(sectionId => {
-          const card = document.querySelector(`[data-section="${sectionId}"]`);
-          if (card) card.classList.add('selected');
-        });
-        
-        if (this.selectedSections.length > 0) {
-          document.getElementById('startAssessment').disabled = false;
-        }
-        
-        // If in progress, rebuild question sequence and restore questionnaire state
-        if (this.currentQuestionIndex > 0 && this.selectedSections.length > 0) {
-          // Rebuild question sequence
-          this.questionSequence = [];
-          this.selectedSections.forEach(sectionId => {
-            if (sectionId === 'obstacles') {
-              Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
-                const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
-                this.questionSequence.push({
-                  id: `obstacle_${obstacleKey}`,
-                  type: 'obstacle',
-                  section: 'obstacles',
-                  obstacle: obstacleKey,
-                  question: obstacle.question,
-                  description: obstacle.description,
-                  name: obstacle.name,
-                  weight: obstacle.weight
-                });
+          if (sectionId === 'obstacles') {
+            Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
+              const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
+              this.questionSequence.push({
+                id: `obstacle_${obstacleKey}`,
+                type: 'obstacle',
+                section: 'obstacles',
+                obstacle: obstacleKey,
+                question: obstacle.question,
+                description: obstacle.description,
+                name: obstacle.name,
+                weight: obstacle.weight
               });
-            } else if (sectionId === 'domains') {
-              Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
-                const domain = SATISFACTION_DOMAINS[domainKey];
+            });
+          } else if (sectionId === 'domains') {
+            Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
+              const domain = SATISFACTION_DOMAINS[domainKey];
+              this.questionSequence.push({
+                id: `domain_${domainKey}_overview`,
+                type: 'domain_overview',
+                section: 'domains',
+                domain: domainKey,
+                question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
+                description: domain.description,
+                name: domain.name,
+                weight: domain.weight
+              });
+              domain.aspects.forEach((aspect, index) => {
                 this.questionSequence.push({
-                  id: `domain_${domainKey}_overview`,
-                  type: 'domain_overview',
+                  id: `domain_${domainKey}_aspect_${index}`,
+                  type: 'domain_aspect',
                   section: 'domains',
                   domain: domainKey,
-                  question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
-                  description: domain.description,
+                  aspect: aspect,
+                  question: this.generateAspectQuestion(domainKey, aspect, domain.name),
                   name: domain.name,
-                  weight: domain.weight
-                });
-                domain.aspects.forEach((aspect, index) => {
-                  this.questionSequence.push({
-                    id: `domain_${domainKey}_aspect_${index}`,
-                    type: 'domain_aspect',
-                    section: 'domains',
-                    domain: domainKey,
-                    aspect: aspect,
-                    question: this.generateAspectQuestion(domainKey, aspect, domain.name),
-                    name: domain.name,
-                    weight: QUESTION_WEIGHTINGS.aspect_default
-                  });
+                  weight: QUESTION_WEIGHTINGS.aspect_default
                 });
               });
-            }
-          });
-          
-          document.getElementById('sectionSelection').style.display = 'none';
-          document.getElementById('questionnaireSection').classList.add('active');
-          this.renderCurrentQuestion();
-        }
-      } catch (e) {
-        console.error('Error loading stored data:', e);
+            });
+          }
+        });
+        
+        const sectionSelection = document.getElementById('sectionSelection');
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        if (sectionSelection) sectionSelection.style.display = 'none';
+        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.renderCurrentQuestion();
       }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 

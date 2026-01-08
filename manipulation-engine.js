@@ -17,7 +17,7 @@ let PHASE_1_VECTOR_SCREENING, generatePhase3VectorQuestions;
 /**
  * Manipulation Engine - Identifies manipulation vectors through multi-phase assessment
  */
-class ManipulationEngine {
+export class ManipulationEngine {
   /**
    * Initialize the manipulation assessment engine
    */
@@ -444,7 +444,12 @@ class ManipulationEngine {
     }
   }
 
+  /**
+   * Render the current question
+   */
   renderCurrentQuestion() {
+    const renderStart = performance.now();
+    
     if (this.currentQuestionIndex >= this.questionSequence.length) {
       this.completePhase();
       return;
@@ -453,28 +458,47 @@ class ManipulationEngine {
     const question = this.questionSequence[this.currentQuestionIndex];
     const container = document.getElementById('questionContainer');
     
-    if (!container) return;
-    
-    let html = '';
-    
-    // Render based on question type
-    if (question.type === 'three_point') {
-      html = this.renderThreePointQuestion(question);
-    } else if (question.type === 'binary_unsure') {
-      html = this.renderBinaryUnsureQuestion(question);
-    } else if (question.type === 'frequency') {
-      html = this.renderFrequencyQuestion(question);
-    } else if (question.type === 'multiselect') {
-      html = this.renderMultiselectQuestion(question);
+    if (!container) {
+      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      return;
     }
     
-    container.innerHTML = html;
-    
-    // Attach event listeners for the specific question type
-    this.attachQuestionListeners(question);
-    
-    this.updateProgress();
-    this.updateNavigationButtons();
+    try {
+      let html = '';
+      
+      // Render based on question type
+      if (question.type === 'three_point') {
+        html = this.renderThreePointQuestion(question);
+      } else if (question.type === 'binary_unsure') {
+        html = this.renderBinaryUnsureQuestion(question);
+      } else if (question.type === 'frequency') {
+        html = this.renderFrequencyQuestion(question);
+      } else if (question.type === 'multiselect') {
+        html = this.renderMultiselectQuestion(question);
+      }
+      
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = html;
+      
+      // Attach event listeners for the specific question type
+      this.attachQuestionListeners(question);
+      
+      this.updateProgress();
+      this.updateNavigationButtons();
+      
+      // Track render performance
+      const renderDuration = performance.now() - renderStart;
+      this.debugReporter.recordRender('question', renderDuration);
+      
+      // Focus management for accessibility
+      const firstInput = container.querySelector('input, button, select, textarea');
+      if (firstInput) {
+        DOMUtils.focusElement(firstInput);
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
+    }
   }
 
   renderThreePointQuestion(question) {
@@ -828,7 +852,18 @@ class ManipulationEngine {
     }
   }
 
-  nextQuestion() {
+  /**
+   * Move to next question
+   * @returns {Promise<void>}
+   */
+  async nextQuestion() {
+    // Check if current question has been answered
+    const currentQuestion = this.questionSequence[this.currentQuestionIndex];
+    if (currentQuestion && !this.answers[currentQuestion.id]) {
+      ErrorHandler.showUserError('Please select an answer before proceeding.');
+      return;
+    }
+    
     this.saveCurrentAnswer();
     
     this.currentQuestionIndex++;
@@ -837,7 +872,7 @@ class ManipulationEngine {
     if (this.currentQuestionIndex < this.questionSequence.length) {
       this.renderCurrentQuestion();
     } else {
-      this.completePhase();
+      await this.completePhase();
     }
   }
 
@@ -866,24 +901,33 @@ class ManipulationEngine {
     // Answer is already saved in attachQuestionListeners via saveProgress()
   }
 
-  completePhase() {
-    if (this.currentPhase === 1) {
-      this.analyzePhase1Results();
-      if (this.questionSequence.length > 0) {
-        this.renderCurrentQuestion(); // Start Phase 2
-      } else {
+  /**
+   * Complete current phase and proceed to next
+   * @returns {Promise<void>}
+   */
+  async completePhase() {
+    try {
+      if (this.currentPhase === 1) {
+        await this.analyzePhase1Results();
+        if (this.questionSequence.length > 0) {
+          this.renderCurrentQuestion(); // Start Phase 2
+        } else {
+          this.completeAssessment();
+        }
+      } else if (this.currentPhase === 2) {
+        await this.processPhase2Results();
+        if (this.questionSequence.length > 0) {
+          this.renderCurrentQuestion(); // Start Phase 3
+        } else {
+          this.completeAssessment();
+        }
+      } else if (this.currentPhase === 3) {
+        this.processPhase3Results();
         this.completeAssessment();
       }
-    } else if (this.currentPhase === 2) {
-      this.processPhase2Results();
-      if (this.questionSequence.length > 0) {
-        this.renderCurrentQuestion(); // Start Phase 3
-      } else {
-        this.completeAssessment();
-      }
-    } else if (this.currentPhase === 3) {
-      this.processPhase3Results();
-      this.completeAssessment();
+    } catch (error) {
+      this.debugReporter.logError(error, 'completePhase');
+      ErrorHandler.showUserError('Failed to complete phase. Please try again.');
     }
   }
 
@@ -1048,44 +1092,57 @@ class ManipulationEngine {
     }
   }
 
-  renderResults() {
+  /**
+   * Render assessment results
+   */
+  async renderResults() {
     const container = document.getElementById('vectorResults');
-    if (!container) return;
-    
-    let html = '<div class="manipulation-summary">';
-    html += '<h3>Manipulation Vector Analysis Results</h3>';
-    html += '<p>Based on your responses, here are the manipulation vectors identified and recommended strategies.</p>';
-    html += '</div>';
-    
-    // Primary vector
-    if (this.analysisData.primaryVector) {
-      const primary = this.analysisData.primaryVector;
-      html += `
-        <div class="vector-result" style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
-          <h3 style="color: #d32f2f; margin-bottom: 1rem;">Primary Vector: ${primary.name}</h3>
-          <p style="margin-bottom: 1rem;">${primary.description}</p>
-          <p><strong>Activation Level:</strong> ${this.getActivationLevelLabel(primary.activationLevel)}</p>
-          <p><strong>Score:</strong> ${primary.rawScore.toFixed(1)}/10 (Weighted: ${primary.weightedScore.toFixed(1)})</p>
-          ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.getStructuralModifierLabel(this.analysisData.structuralModifier)}</p>` : ''}
-        </div>
-      `;
+    if (!container) {
+      ErrorHandler.showUserError('Results container not found.');
+      return;
     }
     
-    // Supporting vectors
-    if (this.analysisData.supportingVectors && this.analysisData.supportingVectors.length > 0) {
-      html += '<div class="supporting-vectors" style="margin-bottom: 2rem;">';
-      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Supporting Vectors</h4>';
-      this.analysisData.supportingVectors.forEach(vector => {
+    try {
+      await this.loadManipulationData(); // Ensure data is loaded
+      
+      let html = '<div class="manipulation-summary">';
+      html += '<h3>Manipulation Vector Analysis Results</h3>';
+      html += '<p>Based on your responses, here are the manipulation vectors identified and recommended strategies.</p>';
+      html += '</div>';
+      
+      // Primary vector
+      if (this.analysisData.primaryVector) {
+        const primary = this.analysisData.primaryVector;
+        const primaryName = SecurityUtils.sanitizeHTML(primary.name || 'Unknown');
+        const primaryDesc = SecurityUtils.sanitizeHTML(primary.description || '');
         html += `
-          <div class="vector-result" style="background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-            <h4>${vector.name}</h4>
-            <p style="font-size: 0.9rem; color: var(--muted);">${vector.description}</p>
-            <p><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10</p>
+          <div class="vector-result" style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+            <h3 style="color: #d32f2f; margin-bottom: 1rem;">Primary Vector: ${primaryName}</h3>
+            <p style="margin-bottom: 1rem;">${primaryDesc}</p>
+            <p><strong>Activation Level:</strong> ${this.getActivationLevelLabel(primary.activationLevel)}</p>
+            <p><strong>Score:</strong> ${primary.rawScore.toFixed(1)}/10 (Weighted: ${primary.weightedScore.toFixed(1)})</p>
+            ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.getStructuralModifierLabel(this.analysisData.structuralModifier)}</p>` : ''}
           </div>
         `;
-      });
-      html += '</div>';
-    }
+      }
+      
+      // Supporting vectors
+      if (this.analysisData.supportingVectors && this.analysisData.supportingVectors.length > 0) {
+        html += '<div class="supporting-vectors" style="margin-bottom: 2rem;">';
+        html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Supporting Vectors</h4>';
+        this.analysisData.supportingVectors.forEach(vector => {
+          const vecName = SecurityUtils.sanitizeHTML(vector.name || 'Unknown');
+          const vecDesc = SecurityUtils.sanitizeHTML(vector.description || '');
+          html += `
+            <div class="vector-result" style="background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+              <h4>${vecName}</h4>
+              <p style="font-size: 0.9rem; color: var(--muted);">${vecDesc}</p>
+              <p><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10</p>
+            </div>
+          `;
+        });
+        html += '</div>';
+      }
     
     // Tactics
     if (this.analysisData.tactics && this.analysisData.tactics.length > 0) {
@@ -1185,11 +1242,11 @@ class ManipulationEngine {
         if (this.currentPhase === 1) {
           await this.buildPhase1Sequence();
           } else if (this.currentPhase === 2) {
-            this.analyzePhase1Results();
-            this.buildPhase2Sequence();
+            await this.analyzePhase1Results();
+            await this.buildPhase2Sequence();
           } else if (this.currentPhase === 3) {
-            this.processPhase2Results();
-            this.buildPhase3Sequence();
+            await this.processPhase2Results();
+            await this.buildPhase3Sequence();
           }
           document.getElementById('questionnaireSection').classList.add('active');
           this.renderCurrentQuestion();
@@ -1237,13 +1294,4 @@ class ManipulationEngine {
     
     this.buildPhase1Sequence();
   }
-}
-
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.manipulationEngine = new ManipulationEngine();
-  });
-} else {
-  window.manipulationEngine = new ManipulationEngine();
 }

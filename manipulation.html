@@ -21,6 +21,13 @@
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/manipulation-analysis-cover.jpg">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Resource hints for performance -->
+  <link rel="preload" href="./manipulation-engine.js" as="script">
+  <link rel="preload" href="./shared/data-loader.js" as="script">
+  <link rel="preload" href="./shared/debug-reporter.js" as="script">
+  <link rel="preload" href="./shared/utils.js" as="script">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
     /* Page-specific styles for manipulation.html */
     body {
@@ -618,6 +625,8 @@
         <div id="vectorResults">
           <!-- Results will be populated by JavaScript -->
         </div>
+        <!-- Debug Report Container (visible when ?debug=true in URL) -->
+        <div id="debug-report" style="display: none;"></div>
         <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0, 0, 0, 0.1);">
           <h3>Export Your Analysis</h3>
           <p style="color: var(--muted); margin-bottom: 1rem;">Export your analysis for reference or professional consultation.</p>
@@ -633,7 +642,44 @@
     <p>&copy; 2025 Warwick Marshall. All rights reserved.</p>
   </footer>
 
-  <script type="module" src="manipulation-engine.js"></script>
+  <script type="module">
+    // Import performance monitoring and utilities
+    import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
+    
+    // Initialize performance monitoring
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initializePerformanceMonitoring();
+      });
+    } else {
+      initializePerformanceMonitoring();
+    }
+    
+    // Show debug report container if debug mode is enabled
+    if (window.location.search.includes('debug=true')) {
+      const debugContainer = document.getElementById('debug-report');
+      if (debugContainer) {
+        debugContainer.style.display = 'block';
+      }
+    }
+    
+    // Import and initialize engine
+    import('./manipulation-engine.js').then(module => {
+      const { ManipulationEngine } = module;
+      
+      function initEngine() {
+        window.manipulationEngine = new ManipulationEngine();
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEngine);
+      } else {
+        initEngine();
+      }
+    }).catch(error => {
+      console.error('Failed to load manipulation engine:', error);
+    });
+  </script>
   <script>
     // Hamburger menu functionality
     document.addEventListener('DOMContentLoaded', function() {
