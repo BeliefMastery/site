@@ -7,8 +7,9 @@ import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-util
 
 export class SovereigntyEngine {
   constructor() {
-    this.currentSection = 1; // 1-4 sections
+    this.currentSection = 0; // 0 = IQ bracket selection, 1-4 = assessment sections
     this.currentQuestionIndex = 0;
+    this.iqBracket = null; // IQ bracket for faster funneling
     this.answers = {};
     this.questionSequence = [];
     this.scores = {
@@ -18,8 +19,14 @@ export class SovereigntyEngine {
       cognitiveComplexity: 0,
       driftRisk: 0
     };
+    this.preliminaryFilters = {
+      aiUsageFrequency: null, // 'never', 'rarely', 'daily', 'frequent'
+      dependencyLevel: null, // 'low', 'medium', 'high'
+      cognitiveLevel: null // From Section 2, used for filtering Sections 3 & 4
+    };
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      iqBracket: null,
       section1Results: {},
       section2Results: {},
       section3Results: {},
@@ -95,7 +102,7 @@ export class SovereigntyEngine {
   }
 
   startAssessment() {
-    this.currentSection = 1;
+    this.currentSection = 0; // Start with IQ bracket selection
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.scores = {
@@ -105,30 +112,317 @@ export class SovereigntyEngine {
       cognitiveComplexity: 0,
       driftRisk: 0
     };
-    this.buildSectionSequence(1);
     this.showQuestionContainer();
-    this.renderCurrentQuestion();
-    this.updateNavigation();
+    this.showIQBracketSelection();
     this.saveProgress();
   }
 
+  showIQBracketSelection() {
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
+        <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket (Optional)</h2>
+        <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">
+          Providing your IQ bracket helps us prioritize relevant questions and accelerate the assessment. 
+          If you don't know your IQ, you can skip this step. Estimate based on standardized tests (SAT, ACT, WAIS, etc.) or educational/career patterns.
+        </p>
+        <div style="display: grid; gap: 1rem; max-width: 600px; margin: 0 auto;">
+          <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>80-100 IQ</strong> - Routine Guided Thinkers (~34% of population)
+          </button>
+          <button id="selectIQ100_115" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>100-115 IQ</strong> - Practical Adaptive Thinkers (~34% of population)
+          </button>
+          <button id="selectIQ115_130" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>115-130 IQ</strong> - Strategic Analytical Thinkers (~14% of population)
+          </button>
+          <button id="selectIQ130_145" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>130-145 IQ</strong> - Creative Synthesizing Thinkers (~2% of population)
+          </button>
+          <button id="selectIQ145_plus" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+            <strong>145+ IQ</strong> - Meta-Recursive Thinkers (&lt;1% of population)
+          </button>
+          <button id="selectIQUnknown" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(200, 200, 200, 0.1); border: 2px solid #888; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: #666; font-weight: 600; text-align: left; margin-top: 1rem;">
+            <strong>I don't know / Prefer not to specify</strong> - Full assessment will be provided
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Add click handlers
+    setTimeout(() => {
+      const iqBrackets = {
+        'selectIQ80_100': '80_100',
+        'selectIQ100_115': '100_115',
+        'selectIQ115_130': '115_130',
+        'selectIQ130_145': '130_145',
+        'selectIQ145_plus': '145_plus',
+        'selectIQUnknown': 'unknown'
+      };
+
+      Object.keys(iqBrackets).forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+          button.addEventListener('click', () => {
+            this.iqBracket = iqBrackets[buttonId];
+            this.analysisData.iqBracket = iqBrackets[buttonId];
+            this.currentSection = 1;
+            this.buildSectionSequence(1);
+            this.renderCurrentQuestion();
+            this.updateNavigation();
+            this.saveProgress();
+          });
+
+          // Add hover effects
+          button.addEventListener('mouseenter', () => {
+            if (buttonId !== 'selectIQUnknown') {
+              button.style.background = 'rgba(255, 184, 0, 0.2)';
+              button.style.transform = 'translateY(-2px)';
+            } else {
+              button.style.background = 'rgba(200, 200, 200, 0.2)';
+            }
+          });
+          button.addEventListener('mouseleave', () => {
+            if (buttonId !== 'selectIQUnknown') {
+              button.style.background = 'rgba(255, 184, 0, 0.1)';
+              button.style.transform = 'translateY(0)';
+            } else {
+              button.style.background = 'rgba(200, 200, 200, 0.1)';
+            }
+          });
+        }
+      });
+    }, 100);
+  }
+
   buildSectionSequence(section) {
+    let questions = [];
+    
     switch(section) {
       case 1:
-        this.questionSequence = [...SECTION_1_USAGE_PATTERNS];
+        questions = [...SECTION_1_USAGE_PATTERNS];
+        // Apply IQ bracket and usage frequency filters
+        questions = this.filterSection1Questions(questions);
         break;
       case 2:
-        this.questionSequence = [...SECTION_2_COGNITIVE_STYLE];
+        questions = [...SECTION_2_COGNITIVE_STYLE];
+        // Apply IQ bracket filter
+        questions = this.filterSection2Questions(questions);
         break;
       case 3:
-        this.questionSequence = [...SECTION_3_ATTACHMENT];
+        questions = [...SECTION_3_ATTACHMENT];
+        // Apply IQ bracket, dependency level, and cognitive level filters
+        questions = this.filterSection3Questions(questions);
         break;
       case 4:
-        this.questionSequence = [...SECTION_4_SOVEREIGNTY];
+        questions = [...SECTION_4_SOVEREIGNTY];
+        // Apply IQ bracket, dependency level, and cognitive level filters
+        questions = this.filterSection4Questions(questions);
         break;
     }
+    
+    this.questionSequence = questions;
     // Shuffle to mitigate order bias
     this.questionSequence.sort(() => Math.random() - 0.5);
+  }
+
+  filterSection1Questions(questions) {
+    // Section 1: Usage Patterns
+    // Filter based on IQ bracket and usage frequency (from early questions)
+    
+    if (this.iqBracket === 'unknown' || !this.iqBracket) {
+      // Check if we can determine usage frequency from early answers
+      const usageAnswer = this.answers['u2']; // Question about daily usage frequency
+      if (usageAnswer) {
+        const freqOption = SECTION_1_USAGE_PATTERNS[1]?.options?.[usageAnswer.selectedIndex];
+        if (freqOption) {
+          if (freqOption.text.includes('Never') || freqOption.text.includes('Rarely')) {
+            this.preliminaryFilters.aiUsageFrequency = 'rarely';
+            // Skip some detailed usage questions for non-users
+            return this.filterByUsageFrequency(questions, 12); // Reduce to 12 questions
+          }
+        }
+      }
+      return questions; // No filtering if IQ unknown and no usage data
+    }
+    
+    // IQ bracket filtering
+    let targetCount = 12; // Reduce from 15 to 12 with IQ bracket
+    
+    return this.filterQuestionsByIQ(questions, targetCount);
+  }
+
+  filterSection2Questions(questions) {
+    // Section 2: Cognitive Style
+    // Filter based on IQ bracket (most relevant section for IQ)
+    
+    if (this.iqBracket === 'unknown' || !this.iqBracket) {
+      return questions; // Keep all if IQ unknown
+    }
+    
+    let targetCount = 10; // Reduce from ~12 to 10 with IQ bracket
+    
+    return this.filterQuestionsByIQ(questions, targetCount, 'cognitive');
+  }
+
+  filterSection3Questions(questions) {
+    // Section 3: Attachment
+    // Filter based on IQ bracket, dependency level from Section 1, and cognitive level from Section 2
+    
+    if (this.iqBracket === 'unknown' || !this.iqBracket) {
+      // Still apply dependency-based filtering if available
+      const dependencyScore = this.scores.dependency || 0;
+      if (dependencyScore < -3) {
+        // Low dependency - can skip some attachment questions
+        return questions.slice(0, 6); // Reduce to 6 questions
+      }
+      return questions;
+    }
+    
+    let targetCount = 6; // Reduce from 8 to 6 with IQ bracket
+    
+    // Also check dependency level
+    const dependencyScore = this.scores.dependency || 0;
+    if (dependencyScore < -3) {
+      // Very low dependency - further reduce
+      targetCount = 5;
+    }
+    
+    return this.filterQuestionsByIQ(questions, targetCount, 'attachment');
+  }
+
+  filterSection4Questions(questions) {
+    // Section 4: Sovereignty Indicators
+    // Filter based on IQ bracket, dependency level, and cognitive level
+    
+    if (this.iqBracket === 'unknown' || !this.iqBracket) {
+      // Still apply dependency-based filtering
+      const dependencyScore = this.scores.dependency || 0;
+      if (dependencyScore < -3) {
+        // Low dependency - already high sovereignty likely
+        return questions.slice(0, 7); // Reduce to 7 questions
+      }
+      return questions;
+    }
+    
+    let targetCount = 8; // Reduce from 10 to 8 with IQ bracket
+    
+    // Check dependency and cognitive level
+    const dependencyScore = this.scores.dependency || 0;
+    const cognitiveScore = this.scores.cognitiveComplexity || 0;
+    
+    if (dependencyScore < -3) {
+      // Very low dependency - further reduce
+      targetCount = 7;
+    }
+    
+    if (this.iqBracket === '80_100' || this.iqBracket === '100_115') {
+      // Lower IQ brackets - sovereignty concepts may be less relevant
+      targetCount = 7;
+    }
+    
+    return this.filterQuestionsByIQ(questions, targetCount, 'sovereignty');
+  }
+
+  filterByUsageFrequency(questions, targetCount) {
+    // Prioritize core questions and skip detailed usage scenarios for non-users
+    const coreQuestionIds = ['u1', 'u2', 'u3', 'u6', 'u10', 'u11', 'u12', 'u13']; // Essential questions
+    const optionalQuestionIds = ['u4', 'u5', 'u7', 'u8', 'u9', 'u14', 'u15']; // Detailed scenarios
+    
+    const coreQuestions = questions.filter(q => coreQuestionIds.includes(q.id));
+    const optionalQuestions = questions.filter(q => optionalQuestionIds.includes(q.id));
+    
+    // Keep all core questions, add optional up to target count
+    const selected = [...coreQuestions];
+    const remaining = targetCount - selected.length;
+    
+    if (remaining > 0 && optionalQuestions.length > 0) {
+      selected.push(...optionalQuestions.slice(0, remaining));
+    }
+    
+    return selected.slice(0, targetCount);
+  }
+
+  filterQuestionsByIQ(questions, targetCount, questionType = 'general') {
+    // Filter questions based on IQ bracket relevance
+    // Different question types have different relevance patterns
+    
+    if (this.iqBracket === 'unknown' || !this.iqBracket) {
+      return questions.slice(0, targetCount);
+    }
+    
+    // Score each question by relevance to IQ bracket
+    const scoredQuestions = questions.map(q => {
+      let relevanceScore = 1; // Default relevance
+      
+      // Check question content for cognitive complexity indicators
+      const questionText = (q.question || '').toLowerCase();
+      const hasHighComplexityTerms = ['meta', 'recursive', 'framework', 'abstract', 'paradox', 'contradiction'].some(term => questionText.includes(term));
+      const hasLowComplexityTerms = ['simple', 'clear', 'routine', 'familiar'].some(term => questionText.includes(term));
+      
+      // Check options for cognitive level indicators
+      let hasHighCognitiveOptions = false;
+      let hasLowCognitiveOptions = false;
+      
+      if (q.options) {
+        q.options.forEach(opt => {
+          const optText = (opt.text || '').toLowerCase();
+          if (opt.cognitiveLevel === 'high' || opt.cognitiveLevel === 'very_high' || 
+              optText.includes('meta') || optText.includes('recursive') || optText.includes('framework')) {
+            hasHighCognitiveOptions = true;
+          }
+          if (opt.cognitiveLevel === 'low' || opt.cognitiveLevel === 'medium' ||
+              optText.includes('simple') || optText.includes('clear') || optText.includes('routine')) {
+            hasLowCognitiveOptions = true;
+          }
+        });
+      }
+      
+      // IQ bracket relevance scoring
+      if (this.iqBracket === '80_100' || this.iqBracket === '100_115') {
+        // Lower IQ brackets - prefer simpler, practical questions
+        if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore += 3;
+        if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore -= 1;
+      } else if (this.iqBracket === '115_130') {
+        // Mid IQ - balanced, but prefer strategic/analytical questions
+        if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore += 2;
+        if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore += 1;
+      } else if (this.iqBracket === '130_145' || this.iqBracket === '145_plus') {
+        // Higher IQ - prefer complex, meta-cognitive questions
+        if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore += 3;
+        if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore -= 1;
+      }
+      
+      // Question type specific relevance
+      if (questionType === 'cognitive' && (hasHighComplexityTerms || hasHighCognitiveOptions)) {
+        relevanceScore += 2; // Cognitive style questions benefit from complexity
+      }
+      
+      if (questionType === 'attachment' && this.iqBracket !== '80_100') {
+        // Attachment questions are relevant across most IQ brackets
+        relevanceScore += 1;
+      }
+      
+      if (questionType === 'sovereignty') {
+        // Sovereignty questions are important for higher IQ brackets
+        if (this.iqBracket === '130_145' || this.iqBracket === '145_plus') {
+          relevanceScore += 2;
+        }
+      }
+      
+      return { question: q, score: relevanceScore };
+    });
+    
+    // Sort by relevance, then randomize ties
+    scoredQuestions.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return Math.random() - 0.5;
+    });
+    
+    // Take top N questions
+    return scoredQuestions.slice(0, targetCount).map(item => item.question);
   }
 
   renderCurrentQuestion() {
@@ -560,6 +854,9 @@ export class SovereigntyEngine {
       timestamp: new Date().toISOString()
     };
 
+    // Update preliminary filters based on early questions
+    this.updatePreliminaryFilters(question, answerValue);
+
     // Score the answer(s) - handle different question types
     if (question.type === 'likert') {
       // Likert questions have scores directly on the question object
@@ -595,6 +892,57 @@ export class SovereigntyEngine {
     }
 
     this.saveProgress();
+  }
+
+  updatePreliminaryFilters(question, answerValue) {
+    // Update filters based on early questions to enable adaptive filtering
+    
+    // Section 1: Usage frequency (from u2 - daily usage frequency)
+    if (question.id === 'u2' && question.options) {
+      const selectedIndex = Array.isArray(answerValue) ? answerValue[0] : answerValue;
+      const selectedOption = question.options[selectedIndex];
+      if (selectedOption) {
+        const text = selectedOption.text.toLowerCase();
+        if (text.includes('never')) {
+          this.preliminaryFilters.aiUsageFrequency = 'never';
+        } else if (text.includes('rarely')) {
+          this.preliminaryFilters.aiUsageFrequency = 'rarely';
+        } else if (text.includes('daily')) {
+          this.preliminaryFilters.aiUsageFrequency = 'daily';
+        } else if (text.includes('multiple times') || text.includes('constantly')) {
+          this.preliminaryFilters.aiUsageFrequency = 'frequent';
+        }
+      }
+    }
+    
+    // Update dependency level based on cumulative dependency score
+    if (this.currentSection === 1) {
+      // After Section 1, categorize dependency level
+      if (this.scores.dependency !== undefined) {
+        if (this.scores.dependency < -3) {
+          this.preliminaryFilters.dependencyLevel = 'low';
+        } else if (this.scores.dependency > 10) {
+          this.preliminaryFilters.dependencyLevel = 'high';
+        } else {
+          this.preliminaryFilters.dependencyLevel = 'medium';
+        }
+      }
+    }
+    
+    // Update cognitive level based on Section 2 results
+    if (this.currentSection === 2) {
+      // After Section 2, categorize cognitive level
+      if (this.scores.cognitiveComplexity !== undefined) {
+        // Cognitive complexity score ranges from negative to positive
+        if (this.scores.cognitiveComplexity < 5) {
+          this.preliminaryFilters.cognitiveLevel = 'low';
+        } else if (this.scores.cognitiveComplexity > 15) {
+          this.preliminaryFilters.cognitiveLevel = 'high';
+        } else {
+          this.preliminaryFilters.cognitiveLevel = 'medium';
+        }
+      }
+    }
   }
 
   nextQuestion() {
@@ -641,15 +989,19 @@ export class SovereigntyEngine {
   completeSection() {
     if (this.currentSection === 1) {
       this.analyzeSection1Results();
+      // Update dependency level filter after Section 1
+      this.updatePreliminaryFilters(null, null);
       this.currentSection = 2;
       this.currentQuestionIndex = 0;
-      this.buildSectionSequence(2);
+      this.buildSectionSequence(2); // Will apply IQ bracket filter + dependency level
       this.renderCurrentQuestion();
     } else if (this.currentSection === 2) {
       this.analyzeSection2Results();
+      // Update cognitive level filter after Section 2
+      this.updatePreliminaryFilters(null, null);
       this.currentSection = 3;
       this.currentQuestionIndex = 0;
-      this.buildSectionSequence(3);
+      this.buildSectionSequence(3); // Will apply IQ bracket + dependency + cognitive filters
       this.renderCurrentQuestion();
     } else if (this.currentSection === 3) {
       this.analyzeSection3Results();
@@ -1148,8 +1500,10 @@ export class SovereigntyEngine {
     const progress = {
       currentSection: this.currentSection,
       currentQuestionIndex: this.currentQuestionIndex,
+      iqBracket: this.iqBracket,
       answers: this.answers,
       scores: this.scores,
+      preliminaryFilters: this.preliminaryFilters,
       analysisData: this.analysisData
     };
     sessionStorage.setItem('sovereigntyAssessment', JSON.stringify(progress));
@@ -1160,8 +1514,9 @@ export class SovereigntyEngine {
       const stored = sessionStorage.getItem('sovereigntyAssessment');
       if (stored) {
         const progress = JSON.parse(stored);
-        this.currentSection = progress.currentSection || 1;
+        this.currentSection = progress.currentSection || 0; // Default to IQ selection
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
+        this.iqBracket = progress.iqBracket || null;
         this.answers = progress.answers || {};
         this.scores = progress.scores || {
           dependency: 0,
