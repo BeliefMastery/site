@@ -4,6 +4,8 @@
 import { COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS } from './sovereignty-data/cognitive-bands.js';
 import { SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY } from './sovereignty-data/sovereignty-questions.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
+import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
 
 export class SovereigntyEngine {
   constructor() {
@@ -42,18 +44,29 @@ export class SovereigntyEngine {
       questionSequence: []
     };
     
+    // Initialize DataStore for persistent storage
+    this.dataStore = new DataStore('sovereignty-assessment');
+    
     this.init();
   }
 
+  /**
+   * Initialize the engine and attach event listeners
+   */
   init() {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
+    try {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          this.attachEventListeners();
+          this.loadStoredData();
+        });
+      } else {
         this.attachEventListeners();
         this.loadStoredData();
-      });
-    } else {
-      this.attachEventListeners();
-      this.loadStoredData();
+      }
+    } catch (error) {
+      ErrorHandler.logError(error, 'SovereigntyEngine.init');
+      ErrorHandler.showUserError('Failed to initialize assessment. Please refresh the page.');
     }
   }
 
@@ -102,20 +115,34 @@ export class SovereigntyEngine {
     }
   }
 
+  /**
+   * Start a new assessment
+   */
   startAssessment() {
-    this.currentSection = 0; // Start with IQ bracket selection
-    this.currentQuestionIndex = 0;
-    this.answers = {};
-    this.scores = {
-      dependency: 0,
-      attachment: 0,
-      sovereignty: 0,
-      cognitiveComplexity: 0,
-      driftRisk: 0
-    };
-    this.showQuestionContainer();
-    this.showIQBracketSelection();
-    this.saveProgress();
+    try {
+      this.currentSection = 0; // Start with IQ bracket selection
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      this.scores = {
+        dependency: 0,
+        attachment: 0,
+        sovereignty: 0,
+        cognitiveComplexity: 0,
+        driftRisk: 0
+      };
+      this.showQuestionContainer();
+      this.showIQBracketSelection();
+      this.saveProgress();
+      
+      // Focus management for accessibility
+      const container = document.getElementById('questionContainer');
+      if (container) {
+        DOMUtils.focusElement(container);
+      }
+    } catch (error) {
+      ErrorHandler.logError(error, 'SovereigntyEngine.startAssessment');
+      ErrorHandler.showUserError('Failed to start assessment. Please try again.');
+    }
   }
 
   showIQBracketSelection() {
@@ -1140,37 +1167,51 @@ export class SovereigntyEngine {
     }
   }
 
+  /**
+   * Move to the next question in the sequence
+   */
   nextQuestion() {
-    // Check if current question has been answered
-    const currentQuestion = this.questionSequence[this.currentQuestionIndex];
-    if (currentQuestion && !this.answers[currentQuestion.id]) {
-      // For multiple response questions, allow skipping
-      if (currentQuestion.type === 'multiple_response') {
-        // Allow progression even if none selected (user can skip)
-      } 
-      // For frequency_grid questions, check if all contexts have been answered
-      else if (currentQuestion.type === 'frequency_grid') {
-        const contexts = currentQuestion.contexts || [];
-        const answer = this.answers[currentQuestion.id];
-        const values = answer && answer.values ? answer.values : {};
-        const allAnswered = contexts.every((context, idx) => values[idx] !== undefined);
-        if (!allAnswered) {
-          alert('Please select a frequency for all contexts before proceeding.');
+    try {
+      // Check if current question has been answered
+      const currentQuestion = this.questionSequence[this.currentQuestionIndex];
+      if (currentQuestion && !this.answers[currentQuestion.id]) {
+        // For multiple response questions, allow skipping
+        if (currentQuestion.type === 'multiple_response') {
+          // Allow progression even if none selected (user can skip)
+        } 
+        // For frequency_grid questions, check if all contexts have been answered
+        else if (currentQuestion.type === 'frequency_grid') {
+          const contexts = currentQuestion.contexts || [];
+          const answer = this.answers[currentQuestion.id];
+          const values = answer && answer.values ? answer.values : {};
+          const allAnswered = contexts.every((context, idx) => values[idx] !== undefined);
+          if (!allAnswered) {
+            ErrorHandler.showUserError('Please select a frequency for all contexts before proceeding.');
+            return;
+          }
+        } else {
+          ErrorHandler.showUserError('Please select an answer before proceeding.');
           return;
         }
-      } else {
-        alert('Please select an answer before proceeding.');
-        return;
       }
-    }
 
-    if (this.currentQuestionIndex < this.questionSequence.length - 1) {
-      this.currentQuestionIndex++;
-      this.renderCurrentQuestion();
-      this.saveProgress();
-    } else {
-      // End of current section
-      this.completeSection();
+      if (this.currentQuestionIndex < this.questionSequence.length - 1) {
+        this.currentQuestionIndex++;
+        this.renderCurrentQuestion();
+        this.saveProgress();
+        
+        // Focus management for accessibility
+        const questionCard = document.querySelector('.question-card');
+        if (questionCard) {
+          DOMUtils.focusElement(questionCard);
+        }
+      } else {
+        // End of current section
+        this.completeSection();
+      }
+    } catch (error) {
+      ErrorHandler.logError(error, 'SovereigntyEngine.nextQuestion');
+      ErrorHandler.showUserError('Failed to proceed to next question. Please try again.');
     }
   }
 
