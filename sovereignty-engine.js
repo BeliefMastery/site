@@ -221,7 +221,8 @@ export class SovereigntyEngine {
     // Add click handlers only if not locked
     if (!isLocked) {
       setTimeout(() => {
-        document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`).forEach(radio => {
+        const inputs = document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`);
+        inputs.forEach(radio => {
           radio.addEventListener('change', (e) => {
             const selectedIndex = parseInt(e.target.value);
             this.processAnswer(question, selectedIndex);
@@ -236,6 +237,18 @@ export class SovereigntyEngine {
               selectedLabel.classList.add('selected');
               selectedLabel.style.background = 'rgba(255, 184, 0, 0.25)';
               selectedLabel.style.border = '2px solid var(--brand)';
+            }
+          });
+        });
+        
+        // Also add click handlers to labels for better click target
+        const labels = document.querySelectorAll(`label.option-label:not(.locked)`);
+        labels.forEach(label => {
+          label.addEventListener('click', (e) => {
+            const input = label.querySelector('input[type="radio"]');
+            if (input && !input.disabled && e.target.tagName !== 'INPUT') {
+              input.checked = true;
+              input.dispatchEvent(new Event('change', { bubbles: true }));
             }
           });
         });
@@ -277,7 +290,8 @@ export class SovereigntyEngine {
     // Add click handlers only if not locked
     if (!isLocked) {
       setTimeout(() => {
-        document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`).forEach(radio => {
+        const inputs = document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`);
+        inputs.forEach(radio => {
           radio.addEventListener('change', (e) => {
             const value = parseInt(e.target.value);
             this.processAnswer(question, value);
@@ -292,6 +306,18 @@ export class SovereigntyEngine {
               selectedLabel.classList.add('selected');
               selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
               selectedLabel.style.border = '2px solid var(--brand)';
+            }
+          });
+        });
+        
+        // Also add click handlers to labels since inputs are hidden
+        const labels = document.querySelectorAll(`label.likert-option:not(.locked)`);
+        labels.forEach(label => {
+          label.addEventListener('click', (e) => {
+            const input = label.querySelector('input');
+            if (input && !input.disabled) {
+              input.checked = true;
+              input.dispatchEvent(new Event('change', { bubbles: true }));
             }
           });
         });
@@ -381,7 +407,6 @@ export class SovereigntyEngine {
   processAnswer(question, answerValue) {
     // Handle both single and multiple answers
     const selectedIndices = Array.isArray(answerValue) ? answerValue : [answerValue];
-    const selectedOptions = selectedIndices.map(idx => question.options[idx]).filter(opt => opt);
     
     this.answers[question.id] = {
       questionId: question.id,
@@ -391,16 +416,39 @@ export class SovereigntyEngine {
       timestamp: new Date().toISOString()
     };
 
-    // Score the answer(s)
-    selectedOptions.forEach(option => {
-      if (option.scores) {
-        Object.keys(option.scores).forEach(scoreKey => {
+    // Score the answer(s) - handle different question types
+    if (question.type === 'likert') {
+      // Likert questions have scores directly on the question object
+      const likertValue = Array.isArray(answerValue) ? answerValue[0] : answerValue;
+      if (question.scores && question.scores[likertValue]) {
+        const likertScores = question.scores[likertValue];
+        Object.keys(likertScores).forEach(scoreKey => {
           if (this.scores[scoreKey] !== undefined) {
-            this.scores[scoreKey] += option.scores[scoreKey] || 0;
+            this.scores[scoreKey] += likertScores[scoreKey] || 0;
+          }
+          // Handle cognitiveLevel which maps to cognitiveComplexity
+          if (scoreKey === 'cognitiveLevel') {
+            this.scores.cognitiveComplexity += likertScores[scoreKey] || 0;
           }
         });
       }
-    });
+    } else {
+      // Multiple choice, frequency, scenario, multiple_response questions have options
+      const selectedOptions = selectedIndices.map(idx => question.options && question.options[idx]).filter(opt => opt);
+      selectedOptions.forEach(option => {
+        if (option.scores) {
+          Object.keys(option.scores).forEach(scoreKey => {
+            if (this.scores[scoreKey] !== undefined) {
+              this.scores[scoreKey] += option.scores[scoreKey] || 0;
+            }
+            // Handle cognitiveLevel which maps to cognitiveComplexity
+            if (scoreKey === 'cognitiveLevel') {
+              this.scores.cognitiveComplexity += option.scores[scoreKey] || 0;
+            }
+          });
+        }
+      });
+    }
 
     this.saveProgress();
   }
