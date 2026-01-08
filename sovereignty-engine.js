@@ -9,7 +9,8 @@ export class SovereigntyEngine {
   constructor() {
     this.currentSection = 0; // 0 = IQ bracket selection, 1-4 = assessment sections
     this.currentQuestionIndex = 0;
-    this.iqBracket = null; // IQ bracket for faster funneling
+    this.iqBracket = null; // Primary IQ bracket for faster funneling
+    this.iqBracketSecondary = null; // Secondary bracket for border crossover (weighted 0.5)
     this.answers = {};
     this.questionSequence = [];
     this.scores = {
@@ -124,25 +125,53 @@ export class SovereigntyEngine {
     container.innerHTML = `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
         <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket (Optional)</h2>
-        <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">
+        <p style="color: var(--muted); margin-bottom: 1rem; line-height: 1.6;">
           Providing your IQ bracket helps us prioritize relevant questions and accelerate the assessment. 
           If you don't know your IQ, you can skip this step. Estimate based on standardized tests (SAT, ACT, WAIS, etc.) or educational/career patterns.
+        </p>
+        <p style="color: var(--brand); margin-bottom: 2rem; line-height: 1.6; font-size: 0.9rem; font-style: italic;">
+          <strong>Note:</strong> IQ brackets have crossover at boundaries. If you're near the edge of a bracket (e.g., IQ 98 or 117), 
+          select "On Border" to include patterns from adjacent brackets for more accurate assessment.
         </p>
         <div style="display: grid; gap: 1rem; max-width: 600px; margin: 0 auto;">
           <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
             <strong>80-100 IQ</strong> - Routine Guided Thinkers (~34% of population)
           </button>
+          <button id="selectIQ80_100_border" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 100-115</strong> (e.g., IQ 95-105)
+          </button>
           <button id="selectIQ100_115" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
             <strong>100-115 IQ</strong> - Practical Adaptive Thinkers (~34% of population)
+          </button>
+          <button id="selectIQ100_115_border_low" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 80-100</strong> (e.g., IQ 98-102)
+          </button>
+          <button id="selectIQ100_115_border_high" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 115-130</strong> (e.g., IQ 113-117)
           </button>
           <button id="selectIQ115_130" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
             <strong>115-130 IQ</strong> - Strategic Analytical Thinkers (~14% of population)
           </button>
+          <button id="selectIQ115_130_border_low" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 100-115</strong> (e.g., IQ 113-117)
+          </button>
+          <button id="selectIQ115_130_border_high" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 130-145</strong> (e.g., IQ 128-132)
+          </button>
           <button id="selectIQ130_145" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
             <strong>130-145 IQ</strong> - Creative Synthesizing Thinkers (~2% of population)
           </button>
+          <button id="selectIQ130_145_border_low" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 115-130</strong> (e.g., IQ 128-132)
+          </button>
+          <button id="selectIQ130_145_border_high" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 145+</strong> (e.g., IQ 143-147)
+          </button>
           <button id="selectIQ145_plus" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
             <strong>145+ IQ</strong> - Meta-Recursive Thinkers (&lt;1% of population)
+          </button>
+          <button id="selectIQ145_plus_border" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+            ↳ <strong>On border with 130-145</strong> (e.g., IQ 143-147)
           </button>
           <button id="selectIQUnknown" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(200, 200, 200, 0.1); border: 2px solid #888; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: #666; font-weight: 600; text-align: left; margin-top: 1rem;">
             <strong>I don't know / Prefer not to specify</strong> - Full assessment will be provided
@@ -154,20 +183,33 @@ export class SovereigntyEngine {
     // Add click handlers
     setTimeout(() => {
       const iqBrackets = {
-        'selectIQ80_100': '80_100',
-        'selectIQ100_115': '100_115',
-        'selectIQ115_130': '115_130',
-        'selectIQ130_145': '130_145',
-        'selectIQ145_plus': '145_plus',
-        'selectIQUnknown': 'unknown'
+        // Core brackets
+        'selectIQ80_100': { primary: '80_100', secondary: null },
+        'selectIQ100_115': { primary: '100_115', secondary: null },
+        'selectIQ115_130': { primary: '115_130', secondary: null },
+        'selectIQ130_145': { primary: '130_145', secondary: null },
+        'selectIQ145_plus': { primary: '145_plus', secondary: null },
+        'selectIQUnknown': { primary: 'unknown', secondary: null },
+        // Border selections with crossover
+        'selectIQ80_100_border': { primary: '80_100', secondary: '100_115' },
+        'selectIQ100_115_border_low': { primary: '100_115', secondary: '80_100' },
+        'selectIQ100_115_border_high': { primary: '100_115', secondary: '115_130' },
+        'selectIQ115_130_border_low': { primary: '115_130', secondary: '100_115' },
+        'selectIQ115_130_border_high': { primary: '115_130', secondary: '130_145' },
+        'selectIQ130_145_border_low': { primary: '130_145', secondary: '115_130' },
+        'selectIQ130_145_border_high': { primary: '130_145', secondary: '145_plus' },
+        'selectIQ145_plus_border': { primary: '145_plus', secondary: '130_145' }
       };
 
       Object.keys(iqBrackets).forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
           button.addEventListener('click', () => {
-            this.iqBracket = iqBrackets[buttonId];
-            this.analysisData.iqBracket = iqBrackets[buttonId];
+            const bracket = iqBrackets[buttonId];
+            this.iqBracket = bracket.primary;
+            this.iqBracketSecondary = bracket.secondary;
+            this.analysisData.iqBracket = bracket.primary;
+            this.analysisData.iqBracketSecondary = bracket.secondary;
             this.currentSection = 1;
             this.buildSectionSequence(1);
             this.renderCurrentQuestion();
@@ -346,71 +388,28 @@ export class SovereigntyEngine {
   }
 
   filterQuestionsByIQ(questions, targetCount, questionType = 'general') {
-    // Filter questions based on IQ bracket relevance
+    // Filter questions based on IQ bracket relevance with crossover support
     // Different question types have different relevance patterns
     
     if (this.iqBracket === 'unknown' || !this.iqBracket) {
       return questions.slice(0, targetCount);
     }
     
-    // Score each question by relevance to IQ bracket
+    // Score each question by relevance to IQ bracket(s) - accounting for crossover
     const scoredQuestions = questions.map(q => {
       let relevanceScore = 1; // Default relevance
       
-      // Check question content for cognitive complexity indicators
-      const questionText = (q.question || '').toLowerCase();
-      const hasHighComplexityTerms = ['meta', 'recursive', 'framework', 'abstract', 'paradox', 'contradiction'].some(term => questionText.includes(term));
-      const hasLowComplexityTerms = ['simple', 'clear', 'routine', 'familiar'].some(term => questionText.includes(term));
+      // Calculate primary bracket relevance
+      let primaryScore = this.calculateIQRelevance(q, this.iqBracket, questionType);
       
-      // Check options for cognitive level indicators
-      let hasHighCognitiveOptions = false;
-      let hasLowCognitiveOptions = false;
-      
-      if (q.options) {
-        q.options.forEach(opt => {
-          const optText = (opt.text || '').toLowerCase();
-          if (opt.cognitiveLevel === 'high' || opt.cognitiveLevel === 'very_high' || 
-              optText.includes('meta') || optText.includes('recursive') || optText.includes('framework')) {
-            hasHighCognitiveOptions = true;
-          }
-          if (opt.cognitiveLevel === 'low' || opt.cognitiveLevel === 'medium' ||
-              optText.includes('simple') || optText.includes('clear') || optText.includes('routine')) {
-            hasLowCognitiveOptions = true;
-          }
-        });
+      // Calculate secondary bracket relevance (if border crossover)
+      let secondaryScore = 0;
+      if (this.iqBracketSecondary) {
+        secondaryScore = this.calculateIQRelevance(q, this.iqBracketSecondary, questionType) * 0.5; // Weighted 50% for secondary
       }
       
-      // IQ bracket relevance scoring
-      if (this.iqBracket === '80_100' || this.iqBracket === '100_115') {
-        // Lower IQ brackets - prefer simpler, practical questions
-        if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore += 3;
-        if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore -= 1;
-      } else if (this.iqBracket === '115_130') {
-        // Mid IQ - balanced, but prefer strategic/analytical questions
-        if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore += 2;
-        if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore += 1;
-      } else if (this.iqBracket === '130_145' || this.iqBracket === '145_plus') {
-        // Higher IQ - prefer complex, meta-cognitive questions
-        if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore += 3;
-        if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore -= 1;
-      }
-      
-      // Question type specific relevance
-      if (questionType === 'cognitive' && (hasHighComplexityTerms || hasHighCognitiveOptions)) {
-        relevanceScore += 2; // Cognitive style questions benefit from complexity
-      }
-      
-      if (questionType === 'attachment' && this.iqBracket !== '80_100') {
-        // Attachment questions are relevant across most IQ brackets
-        relevanceScore += 1;
-      }
-      
-      if (questionType === 'sovereignty') {
-        // Sovereignty questions are important for higher IQ brackets
-        if (this.iqBracket === '130_145' || this.iqBracket === '145_plus') {
-          relevanceScore += 2;
-        }
-      }
+      // Combined relevance score
+      relevanceScore = primaryScore + secondaryScore;
       
       return { question: q, score: relevanceScore };
     });
@@ -423,6 +422,68 @@ export class SovereigntyEngine {
     
     // Take top N questions
     return scoredQuestions.slice(0, targetCount).map(item => item.question);
+  }
+
+  calculateIQRelevance(question, iqBracket, questionType) {
+    // Calculate relevance score for a specific IQ bracket
+    let relevanceScore = 1; // Default relevance
+    
+    // Check question content for cognitive complexity indicators
+    const questionText = (question.question || '').toLowerCase();
+    const hasHighComplexityTerms = ['meta', 'recursive', 'framework', 'abstract', 'paradox', 'contradiction'].some(term => questionText.includes(term));
+    const hasLowComplexityTerms = ['simple', 'clear', 'routine', 'familiar'].some(term => questionText.includes(term));
+    
+    // Check options for cognitive level indicators
+    let hasHighCognitiveOptions = false;
+    let hasLowCognitiveOptions = false;
+    
+    if (question.options) {
+      question.options.forEach(opt => {
+        const optText = (opt.text || '').toLowerCase();
+        if (opt.cognitiveLevel === 'high' || opt.cognitiveLevel === 'very_high' || 
+            optText.includes('meta') || optText.includes('recursive') || optText.includes('framework')) {
+          hasHighCognitiveOptions = true;
+        }
+        if (opt.cognitiveLevel === 'low' || opt.cognitiveLevel === 'medium' ||
+            optText.includes('simple') || optText.includes('clear') || optText.includes('routine')) {
+          hasLowCognitiveOptions = true;
+        }
+      });
+    }
+    
+    // IQ bracket relevance scoring
+    if (iqBracket === '80_100' || iqBracket === '100_115') {
+      // Lower IQ brackets - prefer simpler, practical questions
+      if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore += 3;
+      if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore -= 1;
+    } else if (iqBracket === '115_130') {
+      // Mid IQ - balanced, but prefer strategic/analytical questions
+      if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore += 2;
+      if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore += 1;
+    } else if (iqBracket === '130_145' || iqBracket === '145_plus') {
+      // Higher IQ - prefer complex, meta-cognitive questions
+      if (hasHighComplexityTerms || hasHighCognitiveOptions) relevanceScore += 3;
+      if (hasLowComplexityTerms || hasLowCognitiveOptions) relevanceScore -= 1;
+    }
+    
+    // Question type specific relevance
+    if (questionType === 'cognitive' && (hasHighComplexityTerms || hasHighCognitiveOptions)) {
+      relevanceScore += 2; // Cognitive style questions benefit from complexity
+    }
+    
+    if (questionType === 'attachment' && iqBracket !== '80_100') {
+      // Attachment questions are relevant across most IQ brackets
+      relevanceScore += 1;
+    }
+    
+    if (questionType === 'sovereignty') {
+      // Sovereignty questions are important for higher IQ brackets
+      if (iqBracket === '130_145' || iqBracket === '145_plus') {
+        relevanceScore += 2;
+      }
+    }
+    
+    return relevanceScore;
   }
 
   renderCurrentQuestion() {
@@ -1487,6 +1548,7 @@ export class SovereigntyEngine {
         driftRisk: 0
       };
       this.iqBracket = null;
+      this.iqBracketSecondary = null;
       this.currentSection = 0; // Reset to IQ selection
       this.currentQuestionIndex = 0;
       this.preliminaryFilters = {
@@ -1497,6 +1559,7 @@ export class SovereigntyEngine {
       this.analysisData = {
         timestamp: new Date().toISOString(),
         iqBracket: null,
+        iqBracketSecondary: null,
         section1Results: {},
         section2Results: {},
         section3Results: {},
@@ -1531,6 +1594,7 @@ export class SovereigntyEngine {
       currentSection: this.currentSection,
       currentQuestionIndex: this.currentQuestionIndex,
       iqBracket: this.iqBracket,
+      iqBracketSecondary: this.iqBracketSecondary,
       answers: this.answers,
       scores: this.scores,
       preliminaryFilters: this.preliminaryFilters,
@@ -1547,6 +1611,7 @@ export class SovereigntyEngine {
         this.currentSection = progress.currentSection || 0; // Default to IQ selection
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
         this.iqBracket = progress.iqBracket || null;
+        this.iqBracketSecondary = progress.iqBracketSecondary || null;
         this.answers = progress.answers || {};
         this.scores = progress.scores || {
           dependency: 0,
@@ -1562,9 +1627,12 @@ export class SovereigntyEngine {
         };
         this.analysisData = progress.analysisData || this.analysisData;
         
-        // Restore IQ bracket if set
+        // Restore IQ bracket(s) if set
         if (this.iqBracket) {
           this.analysisData.iqBracket = this.iqBracket;
+        }
+        if (this.iqBracketSecondary) {
+          this.analysisData.iqBracketSecondary = this.iqBracketSecondary;
         }
         
         // Restore state
