@@ -1164,3 +1164,241 @@ blockquote{
     transform:translateY(0);
   }
 }
+
+/* ---------- Accessibility Improvements ---------- */
+
+/* Ensure sufficient contrast */
+:root {
+  --text-primary: #111;
+  --text-secondary: #5a5a5a;
+  --link-color: #0066cc; /* WCAG AA compliant */
+  --focus-color: #0066cc;
+}
+
+/* Focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--focus-color, #0066cc);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip to content link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--brand);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Ensure minimum touch target sizes (44x44px) */
+button, a, input[type="radio"], input[type="checkbox"], 
+input[type="button"], input[type="submit"] {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Prevent horizontal overflow on mobile */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  height: auto;
+  max-width: 100%;
+}
+
+/* Fluid typography for better mobile readability */
+:root {
+  --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --font-size-heading: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --font-size-subheading: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+}
+
+body {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+h1 {
+  font-size: var(--font-size-heading);
+}
+
+h2 {
+  font-size: var(--font-size-subheading);
+}
+
+/* Error message styling */
+.error-message {
+  padding: 1rem;
+  margin: 1rem 0;
+  background: rgba(220, 53, 69, 0.1);
+  border: 2px solid #dc3545;
+  border-radius: var(--radius, 8px);
+  color: #dc3545;
+  font-weight: 600;
+  position: relative;
+}
+
+.error-message::before {
+  content: "⚠ ";
+  font-weight: bold;
+}
+
+/* ARIA live regions for dynamic content */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Improved form field accessibility */
+fieldset {
+  border: 2px solid var(--muted);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+legend {
+  font-weight: 600;
+  padding: 0 0.5rem;
+}
+
+/* Radio button groups */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+.radio-group label:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.radio-group input[type="radio"] {
+  min-width: 20px;
+  min-height: 20px;
+  cursor: pointer;
+}
+
+/* Loading states */
+.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--accent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Lazy loading image placeholder */
+img[loading="lazy"] {
+  background: #f0f0f0;
+  min-height: 200px;
+}
+
+img[data-src] {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+img[data-src].loaded {
+  opacity: 1;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+  /* Larger touch targets on mobile */
+  button, a, .btn {
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Better spacing for mobile */
+  .question-card, .card {
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+  
+  /* Prevent text from being too small */
+  body {
+    font-size: clamp(1rem, 4vw, 1.125rem);
+  }
+  
+  /* Better form input sizing */
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+    min-height: 44px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --brand: #000;
+    --muted: #333;
+    --accent: #ff8c00;
+  }
+  
+  * {
+    border-color: currentColor;
+  }
+}
+
+/* Reduced motion support (already exists, but ensure it's comprehensive) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
