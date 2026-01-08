@@ -139,6 +139,8 @@ export const ARCHETYPES = {
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'low', // Usually misses out on reproduction due to outsider positioning and intellectual focus over social connection
     reproductiveDescription: 'Typically misses out on reproduction. Intellectual focus, outsider positioning, and rebellion against social norms limit mate access. Values knowledge and authenticity over reproductive opportunities.',
+    // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
+    archetypalNarrative: 'You see through the bullshit, and that\'s your curse. Your intellectual depth and authentic questioning of norms make you fascinating but inaccessible. You watch as less insightful men achieve reproduction while you remain alone, misunderstood, or stuck in situationships that never progress. Your depth intimidates potential partners, and your refusal to play social games means you miss opportunities. You may rationalize this as "choosing authenticity," but the truth is you chose knowledge over connection, and now you face the consequences: few or no children, aging alone, your intellectual insights dying with you. The truth: you understood the game but refused to play it, and now you\'ve lost without ever really competing.',
     explanation: 'The Gamma archetype represents intellectual independence and questioning of social norms. The term "Gamma" refers to behavioral patterns of intellectual rebellion and outsider positioning, not a social hierarchy ranking. This archetype values knowledge, freedom, and authenticity over social acceptance.'
   },
   gamma_nu: {
