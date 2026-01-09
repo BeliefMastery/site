@@ -645,6 +645,108 @@ function generateNeedsDependencyExport(data) {
   return csv;
 }
 
+function generateArchetypeExport(data) {
+  let csv = '=== ARCHETYPE ANALYSIS DATA ===\n';
+  
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Phase,Category,Archetype,Dimension\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.phase || ''}","${q.category || ''}","${q.archetype || ''}","${q.dimension || ''}"\n`;
+    });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
+  }
+  
+  if (data.primaryArchetype) {
+    csv += '\n=== PRIMARY ARCHETYPE ===\n';
+    csv += `Archetype: ${data.primaryArchetype.name}\n`;
+    csv += `Confidence: ${data.primaryArchetype.confidence.toFixed(1)}%\n`;
+    if (data.primaryArchetype.description) {
+      csv += `Description: ${data.primaryArchetype.description}\n`;
+    }
+  }
+  
+  if (data.secondaryArchetype) {
+    csv += '\n=== SECONDARY ARCHETYPE ===\n';
+    csv += `Archetype: ${data.secondaryArchetype.name}\n`;
+    csv += `Confidence: ${data.secondaryArchetype.confidence.toFixed(1)}%\n`;
+  }
+  
+  if (data.tertiaryArchetype) {
+    csv += '\n=== TERTIARY ARCHETYPE ===\n';
+    csv += `Archetype: ${data.tertiaryArchetype.name}\n`;
+    csv += `Confidence: ${data.tertiaryArchetype.confidence.toFixed(1)}%\n`;
+  }
+  
+  return csv;
+}
+
+function generateSovereigntyExport(data) {
+  let csv = '=== AI SOVEREIGNTY ANALYSIS DATA ===\n';
+  
+  // Include ALL questions with their answers (ensure comprehensive coverage)
+  if (data.questionSequence && data.questionSequence.length > 0) {
+    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
+    csv += 'Question ID,Question Text,Answer (0-10),Section,Category,Type\n';
+    data.questionSequence.forEach(q => {
+      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
+      const questionText = q.question || q.questionText || '';
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.section || ''}","${q.category || ''}","${q.type || ''}"\n`;
+    });
+  }
+  
+  // Include any additional answers not in questionSequence (legacy support)
+  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
+    const questionIds = new Set();
+    if (data.questionSequence) {
+      data.questionSequence.forEach(q => questionIds.add(q.id));
+    }
+    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
+    if (missingAnswers.length > 0) {
+      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
+      csv += 'Question ID,Answer (0-10)\n';
+      missingAnswers.forEach(([id, answer]) => {
+        csv += `"${id}",${answer}\n`;
+      });
+    }
+  }
+  
+  if (data.cognitiveBand) {
+    csv += '\n=== COGNITIVE BAND ===\n';
+    csv += `Band: ${data.cognitiveBand.name || ''}\n`;
+    csv += `IQ Range: ${data.cognitiveBand.iqRange || ''}\n`;
+  }
+  
+  if (data.sovereigntyScore !== undefined) {
+    csv += '\n=== SOVEREIGNTY METRICS ===\n';
+    csv += `Sovereignty Score: ${data.sovereigntyScore}/100\n`;
+    csv += `Attachment Mode: ${data.attachmentMode || ''}\n`;
+    if (data.sovereignSplitPosition) {
+      csv += `Sovereign Split Position: ${data.sovereignSplitPosition.name || ''}\n`;
+    }
+  }
+  
+  return csv;
+}
+
 export function exportJSON(assessmentData, systemType, systemName) {
   const exportData = {
     systemType: systemType,
