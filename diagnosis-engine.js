@@ -1271,21 +1271,22 @@ export class DiagnosisEngine {
     
     if (VALIDATION_PAIRS && Array.isArray(VALIDATION_PAIRS)) {
       VALIDATION_PAIRS.forEach(pair => {
-      const primaryId = `${categoryKey}_${disorderName}_${Object.keys(DSM5_CATEGORIES[categoryKey].disorders[disorderName].criteria)[0]}_${pair.primary}`;
-      const validationId = `${categoryKey}_${disorderName}_validation_${pair.primary}`;
-      
-      const primaryAnswer = this.answers[primaryId];
-      const validationAnswer = this.answers[validationId];
-      
-      if (primaryAnswer !== undefined && validationAnswer !== undefined) {
-        validationCount++;
-        // Check for inconsistency (high primary, high validation = inconsistent)
-        const primaryNormalized = primaryAnswer / 10;
-        const validationNormalized = validationAnswer / 10;
-        const inconsistency = Math.abs(primaryNormalized - (1 - validationNormalized));
-        inconsistencyScore += inconsistency;
-      }
-    });
+        const primaryId = `${categoryKey}_${disorderName}_${Object.keys(DSM5_CATEGORIES[categoryKey].disorders[disorderName].criteria)[0]}_${pair.primary}`;
+        const validationId = `${categoryKey}_${disorderName}_validation_${pair.primary}`;
+        
+        const primaryAnswer = this.answers[primaryId];
+        const validationAnswer = this.answers[validationId];
+        
+        if (primaryAnswer !== undefined && validationAnswer !== undefined) {
+          validationCount++;
+          // Check for inconsistency (high primary, high validation = inconsistent)
+          const primaryNormalized = primaryAnswer / 10;
+          const validationNormalized = validationAnswer / 10;
+          const inconsistency = Math.abs(primaryNormalized - (1 - validationNormalized));
+          inconsistencyScore += inconsistency;
+        }
+      });
+    }
     
     if (validationCount > 0) {
       const avgInconsistency = inconsistencyScore / validationCount;
