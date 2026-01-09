@@ -20,7 +20,8 @@ export class SovereigntySpectrumEngine {
    */
   constructor() {
     this.selectedParadigms = [];
-    this.currentPhase = 1; // 1 = Paradigm selection, 2 = Intents/Practicalities, 3 = Derailers, 4 = Results
+    this.paradigmRatings = {}; // Store ratings for all paradigms
+    this.currentPhase = 1; // 1 = Paradigm rating, 2 = Intents/Practicalities, 3 = Derailers, 4 = Results
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
@@ -34,6 +35,7 @@ export class SovereigntySpectrumEngine {
     this.analysisData = {
       timestamp: new Date().toISOString(),
       selectedParadigms: [],
+      paradigmRatings: {},
       paradigmAlignments: {},
       derailerScores: {},
       spectrumPosition: 0,
@@ -127,38 +129,111 @@ export class SovereigntySpectrumEngine {
   }
 
   /**
-   * Toggle paradigm selection
-   * @param {string} paradigmId - ID of paradigm to toggle
+   * Rate a paradigm (1-5 scale)
+   * @param {string} paradigmId - ID of paradigm to rate
+   * @param {number} rating - Rating value (1-5)
    */
-  toggleParadigm(paradigmId) {
-    const index = this.selectedParadigms.indexOf(paradigmId);
-    if (index > -1) {
-      this.selectedParadigms.splice(index, 1);
-    } else {
-      if (this.selectedParadigms.length >= 5) {
-        ErrorHandler.showUserError('Please select a maximum of 5 paradigms.');
-        return;
-      }
-      this.selectedParadigms.push(paradigmId);
-    }
+  rateParadigm(paradigmId, rating) {
+    this.paradigmRatings[paradigmId] = parseInt(rating);
     
     // Update UI
     const card = document.querySelector(`[data-paradigm="${paradigmId}"]`);
     if (card) {
-      card.classList.toggle('selected');
+      const ratingInput = card.querySelector(`input[type="radio"]:checked`);
+      if (ratingInput) {
+        // Visual feedback
+        card.classList.add('rated');
+        const ratingDisplay = card.querySelector('.rating-display');
+        if (ratingDisplay) {
+          ratingDisplay.textContent = `Rating: ${rating}/5`;
+        }
+      }
     }
     
-    // Update start button
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.disabled = this.selectedParadigms.length < 3;
-    }
-    
+    // Check if all paradigms are rated
+    this.checkParadigmRatingComplete();
     this.saveProgress();
   }
 
   /**
-   * Render paradigm selection (Phase 1)
+   * Check if all paradigms have been rated
+   */
+  checkParadigmRatingComplete() {
+    if (!SOVEREIGNTY_PARADIGMS) return;
+    
+    const totalParadigms = SOVEREIGNTY_PARADIGMS.length;
+    const ratedCount = Object.keys(this.paradigmRatings).filter(
+      id => this.paradigmRatings[id] !== undefined && this.paradigmRatings[id] !== null
+    ).length;
+    
+    const startBtn = document.getElementById('startAssessment');
+    if (startBtn) {
+      startBtn.disabled = ratedCount < totalParadigms;
+      if (ratedCount === totalParadigms) {
+        startBtn.textContent = 'Continue to Assessment';
+      } else {
+        startBtn.textContent = `Rate All Paradigms (${ratedCount}/${totalParadigms})`;
+      }
+    }
+  }
+
+  /**
+   * Select top paradigms based on ratings
+   */
+  selectTopParadigms() {
+    if (!SOVEREIGNTY_PARADIGMS) return;
+    
+    // Get all paradigms with their ratings
+    const paradigmScores = SOVEREIGNTY_PARADIGMS.map(paradigm => ({
+      id: paradigm.id,
+      name: paradigm.name,
+      rating: this.paradigmRatings[paradigm.id] || 0,
+      weight: paradigm.weight || 1.0
+    }));
+    
+    // Sort by rating (highest first)
+    paradigmScores.sort((a, b) => b.rating - a.rating);
+    
+    // Calculate quartiles
+    const ratings = paradigmScores.map(p => p.rating).filter(r => r > 0);
+    if (ratings.length === 0) return;
+    
+    ratings.sort((a, b) => b - a);
+    const q1Index = Math.floor(ratings.length * 0.25);
+    const q3Index = Math.floor(ratings.length * 0.75);
+    const q1Value = ratings[q1Index] || 0;
+    const q3Value = ratings[q3Index] || 0;
+    
+    // Select paradigms in top quartile (Q3+) or highest 3-5
+    const topParadigms = paradigmScores.filter(p => {
+      return p.rating >= q3Value && p.rating > 0;
+    });
+    
+    // Ensure we have at least 3, but no more than 5
+    if (topParadigms.length < 3) {
+      // Take top 3-5 by rating
+      this.selectedParadigms = paradigmScores
+        .filter(p => p.rating > 0)
+        .slice(0, 5)
+        .map(p => p.id);
+    } else if (topParadigms.length > 5) {
+      // Take top 5 from Q3+
+      this.selectedParadigms = topParadigms
+        .slice(0, 5)
+        .map(p => p.id);
+    } else {
+      this.selectedParadigms = topParadigms.map(p => p.id);
+    }
+    
+    // Store in analysis data
+    this.analysisData.paradigmRatings = { ...this.paradigmRatings };
+    this.analysisData.selectedParadigms = [...this.selectedParadigms];
+    
+    this.debugReporter.logEvent('ParadigmSelection', `Selected ${this.selectedParadigms.length} paradigms based on ratings`);
+  }
+
+  /**
+   * Render paradigm rating (Phase 1)
    */
   async renderParadigmSelection() {
     await this.loadSpectrumData();
@@ -167,8 +242,8 @@ export class SovereigntySpectrumEngine {
     if (!container) return;
     
     let html = '<div class="paradigm-selection-intro">';
-    html += '<h3>Select 3-5 Paradigms That Resonate</h3>';
-    html += '<p>Choose the philosophical, spiritual, or psychological frameworks that most align with your values and worldview. You can select between 3 and 5 paradigms.</p>';
+    html += '<h3>Rate Each Paradigm</h3>';
+    html += '<p>Rate how much each philosophical, spiritual, or psychological framework resonates with your values and worldview. Use a scale of 1 (Not at all) to 5 (Strongly resonates). The system will automatically select your top 3-5 paradigms based on your ratings.</p>';
     html += '</div>';
     html += '<div class="paradigm-grid">';
     
@@ -188,15 +263,41 @@ export class SovereigntySpectrumEngine {
         const paradigm = SOVEREIGNTY_PARADIGMS.find(p => p.id === paradigmId);
         if (!paradigm) return;
         
-        const isSelected = this.selectedParadigms.includes(paradigmId);
-        const selectedClass = isSelected ? 'selected' : '';
+        const currentRating = this.paradigmRatings[paradigmId] || null;
+        const ratedClass = currentRating ? 'rated' : '';
         
         html += `
-          <div class="paradigm-card ${selectedClass}" data-paradigm="${paradigmId}" onclick="window.spectrumEngine.toggleParadigm('${paradigmId}')">
+          <div class="paradigm-card ${ratedClass}" data-paradigm="${paradigmId}">
             <h5>${SecurityUtils.sanitizeHTML(paradigm.name)}</h5>
             <p class="paradigm-description">${SecurityUtils.sanitizeHTML(paradigm.description)}</p>
             <div class="paradigm-values">
               <strong>Values:</strong> ${SecurityUtils.sanitizeHTML(paradigm.values.join(', '))}
+            </div>
+            <div class="paradigm-rating">
+              <label>How much does this resonate with you?</label>
+              <div class="rating-scale">
+                <label class="rating-option">
+                  <input type="radio" name="paradigm_${paradigmId}" value="1" ${currentRating === 1 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
+                  <span>1 - Not at all</span>
+                </label>
+                <label class="rating-option">
+                  <input type="radio" name="paradigm_${paradigmId}" value="2" ${currentRating === 2 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
+                  <span>2 - Slightly</span>
+                </label>
+                <label class="rating-option">
+                  <input type="radio" name="paradigm_${paradigmId}" value="3" ${currentRating === 3 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
+                  <span>3 - Moderately</span>
+                </label>
+                <label class="rating-option">
+                  <input type="radio" name="paradigm_${paradigmId}" value="4" ${currentRating === 4 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
+                  <span>4 - Strongly</span>
+                </label>
+                <label class="rating-option">
+                  <input type="radio" name="paradigm_${paradigmId}" value="5" ${currentRating === 5 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
+                  <span>5 - Very strongly</span>
+                </label>
+              </div>
+              ${currentRating ? `<div class="rating-display">Rating: ${currentRating}/5</div>` : ''}
             </div>
           </div>
         `;
@@ -207,12 +308,24 @@ export class SovereigntySpectrumEngine {
     
     html += '</div>';
     html += '<div style="text-align: center; margin-top: 2rem;">';
-    html += `<button class="btn btn-primary" id="startAssessment" ${this.selectedParadigms.length < 3 ? 'disabled' : ''}>Begin Assessment</button>`;
+    const ratedCount = Object.keys(this.paradigmRatings).filter(id => this.paradigmRatings[id] !== undefined && this.paradigmRatings[id] !== null).length;
+    const totalParadigms = SOVEREIGNTY_PARADIGMS ? SOVEREIGNTY_PARADIGMS.length : 18;
+    html += `<button class="btn btn-primary" id="startAssessment" ${ratedCount < totalParadigms ? 'disabled' : ''}>${ratedCount < totalParadigms ? `Rate All Paradigms (${ratedCount}/${totalParadigms})` : 'Continue to Assessment'}</button>`;
     html += '</div>';
     
     SecurityUtils.safeInnerHTML(container, html);
     
-    // Re-attach event listeners
+    // Attach rating listeners
+    const ratingInputs = container.querySelectorAll('input[type="radio"][data-paradigm-id]');
+    ratingInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        const paradigmId = e.target.dataset.paradigmId;
+        const rating = e.target.value;
+        this.rateParadigm(paradigmId, rating);
+      });
+    });
+    
+    // Re-attach start button listener
     const startBtn = document.getElementById('startAssessment');
     if (startBtn) {
       startBtn.addEventListener('click', () => this.startAssessment());
@@ -224,13 +337,32 @@ export class SovereigntySpectrumEngine {
    * @returns {Promise<void>}
    */
   async startAssessment() {
-    if (this.selectedParadigms.length < 3) {
-      ErrorHandler.showUserError('Please select at least 3 paradigms to begin.');
+    // Check if all paradigms are rated
+    if (!SOVEREIGNTY_PARADIGMS) {
+      await this.loadSpectrumData();
+    }
+    
+    const totalParadigms = SOVEREIGNTY_PARADIGMS.length;
+    const ratedCount = Object.keys(this.paradigmRatings).filter(
+      id => this.paradigmRatings[id] !== undefined && this.paradigmRatings[id] !== null
+    ).length;
+    
+    if (ratedCount < totalParadigms) {
+      ErrorHandler.showUserError(`Please rate all ${totalParadigms} paradigms before continuing.`);
       return;
     }
     
     try {
       await this.loadSpectrumData();
+      
+      // Select top paradigms based on ratings
+      this.selectTopParadigms();
+      
+      if (this.selectedParadigms.length < 3) {
+        ErrorHandler.showUserError('Not enough paradigms rated highly. Please rate at least 3 paradigms with a score of 3 or higher.');
+        return;
+      }
+      
       await this.buildPhase2Sequence();
       
       this.currentPhase = 2;
@@ -798,6 +930,7 @@ export class SovereigntySpectrumEngine {
     try {
       const progress = {
         selectedParadigms: this.selectedParadigms,
+        paradigmRatings: this.paradigmRatings,
         currentPhase: this.currentPhase,
         currentQuestionIndex: this.currentQuestionIndex,
         answers: this.answers,
@@ -821,6 +954,7 @@ export class SovereigntySpectrumEngine {
       const progress = this.dataStore.load('progress');
       if (progress) {
         this.selectedParadigms = progress.selectedParadigms || [];
+        this.paradigmRatings = progress.paradigmRatings || {};
         this.currentPhase = progress.currentPhase || 1;
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
         this.answers = progress.answers || {};
@@ -856,6 +990,7 @@ export class SovereigntySpectrumEngine {
    */
   resetAssessment() {
     this.selectedParadigms = [];
+    this.paradigmRatings = {};
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -865,6 +1000,7 @@ export class SovereigntySpectrumEngine {
     this.analysisData = {
       timestamp: new Date().toISOString(),
       selectedParadigms: [],
+      paradigmRatings: {},
       paradigmAlignments: {},
       derailerScores: {},
       spectrumPosition: 0,

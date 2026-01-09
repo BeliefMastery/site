@@ -127,9 +127,59 @@
       box-shadow: var(--shadow);
     }
 
-    .paradigm-card.selected {
+    .paradigm-card.rated {
       border-color: var(--brand);
-      background: rgba(255, 184, 0, 0.1);
+      background: rgba(255, 184, 0, 0.05);
+    }
+
+    .paradigm-rating {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .paradigm-rating label {
+      display: block;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .rating-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .rating-option {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: var(--transition);
+    }
+
+    .rating-option:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .rating-option input[type="radio"] {
+      margin-right: 0.75rem;
+      cursor: pointer;
+    }
+
+    .rating-option input[type="radio"]:checked + span {
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .rating-display {
+      margin-top: 0.5rem;
+      font-weight: 600;
+      color: var(--brand);
+      font-size: 0.9rem;
     }
 
     .paradigm-card h5 {
@@ -459,7 +509,8 @@
         </div>
         <p><strong>This assessment evaluates:</strong></p>
         <ul style="margin-left: 1.5rem; line-height: 1.8;">
-          <li><strong>Paradigm Alignment:</strong> How well your values, ideals, and intents align with selected frameworks</li>
+          <li><strong>Paradigm Rating:</strong> Rate all 18 paradigms on how much they resonate with you (1-5 scale)</li>
+          <li><strong>Automatic Selection:</strong> System selects your top 3-5 paradigms based on your ratings</li>
           <li><strong>Practical Integration:</strong> How consistently you live according to your stated values</li>
           <li><strong>Derailer Detection:</strong> Hypocrisy (value-action gaps), reluctance (inertial resistance), and nihilism (despair-induced abdication)</li>
           <li><strong>Spectrum Position:</strong> Your position from 0 (Nihilistic Fragmentation) to 100 (Paradigm-Transcendent Sovereignty)</li>
