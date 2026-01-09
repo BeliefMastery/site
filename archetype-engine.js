@@ -203,7 +203,7 @@ export class ArchetypeEngine {
     const container = document.getElementById('questionContainer');
     if (!container) return;
 
-    container.innerHTML = `
+    SecurityUtils.safeInnerHTML(container, `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
         <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket</h2>
         <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">
