@@ -40,6 +40,10 @@ export function exportForAIAgent(assessmentData, systemType, systemName) {
     csv += generateTemperamentExport(assessmentData);
   } else if (systemType === 'needs-dependency') {
     csv += generateNeedsDependencyExport(assessmentData);
+  } else if (systemType === 'archetype' || systemType === 'archetype-analysis') {
+    csv += generateArchetypeExport(assessmentData);
+  } else if (systemType === 'sovereignty' || systemType === 'sovereignty-analysis') {
+    csv += generateSovereigntyExport(assessmentData);
   }
   
   csv += '\n';

@@ -1685,23 +1685,13 @@ export class ArchetypeEngine {
     }
 
     if (format === 'json') {
-      exportJSON(this.analysisData, 'archetype-analysis');
+      const json = exportJSON(this.analysisData, 'archetype-analysis', 'Archetype Analysis');
+      downloadFile(json, `archetype-analysis-${Date.now()}.json`, 'application/json');
     } else if (format === 'csv') {
-      // Create CSV export
-      const csvRows = [];
-      csvRows.push(['Archetype Analysis Results']);
-      csvRows.push(['Timestamp', this.analysisData.timestamp]);
-      csvRows.push([]);
-      csvRows.push(['Primary Archetype', this.analysisData.primaryArchetype.name, `Confidence: ${this.analysisData.primaryArchetype.confidence.toFixed(1)}%`]);
-      if (this.analysisData.secondaryArchetype) {
-        csvRows.push(['Secondary Archetype', this.analysisData.secondaryArchetype.name, `Confidence: ${this.analysisData.secondaryArchetype.confidence.toFixed(1)}%`]);
-      }
-      if (this.analysisData.tertiaryArchetype) {
-        csvRows.push(['Tertiary Archetype', this.analysisData.tertiaryArchetype.name, `Confidence: ${this.analysisData.tertiaryArchetype.confidence.toFixed(1)}%`]);
-      }
-      
-      const csvContent = csvRows.map(row => row.join(',')).join('\n');
-      downloadFile(csvContent, 'archetype-analysis.csv', 'text/csv');
+      // Use shared export utility to ensure question-answer pairs are included
+      // Note: Need to add archetype support to export-utils.js or use generic format
+      const csv = exportForAIAgent(this.analysisData, 'archetype', 'Archetype Analysis');
+      downloadFile(csv, `archetype-analysis-${Date.now()}.csv`, 'text/csv');
     }
   }
 }

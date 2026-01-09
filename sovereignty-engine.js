@@ -1868,11 +1868,12 @@ export class SovereigntyEngine {
 
   exportAnalysis(format) {
     if (format === 'json') {
-      exportJSON(this.analysisData, 'sovereignty-analysis');
+      const json = exportJSON(this.analysisData, 'sovereignty-analysis', 'AI Sovereignty Analysis');
+      downloadFile(json, `sovereignty-analysis-${Date.now()}.json`, 'application/json');
     } else if (format === 'csv') {
-      // CSV export implementation
-      const csv = this.generateCSV();
-      downloadFile(csv, 'sovereignty-analysis.csv', 'text/csv');
+      // Use shared export utility to ensure question-answer pairs are included
+      const csv = exportForAIAgent(this.analysisData, 'sovereignty', 'AI Sovereignty Analysis');
+      downloadFile(csv, `sovereignty-analysis-${Date.now()}.csv`, 'text/csv');
     }
   }
 
