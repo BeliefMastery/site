@@ -338,7 +338,12 @@ export class DebugReporter {
       </div>
     `;
     
-    container.innerHTML = reportHTML;
+    // Use SecurityUtils if available, otherwise fallback to innerHTML
+    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeInnerHTML) {
+      SecurityUtils.safeInnerHTML(container, reportHTML);
+    } else {
+      container.innerHTML = reportHTML;
+    }
   }
 
   /**
