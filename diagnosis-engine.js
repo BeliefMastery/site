@@ -689,7 +689,8 @@ export class DiagnosisEngine {
         });
         
         // Add contradictory validation questions
-        VALIDATION_PAIRS.forEach(pair => {
+        if (VALIDATION_PAIRS && Array.isArray(VALIDATION_PAIRS)) {
+          VALIDATION_PAIRS.forEach(pair => {
           const questionId = `${categoryKey}_${disorderName}_validation_${pair.primary}`;
           this.questionSequence.push({
             id: questionId,
