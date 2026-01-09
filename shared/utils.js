@@ -42,9 +42,10 @@ export const SecurityUtils = {
   },
 
   /**
-   * Safely set innerHTML with automatic sanitization
+   * Safely set innerHTML - assumes content is already sanitized
+   * Dynamic content should be sanitized BEFORE building the template literal
    * @param {HTMLElement} element - Element to set innerHTML on
-   * @param {string} content - HTML content to set (will be sanitized)
+   * @param {string} content - HTML content to set (should already have dynamic parts sanitized)
    */
   safeInnerHTML(element, content) {
     if (!element) {
@@ -56,7 +57,9 @@ export const SecurityUtils = {
       element.innerHTML = '';
       return;
     }
-    element.innerHTML = this.sanitizeHTML(content);
+    // Trust the HTML structure - dynamic content should already be sanitized
+    // This allows HTML tags in template literals to render correctly
+    element.innerHTML = content;
   },
 
   /**
