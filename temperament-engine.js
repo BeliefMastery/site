@@ -234,6 +234,10 @@ export class TemperamentEngine {
 
     // Shuffle questions to mitigate bias
     this.questionSequence.sort(() => Math.random() - 0.5);
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase2Sequence');
+      ErrorHandler.showUserError('Failed to build Phase 2 sequence. Please try again.');
+    }
   }
 
   attachEventListeners() {

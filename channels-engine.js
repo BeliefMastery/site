@@ -374,6 +374,10 @@ export class ChannelsEngine {
     });
     
     this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase3Sequence');
+      ErrorHandler.showUserError('Failed to build Phase 3 sequence. Please try again.');
+    }
   }
 
   processPhase3Answer(question) {

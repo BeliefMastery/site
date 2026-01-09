@@ -286,6 +286,7 @@ export class RelationshipEngine {
     }
   }
 
+  async buildStage2Sequence() {
       // Stage 2: Domain-specific questions for weakest links
       this.questionSequence = [];
       this.currentStage = 2;
@@ -710,6 +711,61 @@ export class RelationshipEngine {
     await this.loadRelationshipData();
     
     try {
+      // Stage 2: Domain-specific questions for weakest links
+      this.questionSequence = [];
+      this.currentStage = 2;
+      
+      // Get domains for weakest links
+      const relevantDomains = new Set();
+      this.weakestLinks.forEach(link => {
+        // Find which domain this compatibility point belongs to
+        Object.keys(RELATIONSHIP_DOMAINS).forEach(domainKey => {
+          const domain = RELATIONSHIP_DOMAINS[domainKey];
+          if (domain.compatibilityPoints.includes(link.point)) {
+            relevantDomains.add(domainKey);
+          }
+        });
+      });
+      
+      // Add domain-specific questions for weakest links
+      this.weakestLinks.forEach(link => {
+        const domainQuestions = STAGE_2_DOMAIN_QUESTIONS[link.point];
+        if (domainQuestions && domainQuestions.questions) {
+          domainQuestions.questions.forEach(question => {
+            this.questionSequence.push({
+              id: question.id || `stage2_${link.point}_${this.questionSequence.length + 1}`,
+              question: question.question,
+              weight: question.weight || 1.0,
+              compatibilityPoint: link.point,
+              stage: 2,
+              domain: question.domain || 'generic',
+              domainName: question.domainName || RELATIONSHIP_DOMAINS[question.domain]?.name || 'Deep Dive'
+            });
+          });
+        } else {
+          // Fallback: use questions from compatibility point if available
+          const point = COMPATIBILITY_POINTS[link.point];
+          if (point && point.questions && point.questions.length > 1) {
+            // Use additional questions from the compatibility point as domain questions
+            point.questions.slice(1).forEach((q, index) => {
+              this.questionSequence.push({
+                id: `domain_${link.point}_${index + 1}`,
+                question: q,
+                weight: 1.0 + (index * 0.1),
+                compatibilityPoint: link.point,
+                stage: 2,
+                domain: 'generic',
+                domainName: 'Deep Dive'
+              });
+            });
+          }
+        }
+      });
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildStage2Sequence');
+      ErrorHandler.showUserError('Failed to build Stage 2 sequence. Please try again.');
+    }
+  }
 
   analyzeStage2Results() {
     // Analyze domain-specific answers
