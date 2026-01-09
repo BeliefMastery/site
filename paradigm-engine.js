@@ -443,8 +443,8 @@ export class ParadigmEngine {
       html += this.renderScaledQuestion(question);
     }
     
-      // Note: HTML is generated from trusted templates
-      container.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       
       // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
@@ -476,7 +476,7 @@ export class ParadigmEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="binary-options">
           ${question.options.map((option, index) => `
             <label class="binary-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -487,7 +487,7 @@ export class ParadigmEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -504,7 +504,7 @@ export class ParadigmEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="scenario-options">
           ${question.options.map((option, index) => `
             <label class="scenario-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -515,7 +515,7 @@ export class ParadigmEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -533,7 +533,7 @@ export class ParadigmEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
         <div class="multiselect-options">
           ${question.options.map((option, index) => {
@@ -547,7 +547,7 @@ export class ParadigmEngine {
                   data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                   ${isSelected ? 'checked' : ''}
                 />
-                <span class="option-text">${option.text}</span>
+                <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
               </label>
             `;
           }).join('')}
@@ -569,7 +569,7 @@ export class ParadigmEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="ranked-instruction">${question.instruction || 'Drag to reorder, or click to move up/down'}</p>
         <div class="ranked-options" id="rankedOptions_${question.id}">
           ${sortedOptions.map((option, index) => {
@@ -598,7 +598,7 @@ export class ParadigmEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="scale-container">
           <div class="scale-input">
             <input 

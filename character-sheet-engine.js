@@ -515,36 +515,36 @@ export class CharacterSheetEngine {
     const narratives = [];
     
     // Opening - character origin
-    narratives.push(`${formData.name} emerged into the world as a ${race}, their essence shaped by cosmic forces that converged at the moment of their birth.`);
+    narratives.push(`${SecurityUtils.sanitizeHTML(formData.name || '')} emerged into the world as a ${SecurityUtils.sanitizeHTML(race || '')}, their essence shaped by cosmic forces that converged at the moment of their birth.`);
     
     // Sun sign - core identity
     if (sunSign) {
       const sunTrait = sunSign.keyTraits[Math.floor(Math.random() * sunSign.keyTraits.length)];
-      narratives.push(`Born under the ${sunSign.name} Sun, their fundamental nature is ${sunTrait.toLowerCase()}, driving them toward ${sunSign.keyTraits.filter(t => t !== sunTrait)[0].toLowerCase()} in all endeavors.`);
+      narratives.push(`Born under the ${SecurityUtils.sanitizeHTML(sunSign.name || '')} Sun, their fundamental nature is ${SecurityUtils.sanitizeHTML(sunTrait || '').toLowerCase()}, driving them toward ${SecurityUtils.sanitizeHTML(sunSign.keyTraits.filter(t => t !== sunTrait)[0] || '').toLowerCase()} in all endeavors.`);
     }
     
     // Moon sign - inner world
     if (moonSign) {
-      narratives.push(`Beneath the surface, the ${moonSign.name} Moon illuminates their inner landscape, making them deeply ${moonSign.keyTraits[0].toLowerCase()} and ${moonSign.keyTraits[1].toLowerCase()}, though this emotional depth often remains hidden from casual observers.`);
+      narratives.push(`Beneath the surface, the ${SecurityUtils.sanitizeHTML(moonSign.name || '')} Moon illuminates their inner landscape, making them deeply ${SecurityUtils.sanitizeHTML(moonSign.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(moonSign.keyTraits[1] || '').toLowerCase()}, though this emotional depth often remains hidden from casual observers.`);
     }
     
     // Ascendant - outward expression
     if (ascendantSign) {
-      narratives.push(`To the world, they present as ${ascendantSign.name} rising—${ascendantSign.keyTraits[0].toLowerCase()} and ${ascendantSign.keyTraits[1].toLowerCase()}, a mask that both protects and reveals their true nature.`);
+      narratives.push(`To the world, they present as ${SecurityUtils.sanitizeHTML(ascendantSign.name || '')} rising—${SecurityUtils.sanitizeHTML(ascendantSign.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(ascendantSign.keyTraits[1] || '').toLowerCase()}, a mask that both protects and reveals their true nature.`);
     }
     
     // Chinese astrology - earthly influence
     if (chineseAnimal && chineseElement) {
-      narratives.push(`In the year of the ${chineseElement.name} ${chineseAnimal.name}, earthly forces granted them ${chineseAnimal.keyTraits[0].toLowerCase()} and ${chineseAnimal.keyTraits[1].toLowerCase()}, while the ${chineseElement.name.toLowerCase()} element flows through their ${chineseElement.traits[0].toLowerCase()} nature.`);
+      narratives.push(`In the year of the ${SecurityUtils.sanitizeHTML(chineseElement.name || '')} ${SecurityUtils.sanitizeHTML(chineseAnimal.name || '')}, earthly forces granted them ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[1] || '').toLowerCase()}, while the ${SecurityUtils.sanitizeHTML(chineseElement.name || '').toLowerCase()} element flows through their ${SecurityUtils.sanitizeHTML(chineseElement.traits[0] || '').toLowerCase()} nature.`);
     }
     
     // Mayan seal - galactic signature
     if (mayanSeal && mayanTone) {
-      narratives.push(`Their galactic signature, ${mayanDisplay}, marks them as one who ${mayanSeal.ability.split(' - ')[1]?.toLowerCase() || mayanSeal.ability.toLowerCase()}, while the ${mayanTone.name} tone shapes their approach: ${mayanTone.approach.split(' - ')[1]?.toLowerCase() || mayanTone.approach.toLowerCase()}.`);
+      narratives.push(`Their galactic signature, ${SecurityUtils.sanitizeHTML(mayanDisplay || '')}, marks them as one who ${SecurityUtils.sanitizeHTML(mayanSeal.ability.split(' - ')[1] || mayanSeal.ability || '').toLowerCase()}, while the ${SecurityUtils.sanitizeHTML(mayanTone.name || '')} tone shapes their approach: ${SecurityUtils.sanitizeHTML(mayanTone.approach.split(' - ')[1] || mayanTone.approach || '').toLowerCase()}.`);
     }
     
     // Class connection
-    narratives.push(`These converging influences naturally led ${formData.name} to the path of the ${characterClass}, where their unique combination of ${sunSign?.keyTraits[0]?.toLowerCase() || 'abilities'} and ${moonSign?.keyTraits[0]?.toLowerCase() || 'insights'} finds its fullest expression.`);
+    narratives.push(`These converging influences naturally led ${SecurityUtils.sanitizeHTML(formData.name || '')} to the path of the ${SecurityUtils.sanitizeHTML(characterClass || '')}, where their unique combination of ${SecurityUtils.sanitizeHTML(sunSign?.keyTraits[0] || 'abilities').toLowerCase()} and ${SecurityUtils.sanitizeHTML(moonSign?.keyTraits[0] || 'insights').toLowerCase()} finds its fullest expression.`);
     
     // Closing - destiny
     narratives.push(`Their journey is one of integration—learning to harmonize the ${sunSign?.element?.toLowerCase() || 'elemental'} fire of their Sun with the ${moonSign?.element?.toLowerCase() || 'emotional'} waters of their Moon, while the ${mayanDisplay} signature guides them toward their galactic purpose.`);
@@ -842,29 +842,29 @@ export class CharacterSheetEngine {
     
     let html = `
       <div class="character-sheet">
-        <h2>${character.name}</h2>
-        <p class="character-subtitle">${character.race} ${character.characterClass}</p>
+        <h2>${SecurityUtils.sanitizeHTML(character.name || '')}</h2>
+        <p class="character-subtitle">${SecurityUtils.sanitizeHTML(character.race || '')} ${SecurityUtils.sanitizeHTML(character.characterClass || '')}</p>
         
         <section class="astrology-summary" style="background: var(--bg); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">
           <h3 style="margin-top: 0; color: var(--brand);">Astrological Profile</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
             <div>
-              <p style="margin: 0.25rem 0;"><strong>Western:</strong> ${character.astrologyData.western.sun?.name || 'Unknown'} Sun${character.astrologyData.western.moon ? `, ${character.astrologyData.western.moon.name} Moon` : ''}${character.astrologyData.western.ascendant ? `, ${character.astrologyData.western.ascendant.name} Ascendant` : ''}</p>
+              <p style="margin: 0.25rem 0;"><strong>Western:</strong> ${SecurityUtils.sanitizeHTML(character.astrologyData.western.sun?.name || 'Unknown')} Sun${character.astrologyData.western.moon ? `, ${SecurityUtils.sanitizeHTML(character.astrologyData.western.moon.name || '')} Moon` : ''}${character.astrologyData.western.ascendant ? `, ${SecurityUtils.sanitizeHTML(character.astrologyData.western.ascendant.name || '')} Ascendant` : ''}</p>
             </div>
             <div>
-              <p style="margin: 0.25rem 0;"><strong>Chinese:</strong> ${chineseDisplay}</p>
+              <p style="margin: 0.25rem 0;"><strong>Chinese:</strong> ${SecurityUtils.sanitizeHTML(chineseDisplay || '')}</p>
             </div>
             <div>
-              <p style="margin: 0.25rem 0;"><strong>Mayan:</strong> ${mayanDisplay || 'Unknown'}</p>
+              <p style="margin: 0.25rem 0;"><strong>Mayan:</strong> ${SecurityUtils.sanitizeHTML(mayanDisplay || 'Unknown')}</p>
             </div>
           </div>
         </section>
         
         <section class="character-overview">
           <h3>Character Overview</h3>
-          <p><strong>Race:</strong> ${character.race}</p>
-          <p><strong>Class:</strong> ${character.characterClass}</p>
-          <p><strong>Backstory:</strong> ${character.backstory}</p>
+          <p><strong>Race:</strong> ${SecurityUtils.sanitizeHTML(character.race || '')}</p>
+          <p><strong>Class:</strong> ${SecurityUtils.sanitizeHTML(character.characterClass || '')}</p>
+          <p><strong>Backstory:</strong> ${SecurityUtils.sanitizeHTML(character.backstory || '')}</p>
         </section>
         
         <section class="base-stats">
@@ -883,7 +883,7 @@ export class CharacterSheetEngine {
         <section class="proficiencies">
           <h3>Proficiencies</h3>
           <ul>
-            ${character.proficiencies.map(p => `<li>${p}</li>`).join('')}
+            ${character.proficiencies.map(p => `<li>${SecurityUtils.sanitizeHTML(p || '')}</li>`).join('')}
           </ul>
         </section>
         
@@ -900,9 +900,9 @@ export class CharacterSheetEngine {
             <tbody>
               ${character.traits.map(t => `
                 <tr>
-                  <td>${t.name}</td>
-                  <td>${t.source}</td>
-                  <td>${t.modifier}</td>
+                  <td>${SecurityUtils.sanitizeHTML(t.name || '')}</td>
+                  <td>${SecurityUtils.sanitizeHTML(t.source || '')}</td>
+                  <td>${SecurityUtils.sanitizeHTML(t.modifier || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1014,8 +1014,8 @@ export class CharacterSheetEngine {
       </div>
     `;
 
-      // Note: HTML is generated from trusted templates, sanitization applied to user inputs
-      resultsContainer.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(resultsContainer, html);
       
       // Display debug report if in development mode
       if (window.location.search.includes('debug=true')) {

@@ -487,8 +487,8 @@ export class NeedsDependencyEngine {
         html = this.renderNeedChainQuestion(question);
       }
       
-      // Note: HTML is generated from trusted templates
-      container.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       
       // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
@@ -522,7 +522,7 @@ export class NeedsDependencyEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="scale-container">
           <div class="scale-input">
             <input 
@@ -555,7 +555,7 @@ export class NeedsDependencyEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="scenario-options">
           ${question.options.map((option, index) => `
             <label class="scenario-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -566,7 +566,7 @@ export class NeedsDependencyEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -584,7 +584,7 @@ export class NeedsDependencyEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
         <div class="multiselect-options">
           ${question.options.map((option, index) => {
@@ -598,7 +598,7 @@ export class NeedsDependencyEngine {
                   data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                   ${isSelected ? 'checked' : ''}
                 />
-                <span class="option-text">${option.text}</span>
+                <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
               </label>
             `;
           }).join('')}
@@ -617,7 +617,7 @@ export class NeedsDependencyEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="need-chain-options">
           ${question.options.map((option, index) => `
             <label class="need-chain-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -628,7 +628,7 @@ export class NeedsDependencyEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -1174,7 +1174,7 @@ export class NeedsDependencyEngine {
       <div class="need-chain-section">
         <h2>Need Chain Analysis</h2>
         <div class="need-chain-visualization">
-          <p><strong>Surface Need:</strong> ${this.needChain[0]?.need || 'Unknown'}</p>
+          <p><strong>Surface Need:</strong> ${SecurityUtils.sanitizeHTML(this.needChain[0]?.need || 'Unknown')}</p>
           ${this.needChain.length > 1 ? `
             <p><strong>Deeper Needs:</strong> ${this.needChain.slice(1).map(n => n.need).join(' → ')}</p>
           ` : ''}
