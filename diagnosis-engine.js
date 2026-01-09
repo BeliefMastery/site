@@ -691,17 +691,18 @@ export class DiagnosisEngine {
         // Add contradictory validation questions
         if (VALIDATION_PAIRS && Array.isArray(VALIDATION_PAIRS)) {
           VALIDATION_PAIRS.forEach(pair => {
-          const questionId = `${categoryKey}_${disorderName}_validation_${pair.primary}`;
-          this.questionSequence.push({
-            id: questionId,
-            category: categoryKey,
-            disorder: disorderName,
-            questionText: pair.contradictory,
-            weight: pair.weight,
-            type: 'validation',
-            primaryQuestion: pair.primary
+            const questionId = `${categoryKey}_${disorderName}_validation_${pair.primary}`;
+            this.questionSequence.push({
+              id: questionId,
+              category: categoryKey,
+              disorder: disorderName,
+              questionText: pair.contradictory,
+              weight: pair.weight,
+              type: 'validation',
+              primaryQuestion: pair.primary
+            });
           });
-        });
+        }
       });
     });
     
@@ -1268,7 +1269,8 @@ export class DiagnosisEngine {
     let validationCount = 0;
     let inconsistencyScore = 0;
     
-    VALIDATION_PAIRS.forEach(pair => {
+    if (VALIDATION_PAIRS && Array.isArray(VALIDATION_PAIRS)) {
+      VALIDATION_PAIRS.forEach(pair => {
       const primaryId = `${categoryKey}_${disorderName}_${Object.keys(DSM5_CATEGORIES[categoryKey].disorders[disorderName].criteria)[0]}_${pair.primary}`;
       const validationId = `${categoryKey}_${disorderName}_validation_${pair.primary}`;
       
