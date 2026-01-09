@@ -200,6 +200,23 @@ export class DebugReporter {
   }
 
   /**
+   * Log an event (informational message)
+   * @param {string} category - Event category
+   * @param {string} message - Event message
+   * @param {Object} data - Optional event data
+   */
+  logEvent(category, message, data = {}) {
+    this.report.warnings.push({
+      type: 'event',
+      category,
+      message,
+      data,
+      timestamp: new Date().toISOString()
+    });
+    console.log(`[${this.engineName}] ${category}: ${message}`, data);
+  }
+
+  /**
    * Log a warning
    * @param {string} message - Warning message
    * @param {string} context - Context where the warning occurred
