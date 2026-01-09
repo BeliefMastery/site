@@ -534,8 +534,13 @@ export class DiagnosisEngine {
     const startAssessmentBtn = document.getElementById('startAssessment');
     if (startAssessmentBtn) {
       // Remove existing listener if any, then add new one
+      const wasDisabled = startAssessmentBtn.disabled;
       startAssessmentBtn.replaceWith(startAssessmentBtn.cloneNode(true));
-      document.getElementById('startAssessment').addEventListener('click', () => this.startAssessment());
+      const newBtn = document.getElementById('startAssessment');
+      if (newBtn) {
+        newBtn.disabled = wasDisabled;
+        newBtn.addEventListener('click', () => this.startAssessment());
+      }
     }
     
     const startHereGuideBtn = document.getElementById('startHereGuide');

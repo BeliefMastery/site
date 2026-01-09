@@ -68,7 +68,7 @@ export class CoachingEngine {
    * @returns {Promise<void>}
    */
   async loadCoachingData() {
-    if (SOVEREIGNTY_OBSTACLES && SATISFACTION_DOMAINS) {
+    if (SOVEREIGNTY_OBSTACLES && SATISFACTION_DOMAINS && QUESTION_WEIGHTINGS) {
       return; // Already loaded
     }
 
@@ -273,7 +273,7 @@ export class CoachingEngine {
               aspect: aspect,
               question: this.generateAspectQuestion(domainKey, aspect, domain.name),
               name: domain.name,
-              weight: QUESTION_WEIGHTINGS.aspect_default
+              weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
             });
           });
         });
@@ -1298,7 +1298,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
                   aspect: aspect,
                   question: this.generateAspectQuestion(domainKey, aspect, domain.name),
                   name: domain.name,
-                  weight: QUESTION_WEIGHTINGS.aspect_default
+                  weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
                 });
               });
             });
