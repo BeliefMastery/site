@@ -819,7 +819,7 @@ export class TemperamentEngine {
           Tip: Rate the degree to which this pattern is present in your experience.
         </p>
       </div>
-    `;
+    `);
     
     const slider = document.getElementById('questionSlider');
     const sliderValueSpan = document.getElementById('sliderValue');

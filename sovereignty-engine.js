@@ -230,7 +230,7 @@ export class SovereigntyEngine {
           </button>
         </div>
       </div>
-    `;
+    `);
 
     // Add IQ input handler
     setTimeout(() => {
