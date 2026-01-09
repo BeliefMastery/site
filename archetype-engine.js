@@ -231,7 +231,7 @@ export class ArchetypeEngine {
           </button>
         </div>
       </div>
-    `;
+    `);
 
     // Add click handlers
     setTimeout(() => {
