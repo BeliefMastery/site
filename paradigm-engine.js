@@ -1829,4 +1829,12 @@ export class ParadigmEngine {
   }
 }
 
+// Initialize engine when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.paradigmEngine = new ParadigmEngine();
+  });
+} else {
+  window.paradigmEngine = new ParadigmEngine();
+}
 

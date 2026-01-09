@@ -1110,7 +1110,8 @@ export class DiagnosisEngine {
           return;
         }
         this.refinementRequested = e.target.checked;
-    });
+      });
+    }
     
     const proceedToRefinementBtn = document.getElementById('proceedToRefinement');
     if (proceedToRefinementBtn) {
@@ -2036,4 +2037,12 @@ export class DiagnosisEngine {
   }
 }
 
+// Initialize engine when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.diagnosisEngine = new DiagnosisEngine();
+  });
+} else {
+  window.diagnosisEngine = new DiagnosisEngine();
+}
 

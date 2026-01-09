@@ -1348,8 +1348,5 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
   }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  new CoachingEngine();
-});
+// Note: Engine is initialized explicitly in coaching.html to avoid conflicts
 

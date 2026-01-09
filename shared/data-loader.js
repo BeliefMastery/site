@@ -44,10 +44,23 @@ export async function loadDataModule(modulePath, moduleName = null) {
   }
 
   try {
-    // Dynamic import - only loads when called
-    const module = await import(modulePath);
+    // Resolve path relative to root directory (not shared/)
+    // When import() is called from shared/data-loader.js, relative paths
+    // are resolved relative to shared/, so we need to adjust them
+    let resolvedPath = modulePath;
+    if (modulePath.startsWith('./')) {
+      // Path like './coaching-data/file.js' should become '../coaching-data/file.js'
+      // when imported from shared/
+      resolvedPath = modulePath.replace('./', '../');
+    } else if (!modulePath.startsWith('/') && !modulePath.startsWith('http') && !modulePath.startsWith('.')) {
+      // If it's a relative path without ./, assume it's from root
+      resolvedPath = '../' + modulePath;
+    }
     
-    // Cache the module
+    // Dynamic import - only loads when called
+    const module = await import(resolvedPath);
+    
+    // Cache the module (use original path as key for consistency)
     dataCache.set(modulePath, module);
     
     // Mark as loaded in debug reporter

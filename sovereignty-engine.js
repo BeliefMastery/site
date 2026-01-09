@@ -8,7 +8,6 @@ import { loadDataModule } from './shared/data-loader.js';
 // Lazy load data modules - only load when needed
 let COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS;
 let SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY;
-import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
 
 export class SovereigntyEngine {
   constructor() {

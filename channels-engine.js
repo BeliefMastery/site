@@ -110,6 +110,15 @@ export class ChannelsEngine {
   }
 
   attachEventListeners() {
+    const startBtn = document.getElementById('startAssessment');
+    if (startBtn) {
+      startBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.startAssessment();
+      });
+    }
+    
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());

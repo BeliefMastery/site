@@ -767,6 +767,50 @@
     </div>
   </div>
 
+  <link rel="modulepreload" href="./channels-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
+  
+  <script type="module">
+    import { ChannelsEngine } from './channels-engine.js';
+    import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
+    import { DebugReporter, setDebugReporter } from './shared/debug-reporter.js';
+    
+    // Initialize debug reporter
+    setDebugReporter(DebugReporter);
+    
+    // Initialize performance monitoring
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initializePerformanceMonitoring();
+      });
+    } else {
+      initializePerformanceMonitoring();
+    }
+    
+    // Initialize engine
+    function initEngine() {
+      window.channelsEngine = new ChannelsEngine();
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initEngine);
+    } else {
+      initEngine();
+    }
+    
+    // Show debug report if requested
+    if (window.location.search.includes('debug=true')) {
+      DebugReporter.displayReport();
+      const debugContainer = document.getElementById('debug-report-container');
+      if (debugContainer) {
+        debugContainer.style.display = 'block';
+      }
+    }
+  </script>
+  
   <script>
     // Debug panel toggle
     document.addEventListener('DOMContentLoaded', function() {

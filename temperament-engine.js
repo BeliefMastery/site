@@ -1127,11 +1127,12 @@ AI AGENT CONFIGURATION:
 }
 
 // Initialize when DOM is ready
+// Initialize engine when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    new TemperamentEngine();
+    window.temperamentEngine = new TemperamentEngine();
   });
 } else {
-  new TemperamentEngine();
+  window.temperamentEngine = new TemperamentEngine();
 }
 
