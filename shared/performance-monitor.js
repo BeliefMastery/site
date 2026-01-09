@@ -226,6 +226,9 @@ export function initializePerformanceMonitoring() {
 
   // Cumulative Layout Shift (CLS)
   try {
+    let lastLoggedCLS = 0;
+    let clsLogThrottle = null;
+    
     new PerformanceObserver((entryList) => {
       let cls = 0;
       for (const entry of entryList.getEntries()) {
@@ -233,9 +236,36 @@ export function initializePerformanceMonitoring() {
           cls += entry.value;
         }
       }
-      performanceMetrics.cls = cls;
-      console.log('CLS:', cls);
+      // Accumulate CLS (it's cumulative)
+      performanceMetrics.cls = (performanceMetrics.cls || 0) + cls;
+      
+      // Only log if CLS increased significantly (>0.01) or periodically
+      const currentCLS = performanceMetrics.cls;
+      if (currentCLS - lastLoggedCLS > 0.01) {
+        console.log('CLS:', currentCLS.toFixed(6));
+        lastLoggedCLS = currentCLS;
+      } else if (cls > 0) {
+        // Throttle: log at most once per 2 seconds for small changes
+        if (!clsLogThrottle) {
+          clsLogThrottle = setTimeout(() => {
+            if (performanceMetrics.cls !== lastLoggedCLS && performanceMetrics.cls > 0.001) {
+              console.log('CLS:', performanceMetrics.cls.toFixed(6));
+              lastLoggedCLS = performanceMetrics.cls;
+            }
+            clsLogThrottle = null;
+          }, 2000);
+        }
+      }
     }).observe({ type: 'layout-shift', buffered: true });
+    
+    // Log final CLS on page visibility change or unload
+    const logFinalCLS = () => {
+      if (performanceMetrics.cls && performanceMetrics.cls !== lastLoggedCLS) {
+        console.log('Final CLS:', performanceMetrics.cls.toFixed(6));
+      }
+    };
+    document.addEventListener('visibilitychange', logFinalCLS);
+    window.addEventListener('beforeunload', logFinalCLS);
   } catch (e) {
     console.warn('CLS observation not supported:', e);
   }
