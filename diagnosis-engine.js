@@ -312,14 +312,14 @@ export class DiagnosisEngine {
     const noBtn = document.getElementById('guideNo');
     const unsureBtn = document.getElementById('guideUnsure');
     
-    if (yesBtn) yesBtn.addEventListener('click', () => this.answerGuide(true));
-    if (noBtn) noBtn.addEventListener('click', () => this.answerGuide(false));
-    if (unsureBtn) unsureBtn.addEventListener('click', () => this.answerGuide('unsure'));
-    
-    const backBtn = document.getElementById('guideBack');
-    if (backBtn && !backBtn.disabled) {
-      backBtn.addEventListener('click', () => this.prevGuideQuestion());
-    }
+      if (yesBtn) yesBtn.addEventListener('click', () => this.answerGuide(true));
+      if (noBtn) noBtn.addEventListener('click', () => this.answerGuide(false));
+      if (unsureBtn) unsureBtn.addEventListener('click', () => this.answerGuide('unsure'));
+      
+      const backBtn = document.getElementById('guideBack');
+      if (backBtn && !backBtn.disabled) {
+        backBtn.addEventListener('click', () => this.prevGuideQuestion());
+      }
     
       if (isLast) {
         const completeBtn = document.getElementById('guideComplete');
@@ -340,37 +340,65 @@ export class DiagnosisEngine {
     }
   }
 
-  answerGuide(answer) {
-    const question = CATEGORY_GUIDE_QUESTIONS[this.currentGuideQuestion];
-    this.guideAnswers[question.id] = answer;
-    
-    // If answered yes or unsure, add categories to suggested
-    if (answer === true || answer === 'unsure') {
-      question.categories.forEach(catKey => {
-        if (!this.suggestedCategories.includes(catKey)) {
-          this.suggestedCategories.push(catKey);
+  /**
+   * Answer guide question and proceed to next
+   * @param {boolean|string} answer - Guide answer (true, false, or 'unsure')
+   * @returns {Promise<void>}
+   */
+  async answerGuide(answer) {
+    try {
+      await this.loadDiagnosisData(); // Ensure guide questions are loaded
+      
+      const question = CATEGORY_GUIDE_QUESTIONS?.[this.currentGuideQuestion];
+      if (!question) {
+        this.logDebug('ERROR: Guide question not found at index', this.currentGuideQuestion);
+        await this.completeGuide();
+        return;
+      }
+      
+      this.guideAnswers[question.id] = answer;
+      
+      // If answered yes or unsure, add categories to suggested
+      if (answer === true || answer === 'unsure') {
+        if (question.categories) {
+          question.categories.forEach(catKey => {
+            if (!this.suggestedCategories.includes(catKey)) {
+              this.suggestedCategories.push(catKey);
+            }
+          });
         }
-      });
-    }
-    
-    // Move to next question
-    this.currentGuideQuestion++;
-    if (this.currentGuideQuestion < CATEGORY_GUIDE_QUESTIONS.length) {
-      this.renderGuideQuestion();
-    } else {
-      this.completeGuide();
+      }
+      
+      // Move to next question
+      this.currentGuideQuestion++;
+      if (this.currentGuideQuestion < CATEGORY_GUIDE_QUESTIONS.length) {
+        await this.renderGuideQuestion();
+      } else {
+        await this.completeGuide();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'answerGuide');
+      ErrorHandler.showUserError('Failed to process guide answer. Please try again.');
     }
   }
 
-  prevGuideQuestion() {
+  /**
+   * Move to previous guide question
+   * @returns {Promise<void>}
+   */
+  async prevGuideQuestion() {
     if (this.currentGuideQuestion > 0) {
       this.currentGuideQuestion--;
-      this.renderGuideQuestion();
+      await this.renderGuideQuestion();
     }
   }
 
-  skipGuide() {
-    this.completeGuide();
+  /**
+   * Skip guide and proceed to category selection
+   * @returns {Promise<void>}
+   */
+  async skipGuide() {
+    await this.completeGuide();
   }
 
   /**
@@ -1082,22 +1110,25 @@ export class DiagnosisEngine {
         this.refinementRequested = e.target.checked;
     });
     
-    document.getElementById('proceedToRefinement').addEventListener('click', () => {
-      // Check refinement ceiling
-      if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
-        ErrorHandler.showUserError('Maximum refinement passes reached. Proceeding to results.');
-        await this.showResults();
-        return;
-      }
-      
-      if (!confirm('This step sharpens distinctions for learning clarity. Proceed?')) {
-        return;
-      }
-      
-      this.refinementRequested = true;
-      this.analysisData.refinementPasses++;
-      this.startRefinementQuestions();
-    });
+    const proceedToRefinementBtn = document.getElementById('proceedToRefinement');
+    if (proceedToRefinementBtn) {
+      proceedToRefinementBtn.addEventListener('click', async () => {
+        // Check refinement ceiling
+        if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
+          ErrorHandler.showUserError('Maximum refinement passes reached. Proceeding to results.');
+          await this.showResults();
+          return;
+        }
+        
+        if (!confirm('This step sharpens distinctions for learning clarity. Proceed?')) {
+          return;
+        }
+        
+        this.refinementRequested = true;
+        this.analysisData.refinementPasses++;
+        this.startRefinementQuestions();
+      });
+    }
     
     const skipToResultsBtn = document.getElementById('skipToResults');
     if (skipToResultsBtn) {
