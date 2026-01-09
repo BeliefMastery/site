@@ -598,7 +598,7 @@ export class CharacterSheetEngine {
       astrologyData.western.sun.keyTraits.forEach(trait => {
         traits.push({
           name: trait,
-          source: `Sun Sign (${astrologyData.western.sun.name})`,
+          source: `Sun Sign (${SecurityUtils.sanitizeHTML(astrologyData.western.sun.name || '')})`,
           modifier: '+1'
         });
       });
@@ -608,7 +608,7 @@ export class CharacterSheetEngine {
     if (astrologyData.mayan.seal) {
       traits.push({
         name: astrologyData.mayan.seal.ability.split(' - ')[0],
-        source: `Mayan Seal (${astrologyData.mayan.seal.name})`,
+        source: `Mayan Seal (${SecurityUtils.sanitizeHTML(astrologyData.mayan.seal.name || '')})`,
         modifier: '+2'
       });
     }
@@ -790,7 +790,7 @@ export class CharacterSheetEngine {
       astrologyData.western.sun.challenges.forEach(challenge => {
         flaws.push({
           name: challenge,
-          source: `Sun Sign (${astrologyData.western.sun.name})`,
+          source: `Sun Sign (${SecurityUtils.sanitizeHTML(astrologyData.western.sun.name || '')})`,
           modifier: '-1'
         });
       });
@@ -800,7 +800,7 @@ export class CharacterSheetEngine {
     if (astrologyData.mayan.seal) {
       flaws.push({
         name: astrologyData.mayan.seal.negativeModifier.split(' - ')[0],
-        source: `Mayan Seal (${astrologyData.mayan.seal.name})`,
+        source: `Mayan Seal (${SecurityUtils.sanitizeHTML(astrologyData.mayan.seal.name || '')})`,
         modifier: '-1'
       });
     }
@@ -809,7 +809,7 @@ export class CharacterSheetEngine {
     if (astrologyData.chinese.animal) {
       flaws.push({
         name: astrologyData.chinese.animal.challenges[0],
-        source: `Chinese Animal (${astrologyData.chinese.animal.name})`,
+        source: `Chinese Animal (${SecurityUtils.sanitizeHTML(astrologyData.chinese.animal.name || '')})`,
         modifier: '-1'
       });
     }
