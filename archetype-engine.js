@@ -149,7 +149,7 @@ export class ArchetypeEngine {
     const container = document.getElementById('questionContainer');
     if (!container) return;
 
-    container.innerHTML = `
+    SecurityUtils.safeInnerHTML(container, `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
         <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your Gender</h2>
         <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">This assessment adapts questions based on gender to provide more accurate archetype identification. Your selection is used only for question branching and does not affect the validity of results.</p>
@@ -162,7 +162,7 @@ export class ArchetypeEngine {
           </button>
         </div>
       </div>
-    `;
+    `);
 
     // Add hover effects
     setTimeout(() => {

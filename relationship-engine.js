@@ -629,7 +629,7 @@ export class RelationshipEngine {
     
     this.groundingPauseShown = true;
     
-    container.innerHTML = `
+    SecurityUtils.safeInnerHTML(container, `
       <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
         <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Assessment Complete</h3>
         <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -637,7 +637,7 @@ export class RelationshipEngine {
         </p>
         <button class="btn btn-primary" id="continueToResults" style="min-width: 150px;">View Results</button>
       </div>
-    `;
+    `);
     
     const continueBtn = document.getElementById('continueToResults');
     if (continueBtn) {

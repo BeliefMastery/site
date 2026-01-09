@@ -433,8 +433,8 @@ export class DiagnosisEngine {
         return SecurityUtils.sanitizeHTML(catDesc?.name || cat);
       }).join(', ');
       
-      // Note: HTML is generated from trusted templates
-      container.innerHTML = `
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
