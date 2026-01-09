@@ -1,20 +1,25 @@
-// Needs Dependency Loop Determinator Engine - Version 2
+// Needs Dependency Loop Determinator Engine - Version 2.1
 // 4-Phase Questionnaire Architecture
-// Based on Chapter 5: Needs and Beliefs from Belief Mastery
-// STRICT PROPRIETARY VOCABULARY - MUST BE ADHERED TO
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { NEEDS_VOCABULARY } from './needs-dependency-data/needs-vocabulary.js';
-import { VICES_VOCABULARY } from './needs-dependency-data/vices-vocabulary.js';
-import { DEPENDENCY_LOOPS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS } from './needs-dependency-data/dependency-loop-questions.js';
-import { PATTERN_NEEDS_MAPPING } from './needs-dependency-data/pattern-needs-mapping.js';
-import { NEED_COMPULSION_AVERSION_MAPPING } from './needs-dependency-data/need-compulsion-aversion-mapping.js';
-import { VICE_NEEDS_MAPPING } from './needs-dependency-data/vice-needs-mapping.js';
-import { PATTERNS_COMPENDIUM } from './needs-dependency-data/patterns-compendium.js';
-import { NEEDS_GLOSSARY } from './needs-dependency-data/needs-glossary.js';
-import { VICES_GLOSSARY } from './needs-dependency-data/vices-glossary.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class NeedsDependencyEngine {
+// Data modules - will be loaded lazily
+let NEEDS_VOCABULARY, VICES_VOCABULARY;
+let DEPENDENCY_LOOPS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
+let PATTERN_NEEDS_MAPPING, NEED_COMPULSION_AVERSION_MAPPING, VICE_NEEDS_MAPPING;
+let PATTERNS_COMPENDIUM, NEEDS_GLOSSARY, VICES_GLOSSARY;
+
+/**
+ * Needs Dependency Engine - Identifies dependency loops through 4-phase assessment
+ */
+export class NeedsDependencyEngine {
+  /**
+   * Initialize the needs dependency engine
+   */
   constructor() {
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
@@ -37,174 +42,331 @@ class NeedsDependencyEngine {
       questionSequence: []
     };
     
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('NeedsDependencyEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('needs-dependency-assessment', '1.0.0');
+    
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
-    this.buildPhase1Sequence();
     this.attachEventListeners();
-    this.loadStoredData();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
   }
 
-  buildPhase1Sequence() {
-    this.questionSequence = [...PHASE_1_QUESTIONS];
-    this.currentPhase = 1;
-    this.currentQuestionIndex = 0;
-  }
-
-  // Decision Tree Logic: Analyze Phase 1 responses to identify top 3 loops
-  analyzePhase1Results() {
-    const loopScores = {};
-    const viceProfile = [];
-    const stressResponse = null;
-    const triggerSensitivity = [];
-    
-    // Initialize loop scores
-    DEPENDENCY_LOOPS.forEach(loop => {
-      loopScores[loop] = {
-        compulsionIndex: 0,
-        aversionIndex: 0,
-        viceAlignment: 0,
-        triggerMatch: 0,
-        historicalPattern: false,
-        totalScore: 0
-      };
-    });
-    
-    // Process Phase 1 answers
-    PHASE_1_QUESTIONS.forEach(question => {
-      const answer = this.answers[question.id];
-      if (!answer) return;
-      
-      if (question.id === 'p1_relationship_pattern' && answer.mapsTo) {
-        answer.mapsTo.loops.forEach(loop => {
-          if (answer.mapsTo.sourcing === 'compulsive') {
-            loopScores[loop].compulsionIndex += 3;
-          } else if (answer.mapsTo.sourcing === 'avoidant') {
-            loopScores[loop].aversionIndex += 3;
-          }
-        });
-        if (answer.mapsTo.stressResponse) {
-          // Store stress response for later use
-        }
-      }
-      
-      if (question.id === 'p1_stress_response' && answer.mapsTo) {
-        answer.mapsTo.loops.forEach(loop => {
-          loopScores[loop].compulsionIndex += 2;
-        });
-      }
-      
-      if (question.id === 'p1_vice_states' && Array.isArray(answer)) {
-        answer.forEach(selected => {
-          if (selected.mapsTo) {
-            viceProfile.push(...selected.mapsTo.vices);
-            selected.mapsTo.loops.forEach(loop => {
-              loopScores[loop].viceAlignment += 2;
-            });
-          }
-        });
-      }
-      
-      if (question.id === 'p1_trigger_sensitivity' && answer.mapsTo) {
-        triggerSensitivity.push(...(answer.mapsTo.triggers || []));
-        answer.mapsTo.loops.forEach(loop => {
-          loopScores[loop].triggerMatch += 2;
-        });
-      }
-      
-      if (question.id === 'p1_attachment_style' && answer.mapsTo) {
-        answer.mapsTo.loops.forEach(loop => {
-          loopScores[loop].compulsionIndex += 1;
-        });
-      }
-    });
-    
-    // Calculate total scores
-    Object.keys(loopScores).forEach(loop => {
-      const score = loopScores[loop];
-      score.totalScore = (
-        score.compulsionIndex * 0.25 +
-        score.aversionIndex * 0.25 +
-        score.viceAlignment * 0.25 +
-        score.triggerMatch * 0.25
-      );
-    });
-    
-    // Identify top 3 loops
-    const sortedLoops = Object.entries(loopScores)
-      .sort((a, b) => b[1].totalScore - a[1].totalScore)
-      .slice(0, 3);
-    
-    this.identifiedLoops = sortedLoops.map(([loop, scores]) => ({
-      loop,
-      scores,
-      confidence: scores.totalScore >= 6 ? 'high' : scores.totalScore >= 4 ? 'medium' : 'low'
-    }));
-    
-    this.analysisData.phase1Results = {
-      loopScores,
-      viceProfile,
-      stressResponse,
-      triggerSensitivity,
-      topLoops: this.identifiedLoops
-    };
-    
-    // Build Phase 2 sequence based on identified loops
-    this.buildPhase2Sequence();
-  }
-
-  buildPhase2Sequence() {
-    this.questionSequence = [];
-    
-    // Add questions for each identified loop (up to 3 loops)
-    this.identifiedLoops.forEach(({ loop }) => {
-      if (PHASE_2_QUESTIONS[loop]) {
-        this.questionSequence.push(...PHASE_2_QUESTIONS[loop]);
-      }
-    });
-    
-    this.currentPhase = 2;
-    this.currentQuestionIndex = 0;
-  }
-
-  buildPhase3Sequence() {
-    // Phase 3 uses the primary loop identified from Phase 2
-    const primaryLoop = this.analysisData.primaryLoop || this.identifiedLoops[0]?.loop;
-    
-    if (!primaryLoop) {
-      // Skip to Phase 4 if no primary loop
-      this.buildPhase4Sequence();
-      return;
+  /**
+   * Load needs dependency data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadNeedsDependencyData() {
+    if (PHASE_1_QUESTIONS && DEPENDENCY_LOOPS) {
+      return; // Already loaded
     }
-    
-    // Build dynamic need chain questions
-    this.questionSequence = [];
-    const surfaceNeed = this.getSurfaceNeedForLoop(primaryLoop);
-    
-    PHASE_3_QUESTIONS.forEach((question, index) => {
-      if (question.dynamic) {
-        const dynamicQuestion = { ...question };
-        if (index === 0) {
-          dynamicQuestion.question = dynamicQuestion.question.replace('[SURFACE_NEED]', surfaceNeed);
-        } else {
-          // Will be populated dynamically based on previous answer
-          dynamicQuestion.question = dynamicQuestion.question.replace('[DEEPER_NEED]', 'this need');
-        }
-        this.questionSequence.push(dynamicQuestion);
-      } else {
-        this.questionSequence.push(question);
-      }
-    });
-    
-    this.currentPhase = 3;
-    this.currentQuestionIndex = 0;
+
+    try {
+      // Load dependency loop questions data
+      const loopQuestionsModule = await loadDataModule(
+        './needs-dependency-data/dependency-loop-questions.js',
+        'Dependency Loop Questions'
+      );
+      DEPENDENCY_LOOPS = loopQuestionsModule.DEPENDENCY_LOOPS;
+      PHASE_1_QUESTIONS = loopQuestionsModule.PHASE_1_QUESTIONS;
+      PHASE_2_QUESTIONS = loopQuestionsModule.PHASE_2_QUESTIONS;
+      PHASE_3_QUESTIONS = loopQuestionsModule.PHASE_3_QUESTIONS;
+      PHASE_4_QUESTIONS = loopQuestionsModule.PHASE_4_QUESTIONS;
+
+      // Load needs vocabulary data
+      const needsVocabModule = await loadDataModule(
+        './needs-dependency-data/needs-vocabulary.js',
+        'Needs Vocabulary'
+      );
+      NEEDS_VOCABULARY = needsVocabModule.NEEDS_VOCABULARY;
+
+      // Load vices vocabulary data
+      const vicesVocabModule = await loadDataModule(
+        './needs-dependency-data/vices-vocabulary.js',
+        'Vices Vocabulary'
+      );
+      VICES_VOCABULARY = vicesVocabModule.VICES_VOCABULARY;
+
+      // Load mapping data
+      const patternNeedsModule = await loadDataModule(
+        './needs-dependency-data/pattern-needs-mapping.js',
+        'Pattern Needs Mapping'
+      );
+      PATTERN_NEEDS_MAPPING = patternNeedsModule.PATTERN_NEEDS_MAPPING;
+
+      const needCompulsionModule = await loadDataModule(
+        './needs-dependency-data/need-compulsion-aversion-mapping.js',
+        'Need Compulsion Aversion Mapping'
+      );
+      NEED_COMPULSION_AVERSION_MAPPING = needCompulsionModule.NEED_COMPULSION_AVERSION_MAPPING;
+
+      const viceNeedsModule = await loadDataModule(
+        './needs-dependency-data/vice-needs-mapping.js',
+        'Vice Needs Mapping'
+      );
+      VICE_NEEDS_MAPPING = viceNeedsModule.VICE_NEEDS_MAPPING;
+
+      // Load compendium/glossary data
+      const patternsModule = await loadDataModule(
+        './needs-dependency-data/patterns-compendium.js',
+        'Patterns Compendium'
+      );
+      PATTERNS_COMPENDIUM = patternsModule.PATTERNS_COMPENDIUM;
+
+      const needsGlossaryModule = await loadDataModule(
+        './needs-dependency-data/needs-glossary.js',
+        'Needs Glossary'
+      );
+      NEEDS_GLOSSARY = needsGlossaryModule.NEEDS_GLOSSARY;
+
+      const vicesGlossaryModule = await loadDataModule(
+        './needs-dependency-data/vices-glossary.js',
+        'Vices Glossary'
+      );
+      VICES_GLOSSARY = vicesGlossaryModule.VICES_GLOSSARY;
+
+      this.debugReporter.recordSection('Phase 1', PHASE_1_QUESTIONS?.length || 0);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadNeedsDependencyData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
   }
 
-  buildPhase4Sequence() {
-    this.questionSequence = [...PHASE_4_QUESTIONS];
-    this.currentPhase = 4;
-    this.currentQuestionIndex = 0;
+  /**
+   * Build Phase 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase1Sequence() {
+    await this.loadNeedsDependencyData();
+    
+    try {
+      this.questionSequence = [...PHASE_1_QUESTIONS];
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase1Sequence');
+      ErrorHandler.showUserError('Failed to build Phase 1 sequence. Please refresh the page.');
+    }
+  }
+
+  /**
+   * Analyze Phase 1 results and proceed to Phase 2
+   * @returns {Promise<void>}
+   */
+  async analyzePhase1Results() {
+    await this.loadNeedsDependencyData();
+    
+    try {
+      const loopScores = {};
+      const viceProfile = [];
+      const stressResponse = null;
+      const triggerSensitivity = [];
+      
+      // Initialize loop scores
+      DEPENDENCY_LOOPS.forEach(loop => {
+        loopScores[loop] = {
+          compulsionIndex: 0,
+          aversionIndex: 0,
+          viceAlignment: 0,
+          triggerMatch: 0,
+          historicalPattern: false,
+          totalScore: 0
+        };
+      });
+      
+      // Process Phase 1 answers
+      PHASE_1_QUESTIONS.forEach(question => {
+        const answer = this.answers[question.id];
+        if (!answer) return;
+        
+        if (question.id === 'p1_relationship_pattern' && answer.mapsTo) {
+          answer.mapsTo.loops.forEach(loop => {
+            if (answer.mapsTo.sourcing === 'compulsive') {
+              loopScores[loop].compulsionIndex += 3;
+            } else if (answer.mapsTo.sourcing === 'avoidant') {
+              loopScores[loop].aversionIndex += 3;
+            }
+          });
+          if (answer.mapsTo.stressResponse) {
+            // Store stress response for later use
+          }
+        }
+        
+        if (question.id === 'p1_stress_response' && answer.mapsTo) {
+          answer.mapsTo.loops.forEach(loop => {
+            loopScores[loop].compulsionIndex += 2;
+          });
+        }
+        
+        if (question.id === 'p1_vice_states' && Array.isArray(answer)) {
+          answer.forEach(selected => {
+            if (selected.mapsTo) {
+              viceProfile.push(...selected.mapsTo.vices);
+              selected.mapsTo.loops.forEach(loop => {
+                loopScores[loop].viceAlignment += 2;
+              });
+            }
+          });
+        }
+        
+        if (question.id === 'p1_trigger_sensitivity' && answer.mapsTo) {
+          triggerSensitivity.push(...(answer.mapsTo.triggers || []));
+          answer.mapsTo.loops.forEach(loop => {
+            loopScores[loop].triggerMatch += 2;
+          });
+        }
+        
+        if (question.id === 'p1_attachment_style' && answer.mapsTo) {
+          answer.mapsTo.loops.forEach(loop => {
+            loopScores[loop].compulsionIndex += 1;
+          });
+        }
+      });
+      
+      // Calculate total scores
+      Object.keys(loopScores).forEach(loop => {
+        const score = loopScores[loop];
+        score.totalScore = (
+          score.compulsionIndex * 0.25 +
+          score.aversionIndex * 0.25 +
+          score.viceAlignment * 0.25 +
+          score.triggerMatch * 0.25
+        );
+      });
+      
+      // Identify top 3 loops
+      const sortedLoops = Object.entries(loopScores)
+        .sort((a, b) => b[1].totalScore - a[1].totalScore)
+        .slice(0, 3);
+      
+      this.identifiedLoops = sortedLoops.map(([loop, scores]) => ({
+        loop,
+        scores,
+        confidence: scores.totalScore >= 6 ? 'high' : scores.totalScore >= 4 ? 'medium' : 'low'
+      }));
+      
+      this.analysisData.phase1Results = {
+        loopScores,
+        viceProfile,
+        stressResponse,
+        triggerSensitivity,
+        topLoops: this.identifiedLoops
+      };
+      
+      // Build Phase 2 sequence based on identified loops
+      await this.buildPhase2Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzePhase1Results');
+      ErrorHandler.showUserError('Failed to analyze Phase 1 results. Please try again.');
+    }
+  }
+
+  /**
+   * Build Phase 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase2Sequence() {
+    await this.loadNeedsDependencyData();
+    
+    try {
+      this.questionSequence = [];
+      
+      // Add questions for each identified loop (up to 3 loops)
+      this.identifiedLoops.forEach(({ loop }) => {
+        if (PHASE_2_QUESTIONS[loop]) {
+          this.questionSequence.push(...PHASE_2_QUESTIONS[loop]);
+        }
+      });
+      
+      this.currentPhase = 2;
+      this.currentQuestionIndex = 0;
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase2Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 2. Please refresh the page.');
+    }
+  }
+
+  /**
+   * Build Phase 3 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase3Sequence() {
+    await this.loadNeedsDependencyData();
+    
+    try {
+      // Phase 3 uses the primary loop identified from Phase 2
+      const primaryLoop = this.analysisData.primaryLoop || this.identifiedLoops[0]?.loop;
+      
+      if (!primaryLoop) {
+        // Skip to Phase 4 if no primary loop
+        await this.buildPhase4Sequence();
+        return;
+      }
+      
+      // Build dynamic need chain questions
+      this.questionSequence = [];
+      const surfaceNeed = this.getSurfaceNeedForLoop(primaryLoop);
+      
+      PHASE_3_QUESTIONS.forEach((question, index) => {
+        if (question.dynamic) {
+          const dynamicQuestion = { ...question };
+          if (index === 0) {
+            dynamicQuestion.question = dynamicQuestion.question.replace('[SURFACE_NEED]', surfaceNeed);
+          } else {
+            // Will be populated dynamically based on previous answer
+            dynamicQuestion.question = dynamicQuestion.question.replace('[DEEPER_NEED]', 'this need');
+          }
+          this.questionSequence.push(dynamicQuestion);
+        } else {
+          this.questionSequence.push(question);
+        }
+      });
+      
+      this.currentPhase = 3;
+      this.currentQuestionIndex = 0;
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase3Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 3. Please refresh the page.');
+    }
+  }
+
+  /**
+   * Build Phase 4 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase4Sequence() {
+    await this.loadNeedsDependencyData();
+    
+    try {
+      this.questionSequence = [...PHASE_4_QUESTIONS];
+      this.currentPhase = 4;
+      this.currentQuestionIndex = 0;
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase4Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 4. Please refresh the page.');
+    }
   }
 
   getSurfaceNeedForLoop(loop) {
@@ -272,13 +434,32 @@ class NeedsDependencyEngine {
     }
   }
 
-  startAssessment() {
-    document.getElementById('introSection').style.display = 'none';
-    document.getElementById('questionnaireSection').classList.add('active');
-    this.renderCurrentQuestion();
+  /**
+   * Start the assessment
+   * @returns {Promise<void>}
+   */
+  async startAssessment() {
+    try {
+      await this.buildPhase1Sequence();
+      
+      const introSection = document.getElementById('introSection');
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      if (introSection) introSection.style.display = 'none';
+      if (questionnaireSection) questionnaireSection.classList.add('active');
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'startAssessment');
+      ErrorHandler.showUserError('Failed to start assessment. Please try again.');
+    }
   }
 
+  /**
+   * Render the current question
+   */
   renderCurrentQuestion() {
+    const renderStart = performance.now();
+    
     if (this.currentQuestionIndex >= this.questionSequence.length) {
       this.completePhase();
       return;
@@ -287,28 +468,47 @@ class NeedsDependencyEngine {
     const question = this.questionSequence[this.currentQuestionIndex];
     const container = document.getElementById('questionContainer');
     
-    if (!container) return;
-    
-    let html = '';
-    
-    // Render based on question type
-    if (question.type === 'scaled') {
-      html = this.renderScaledQuestion(question);
-    } else if (question.type === 'scenario') {
-      html = this.renderScenarioQuestion(question);
-    } else if (question.type === 'multiselect') {
-      html = this.renderMultiselectQuestion(question);
-    } else if (question.type === 'need_chain') {
-      html = this.renderNeedChainQuestion(question);
+    if (!container) {
+      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      return;
     }
     
-    container.innerHTML = html;
-    
-    // Attach event listeners for the specific question type
-    this.attachQuestionListeners(question);
-    
-    this.updateProgress();
-    this.updateNavigationButtons();
+    try {
+      let html = '';
+      
+      // Render based on question type
+      if (question.type === 'scaled') {
+        html = this.renderScaledQuestion(question);
+      } else if (question.type === 'scenario') {
+        html = this.renderScenarioQuestion(question);
+      } else if (question.type === 'multiselect') {
+        html = this.renderMultiselectQuestion(question);
+      } else if (question.type === 'need_chain') {
+        html = this.renderNeedChainQuestion(question);
+      }
+      
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = html;
+      
+      // Attach event listeners for the specific question type
+      this.attachQuestionListeners(question);
+      
+      this.updateProgress();
+      this.updateNavigationButtons();
+      
+      // Track render performance
+      const renderDuration = performance.now() - renderStart;
+      this.debugReporter.recordRender('question', renderDuration);
+      
+      // Focus management for accessibility
+      const firstInput = container.querySelector('input, button, select, textarea');
+      if (firstInput) {
+        DOMUtils.focusElement(firstInput);
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
+    }
   }
 
   renderScaledQuestion(question) {
@@ -571,7 +771,18 @@ class NeedsDependencyEngine {
     }
   }
 
-  nextQuestion() {
+  /**
+   * Move to next question
+   * @returns {Promise<void>}
+   */
+  async nextQuestion() {
+    // Check if current question has been answered
+    const currentQuestion = this.questionSequence[this.currentQuestionIndex];
+    if (currentQuestion && !this.answers[currentQuestion.id]) {
+      ErrorHandler.showUserError('Please select an answer before proceeding.');
+      return;
+    }
+    
     // Save current answer
     this.saveCurrentAnswer();
     
@@ -581,11 +792,15 @@ class NeedsDependencyEngine {
     if (this.currentQuestionIndex < this.questionSequence.length) {
       this.renderCurrentQuestion();
     } else {
-      this.completePhase();
+      await this.completePhase();
     }
   }
 
-  prevQuestion() {
+  /**
+   * Move to previous question
+   * @returns {Promise<void>}
+   */
+  async prevQuestion() {
     if (this.currentQuestionIndex > 0) {
       this.saveCurrentAnswer();
       this.currentQuestionIndex--;
@@ -596,11 +811,11 @@ class NeedsDependencyEngine {
       this.currentPhase--;
       // Rebuild sequence for previous phase
       if (this.currentPhase === 1) {
-        this.buildPhase1Sequence();
+        await this.buildPhase1Sequence();
       } else if (this.currentPhase === 2) {
-        this.buildPhase2Sequence();
+        await this.buildPhase2Sequence();
       } else if (this.currentPhase === 3) {
-        this.buildPhase3Sequence();
+        await this.buildPhase3Sequence();
       }
       this.currentQuestionIndex = this.questionSequence.length - 1;
       this.renderCurrentQuestion();
@@ -636,7 +851,14 @@ class NeedsDependencyEngine {
     }
   }
 
-  analyzePhase2Results() {
+  /**
+   * Analyze Phase 2 results and proceed to Phase 3
+   * @returns {Promise<void>}
+   */
+  async analyzePhase2Results() {
+    await this.loadNeedsDependencyData();
+    
+    try {
     // Calculate loop scores based on Phase 2 responses
     const loopScores = {};
     
@@ -685,10 +907,21 @@ class NeedsDependencyEngine {
     const sortedLoops = Object.entries(loopScores)
       .sort((a, b) => b[1].totalScore - a[1].totalScore);
     
-    this.analysisData.primaryLoop = sortedLoops[0]?.[0] || null;
-    this.analysisData.secondaryLoops = sortedLoops.slice(1, 3).map(([loop]) => loop);
-    this.analysisData.loopScores = loopScores;
-    this.analysisData.phase2Results = loopScores;
+      this.analysisData.primaryLoop = sortedLoops[0]?.[0] || null;
+      this.analysisData.secondaryLoops = sortedLoops.slice(1, 3).map(([loop]) => loop);
+      this.analysisData.loopScores = loopScores;
+      this.analysisData.phase2Results = loopScores;
+      
+      // Build Phase 3 sequence if there's a primary loop
+      if (this.analysisData.primaryLoop) {
+        await this.buildPhase3Sequence();
+      } else {
+        await this.buildPhase4Sequence();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzePhase2Results');
+      ErrorHandler.showUserError('Failed to analyze Phase 2 results. Please try again.');
+    }
   }
 
   analyzePhase3Results() {
@@ -719,68 +952,93 @@ class NeedsDependencyEngine {
     };
   }
 
-  completeAssessment() {
-    // Generate recommendations
-    this.generateRecommendations();
-    
-    // Include all raw answers and question sequence for export
-    this.analysisData.allAnswers = { ...this.answers };
-    this.analysisData.questionSequence = this.getAllQuestionsAnswered();
-    
-    // Hide questionnaire, show results
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
-    
-    this.renderResults();
-    this.saveProgress();
+  /**
+   * Complete assessment and render results
+   * @returns {Promise<void>}
+   */
+  async completeAssessment() {
+    try {
+      await this.loadNeedsDependencyData(); // Ensure all data is loaded
+      
+      // Generate recommendations
+      this.generateRecommendations();
+      
+      // Include all raw answers and question sequence for export
+      this.analysisData.allAnswers = { ...this.answers };
+      this.analysisData.questionSequence = this.getAllQuestionsAnswered();
+      
+      // Hide questionnaire, show results
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      const resultsSection = document.getElementById('resultsSection');
+      if (questionnaireSection) questionnaireSection.classList.remove('active');
+      if (resultsSection) resultsSection.classList.add('active');
+      
+      await this.renderResults();
+      this.saveProgress();
+    } catch (error) {
+      this.debugReporter.logError(error, 'completeAssessment');
+      ErrorHandler.showUserError('Failed to complete assessment. Please try again.');
+    }
   }
 
+  /**
+   * Get all questions answered across all phases
+   * @returns {Array}
+   */
   getAllQuestionsAnswered() {
     const allQuestions = [];
     
     // Phase 1
-    PHASE_1_QUESTIONS.forEach(q => {
-      allQuestions.push({
-        id: q.id,
-        question: q.question,
-        phase: 1,
-        answer: this.answers[q.id]
-      });
-    });
-    
-    // Phase 2
-    this.identifiedLoops.forEach(({ loop }) => {
-      const loopQuestions = PHASE_2_QUESTIONS[loop] || [];
-      loopQuestions.forEach(q => {
+    if (PHASE_1_QUESTIONS) {
+      PHASE_1_QUESTIONS.forEach(q => {
         allQuestions.push({
           id: q.id,
           question: q.question,
-          phase: 2,
-          loop: loop,
+          phase: 1,
           answer: this.answers[q.id]
         });
       });
-    });
+    }
+    
+    // Phase 2
+    if (PHASE_2_QUESTIONS && this.identifiedLoops) {
+      this.identifiedLoops.forEach(({ loop }) => {
+        const loopQuestions = PHASE_2_QUESTIONS[loop] || [];
+        loopQuestions.forEach(q => {
+          allQuestions.push({
+            id: q.id,
+            question: q.question,
+            phase: 2,
+            loop: loop,
+            answer: this.answers[q.id]
+          });
+        });
+      });
+    }
     
     // Phase 3
-    PHASE_3_QUESTIONS.forEach(q => {
-      allQuestions.push({
-        id: q.id,
-        question: q.question,
-        phase: 3,
-        answer: this.answers[q.id]
+    if (PHASE_3_QUESTIONS) {
+      PHASE_3_QUESTIONS.forEach(q => {
+        allQuestions.push({
+          id: q.id,
+          question: q.question,
+          phase: 3,
+          answer: this.answers[q.id]
+        });
       });
-    });
+    }
     
     // Phase 4
-    PHASE_4_QUESTIONS.forEach(q => {
-      allQuestions.push({
-        id: q.id,
-        question: q.question,
-        phase: 4,
-        answer: this.answers[q.id]
+    if (PHASE_4_QUESTIONS) {
+      PHASE_4_QUESTIONS.forEach(q => {
+        allQuestions.push({
+          id: q.id,
+          question: q.question,
+          phase: 4,
+          answer: this.answers[q.id]
+        });
       });
-    });
+    }
     
     return allQuestions;
   }
@@ -819,35 +1077,56 @@ class NeedsDependencyEngine {
     this.analysisData.recommendations = recommendations;
   }
 
-  renderResults() {
-    const container = document.getElementById('resultsContainer');
-    if (!container) return;
-    
-    let html = '<div class="results-content">';
-    
-    // Primary Loop
-    if (this.analysisData.primaryLoop) {
-      html += this.renderPrimaryLoop();
+  /**
+   * Render assessment results
+   * @returns {Promise<void>}
+   */
+  async renderResults() {
+    try {
+      await this.loadNeedsDependencyData(); // Ensure all data is loaded
+      
+      const container = document.getElementById('resultsContainer');
+      if (!container) {
+        ErrorHandler.showUserError('Results container not found.');
+        return;
+      }
+      
+      let html = '<div class="results-content">';
+      
+      // Primary Loop
+      if (this.analysisData.primaryLoop) {
+        html += this.renderPrimaryLoop();
+      }
+      
+      // Secondary Loops
+      if (this.analysisData.secondaryLoops.length > 0) {
+        html += this.renderSecondaryLoops();
+      }
+      
+      // Need Chain
+      if (this.needChain.length > 0) {
+        html += this.renderNeedChain();
+      }
+      
+      // Recommendations
+      html += this.renderRecommendations();
+      
+      // Closure
+      html += this.renderClosure();
+      
+      html += '</div>';
+      
+      // Note: HTML is generated from trusted templates, sanitization applied to user content
+      container.innerHTML = html;
+      
+      // Display debug report if in development mode
+      if (window.location.search.includes('debug=true')) {
+        this.debugReporter.displayReport('debug-report');
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderResults');
+      ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
     }
-    
-    // Secondary Loops
-    if (this.analysisData.secondaryLoops.length > 0) {
-      html += this.renderSecondaryLoops();
-    }
-    
-    // Need Chain
-    if (this.needChain.length > 0) {
-      html += this.renderNeedChain();
-    }
-    
-    // Recommendations
-    html += this.renderRecommendations();
-    
-    // Closure
-    html += this.renderClosure();
-    
-    html += '</div>';
-    container.innerHTML = html;
   }
 
   renderPrimaryLoop() {
@@ -960,50 +1239,69 @@ class NeedsDependencyEngine {
     `;
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      currentPhase: this.currentPhase,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      identifiedLoops: this.identifiedLoops,
-      needChain: this.needChain,
-      analysisData: this.analysisData,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem('needsDependencyProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        currentPhase: this.currentPhase,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        identifiedLoops: this.identifiedLoops,
+        needChain: this.needChain,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = localStorage.getItem('needsDependencyProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.currentPhase = data.currentPhase || 1;
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
-        this.identifiedLoops = data.identifiedLoops || [];
-        this.needChain = data.needChain || [];
-        this.analysisData = data.analysisData || this.analysisData;
-        
-        // Rebuild question sequence based on current phase
-        if (this.currentPhase === 1) {
-          this.buildPhase1Sequence();
-        } else if (this.currentPhase === 2) {
-          this.analyzePhase1Results();
-          this.buildPhase2Sequence();
-        } else if (this.currentPhase === 3) {
-          this.analyzePhase1Results();
-          this.analyzePhase2Results();
-          this.buildPhase3Sequence();
-        } else if (this.currentPhase === 4) {
-          this.analyzePhase1Results();
-          this.analyzePhase2Results();
-          this.analyzePhase3Results();
-          this.buildPhase4Sequence();
-        }
-      } catch (e) {
-        console.error('Error loading stored progress:', e);
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.currentPhase = data.currentPhase || 1;
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.identifiedLoops = data.identifiedLoops || [];
+      this.needChain = data.needChain || [];
+      this.analysisData = data.analysisData || this.analysisData;
+      
+      // Rebuild question sequence based on current phase
+      if (this.currentPhase === 1) {
+        await this.buildPhase1Sequence();
+      } else if (this.currentPhase === 2) {
+        await this.analyzePhase1Results();
+        await this.buildPhase2Sequence();
+      } else if (this.currentPhase === 3) {
+        await this.analyzePhase1Results();
+        await this.analyzePhase2Results();
+        await this.buildPhase3Sequence();
+      } else if (this.currentPhase === 4) {
+        await this.analyzePhase1Results();
+        await this.analyzePhase2Results();
+        // Note: analyzePhase3Results is not async, so no await needed
+        this.analyzePhase3Results();
+        await this.buildPhase4Sequence();
       }
+      
+      // If in progress, restore questionnaire state
+      if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.renderCurrentQuestion();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 

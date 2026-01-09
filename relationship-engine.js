@@ -419,12 +419,25 @@ export class RelationshipEngine {
     }
   }
 
-  startAssessment() {
-    document.getElementById('questionnaireSection').classList.add('active');
-    this.currentQuestionIndex = 0;
-    this.renderCurrentQuestion();
-    this.updateProgressBar();
-    this.saveProgress();
+  /**
+   * Start the assessment
+   * @returns {Promise<void>}
+   */
+  async startAssessment() {
+    try {
+      await this.buildStage1Sequence();
+      
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      if (questionnaireSection) questionnaireSection.classList.add('active');
+      
+      this.currentQuestionIndex = 0;
+      this.renderCurrentQuestion();
+      this.updateProgressBar();
+      this.saveProgress();
+    } catch (error) {
+      this.debugReporter.logError(error, 'startAssessment');
+      ErrorHandler.showUserError('Failed to start assessment. Please try again.');
+    }
   }
 
   renderCurrentQuestion() {
@@ -1187,42 +1200,83 @@ export class RelationshipEngine {
     }
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('relationshipProgress', JSON.stringify(progressData));
-  }
-
-  loadStoredData() {
-    const stored = sessionStorage.getItem('relationshipProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
-
-        // If in progress, restore questionnaire state
-        if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
-          this.renderCurrentQuestion();
-          this.updateProgressBar();
-        }
-      } catch (e) {
-        console.error("Error loading stored relationship data:", e);
-        sessionStorage.removeItem('relationshipProgress');
-      }
+    try {
+      const progressData = {
+        currentStage: this.currentStage,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        weakestLinks: this.weakestLinks,
+        domainWeakAreas: this.domainWeakAreas,
+        crossDomainSpillover: this.crossDomainSpillover,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
     }
   }
 
-  clearAllCachedData() {
-    sessionStorage.removeItem('relationshipProgress');
-    this.resetAssessment();
-    alert('All cached data for Relationship Optimization has been cleared.');
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.currentStage = data.currentStage || 1;
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.weakestLinks = data.weakestLinks || [];
+      this.domainWeakAreas = data.domainWeakAreas || {};
+      this.crossDomainSpillover = data.crossDomainSpillover || {};
+      this.analysisData = data.analysisData || this.analysisData;
+
+      // If in progress, restore questionnaire state
+      if (this.currentQuestionIndex > 0) {
+        if (this.currentStage === 1) {
+          await this.buildStage1Sequence();
+        } else if (this.currentStage === 2) {
+          await this.analyzeStage1Results();
+          await this.buildStage2Sequence();
+        } else if (this.currentStage === 3) {
+          await this.analyzeStage1Results();
+          await this.buildStage2Sequence();
+          await this.buildStage3Sequence();
+        }
+        
+        if (this.currentQuestionIndex < this.questionSequence.length) {
+          this.renderCurrentQuestion();
+          this.updateProgressBar();
+        }
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
+    }
   }
 
-  resetAssessment() {
+  /**
+   * Clear all cached data
+   */
+  clearAllCachedData() {
+    this.dataStore.clear('progress');
+    this.resetAssessment();
+    ErrorHandler.showUserError('All cached data for Relationship Optimization has been cleared.', 'success');
+  }
+
+  /**
+   * Reset assessment
+   * @returns {Promise<void>}
+   */
+  async resetAssessment() {
+    this.currentStage = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.stage2TransitionShown = false;
@@ -1238,17 +1292,19 @@ export class RelationshipEngine {
       crossDomainSpillover: {}
     };
 
-    sessionStorage.removeItem('relationshipProgress');
+    this.dataStore.clear('progress');
 
     // Reset UI
-    document.getElementById('questionnaireSection').classList.add('active');
-    document.getElementById('resultsSection').classList.remove('active');
-    document.getElementById('progressBarFill').style.width = '0%';
-    this.startAssessment();
+    const questionnaireSection = document.getElementById('questionnaireSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const progressBarFill = document.getElementById('progressBarFill');
+    
+    if (questionnaireSection) questionnaireSection.classList.add('active');
+    if (resultsSection) resultsSection.classList.remove('active');
+    if (progressBarFill) progressBarFill.style.width = '0%';
+    
+    await this.startAssessment();
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  new RelationshipEngine();
-});
 

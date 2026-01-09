@@ -1,5 +1,7 @@
-// Diagnosis Engine - Main questionnaire logic and calculation system
-// 
+// Diagnosis Engine - Version 2.1
+// Main questionnaire logic and calculation system
+// Enhanced with lazy loading, error handling, and debug reporting
+//
 // FUTURE FIREBASE INTEGRATION NOTES:
 // - Currently uses LocalStorage/SessionStorage (public access, no auth)
 // - Planned: Firebase Anonymous Auth for guest usage
@@ -7,12 +9,25 @@
 // - Architecture prepared for storage abstraction layer (see docs/FIREBASE_INTEGRATION_PLAN.md)
 // - Current implementation remains insecure/public - suitable for educational/demo purposes
 //
-import { DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS, SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS, MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS } from './dsm5-data/index.js';
-import { CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS } from './dsm5-data/category-guide.js';
-import { TREATMENT_DATABASE } from './treatment-database.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class DiagnosisEngine {
+// Data modules - will be loaded lazily
+let DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS;
+let SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS;
+let MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS;
+let CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS;
+let TREATMENT_DATABASE;
+
+/**
+ * Diagnosis Engine - Multi-category DSM-5 diagnostic assessment with guide mode
+ */
+export class DiagnosisEngine {
+  /**
+   * Initialize the diagnosis engine
+   */
   constructor() {
     this.selectedCategories = [];
     this.currentCategoryIndex = 0;
@@ -27,7 +42,7 @@ class DiagnosisEngine {
     this.suggestedCategories = [];
     this.refinementRequested = false;
     this.multiBranchingDetected = false;
-    this.debugMode = false;
+    this.debugMode = window.location.search.includes('debug=true');
     this.debugLog = [];
     this.analysisData = {
       timestamp: new Date().toISOString(),
@@ -38,11 +53,25 @@ class DiagnosisEngine {
       conclusionVector: {}
     };
     
+    // Initialize debug reporter (integrate with existing debug system)
+    this.debugReporter = createDebugReporter('DiagnosisEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('diagnosis-assessment', '1.0.0');
+    
     this.init();
   }
 
+  /**
+   * Log debug information (integrated with shared debug reporter)
+   * @param {string} message - Debug message
+   * @param {*} data - Optional debug data
+   */
   logDebug(message, data = null) {
-    if (!this.debugMode) return;
+    if (!this.debugMode && !window.location.search.includes('debug=true')) return;
+    
     const logEntry = {
       timestamp: new Date().toISOString(),
       message: message,
@@ -56,7 +85,9 @@ class DiagnosisEngine {
       }
     };
     this.debugLog.push(logEntry);
-    console.log('[DiagnosisEngine]', message, data || '');
+    
+    // Use shared debug reporter
+    this.debugReporter.logEvent('DiagnosisEngine', message, data || {});
     
     // Update debug panel if it exists
     this.updateDebugPanel();
@@ -81,49 +112,136 @@ class DiagnosisEngine {
     debugLogElement.scrollTop = debugLogElement.scrollHeight;
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
-    this.renderCategorySelection();
+    this.renderCategorySelection().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
     this.attachEventListeners();
-    this.loadStoredData();
-  }
-
-  renderCategorySelection() {
-    const grid = document.getElementById('categoryGrid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    
-    Object.keys(DSM5_CATEGORIES).forEach(categoryKey => {
-      const category = DSM5_CATEGORIES[categoryKey];
-      const card = document.createElement('div');
-      card.className = 'category-card';
-      card.dataset.category = categoryKey;
-      
-      // Check if this category was suggested by the guide
-      const isSuggested = this.suggestedCategories.includes(categoryKey);
-      if (isSuggested) {
-        card.classList.add('suggested');
-      }
-      
-      card.innerHTML = `
-        <h3>${category.name}</h3>
-        <p>${Object.keys(category.disorders).length} disorder${Object.keys(category.disorders).length !== 1 ? 's' : ''} available</p>
-        ${isSuggested ? '<p style="margin-top: 0.5rem; color: var(--accent); font-weight: 600; font-size: 0.85rem;">✓ Suggested for you</p>' : ''}
-      `;
-      card.addEventListener('click', () => this.toggleCategory(categoryKey, card));
-      grid.appendChild(card);
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
     });
   }
 
-  startGuide() {
-    this.guideMode = true;
-    this.guideAnswers = {};
-    this.currentGuideQuestion = 0;
-    this.suggestedCategories = [];
-    
-    // Hide category selection, show guide
-    document.getElementById('categorySelection').style.display = 'none';
-    this.renderGuideQuestion();
+  /**
+   * Load diagnosis data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadDiagnosisData() {
+    if (DSM5_CATEGORIES && QUESTION_TEMPLATES) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load DSM-5 categories and questions data
+      const dsm5Module = await loadDataModule(
+        './dsm5-data/index.js',
+        'DSM-5 Data'
+      );
+      DSM5_CATEGORIES = dsm5Module.DSM5_CATEGORIES;
+      QUESTION_TEMPLATES = dsm5Module.QUESTION_TEMPLATES;
+      VALIDATION_PAIRS = dsm5Module.VALIDATION_PAIRS;
+      SCORING_THRESHOLDS = dsm5Module.SCORING_THRESHOLDS;
+      SUB_INQUIRY_QUESTIONS = dsm5Module.SUB_INQUIRY_QUESTIONS;
+      COMORBIDITY_GROUPS = dsm5Module.COMORBIDITY_GROUPS;
+      COMORBIDITY_REFINEMENT_QUESTIONS = dsm5Module.COMORBIDITY_REFINEMENT_QUESTIONS;
+      MULTI_BRANCHING_THRESHOLDS = dsm5Module.MULTI_BRANCHING_THRESHOLDS;
+      REFINED_QUESTIONS = dsm5Module.REFINED_QUESTIONS;
+      DIFFERENTIAL_QUESTIONS = dsm5Module.DIFFERENTIAL_QUESTIONS;
+
+      // Load category guide data
+      const categoryGuideModule = await loadDataModule(
+        './dsm5-data/category-guide.js',
+        'Category Guide'
+      );
+      CATEGORY_GUIDE_QUESTIONS = categoryGuideModule.CATEGORY_GUIDE_QUESTIONS;
+      CATEGORY_DESCRIPTIONS = categoryGuideModule.CATEGORY_DESCRIPTIONS;
+
+      // Load treatment database
+      const treatmentModule = await loadDataModule(
+        './treatment-database.js',
+        'Treatment Database'
+      );
+      TREATMENT_DATABASE = treatmentModule.TREATMENT_DATABASE;
+
+      this.debugReporter.logEvent('DataLoader', 'All diagnosis data loaded successfully');
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadDiagnosisData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
+  }
+
+  /**
+   * Render category selection screen
+   * @returns {Promise<void>}
+   */
+  async renderCategorySelection() {
+    try {
+      await this.loadDiagnosisData();
+      
+      const grid = document.getElementById('categoryGrid');
+      if (!grid) {
+        ErrorHandler.showUserError('Category grid not found.');
+        return;
+      }
+      
+      grid.innerHTML = '';
+      
+      Object.keys(DSM5_CATEGORIES).forEach(categoryKey => {
+        const category = DSM5_CATEGORIES[categoryKey];
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.dataset.category = categoryKey;
+        
+        // Check if this category was suggested by the guide
+        const isSuggested = this.suggestedCategories.includes(categoryKey);
+        if (isSuggested) {
+          card.classList.add('suggested');
+        }
+        
+        // Sanitize category name for display
+        const categoryName = SecurityUtils.sanitizeHTML(category.name);
+        const disorderCount = Object.keys(category.disorders).length;
+        
+        card.innerHTML = `
+          <h3>${categoryName}</h3>
+          <p>${disorderCount} disorder${disorderCount !== 1 ? 's' : ''} available</p>
+          ${isSuggested ? '<p style="margin-top: 0.5rem; color: var(--accent); font-weight: 600; font-size: 0.85rem;">✓ Suggested for you</p>' : ''}
+        `;
+        card.addEventListener('click', () => this.toggleCategory(categoryKey, card));
+        grid.appendChild(card);
+      });
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCategorySelection');
+      ErrorHandler.showUserError('Failed to render category selection. Please refresh the page.');
+    }
+  }
+
+  /**
+   * Start category guide mode
+   * @returns {Promise<void>}
+   */
+  async startGuide() {
+    try {
+      await this.loadDiagnosisData();
+      
+      this.guideMode = true;
+      this.guideAnswers = {};
+      this.currentGuideQuestion = 0;
+      this.suggestedCategories = [];
+      
+      // Hide category selection, show guide
+      const categorySelection = document.getElementById('categorySelection');
+      if (categorySelection) categorySelection.style.display = 'none';
+      
+      this.renderGuideQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'startGuide');
+      ErrorHandler.showUserError('Failed to start guide. Please try again.');
+    }
   }
 
   renderGuideQuestion() {
@@ -415,27 +533,51 @@ class DiagnosisEngine {
     }
   }
 
-  startAssessment() {
-    if (this.selectedCategories.length === 0) return;
+  /**
+   * Start the assessment with selected categories
+   * @returns {Promise<void>}
+   */
+  async startAssessment() {
+    if (this.selectedCategories.length === 0) {
+      ErrorHandler.showUserError('Please select at least one category to assess.');
+      return;
+    }
     
-    this.currentStage = 'questionnaire';
-    document.getElementById('categorySelection').style.display = 'none';
-    const disclaimerSection = document.getElementById('disclaimerSection');
-    if (disclaimerSection) disclaimerSection.style.display = 'none';
-    document.getElementById('questionnaireSection').classList.add('active');
-    
-    this.buildQuestionSequence();
-    this.renderCurrentQuestion();
-    this.updateProgress();
-    this.logDebug('Assessment started', { categories: this.selectedCategories, questionCount: this.questionSequence.length });
+    try {
+      await this.loadDiagnosisData();
+      await this.buildQuestionSequence();
+      
+      this.currentStage = 'questionnaire';
+      const categorySelection = document.getElementById('categorySelection');
+      const disclaimerSection = document.getElementById('disclaimerSection');
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      
+      if (categorySelection) categorySelection.style.display = 'none';
+      if (disclaimerSection) disclaimerSection.style.display = 'none';
+      if (questionnaireSection) questionnaireSection.classList.add('active');
+      
+      this.renderCurrentQuestion();
+      this.updateProgress();
+      this.logDebug('Assessment started', { categories: this.selectedCategories, questionCount: this.questionSequence.length });
+    } catch (error) {
+      this.debugReporter.logError(error, 'startAssessment');
+      ErrorHandler.showUserError('Failed to start assessment. Please try again.');
+    }
   }
 
-  buildQuestionSequence() {
-    this.questionSequence = [];
-    this.answers = {};
+  /**
+   * Build question sequence from selected categories
+   * @returns {Promise<void>}
+   */
+  async buildQuestionSequence() {
+    await this.loadDiagnosisData();
     
-    this.selectedCategories.forEach(categoryKey => {
-      const category = DSM5_CATEGORIES[categoryKey];
+    try {
+      this.questionSequence = [];
+      this.answers = {};
+      
+      this.selectedCategories.forEach(categoryKey => {
+        const category = DSM5_CATEGORIES[categoryKey];
       
       Object.keys(category.disorders).forEach(disorderName => {
         const disorder = category.disorders[disorderName];
@@ -490,8 +632,14 @@ class DiagnosisEngine {
       });
     });
     
-    // Shuffle to reduce order bias, but keep related questions somewhat grouped
-    this.shuffleQuestions();
+      // Shuffle to reduce order bias, but keep related questions somewhat grouped
+      this.shuffleQuestions();
+      
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildQuestionSequence');
+      ErrorHandler.showUserError('Failed to build question sequence. Please refresh the page.');
+    }
   }
 
   // Reframe questions to avoid double negatives and use positive "degree of presence" language
@@ -628,34 +776,49 @@ class DiagnosisEngine {
     }
   }
 
+  /**
+   * Render the current question
+   */
   renderCurrentQuestion() {
-    // Determine which sequence we're using
-    const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
-    const totalMainQuestions = this.questionSequence.length;
-    const totalRefinedQuestions = this.refinedQuestionSequence.length;
-    const totalQuestions = totalMainQuestions + (isInRefinement ? totalRefinedQuestions : 0);
+    const renderStart = performance.now();
     
-    // Check if we've completed all questions
-    if (this.currentQuestionIndex >= totalQuestions) {
-      this.completeAssessment();
-      return;
-    }
-    
-    // Get the appropriate question
-    let question;
-    if (this.currentQuestionIndex < totalMainQuestions) {
-      question = this.questionSequence[this.currentQuestionIndex];
-    } else if (isInRefinement) {
-      question = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions];
-    } else {
-      this.completeAssessment();
-      return;
-    }
-    const container = document.getElementById('questionContainer');
-    
-    container.innerHTML = `
+    try {
+      // Determine which sequence we're using
+      const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
+      const totalMainQuestions = this.questionSequence.length;
+      const totalRefinedQuestions = this.refinedQuestionSequence.length;
+      const totalQuestions = totalMainQuestions + (isInRefinement ? totalRefinedQuestions : 0);
+      
+      // Check if we've completed all questions
+      if (this.currentQuestionIndex >= totalQuestions) {
+        this.completeAssessment();
+        return;
+      }
+      
+      // Get the appropriate question
+      let question;
+      if (this.currentQuestionIndex < totalMainQuestions) {
+        question = this.questionSequence[this.currentQuestionIndex];
+      } else if (isInRefinement) {
+        question = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions];
+      } else {
+        this.completeAssessment();
+        return;
+      }
+      
+      const container = document.getElementById('questionContainer');
+      if (!container) {
+        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+        return;
+      }
+      
+      // Sanitize question text for display
+      const questionText = SecurityUtils.sanitizeHTML(question.questionText || '');
+      
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = `
       <div class="question-block">
-        <h3>${question.questionText}</h3>
+        <h3>${questionText}</h3>
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" 
@@ -686,20 +849,36 @@ class DiagnosisEngine {
     const slider = document.getElementById('questionInput');
     const valueDisplay = document.getElementById('scaleValue');
     
-    slider.addEventListener('input', (e) => {
-      const value = parseInt(e.target.value);
-      valueDisplay.textContent = value;
-      this.answers[question.id] = value;
-      this.saveProgress();
-    });
-    
-    // Set initial value if exists
-    if (this.answers[question.id] !== undefined) {
-      slider.value = this.answers[question.id];
-      valueDisplay.textContent = this.answers[question.id];
+      if (slider && valueDisplay) {
+        slider.addEventListener('input', (e) => {
+          const value = parseInt(e.target.value);
+          valueDisplay.textContent = value;
+          this.answers[question.id] = value;
+          this.saveProgress();
+        });
+        
+        // Set initial value if exists
+        if (this.answers[question.id] !== undefined) {
+          slider.value = this.answers[question.id];
+          valueDisplay.textContent = this.answers[question.id];
+        }
+        
+        // Focus management for accessibility
+        DOMUtils.focusElement(slider);
+      }
+      
+      this.updateProgress();
+      this.updateNavigationButtons();
+      
+      // Track render performance
+      const renderDuration = performance.now() - renderStart;
+      this.debugReporter.recordRender('question', renderDuration);
+      
+      this.logDebug('Rendered question', { questionId: question.id, index: this.currentQuestionIndex });
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
-    
-    this.updateNavigationButtons();
   }
 
   updateProgress() {
@@ -782,21 +961,32 @@ class DiagnosisEngine {
     }
   }
 
-  completeAssessment() {
-    this.calculateResults();
-    
-    // Check for comorbidity and multi-branching
-    const comorbidityGroups = this.detectComorbidity();
-    const hasRefinedQuestions = this.buildRefinedQuestionSequence(comorbidityGroups);
-    
-    // If comorbidity detected and refined questions available, offer refinement
-    if (this.multiBranchingDetected && hasRefinedQuestions && !this.refinementRequested) {
-      this.offerRefinement(comorbidityGroups);
-      return;
+  /**
+   * Complete assessment and proceed to results or refinement
+   * @returns {Promise<void>}
+   */
+  async completeAssessment() {
+    try {
+      await this.loadDiagnosisData(); // Ensure data is loaded
+      
+      this.calculateResults();
+      
+      // Check for comorbidity and multi-branching
+      const comorbidityGroups = this.detectComorbidity();
+      const hasRefinedQuestions = this.buildRefinedQuestionSequence(comorbidityGroups);
+      
+      // If comorbidity detected and refined questions available, offer refinement
+      if (this.multiBranchingDetected && hasRefinedQuestions && !this.refinementRequested) {
+        this.offerRefinement(comorbidityGroups);
+        return;
+      }
+      
+      // Otherwise, proceed to results
+      await this.showResults();
+    } catch (error) {
+      this.debugReporter.logError(error, 'completeAssessment');
+      ErrorHandler.showUserError('Failed to complete assessment. Please try again.');
     }
-    
-    // Otherwise, proceed to results
-    this.showResults();
   }
 
   offerRefinement(comorbidityGroups) {
@@ -852,7 +1042,7 @@ class DiagnosisEngine {
       // Check refinement ceiling
       if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
         alert('Maximum refinement passes reached. Proceeding to results.');
-        this.showResults();
+        await this.showResults();
         return;
       }
       
@@ -875,13 +1065,27 @@ class DiagnosisEngine {
     this.renderCurrentQuestion();
   }
 
-  showResults() {
-    this.currentStage = 'results';
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
-    
-    this.renderResults();
-    this.saveResults();
+  /**
+   * Show results screen
+   * @returns {Promise<void>}
+   */
+  async showResults() {
+    try {
+      await this.loadDiagnosisData(); // Ensure all data is loaded
+      
+      this.currentStage = 'results';
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      const resultsSection = document.getElementById('resultsSection');
+      
+      if (questionnaireSection) questionnaireSection.classList.remove('active');
+      if (resultsSection) resultsSection.classList.add('active');
+      
+      await this.renderResults();
+      this.saveResults();
+    } catch (error) {
+      this.debugReporter.logError(error, 'showResults');
+      ErrorHandler.showUserError('Failed to show results. Please try again.');
+    }
   }
 
   calculateResults() {
@@ -1232,11 +1436,23 @@ class DiagnosisEngine {
     return 'Clinically Salient';
   }
 
-  renderResults() {
-    const container = document.getElementById('resultsContainer');
-    const vector = this.analysisData.conclusionVector;
-    const primaryPattern = vector.primaryPatternMatch;
-    const treatmentData = TREATMENT_DATABASE[primaryPattern] || null;
+  /**
+   * Render assessment results
+   * @returns {Promise<void>}
+   */
+  async renderResults() {
+    try {
+      await this.loadDiagnosisData(); // Ensure all data is loaded
+      
+      const container = document.getElementById('resultsContainer');
+      if (!container) {
+        ErrorHandler.showUserError('Results container not found.');
+        return;
+      }
+      
+      const vector = this.analysisData.conclusionVector;
+      const primaryPattern = vector.primaryPatternMatch;
+      const treatmentData = TREATMENT_DATABASE?.[primaryPattern] || null;
     
     // Show validation consistency
     const validationDisplay = this.analysisData.validationConsistency 
@@ -1392,10 +1608,20 @@ class DiagnosisEngine {
       </div>
     `;
     
-    container.innerHTML = html;
-    
-    // Make instance globally accessible for integration step
-    window.diagnosisEngine = this;
+      // Note: HTML is generated from trusted templates, sanitization applied to user content
+      container.innerHTML = html;
+      
+      // Make instance globally accessible for integration step
+      window.diagnosisEngine = this;
+      
+      // Display debug report if in development mode
+      if (this.debugMode || window.location.search.includes('debug=true')) {
+        this.debugReporter.displayReport('debug-report');
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderResults');
+      ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
+    }
   }
   
   getCategoryForDisorder(disorderName) {
@@ -1553,55 +1779,99 @@ class DiagnosisEngine {
     return html;
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      selectedCategories: this.selectedCategories,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('diagnosisProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        selectedCategories: this.selectedCategories,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        refinedQuestionSequence: this.refinedQuestionSequence,
+        refinementRequested: this.refinementRequested,
+        multiBranchingDetected: this.multiBranchingDetected,
+        guideMode: this.guideMode,
+        guideAnswers: this.guideAnswers,
+        suggestedCategories: this.suggestedCategories,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('diagnosisProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.selectedCategories = data.selectedCategories || [];
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.selectedCategories = data.selectedCategories || [];
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.refinedQuestionSequence = data.refinedQuestionSequence || [];
+      this.refinementRequested = data.refinementRequested || false;
+      this.multiBranchingDetected = data.multiBranchingDetected || false;
+      this.guideMode = data.guideMode || false;
+      this.guideAnswers = data.guideAnswers || {};
+      this.suggestedCategories = data.suggestedCategories || [];
+      this.analysisData = data.analysisData || this.analysisData;
+      
+      // Restore category selections
+      if (this.selectedCategories.length > 0) {
+        await this.loadDiagnosisData();
         
-        // Restore category selections
         this.selectedCategories.forEach(categoryKey => {
           const card = document.querySelector(`[data-category="${categoryKey}"]`);
           if (card) card.classList.add('selected');
         });
         
-        if (this.selectedCategories.length > 0) {
-          document.getElementById('startAssessment').disabled = false;
-        }
-      } catch (e) {
-        console.error('Error loading stored data:', e);
+        const startAssessmentBtn = document.getElementById('startAssessment');
+        if (startAssessmentBtn) startAssessmentBtn.disabled = false;
       }
+      
+      // If in progress, restore questionnaire state
+      if (this.currentQuestionIndex > 0 && this.selectedCategories.length > 0) {
+        await this.buildQuestionSequence();
+        
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.renderCurrentQuestion();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 
+  /**
+   * Save results to history
+   */
   saveResults() {
-    // Save to localStorage for history
-    const history = JSON.parse(localStorage.getItem('diagnosisHistory') || '[]');
-    history.push({
-      ...this.analysisData,
-      id: Date.now()
-    });
-    
-    // Keep only last 10 assessments
-    if (history.length > 10) {
-      history.shift();
+    try {
+      // Save to localStorage for history (separate from progress)
+      const historyData = this.dataStore.load('history') || [];
+      historyData.push({
+        ...this.analysisData,
+        id: Date.now()
+      });
+      
+      // Keep only last 10 assessments
+      if (historyData.length > 10) {
+        historyData.shift();
+      }
+      
+      this.dataStore.save('history', historyData);
+      this.dataStore.clear('progress'); // Clear progress after saving results
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveResults');
     }
-    
-    localStorage.setItem('diagnosisHistory', JSON.stringify(history));
-    sessionStorage.removeItem('diagnosisProgress');
   }
 
   viewAnalysisData(format = 'json') {
