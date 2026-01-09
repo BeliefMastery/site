@@ -2,7 +2,7 @@
 // Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and sovereignty capacity
 
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
-import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { loadDataModule } from './shared/data-loader.js';
 
 // Lazy load data modules - only load when needed
@@ -151,7 +151,8 @@ export class SovereigntyEngine {
     const container = document.getElementById('questionContainer');
     if (!container) return;
 
-    container.innerHTML = `
+    // Static HTML - use safeInnerHTML for consistency
+    SecurityUtils.safeInnerHTML(container, `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
         <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket (Optional)</h2>
         <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6;">
@@ -703,11 +704,12 @@ export class SovereigntyEngine {
       html += `<div class="question-card" style="background: rgba(255, 0, 0, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
         <h3 style="color: #ff4444; margin-top: 0;">Error: Unknown question type "${question.type}"</h3>
         <p style="color: var(--muted);">Question ID: ${question.id}</p>
-        <p style="color: var(--muted);">${question.question || 'No question text available'}</p>
+        <p style="color: var(--muted);">${SecurityUtils.sanitizeHTML(question.question || 'No question text available')}</p>
       </div>`;
     }
 
-    container.innerHTML = html;
+    // HTML is already sanitized in render methods, but use safeInnerHTML for extra safety
+    SecurityUtils.safeInnerHTML(container, html);
     this.updateNavigation();
   }
 
@@ -754,7 +756,7 @@ export class SovereigntyEngine {
       return `
         <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
           <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
-          <span style="flex: 1;">${option.text}</span>
+          <span style="flex: 1;">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
           ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
         </label>
       `;
@@ -801,7 +803,7 @@ export class SovereigntyEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="options-container">
           ${optionsHTML}
         </div>
@@ -824,7 +826,7 @@ export class SovereigntyEngine {
         <label class="likert-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: inline-block; padding: 0.75rem 1rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedLockedStyle}">
           <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="display: none;">
           <span>${i}</span>
-          <div style="font-size: 0.75rem; margin-top: 0.25rem; color: var(--muted);">${labels[i - 1] || ''}</div>
+          <div style="font-size: 0.75rem; margin-top: 0.25rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(labels[i - 1] || '')}</div>
         </label>
       `;
     }
@@ -870,7 +872,7 @@ export class SovereigntyEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="likert-scale" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1rem;">
           ${scaleHTML}
         </div>
@@ -890,7 +892,7 @@ export class SovereigntyEngine {
       return `
         <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
           <input type="checkbox" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
-          <span style="flex: 1;">${option.text}</span>
+          <span style="flex: 1;">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
           ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
         </label>
       `;
@@ -928,7 +930,7 @@ export class SovereigntyEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Select all that apply:</p>
         <div class="options-container">
           ${optionsHTML}
@@ -951,7 +953,7 @@ export class SovereigntyEngine {
     let gridHTML = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">';
     gridHTML += '<thead><tr><th style="text-align: left; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand);">Context</th>';
     scale.forEach((scaleLabel, idx) => {
-      gridHTML += `<th style="text-align: center; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand); min-width: 100px;">${scaleLabel}</th>`;
+      gridHTML += `<th style="text-align: center; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand); min-width: 100px;">${SecurityUtils.sanitizeHTML(scaleLabel || '')}</th>`;
     });
     gridHTML += '</tr></thead><tbody>';
 
@@ -960,7 +962,7 @@ export class SovereigntyEngine {
       const isContextLocked = isLocked && contextAnswer !== null;
       
       gridHTML += `<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">`;
-      gridHTML += `<td style="padding: 0.75rem; font-weight: 600;">${context}</td>`;
+      gridHTML += `<td style="padding: 0.75rem; font-weight: 600;">${SecurityUtils.sanitizeHTML(context || '')}</td>`;
       
       scale.forEach((scaleLabel, scaleIdx) => {
         const isSelected = contextAnswer === scaleIdx;
@@ -1030,7 +1032,7 @@ export class SovereigntyEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Select a frequency for each context:</p>
         ${gridHTML}
         ${lockedNotice}
@@ -1512,9 +1514,9 @@ export class SovereigntyEngine {
         <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 2rem; font-size: 2rem;">Your Sovereignty Profile</h2>
         
         <div class="profile-summary" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: var(--brand); margin-top: 0;">Cognitive Band: ${band.iqRange} IQ</h3>
-          <p style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0;">${band.name}</p>
-          <p style="color: var(--muted); line-height: 1.6;">${band.description}</p>
+          <h3 style="color: var(--brand); margin-top: 0;">Cognitive Band: ${SecurityUtils.sanitizeHTML(band.iqRange || '')} IQ</h3>
+          <p style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(band.name || '')}</p>
+          <p style="color: var(--muted); line-height: 1.6;">${SecurityUtils.sanitizeHTML(band.description || '')}</p>
         </div>
 
         ${subclasses.length > 0 ? `
@@ -1522,9 +1524,9 @@ export class SovereigntyEngine {
             <h3 style="color: var(--brand); margin-top: 0;">Top Subclass Matches</h3>
             ${subclasses.map((subclass, idx) => `
               <div style="margin: 1rem 0; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius);">
-                <h4 style="margin: 0 0 0.5rem 0;">${idx + 1}. ${subclass.name}</h4>
-                <p style="color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0;">${subclass.aiEffect}</p>
-                <p style="color: var(--muted); font-size: 0.85rem; margin: 0.5rem 0; font-style: italic;">Support: ${subclass.support}</p>
+                <h4 style="margin: 0 0 0.5rem 0;">${idx + 1}. ${SecurityUtils.sanitizeHTML(subclass.name || '')}</h4>
+                <p style="color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(subclass.aiEffect || '')}</p>
+                <p style="color: var(--muted); font-size: 0.85rem; margin: 0.5rem 0; font-style: italic;">Support: ${SecurityUtils.sanitizeHTML(subclass.support || '')}</p>
               </div>
             `).join('')}
           </div>
@@ -1532,8 +1534,8 @@ export class SovereigntyEngine {
 
         <div class="split-position" style="background: rgba(255, 184, 0, 0.1); padding: 2rem; border-left: 4px solid var(--brand); border-radius: var(--radius); margin-bottom: 2rem;">
           <h3 style="color: var(--brand); margin-top: 0;">Sovereign Split Position</h3>
-          <p style="font-size: 1.3rem; font-weight: 600; margin: 0.5rem 0;">${split.name}</p>
-          <p style="color: var(--muted); line-height: 1.6;">${split.description}</p>
+          <p style="font-size: 1.3rem; font-weight: 600; margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(split.name || '')}</p>
+          <p style="color: var(--muted); line-height: 1.6;">${SecurityUtils.sanitizeHTML(split.description || '')}</p>
         </div>
 
         <div class="sovereignty-score" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
@@ -1546,7 +1548,7 @@ export class SovereigntyEngine {
 
         <div class="attachment-mode" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
           <h3 style="color: var(--brand); margin-top: 0;">Attachment Mode</h3>
-          <p style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0; text-transform: capitalize;">${attachmentMode}</p>
+          <p style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0; text-transform: capitalize;">${SecurityUtils.sanitizeHTML(attachmentMode || '')}</p>
           <p style="color: var(--muted); line-height: 1.6;">
             ${attachmentMode === 'independent' ? 'You maintain clear boundaries with AI tools.' :
               attachmentMode === 'tool' ? 'You use AI as a practical tool without emotional attachment.' :
@@ -1561,10 +1563,10 @@ export class SovereigntyEngine {
             ${risks.map((risk, idx) => `
               <div style="margin: 1rem 0; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius);">
                 <h4 style="margin: 0 0 0.5rem 0; color: ${risk.severity === 'critical' ? '#ff0000' : '#ff8800'};">
-                  ${idx + 1}. ${risk.name} 
-                  <span style="font-size: 0.8rem; text-transform: uppercase; background: ${risk.severity === 'critical' ? '#ff0000' : '#ff8800'}; padding: 0.2rem 0.5rem; border-radius: 3px; margin-left: 0.5rem;">${risk.severity}</span>
+                  ${idx + 1}. ${SecurityUtils.sanitizeHTML(risk.name || '')} 
+                  <span style="font-size: 0.8rem; text-transform: uppercase; background: ${risk.severity === 'critical' ? '#ff0000' : '#ff8800'}; padding: 0.2rem 0.5rem; border-radius: 3px; margin-left: 0.5rem;">${SecurityUtils.sanitizeHTML(risk.severity || '')}</span>
                 </h4>
-                <p style="color: var(--muted); margin: 0.5rem 0;">${risk.description}</p>
+                <p style="color: var(--muted); margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(risk.description || '')}</p>
               </div>
             `).join('')}
           </div>
@@ -1578,7 +1580,8 @@ export class SovereigntyEngine {
       </div>
     `;
 
-    container.innerHTML = html;
+    // Sanitize results HTML before rendering
+    SecurityUtils.safeInnerHTML(container, html);
   }
 
   generateActionPlan() {
@@ -1646,12 +1649,12 @@ export class SovereigntyEngine {
     return recommendations.map((rec, idx) => `
       <div style="margin: 1.5rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius); border-left: 4px solid ${rec.priority === 'Critical' ? '#ff0000' : rec.priority === 'High' ? '#ff8800' : '#00aa00'};">
         <h4 style="margin: 0 0 0.5rem 0;">
-          ${idx + 1}. ${rec.title}
-          <span style="font-size: 0.8rem; text-transform: uppercase; background: ${rec.priority === 'Critical' ? '#ff0000' : rec.priority === 'High' ? '#ff8800' : '#00aa00'}; padding: 0.2rem 0.5rem; border-radius: 3px; margin-left: 0.5rem;">${rec.priority}</span>
+          ${idx + 1}. ${SecurityUtils.sanitizeHTML(rec.title || '')}
+          <span style="font-size: 0.8rem; text-transform: uppercase; background: ${rec.priority === 'Critical' ? '#ff0000' : rec.priority === 'High' ? '#ff8800' : '#00aa00'}; padding: 0.2rem 0.5rem; border-radius: 3px; margin-left: 0.5rem;">${SecurityUtils.sanitizeHTML(rec.priority || '')}</span>
         </h4>
-        <p style="color: var(--muted); margin: 0.5rem 0;">${rec.description}</p>
+        <p style="color: var(--muted); margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(rec.description || '')}</p>
         <ul style="color: var(--muted); margin: 0.5rem 0; padding-left: 1.5rem;">
-          ${rec.practices.map(practice => `<li>${practice}</li>`).join('')}
+          ${rec.practices.map(practice => `<li>${SecurityUtils.sanitizeHTML(practice || '')}</li>`).join('')}
         </ul>
       </div>
     `).join('');
