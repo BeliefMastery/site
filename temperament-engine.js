@@ -1,15 +1,24 @@
-// Temperament Analyzer Engine
+// Temperament Analyzer Engine - Version 2.1
 // Maps position on masculine-feminine temperament spectrum
-// Version 2: Multi-phase architecture with orientation screening
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { TEMPERAMENT_DIMENSIONS } from './temperament-data/temperament-dimensions.js';
-import { INTIMATE_DYNAMICS } from './temperament-data/intimate-dynamics.js';
-import { ATTRACTION_RESPONSIVENESS } from './temperament-data/attraction-responsiveness.js';
-import { TEMPERAMENT_SCORING } from './temperament-data/temperament-scoring.js';
-import { PHASE_1_ORIENTATION_QUESTIONS } from './temperament-data/temperament-orientation.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class TemperamentEngine {
+// Data modules - will be loaded lazily
+let TEMPERAMENT_DIMENSIONS, INTIMATE_DYNAMICS;
+let ATTRACTION_RESPONSIVENESS, TEMPERAMENT_SCORING;
+let PHASE_1_ORIENTATION_QUESTIONS;
+
+/**
+ * Temperament Engine - Analyzes masculine-feminine temperament spectrum
+ */
+export class TemperamentEngine {
+  /**
+   * Initialize the temperament engine
+   */
   constructor() {
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
@@ -25,65 +34,155 @@ class TemperamentEngine {
       allAnswers: {},
       questionSequence: []
     };
+    
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('TemperamentEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('temperament-assessment', '1.0.0');
 
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
     this.attachEventListeners();
-    this.loadStoredData();
-    this.buildPhase1Sequence();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
   }
 
-  buildPhase1Sequence() {
+  /**
+   * Load temperament data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadTemperamentData() {
+    if (PHASE_1_ORIENTATION_QUESTIONS && TEMPERAMENT_DIMENSIONS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load orientation questions
+      const orientationModule = await loadDataModule(
+        './temperament-data/temperament-orientation.js',
+        'Orientation Questions'
+      );
+      PHASE_1_ORIENTATION_QUESTIONS = orientationModule.PHASE_1_ORIENTATION_QUESTIONS;
+
+      // Load dimensions data
+      const dimensionsModule = await loadDataModule(
+        './temperament-data/temperament-dimensions.js',
+        'Temperament Dimensions'
+      );
+      TEMPERAMENT_DIMENSIONS = dimensionsModule.TEMPERAMENT_DIMENSIONS;
+
+      // Load intimate dynamics data
+      const dynamicsModule = await loadDataModule(
+        './temperament-data/intimate-dynamics.js',
+        'Intimate Dynamics'
+      );
+      INTIMATE_DYNAMICS = dynamicsModule.INTIMATE_DYNAMICS;
+
+      // Load attraction responsiveness data
+      const attractionModule = await loadDataModule(
+        './temperament-data/attraction-responsiveness.js',
+        'Attraction Responsiveness'
+      );
+      ATTRACTION_RESPONSIVENESS = attractionModule.ATTRACTION_RESPONSIVENESS;
+
+      // Load scoring data
+      const scoringModule = await loadDataModule(
+        './temperament-data/temperament-scoring.js',
+        'Temperament Scoring'
+      );
+      TEMPERAMENT_SCORING = scoringModule.TEMPERAMENT_SCORING;
+
+      this.debugReporter.recordSection('Phase 1', PHASE_1_ORIENTATION_QUESTIONS?.length || 0);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadTemperamentData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
+  }
+
+  /**
+   * Build Phase 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase1Sequence() {
+    await this.loadTemperamentData();
+    
     // Phase 1: Orientation Screening (7 quick questions)
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.questionSequence = [...PHASE_1_ORIENTATION_QUESTIONS];
+    this.debugReporter.recordQuestionCount(this.questionSequence.length);
   }
 
-  analyzePhase1Results() {
-    // Calculate preliminary orientation scores
-    let totalMasculine = 0;
-    let totalFeminine = 0;
-    let totalWeight = 0;
-
-    PHASE_1_ORIENTATION_QUESTIONS.forEach(question => {
-      const answer = this.answers[question.id];
-      if (answer && answer.mapsTo) {
-        const weight = answer.mapsTo.weight || 1;
-        totalMasculine += (answer.mapsTo.masculine || 0) * weight;
-        totalFeminine += (answer.mapsTo.feminine || 0) * weight;
-        totalWeight += weight;
-      }
-    });
-
-    const avgMasculine = totalWeight > 0 ? totalMasculine / totalWeight : 0;
-    const avgFeminine = totalWeight > 0 ? totalFeminine / totalWeight : 0;
-    const net = avgMasculine - avgFeminine;
-    const normalizedScore = (net + 2) / 4; // Normalize to 0-1 scale
-
-    this.phase1Results = {
-      masculine: avgMasculine,
-      feminine: avgFeminine,
-      net: net,
-      normalizedScore: normalizedScore
-    };
-
-    this.analysisData.phase1Results = this.phase1Results;
-
-    // Build Phase 2 sequence
-    this.buildPhase2Sequence();
-  }
-
-  buildPhase2Sequence() {
-    // Phase 2: Deep Mapping (all remaining questions)
-    this.currentPhase = 2;
-    this.currentQuestionIndex = 0;
-    this.questionSequence = [];
+  /**
+   * Analyze Phase 1 results and proceed to Phase 2
+   * @returns {Promise<void>}
+   */
+  async analyzePhase1Results() {
+    await this.loadTemperamentData();
     
-    // Add questions from all dimension categories
-    Object.keys(TEMPERAMENT_DIMENSIONS).forEach(dimKey => {
+    try {
+      // Calculate preliminary orientation scores
+      let totalMasculine = 0;
+      let totalFeminine = 0;
+      let totalWeight = 0;
+
+      PHASE_1_ORIENTATION_QUESTIONS.forEach(question => {
+        const answer = this.answers[question.id];
+        if (answer && answer.mapsTo) {
+          const weight = answer.mapsTo.weight || 1;
+          totalMasculine += (answer.mapsTo.masculine || 0) * weight;
+          totalFeminine += (answer.mapsTo.feminine || 0) * weight;
+          totalWeight += weight;
+        }
+      });
+
+      const avgMasculine = totalWeight > 0 ? totalMasculine / totalWeight : 0;
+      const avgFeminine = totalWeight > 0 ? totalFeminine / totalWeight : 0;
+      const net = avgMasculine - avgFeminine;
+      const normalizedScore = (net + 2) / 4; // Normalize to 0-1 scale
+
+      this.phase1Results = {
+        masculine: avgMasculine,
+        feminine: avgFeminine,
+        net: net,
+        normalizedScore: normalizedScore
+      };
+
+      this.analysisData.phase1Results = this.phase1Results;
+
+      // Build Phase 2 sequence
+      await this.buildPhase2Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzePhase1Results');
+      ErrorHandler.showUserError('Failed to analyze Phase 1 results. Please try again.');
+    }
+  }
+
+  /**
+   * Build Phase 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase2Sequence() {
+    await this.loadTemperamentData();
+    
+    try {
+      // Phase 2: Deep Mapping (all remaining questions)
+      this.currentPhase = 2;
+      this.currentQuestionIndex = 0;
+      this.questionSequence = [];
+      
+      // Add questions from all dimension categories
+      Object.keys(TEMPERAMENT_DIMENSIONS).forEach(dimKey => {
       const dimension = TEMPERAMENT_DIMENSIONS[dimKey];
       dimension.questions.forEach(q => {
         this.questionSequence.push({

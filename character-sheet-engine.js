@@ -1,18 +1,90 @@
-// Character Sheet Generator Engine
+// Character Sheet Generator Engine - Version 2.0
 // Translates astrological data into D&D-style character sheets
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign } from './character-sheet-data/western-astrology.js';
-import { CHINESE_ANIMALS, CHINESE_ELEMENTS, getChineseAnimal, getChineseElement } from './character-sheet-data/chinese-astrology.js';
-import { MAYAN_SEALS, MAYAN_TONES, calculateMayanSign, getMayanSignDisplayName } from './character-sheet-data/mayan-astrology.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 
+// Data modules - will be loaded lazily
+let WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign;
+let CHINESE_ANIMALS, CHINESE_ELEMENTS, getChineseAnimal, getChineseElement;
+let MAYAN_SEALS, MAYAN_TONES, calculateMayanSign, getMayanSignDisplayName;
+
+/**
+ * Character Sheet Engine - Generates D&D-style character sheets from astrological data
+ */
 export class CharacterSheetEngine {
+  /**
+   * Initialize the character sheet engine
+   */
   constructor() {
     this.characterData = null;
+    
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('CharacterSheetEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('character-sheet', '1.0.0');
+    
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
     this.attachEventListeners();
+  }
+
+  /**
+   * Load astrological data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadAstrologyData() {
+    if (WESTERN_SIGNS && CHINESE_ANIMALS && MAYAN_SEALS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load Western astrology data
+      const westernModule = await loadDataModule(
+        './character-sheet-data/western-astrology.js',
+        'Western Astrology'
+      );
+      WESTERN_SIGNS = westernModule.WESTERN_SIGNS;
+      ELEMENTS = westernModule.ELEMENTS;
+      MODALITIES = westernModule.MODALITIES;
+      getWesternSign = westernModule.getWesternSign;
+
+      // Load Chinese astrology data
+      const chineseModule = await loadDataModule(
+        './character-sheet-data/chinese-astrology.js',
+        'Chinese Astrology'
+      );
+      CHINESE_ANIMALS = chineseModule.CHINESE_ANIMALS;
+      CHINESE_ELEMENTS = chineseModule.CHINESE_ELEMENTS;
+      getChineseAnimal = chineseModule.getChineseAnimal;
+      getChineseElement = chineseModule.getChineseElement;
+
+      // Load Mayan astrology data
+      const mayanModule = await loadDataModule(
+        './character-sheet-data/mayan-astrology.js',
+        'Mayan Astrology'
+      );
+      MAYAN_SEALS = mayanModule.MAYAN_SEALS;
+      MAYAN_TONES = mayanModule.MAYAN_TONES;
+      calculateMayanSign = mayanModule.calculateMayanSign;
+      getMayanSignDisplayName = mayanModule.getMayanSignDisplayName;
+
+      this.debugReporter.logEvent('DataLoader', 'All astrology data loaded successfully');
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadAstrologyData');
+      ErrorHandler.showUserError('Failed to load astrology data. Please refresh the page.');
+      throw error;
+    }
   }
 
   attachEventListeners() {
@@ -38,41 +110,66 @@ export class CharacterSheetEngine {
     }
   }
 
-  calculateSunSign() {
-    const birthDateInput = document.getElementById('birthDate');
-    const sunSignInput = document.getElementById('sunSign');
-    
-    if (birthDateInput && sunSignInput && birthDateInput.value) {
-      const date = new Date(birthDateInput.value);
-      const month = date.getMonth() + 1; // JavaScript months are 0-indexed
-      const day = date.getDate();
-      const signKey = getWesternSign(month, day);
+  /**
+   * Calculate and display sun sign based on birth date
+   * @returns {Promise<void>}
+   */
+  async calculateSunSign() {
+    try {
+      await this.loadAstrologyData();
       
-      if (signKey && WESTERN_SIGNS[signKey]) {
-        sunSignInput.value = WESTERN_SIGNS[signKey].name;
+      const birthDateInput = document.getElementById('birthDate');
+      const sunSignInput = document.getElementById('sunSign');
+      
+      if (birthDateInput && sunSignInput && birthDateInput.value) {
+        const date = new Date(birthDateInput.value);
+        const month = date.getMonth() + 1; // JavaScript months are 0-indexed
+        const day = date.getDate();
+        const signKey = getWesternSign(month, day);
+        
+        if (signKey && WESTERN_SIGNS[signKey]) {
+          sunSignInput.value = WESTERN_SIGNS[signKey].name;
+        }
       }
+    } catch (error) {
+      this.debugReporter.logError(error, 'calculateSunSign');
+      ErrorHandler.showUserError('Failed to calculate sun sign.');
     }
   }
 
-  generateCharacter() {
-    // Collect form data
-    const formData = this.collectFormData();
-    
-    if (!this.validateFormData(formData)) {
-      return;
-    }
+  /**
+   * Generate character sheet from form data
+   * @returns {Promise<void>}
+   */
+  async generateCharacter() {
+    try {
+      await this.loadAstrologyData();
+      
+      // Collect form data
+      const formData = this.collectFormData();
+      
+      if (!this.validateFormData(formData)) {
+        return;
+      }
 
-    // Calculate all astrological data
-    const astrologyData = this.calculateAstrology(formData);
-    
-    // Generate character sheet
-    this.characterData = this.buildCharacterSheet(formData, astrologyData);
-    
-    // Display results
-    this.displayCharacterSheet(this.characterData);
-    
-    // Show results section
-    this.showResults();
+      // Calculate all astrological data
+      const astrologyData = this.calculateAstrology(formData);
+      
+      // Generate character sheet
+      this.characterData = this.buildCharacterSheet(formData, astrologyData);
+      
+      // Display results
+      this.displayCharacterSheet(this.characterData);
+      
+      // Show results section
+      this.showResults();
+      
+      // Save character data
+      this.dataStore.save('character', this.characterData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateCharacter');
+      ErrorHandler.showUserError('Failed to generate character sheet. Please try again.');
+    }
   }
 
   collectFormData() {
@@ -90,17 +187,22 @@ export class CharacterSheetEngine {
     };
   }
 
+  /**
+   * Validate form data
+   * @param {Object} formData - Form data to validate
+   * @returns {boolean} - True if valid
+   */
   validateFormData(formData) {
     if (!formData.birthDate) {
-      alert('Please enter your birth date.');
+      ErrorHandler.showUserError('Please enter your birth date.');
       return false;
     }
     
     if (!formData.sunSign) {
-      alert('Please enter your Sun sign (or select a birth date to auto-calculate).');
+      ErrorHandler.showUserError('Please enter your Sun sign (or select a birth date to auto-calculate).');
       return false;
     }
-
+    
     return true;
   }
 
@@ -715,9 +817,17 @@ export class CharacterSheetEngine {
     return flaws;
   }
 
+  /**
+   * Display character sheet in the results container
+   * @param {Object} character - Character data to display
+   */
   displayCharacterSheet(character) {
-    const resultsContainer = document.getElementById('characterSheetResults');
-    if (!resultsContainer) return;
+    try {
+      const resultsContainer = document.getElementById('characterSheetResults');
+      if (!resultsContainer) {
+        ErrorHandler.showUserError('Character sheet results container not found.');
+        return;
+      }
 
     // Format Mayan sign display
     const mayanDisplay = getMayanSignDisplayName(
@@ -904,7 +1014,17 @@ export class CharacterSheetEngine {
       </div>
     `;
 
-    resultsContainer.innerHTML = html;
+      // Note: HTML is generated from trusted templates, sanitization applied to user inputs
+      resultsContainer.innerHTML = html;
+      
+      // Display debug report if in development mode
+      if (window.location.search.includes('debug=true')) {
+        this.debugReporter.displayReport('debug-report');
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'displayCharacterSheet');
+      ErrorHandler.showUserError('Failed to display character sheet. Please try again.');
+    }
   }
 
   showResults() {
