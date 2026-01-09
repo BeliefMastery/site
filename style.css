@@ -1402,3 +1402,157 @@ img[data-src].loaded {
     scroll-behavior: auto !important;
   }
 }
+
+/* ========== ACCESSIBILITY IMPROVEMENTS ========== */
+
+/* Keyboard focus indicators */
+*:focus-visible {
+  outline: 3px solid #4a9eff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  font-weight: 600;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Loading states */
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: #4a9eff;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #4a9eff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error messages */
+.user-error {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 400px;
+  background: #ff4444;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.user-error button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.user-error button:hover {
+  opacity: 1;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Question validation feedback */
+.question-incomplete {
+  border-left: 4px solid #ff4444;
+  padding-left: 12px;
+  background: rgba(255, 68, 68, 0.05);
+  border-radius: 4px;
+}
+
+.question-complete {
+  border-left: 4px solid #44ff44;
+  padding-left: 12px;
+  border-radius: 4px;
+}
+
+/* Print optimization */
+@media print {
+  /* Hide navigation and non-essential elements */
+  nav, .nav-toggle, .debug-console, .debug-panel, .debug-toggle,
+  button:not(.print-only), .skip-link, .user-error, .loading {
+    display: none !important;
+  }
+  
+  /* Ensure content fits */
+  body {
+    margin: 0;
+    padding: 20px;
+    font-size: 12pt;
+  }
+  
+  /* Black text on white for printing */
+  * {
+    color: #000 !important;
+    background: #fff !important;
+  }
+  
+  /* Prevent page breaks inside sections */
+  .report-section, .result-item, .question-container {
+    page-break-inside: avoid;
+  }
+  
+  /* Add URLs for links */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666 !important;
+  }
+  
+  /* Ensure headings are clear */
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+}

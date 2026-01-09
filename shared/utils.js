@@ -140,6 +140,138 @@ export class DataStore {
 }
 
 /**
+ * Storage wrapper with enhanced error handling and fallbacks
+ */
+export const Storage = {
+  /**
+   * Save data with fallback to sessionStorage
+   * @param {string} key - Storage key
+   * @param {any} data - Data to store
+   * @returns {boolean} - Success status
+   */
+  save(key, data) {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+      return true;
+    } catch (e) {
+      console.warn('localStorage failed, using sessionStorage:', e);
+      try {
+        sessionStorage.setItem(key, JSON.stringify(data));
+        return true;
+      } catch (e2) {
+        console.error('Storage failed completely:', e2);
+        if (typeof ErrorHandler !== 'undefined' && ErrorHandler.showUserError) {
+          ErrorHandler.showUserError('Unable to save progress. Please ensure cookies and local storage are enabled.');
+        }
+        return false;
+      }
+    }
+  },
+  
+  /**
+   * Load data with fallback support
+   * @param {string} key - Storage key
+   * @returns {any|null} - Stored data or null
+   */
+  load(key) {
+    try {
+      const data = localStorage.getItem(key) || sessionStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (e) {
+      console.warn('Storage load failed:', e);
+      return null;
+    }
+  },
+  
+  /**
+   * Clear storage
+   * @param {string} key - Storage key
+   */
+  clear(key) {
+    try {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    } catch (e) {
+      console.warn('Storage clear failed:', e);
+    }
+  }
+};
+
+/**
+ * User-friendly error message display
+ */
+export function showError(message) {
+  // Remove any existing error
+  const existing = document.querySelector('.user-error');
+  if (existing) existing.remove();
+  
+  // Create error message
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'user-error';
+  errorDiv.setAttribute('role', 'alert');
+  errorDiv.innerHTML = `
+    <span>⚠️ ${SecurityUtils.sanitizeHTML(message)}</span>
+    <button onclick="this.parentElement.remove()" aria-label="Dismiss error message">×</button>
+  `;
+  document.body.appendChild(errorDiv);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => errorDiv.remove(), 5000);
+  
+  // Focus for screen readers
+  errorDiv.focus();
+}
+
+/**
+ * Loading state management
+ */
+export const LoadingState = {
+  /**
+   * Show loading indicator
+   * @param {string} message - Loading message
+   */
+  show(message = 'Loading...') {
+    // Remove any existing loader
+    const existing = document.getElementById('loader');
+    if (existing) existing.remove();
+    
+    const loader = document.createElement('div');
+    loader.className = 'loading';
+    loader.id = 'loader';
+    loader.setAttribute('role', 'status');
+    loader.setAttribute('aria-live', 'polite');
+    loader.setAttribute('aria-label', message);
+    loader.textContent = message;
+    document.body.appendChild(loader);
+  },
+  
+  /**
+   * Hide loading indicator
+   */
+  hide() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.remove();
+  }
+};
+
+/**
+ * Question validation feedback
+ */
+export function markQuestionState(questionId, answered) {
+  const questionEl = document.getElementById(`question-${questionId}`) || 
+                     document.querySelector(`[data-question-id="${questionId}"]`);
+  if (!questionEl) return;
+  
+  if (answered) {
+    questionEl.classList.remove('question-incomplete');
+    questionEl.classList.add('question-complete');
+  } else {
+    questionEl.classList.remove('question-complete');
+    questionEl.classList.add('question-incomplete');
+  }
+}
+
+/**
  * Error handling utilities
  */
 export const ErrorHandler = {
@@ -167,28 +299,29 @@ export const ErrorHandler = {
    * @param {HTMLElement} container - Container to show error in
    */
   showUserError(message, container = null) {
+    // Remove any existing error
+    const existing = document.querySelector('.user-error');
+    if (existing) existing.remove();
+    
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
+    errorDiv.className = 'user-error';
     errorDiv.setAttribute('role', 'alert');
     errorDiv.setAttribute('aria-live', 'assertive');
-    errorDiv.style.cssText = `
-      padding: 1rem;
-      margin: 1rem 0;
-      background: rgba(220, 53, 69, 0.1);
-      border: 2px solid #dc3545;
-      border-radius: var(--radius, 8px);
-      color: #dc3545;
-      font-weight: 600;
+    errorDiv.innerHTML = `
+      <span>⚠️ ${SecurityUtils.sanitizeHTML(message)}</span>
+      <button onclick="this.parentElement.remove()" aria-label="Dismiss error message">×</button>
     `;
-    errorDiv.textContent = message;
     
     const targetContainer = container || document.querySelector('.assessment-container') || document.body;
-    targetContainer.prepend(errorDiv);
+    targetContainer.appendChild(errorDiv);
     
     // Auto-remove after 5 seconds
     setTimeout(() => {
       errorDiv.remove();
     }, 5000);
+    
+    // Focus for screen readers
+    errorDiv.focus();
     
     return errorDiv;
   },

@@ -102,9 +102,7 @@
   </style>
 </head>
 <body>
-
-  <!-- Skip link for keyboard navigation -->
-  <a href="#main" class="skip-link">Skip to main content</a>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- Background layers for crossfade -->
   <div id="bgA" class="bg-layer" style="background-image:url('./images/shoggoth.jpg');"></div>
@@ -151,7 +149,7 @@
     </nav>
   </header>
 
-  <main class="container" id="main">
+  <main class="container" id="main-content" role="main">
 
     <!-- Online Sovereignty Tools and Analysis Section -->
     <section id="tools" data-bg="./images/shoggoth.jpg" aria-labelledby="tools-title">
@@ -219,10 +217,10 @@
         <a href="books.html" class="section-title-btn" id="books-title">Books</a>
         <div class="image-row books-grid" aria-hidden="false" role="presentation">
           <figure class="image-card headline-book" data-title="Belief Mastery">
-            <a href="books.html#belief-mastery"><img src="./images/BM-cover.jpg" alt="Belief Mastery cover"></a>
+            <a href="books.html#belief-mastery"><img src="./images/BM-cover.jpg" alt="Belief Mastery cover" width="300" height="450"></a>
           </figure>
           <figure class="image-card headline-book" data-title="Sovereign of Mind">
-            <a href="books.html#sovereign-of-mind"><img src="./images/SoM-cover.jpg" alt="Sovereign of Mind cover"></a>
+            <a href="books.html#sovereign-of-mind"><img src="./images/SoM-cover.jpg" alt="Sovereign of Mind cover" width="300" height="450"></a>
           </figure>
           <figure class="image-card" data-title="Distortion Codex">
             <a href="books.html#distortion-codex"><img src="./images/SDC-cover.jpg" alt="Sovereignty-Distortion Codex cover" loading="lazy"></a>
@@ -338,22 +336,49 @@
       });
     })();
 
-    // Hamburger menu toggle
+    // Mobile menu fix - ensure smooth operation with keyboard support
     (function(){
-      const hamburger = document.querySelector('.hamburger');
-      const navList = document.querySelector('.nav-list');
-      if(!hamburger || !navList) return;
-      hamburger.addEventListener('click', () => {
-        const isOpen = navList.classList.toggle('open');
-        hamburger.setAttribute('aria-expanded', isOpen);
-        hamburger.textContent = isOpen ? '✕' : '☰';
+      const toggle = document.querySelector('.hamburger');
+      const nav = document.querySelector('.nav-list');
+      if(!toggle || !nav) return;
+      
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', !expanded);
+        nav.classList.toggle('open');
+        nav.classList.toggle('active');
       });
-      // Close menu when a link is clicked
-      navList.querySelectorAll('a').forEach(link => {
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!nav.contains(e.target) && !toggle.contains(e.target) && nav.classList.contains('open')) {
+          toggle.setAttribute('aria-expanded', 'false');
+          nav.classList.remove('open');
+          nav.classList.remove('active');
+        }
+      });
+      
+      // Close menu when pressing Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && nav.classList.contains('open')) {
+          toggle.setAttribute('aria-expanded', 'false');
+          nav.classList.remove('open');
+          nav.classList.remove('active');
+          toggle.focus(); // Return focus to toggle button
+        }
+      });
+      
+      // Close menu when a link is clicked (mobile)
+      nav.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
-          navList.classList.remove('open');
-          hamburger.setAttribute('aria-expanded', 'false');
-          hamburger.textContent = '☰';
+          if (window.innerWidth <= 768) {
+            nav.classList.remove('open');
+            nav.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.textContent = '☰';
+          }
         });
       });
     })();
@@ -434,6 +459,45 @@
         scheduleNextVariation();
       }, 5000);
     })();
+    
+    // Mobile menu fix - ensure smooth operation
+    (function() {
+      const toggle = document.querySelector('.hamburger');
+      const nav = document.querySelector('.nav-list');
+      
+      if (toggle && nav) {
+        toggle.addEventListener('click', () => {
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-expanded', !expanded);
+          nav.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!nav.contains(e.target) && !toggle.contains(e.target) && nav.classList.contains('active')) {
+            toggle.setAttribute('aria-expanded', 'false');
+            nav.classList.remove('active');
+          }
+        });
+        
+        // Close menu when pressing Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && nav.classList.contains('active')) {
+            toggle.setAttribute('aria-expanded', 'false');
+            nav.classList.remove('active');
+            toggle.focus(); // Return focus to toggle button
+          }
+        });
+      }
+    })();
+    
+    // Lazy loading fallback for older browsers
+    if (!('loading' in HTMLImageElement.prototype)) {
+      document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+        // For older browsers, just load normally (no lazy loading)
+        img.loading = 'eager';
+      });
+    }
   </script>
 </body>
 </html>
