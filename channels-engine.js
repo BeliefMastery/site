@@ -452,8 +452,8 @@ export class ChannelsEngine {
       html = this.renderMultiselectQuestion(question);
     }
     
-      // Note: HTML is generated from trusted templates
-      container.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       
       // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
@@ -487,7 +487,7 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="three-point-options">
           ${question.options.map((option, index) => `
             <label class="three-point-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -498,7 +498,7 @@ export class ChannelsEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -515,7 +515,7 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="binary-unsure-options">
           ${question.options.map((option, index) => `
             <label class="binary-unsure-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -526,7 +526,7 @@ export class ChannelsEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -543,7 +543,7 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="scenario-options">
           ${question.options.map((option, index) => `
             <label class="scenario-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -554,7 +554,7 @@ export class ChannelsEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -571,7 +571,7 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="frequency-options">
           ${question.options.map((option, index) => `
             <label class="frequency-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -582,7 +582,7 @@ export class ChannelsEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -605,7 +605,7 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
         <div class="multiselect-options">
           ${question.options.map((option, index) => {
@@ -619,7 +619,7 @@ export class ChannelsEngine {
                   data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                   ${isSelected ? 'checked' : ''}
                 />
-                <span class="option-text">${option.text}</span>
+                <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
               </label>
             `;
           }).join('')}
@@ -650,7 +650,7 @@ export class ChannelsEngine {
           ${strongNodes.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>Areas of strength:</strong> ${strongNodes.join(', ')}</p>` : ''}
           <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);">Based on this assessment, we've identified critical channels that may reveal blockages. Select 2-3 areas you'd like to explore in depth.</p>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
         <div class="multiselect-options">
     `;
@@ -671,8 +671,8 @@ export class ChannelsEngine {
             ${isSelected ? 'checked' : ''}
           />
           <div style="flex: 1;">
-            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--brand);">${fromNode.name} → ${toNode.name}</div>
-            <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.5;">${channel.description}</div>
+            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--brand);">${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</div>
+            <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.5;">${SecurityUtils.sanitizeHTML(channel.description || '')}</div>
           </div>
         </label>
       `;
@@ -1046,7 +1046,7 @@ export class ChannelsEngine {
     Object.keys(this.nodeScores).forEach(nodeKey => {
       const nodeScore = this.nodeScores[nodeKey];
       const stateColor = nodeScore.state === 'abundant' ? '#28a745' : nodeScore.state === 'balanced' ? '#ffc107' : '#d32f2f';
-      html += `<p style="margin-bottom: 0.5rem;"><strong>${nodeScore.node.name}:</strong> <span style="color: ${stateColor};">${nodeScore.state}</span></p>`;
+      html += `<p style="margin-bottom: 0.5rem;"><strong>${SecurityUtils.sanitizeHTML(nodeScore.node.name || '')}:</strong> <span style="color: ${stateColor};">${SecurityUtils.sanitizeHTML(nodeScore.state || '')}</span></p>`;
     });
     html += '</div>';
     
@@ -1062,9 +1062,9 @@ export class ChannelsEngine {
         
         html += `
           <div class="channel-result">
-            <h3>${fromNode.name} → ${toNode.name}</h3>
-            <p style="color: var(--muted); margin-bottom: 1rem;">${channel.description}</p>
-            <p style="margin-bottom: 1rem;"><strong>Blockage symptoms:</strong> ${channel.blocked || 'Disconnect between these nodes'}</p>
+            <h3>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
+            <p style="margin-bottom: 1rem;"><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
           </div>
         `;
       });
@@ -1084,9 +1084,9 @@ export class ChannelsEngine {
         
         html += `
           <div class="remediation-item">
-            <strong>${fromNode.name} → ${toNode.name}</strong>
+            <strong>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</strong>
             <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-              ${Array.isArray(strategy.strategies) ? strategy.strategies.map(s => `<li>${s}</li>`).join('') : `<li>${strategy.strategies}</li>`}
+              ${Array.isArray(strategy.strategies) ? strategy.strategies.map(s => `<li>${SecurityUtils.sanitizeHTML(s || '')}</li>`).join('') : `<li>${SecurityUtils.sanitizeHTML(strategy.strategies || '')}</li>`}
             </ul>
           </div>
         `;
@@ -1095,8 +1095,8 @@ export class ChannelsEngine {
       html += '</div>';
     }
     
-      // Note: HTML is generated from trusted templates, sanitization applied to user content
-      container.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       
       // Display debug report if in development mode
       if (window.location.search.includes('debug=true')) {
