@@ -285,21 +285,30 @@ export class TemperamentEngine {
     this.saveProgress();
   }
 
+  /**
+   * Render the current question
+   */
   renderCurrentQuestion() {
+    const renderStart = performance.now();
     const questionContainer = document.getElementById('questionContainer');
-    if (!questionContainer) return;
-
-    if (this.currentQuestionIndex >= this.questionSequence.length) {
-      if (this.currentPhase === 1) {
-        this.analyzePhase1Results();
-        this.showPhase1Feedback();
-        return;
-      } else {
-        this.calculateResults();
-        this.renderResults();
-        return;
-      }
+    
+    if (!questionContainer) {
+      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      return;
     }
+
+    try {
+      if (this.currentQuestionIndex >= this.questionSequence.length) {
+        if (this.currentPhase === 1) {
+          this.analyzePhase1Results();
+          this.showPhase1Feedback();
+          return;
+        } else {
+          this.calculateResults();
+          this.renderResults();
+          return;
+        }
+      }
 
     const currentQ = this.questionSequence[this.currentQuestionIndex];
     
@@ -547,8 +556,11 @@ export class TemperamentEngine {
     } else {
       // End of current phase
       if (this.currentPhase === 1) {
-        this.analyzePhase1Results();
-        this.showPhase1Feedback();
+        this.analyzePhase1Results().then(() => {
+          this.showPhase1Feedback();
+        }).catch(error => {
+          this.debugReporter.logError(error, 'nextQuestion - Phase 1 completion');
+        });
       } else {
         this.calculateResults();
         this.renderResults();
@@ -835,15 +847,26 @@ export class TemperamentEngine {
     }
   }
 
-  renderResults() {
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
+  /**
+   * Render assessment results
+   */
+  async renderResults() {
+    try {
+      await this.loadTemperamentData(); // Ensure data is loaded
+      
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      const resultsSection = document.getElementById('resultsSection');
+      if (questionnaireSection) questionnaireSection.classList.remove('active');
+      if (resultsSection) resultsSection.classList.add('active');
 
-    const container = document.getElementById('temperamentResults');
-    if (!container) return;
+      const container = document.getElementById('temperamentResults');
+      if (!container) {
+        ErrorHandler.showUserError('Results container not found.');
+        return;
+      }
 
-    const temperament = this.analysisData.overallTemperament;
-    const interpretation = TEMPERAMENT_SCORING.interpretation[temperament.category];
+      const temperament = this.analysisData.overallTemperament;
+      const interpretation = TEMPERAMENT_SCORING.interpretation[temperament.category];
 
     // Contextual framing block at results entry
     let html = `
@@ -944,8 +967,18 @@ export class TemperamentEngine {
       html += '</ul></div>';
     }
 
-    container.innerHTML = html;
-    this.saveProgress();
+      // Note: HTML is generated from trusted templates, sanitization applied to user content
+      container.innerHTML = html;
+      this.saveProgress();
+      
+      // Display debug report if in development mode
+      if (window.location.search.includes('debug=true')) {
+        this.debugReporter.displayReport('debug-report');
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderResults');
+      ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
+    }
   }
 
   exportAnalysis(format = 'json') {
@@ -1007,43 +1040,57 @@ AI AGENT CONFIGURATION:
     }
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      currentPhase: this.currentPhase,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      phase1Results: this.phase1Results,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('temperamentProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        currentPhase: this.currentPhase,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        phase1Results: this.phase1Results,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('temperamentProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.currentPhase = data.currentPhase || 1;
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.currentPhase = data.currentPhase || 1;
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.phase1Results = data.phase1Results || null;
+      this.analysisData = data.analysisData || this.analysisData;
+      
+      // Restore appropriate phase
+      if (this.currentPhase === 1) {
+        await this.buildPhase1Sequence();
+      } else if (this.currentPhase === 2) {
         this.phase1Results = data.phase1Results || null;
-        
-        // Restore appropriate phase
-        if (this.currentPhase === 1) {
-          this.buildPhase1Sequence();
-        } else if (this.currentPhase === 2) {
-          this.phase1Results = data.phase1Results || null;
-          this.buildPhase2Sequence();
-        }
-        
-        if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
-          // Resume assessment
-          document.getElementById('questionnaireSection').classList.add('active');
-          this.renderCurrentQuestion();
-        }
-      } catch (e) {
-        console.error('Error loading stored data:', e);
+        await this.buildPhase2Sequence();
       }
+      
+      if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
+        // Resume assessment
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.renderCurrentQuestion();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 

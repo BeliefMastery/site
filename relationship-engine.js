@@ -1,15 +1,24 @@
-// Relationship Optimization Engine - Multi-Stage Progressive Analysis
-// Stage 1: Broad Compatibility Assessment
-// Stage 2: Domain-Specific Deep Dive
-// Stage 3: Scenario-Based Roleplay Questions
+// Relationship Optimization Engine - Version 2.1
+// Multi-Stage Progressive Analysis
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { COMPATIBILITY_POINTS, IMPACT_TIER_WEIGHTS, SCORING_THRESHOLDS } from './relationship-data/compatibility-points.js';
-import { ACTION_STRATEGIES } from './relationship-data/action-strategies.js';
-import { ARCHETYPAL_INSIGHTS } from './relationship-data/archetypal-insights.js';
-import { STAGE_2_DOMAIN_QUESTIONS, STAGE_3_SCENARIO_QUESTIONS, RELATIONSHIP_DOMAINS } from './relationship-data/stage-questions.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class RelationshipEngine {
+// Data modules - will be loaded lazily
+let COMPATIBILITY_POINTS, IMPACT_TIER_WEIGHTS, SCORING_THRESHOLDS;
+let ACTION_STRATEGIES, ARCHETYPAL_INSIGHTS;
+let STAGE_2_DOMAIN_QUESTIONS, STAGE_3_SCENARIO_QUESTIONS, RELATIONSHIP_DOMAINS;
+
+/**
+ * Relationship Engine - Optimizes relationship compatibility through multi-stage assessment
+ */
+export class RelationshipEngine {
+  /**
+   * Initialize the relationship engine
+   */
   constructor() {
     this.currentStage = 1; // 1: Broad Assessment, 2: Domain Deep Dive, 3: Scenarios
     this.currentQuestionIndex = 0;
@@ -32,44 +41,118 @@ class RelationshipEngine {
       archetypalInsights: {},
       crossDomainSpillover: {}
     };
+    
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('RelationshipEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('relationship-assessment', '1.0.0');
 
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
-    this.buildStage1Sequence();
     this.attachEventListeners();
-    this.loadStoredData();
-    this.startAssessment();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
   }
 
-  buildStage1Sequence() {
-    // Stage 1: Broad compatibility assessment (one question per compatibility point)
-    this.questionSequence = [];
-    this.currentStage = 1;
+  /**
+   * Load relationship data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadRelationshipData() {
+    if (COMPATIBILITY_POINTS && RELATIONSHIP_DOMAINS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load compatibility points data
+      const compatibilityModule = await loadDataModule(
+        './relationship-data/compatibility-points.js',
+        'Compatibility Points'
+      );
+      COMPATIBILITY_POINTS = compatibilityModule.COMPATIBILITY_POINTS;
+      IMPACT_TIER_WEIGHTS = compatibilityModule.IMPACT_TIER_WEIGHTS;
+      SCORING_THRESHOLDS = compatibilityModule.SCORING_THRESHOLDS;
+
+      // Load action strategies data
+      const strategiesModule = await loadDataModule(
+        './relationship-data/action-strategies.js',
+        'Action Strategies'
+      );
+      ACTION_STRATEGIES = strategiesModule.ACTION_STRATEGIES;
+
+      // Load archetypal insights data
+      const insightsModule = await loadDataModule(
+        './relationship-data/archetypal-insights.js',
+        'Archetypal Insights'
+      );
+      ARCHETYPAL_INSIGHTS = insightsModule.ARCHETYPAL_INSIGHTS;
+
+      // Load stage questions data
+      const questionsModule = await loadDataModule(
+        './relationship-data/stage-questions.js',
+        'Stage Questions'
+      );
+      STAGE_2_DOMAIN_QUESTIONS = questionsModule.STAGE_2_DOMAIN_QUESTIONS;
+      STAGE_3_SCENARIO_QUESTIONS = questionsModule.STAGE_3_SCENARIO_QUESTIONS;
+      RELATIONSHIP_DOMAINS = questionsModule.RELATIONSHIP_DOMAINS;
+
+      this.debugReporter.recordSection('Stage 1', Object.keys(COMPATIBILITY_POINTS || {}).length);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadRelationshipData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
+  }
+
+  /**
+   * Build Stage 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildStage1Sequence() {
+    await this.loadRelationshipData();
     
-    Object.keys(COMPATIBILITY_POINTS).forEach(pointKey => {
-      const point = COMPATIBILITY_POINTS[pointKey];
+    try {
+      // Stage 1: Broad compatibility assessment (one question per compatibility point)
+      this.questionSequence = [];
+      this.currentStage = 1;
       
-      // Use the first question as the primary assessment question
-      if (point.questions && point.questions.length > 0) {
-        this.questionSequence.push({
-          id: `stage1_${pointKey}`,
-          stage: 1,
-          type: 'compatibility',
-          point: pointKey,
-          question: point.questions[0],
-          description: point.description,
-          name: point.name,
-          impactTier: point.impactTier,
-          weight: point.weight,
-          tierWeight: IMPACT_TIER_WEIGHTS[point.impactTier] || 0.7
-        });
-      }
-    });
-    
-    // Shuffle questions for a more dynamic experience
-    this.questionSequence.sort(() => Math.random() - 0.5);
+      Object.keys(COMPATIBILITY_POINTS).forEach(pointKey => {
+        const point = COMPATIBILITY_POINTS[pointKey];
+        
+        // Use the first question as the primary assessment question
+        if (point.questions && point.questions.length > 0) {
+          this.questionSequence.push({
+            id: `stage1_${pointKey}`,
+            stage: 1,
+            type: 'compatibility',
+            point: pointKey,
+            question: point.questions[0],
+            description: point.description,
+            name: point.name,
+            impactTier: point.impactTier,
+            weight: point.weight,
+            tierWeight: IMPACT_TIER_WEIGHTS[point.impactTier] || 0.7
+          });
+        }
+      });
+      
+      // Shuffle questions for a more dynamic experience
+      this.questionSequence.sort(() => Math.random() - 0.5);
+      
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildStage1Sequence');
+      ErrorHandler.showUserError('Failed to build Stage 1 sequence. Please refresh the page.');
+    }
   }
 
   showStage2Transition() {
@@ -197,12 +280,11 @@ class RelationshipEngine {
     }
   }
 
-  buildStage2Sequence() {
-    // Stage 2: Domain-specific questions for weakest links
-    this.questionSequence = [];
-    this.currentStage = 2;
-    
-    // Get domains for weakest links
+      // Stage 2: Domain-specific questions for weakest links
+      this.questionSequence = [];
+      this.currentStage = 2;
+      
+      // Get domains for weakest links
     const relevantDomains = new Set();
     this.weakestLinks.forEach(link => {
       // Find which domain this compatibility point belongs to
@@ -534,7 +616,14 @@ class RelationshipEngine {
     }
   }
 
-  analyzeStage1Results() {
+  /**
+   * Analyze Stage 1 results and proceed to Stage 2
+   * @returns {Promise<void>}
+   */
+  async analyzeStage1Results() {
+    await this.loadRelationshipData();
+    
+    try {
     // Calculate compatibility scores from Stage 1
     this.analysisData.stage1Results = {};
     
@@ -566,9 +655,27 @@ class RelationshipEngine {
       })
       .sort((a, b) => a.weightedScore - b.weightedScore);
     
-    // Top 5-7 current strain points
-    this.weakestLinks = sortedPoints.slice(0, 7);
+      // Top 5-7 current strain points
+      this.weakestLinks = sortedPoints.slice(0, 7);
+      
+      // Build Stage 2 sequence if there are weak areas
+      if (this.weakestLinks.length > 0) {
+        await this.buildStage2Sequence();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzeStage1Results');
+      ErrorHandler.showUserError('Failed to analyze Stage 1 results. Please try again.');
+    }
   }
+  
+  /**
+   * Build Stage 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildStage2Sequence() {
+    await this.loadRelationshipData();
+    
+    try {
 
   analyzeStage2Results() {
     // Analyze domain-specific answers

@@ -1,14 +1,23 @@
-// Channels Engine - Version 2
+// Channels Engine - Version 2.1
 // Multi-Phase Questionnaire Architecture
-// Optimized for experiential assessment and strategic prioritization
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { NODES } from './channel-data/nodes.js';
-import { CHANNELS } from './channel-data/channels.js';
-import { REMEDIATION_STRATEGIES } from './channel-data/remediation-strategies.js';
-import { PHASE_1_NODE_QUESTIONS, generatePhase3ChannelQuestions } from './channel-data/channel-questions.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class ChannelsEngine {
+// Data modules - will be loaded lazily
+let NODES, CHANNELS, REMEDIATION_STRATEGIES;
+let PHASE_1_NODE_QUESTIONS, generatePhase3ChannelQuestions;
+
+/**
+ * Channels Engine - Identifies open/closed channels through multi-phase assessment
+ */
+export class ChannelsEngine {
+  /**
+   * Initialize the channels engine
+   */
   constructor() {
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
@@ -32,13 +41,72 @@ class ChannelsEngine {
       questionSequence: []
     };
     
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('ChannelsEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('channels-assessment', '1.0.0');
+    
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
     this.attachEventListeners();
-    this.loadStoredData();
-    this.buildPhase1Sequence();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
+  }
+
+  /**
+   * Load channels data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadChannelsData() {
+    if (NODES && CHANNELS && PHASE_1_NODE_QUESTIONS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load nodes data
+      const nodesModule = await loadDataModule(
+        './channel-data/nodes.js',
+        'Channel Nodes'
+      );
+      NODES = nodesModule.NODES;
+
+      // Load channels data
+      const channelsModule = await loadDataModule(
+        './channel-data/channels.js',
+        'Channels Data'
+      );
+      CHANNELS = channelsModule.CHANNELS;
+
+      // Load remediation strategies data
+      const remediationModule = await loadDataModule(
+        './channel-data/remediation-strategies.js',
+        'Remediation Strategies'
+      );
+      REMEDIATION_STRATEGIES = remediationModule.REMEDIATION_STRATEGIES;
+
+      // Load questions data
+      const questionsModule = await loadDataModule(
+        './channel-data/channel-questions.js',
+        'Channel Questions'
+      );
+      PHASE_1_NODE_QUESTIONS = questionsModule.PHASE_1_NODE_QUESTIONS;
+      generatePhase3ChannelQuestions = questionsModule.generatePhase3ChannelQuestions;
+
+      this.debugReporter.recordSection('Phase 1', Object.keys(PHASE_1_NODE_QUESTIONS || {}).length * 2);
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadChannelsData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
   }
 
   attachEventListeners() {
@@ -77,71 +145,102 @@ class ChannelsEngine {
     }
   }
 
-  buildPhase1Sequence() {
-    // Phase 1: Core Node Assessment (7 nodes, 2 questions each = 14 questions)
-    this.questionSequence = [];
-    this.currentPhase = 1;
-    this.currentQuestionIndex = 0;
+  /**
+   * Build Phase 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase1Sequence() {
+    await this.loadChannelsData();
     
-    Object.keys(PHASE_1_NODE_QUESTIONS).forEach(nodeKey => {
-      PHASE_1_NODE_QUESTIONS[nodeKey].forEach(question => {
-        this.questionSequence.push({
-          ...question,
-          phase: 1,
-          node: nodeKey
+    try {
+      // Phase 1: Core Node Assessment (7 nodes, 2 questions each = 14 questions)
+      this.questionSequence = [];
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      
+      Object.keys(PHASE_1_NODE_QUESTIONS).forEach(nodeKey => {
+        PHASE_1_NODE_QUESTIONS[nodeKey].forEach(question => {
+          this.questionSequence.push({
+            ...question,
+            phase: 1,
+            node: nodeKey
+          });
         });
       });
-    });
-    
-    // Show questionnaire if not already shown
-    const questionnaireSection = document.getElementById('questionnaireSection');
-    if (questionnaireSection && !questionnaireSection.classList.contains('active')) {
-      questionnaireSection.classList.add('active');
+      
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      
+      // Show questionnaire if not already shown
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      if (questionnaireSection && !questionnaireSection.classList.contains('active')) {
+        questionnaireSection.classList.add('active');
+      }
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase1Sequence');
+      ErrorHandler.showUserError('Failed to build Phase 1 sequence. Please refresh the page.');
     }
-    
-    this.renderCurrentQuestion();
   }
 
-  analyzePhase1Results() {
-    // Calculate node scores from Phase 1 answers
-    this.nodeScores = {};
+  /**
+   * Analyze Phase 1 results and proceed to Phase 2
+   * @returns {Promise<void>}
+   */
+  async analyzePhase1Results() {
+    await this.loadChannelsData();
     
-    Object.keys(NODES).forEach(nodeKey => {
-      const nodeQuestions = PHASE_1_NODE_QUESTIONS[nodeKey] || [];
-      let totalScore = 0;
-      let totalWeight = 0;
+    try {
+      // Calculate node scores from Phase 1 answers
+      this.nodeScores = {};
       
-      nodeQuestions.forEach(question => {
-        const answer = this.answers[question.id];
-        if (answer && answer.mapsTo) {
-          const state = answer.mapsTo.state;
-          const weight = answer.mapsTo.weight || 1;
-          
-          // Score: abundant = 3, balanced = 2, lacking = 1
-          const score = state === 'abundant' ? 3 : state === 'balanced' ? 2 : 1;
-          totalScore += score * weight;
-          totalWeight += weight;
-        }
+      Object.keys(NODES).forEach(nodeKey => {
+        const nodeQuestions = PHASE_1_NODE_QUESTIONS[nodeKey] || [];
+        let totalScore = 0;
+        let totalWeight = 0;
+        
+        nodeQuestions.forEach(question => {
+          const answer = this.answers[question.id];
+          if (answer && answer.mapsTo) {
+            const state = answer.mapsTo.state;
+            const weight = answer.mapsTo.weight || 1;
+            
+            // Score: abundant = 3, balanced = 2, lacking = 1
+            const score = state === 'abundant' ? 3 : state === 'balanced' ? 2 : 1;
+            totalScore += score * weight;
+            totalWeight += weight;
+          }
+        });
+        
+        const avgScore = totalWeight > 0 ? totalScore / totalWeight : 2;
+        const state = avgScore >= 2.5 ? 'abundant' : avgScore >= 1.5 ? 'balanced' : 'lacking';
+        
+        this.nodeScores[nodeKey] = {
+          state: state,
+          score: avgScore,
+          node: NODES[nodeKey]
+        };
       });
       
-      const avgScore = totalWeight > 0 ? totalScore / totalWeight : 2;
-      const state = avgScore >= 2.5 ? 'abundant' : avgScore >= 1.5 ? 'balanced' : 'lacking';
+      this.analysisData.phase1Results = this.nodeScores;
+      this.analysisData.nodeScores = this.nodeScores;
       
-      this.nodeScores[nodeKey] = {
-        state: state,
-        score: avgScore,
-        node: NODES[nodeKey]
-      };
-    });
-    
-    this.analysisData.phase1Results = this.nodeScores;
-    this.analysisData.nodeScores = this.nodeScores;
-    
-    // Build Phase 2 sequence
-    this.buildPhase2Sequence();
+      // Build Phase 2 sequence
+      await this.buildPhase2Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzePhase1Results');
+      ErrorHandler.showUserError('Failed to analyze Phase 1 results. Please try again.');
+    }
   }
 
-  buildPhase2Sequence() {
+  /**
+   * Build Phase 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase2Sequence() {
+    await this.loadChannelsData();
+    
+    try {
     // Phase 2: Critical Channel Identification
     // Show Phase 1 results and ask user to prioritize 2-3 areas
     this.questionSequence = [];
@@ -206,30 +305,51 @@ class ChannelsEngine {
       }),
       phase: 2,
       criticalChannels: criticalChannels
-    });
-    
-    this.renderCurrentQuestion();
-  }
-
-  processPhase2Results() {
-    // Get user's prioritized channels
-    const prioritizationAnswer = this.answers['p2_prioritization'];
-    if (Array.isArray(prioritizationAnswer)) {
-      this.prioritizedChannels = prioritizationAnswer.map(item => item.mapsTo.channel);
-      this.analysisData.prioritizedChannels = this.prioritizedChannels;
+      });
+      
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase2Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 2. Please refresh the page.');
     }
-    
-    // Build Phase 3 sequence
-    this.buildPhase3Sequence();
   }
 
-  buildPhase3Sequence() {
-    // Phase 3: Targeted Channel Deep-Dive
-    this.questionSequence = [];
-    this.currentPhase = 3;
-    this.currentQuestionIndex = 0;
+  /**
+   * Process Phase 2 results and proceed to Phase 3
+   * @returns {Promise<void>}
+   */
+  async processPhase2Results() {
+    try {
+      // Get user's prioritized channels
+      const prioritizationAnswer = this.answers['p2_prioritization'];
+      if (Array.isArray(prioritizationAnswer)) {
+        this.prioritizedChannels = prioritizationAnswer.map(item => item.mapsTo.channel);
+        this.analysisData.prioritizedChannels = this.prioritizedChannels;
+      }
+      
+      // Build Phase 3 sequence
+      await this.buildPhase3Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'processPhase2Results');
+      ErrorHandler.showUserError('Failed to process Phase 2 results.');
+    }
+  }
+
+  /**
+   * Build Phase 3 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase3Sequence() {
+    await this.loadChannelsData();
     
-    // Generate questions for prioritized channels
+    try {
+      // Phase 3: Targeted Channel Deep-Dive
+      this.questionSequence = [];
+      this.currentPhase = 3;
+      this.currentQuestionIndex = 0;
+      
+      // Generate questions for prioritized channels
     this.prioritizedChannels.forEach(channelId => {
       const channel = CHANNELS[channelId];
       if (channel) {
@@ -323,13 +443,29 @@ class ChannelsEngine {
       html = this.renderMultiselectQuestion(question);
     }
     
-    container.innerHTML = html;
-    
-    // Attach event listeners for the specific question type
-    this.attachQuestionListeners(question);
-    
-    this.updateProgress();
-    this.updateNavigationButtons();
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = html;
+      
+      // Attach event listeners for the specific question type
+      this.attachQuestionListeners(question);
+      
+      this.updateProgress();
+      this.updateNavigationButtons();
+      
+      // Track render performance
+      const renderDuration = performance.now() - renderStart;
+      this.debugReporter.recordRender('question', renderDuration);
+      
+      // Focus management for accessibility
+      const firstInput = container.querySelector('input, button, select, textarea');
+      if (firstInput) {
+        DOMUtils.focusElement(firstInput);
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
+    }
+  }
     this.updateStageIndicator();
   }
 
@@ -681,7 +817,18 @@ class ChannelsEngine {
     }
   }
 
-  nextQuestion() {
+  /**
+   * Move to next question
+   * @returns {Promise<void>}
+   */
+  async nextQuestion() {
+    // Check if current question has been answered
+    const currentQuestion = this.questionSequence[this.currentQuestionIndex];
+    if (currentQuestion && !this.answers[currentQuestion.id]) {
+      ErrorHandler.showUserError('Please select an answer before proceeding.');
+      return;
+    }
+    
     this.saveCurrentAnswer();
     
     this.currentQuestionIndex++;
@@ -690,11 +837,15 @@ class ChannelsEngine {
     if (this.currentQuestionIndex < this.questionSequence.length) {
       this.renderCurrentQuestion();
     } else {
-      this.completePhase();
+      await this.completePhase();
     }
   }
 
-  prevQuestion() {
+  /**
+   * Move to previous question
+   * @returns {Promise<void>}
+   */
+  async prevQuestion() {
     if (this.currentQuestionIndex > 0) {
       this.saveCurrentAnswer();
       this.currentQuestionIndex--;
@@ -704,13 +855,13 @@ class ChannelsEngine {
       // Go back to previous phase
       this.currentPhase--;
       if (this.currentPhase === 1) {
-        this.buildPhase1Sequence();
+        await this.buildPhase1Sequence();
       } else if (this.currentPhase === 2) {
-        this.analyzePhase1Results();
-        this.buildPhase2Sequence();
+        await this.analyzePhase1Results();
+        await this.buildPhase2Sequence();
       } else if (this.currentPhase === 3) {
-        this.processPhase2Results();
-        this.buildPhase3Sequence();
+        await this.processPhase2Results();
+        await this.buildPhase3Sequence();
       }
       this.currentQuestionIndex = this.questionSequence.length - 1;
       this.renderCurrentQuestion();
@@ -856,14 +1007,29 @@ class ChannelsEngine {
     });
   }
 
-  renderResults() {
-    const container = document.getElementById('channelResults');
-    if (!container) return;
-    
-    let html = '<div class="channel-summary">';
-    html += '<h3>Your Channel Analysis Results</h3>';
-    html += '<p>Based on your responses, here are the channel blockages identified and recommended remediation strategies.</p>';
-    html += '</div>';
+  /**
+   * Render assessment results
+   * @returns {Promise<void>}
+   */
+  async renderResults() {
+    try {
+      await this.loadChannelsData(); // Ensure data is loaded
+      
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      const resultsSection = document.getElementById('resultsSection');
+      if (questionnaireSection) questionnaireSection.classList.remove('active');
+      if (resultsSection) resultsSection.classList.add('active');
+      
+      const container = document.getElementById('channelResults');
+      if (!container) {
+        ErrorHandler.showUserError('Results container not found.');
+        return;
+      }
+      
+      let html = '<div class="channel-summary">';
+      html += '<h3>Your Channel Analysis Results</h3>';
+      html += '<p>Based on your responses, here are the channel blockages identified and recommended remediation strategies.</p>';
+      html += '</div>';
     
     // Node summary
     html += '<div class="node-summary" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; border-left: 4px solid var(--brand);">';
@@ -920,7 +1086,17 @@ class ChannelsEngine {
       html += '</div>';
     }
     
-    container.innerHTML = html;
+      // Note: HTML is generated from trusted templates, sanitization applied to user content
+      container.innerHTML = html;
+      
+      // Display debug report if in development mode
+      if (window.location.search.includes('debug=true')) {
+        this.debugReporter.displayReport('debug-report');
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderResults');
+      ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
+    }
   }
 
   exportAnalysis(format = 'json') {
@@ -933,50 +1109,65 @@ class ChannelsEngine {
     }
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      currentPhase: this.currentPhase,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      nodeScores: this.nodeScores,
-      prioritizedChannels: this.prioritizedChannels,
-      assessedChannels: this.assessedChannels,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('channelProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        currentPhase: this.currentPhase,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        nodeScores: this.nodeScores,
+        prioritizedChannels: this.prioritizedChannels,
+        assessedChannels: this.assessedChannels,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('channelProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.currentPhase = data.currentPhase || 1;
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
-        this.nodeScores = data.nodeScores || {};
-        this.prioritizedChannels = data.prioritizedChannels || [];
-        this.assessedChannels = data.assessedChannels || [];
-        
-        // Restore questionnaire state
-        if (this.currentQuestionIndex > 0) {
-          if (this.currentPhase === 1) {
-            this.buildPhase1Sequence();
-          } else if (this.currentPhase === 2) {
-            this.analyzePhase1Results();
-            this.buildPhase2Sequence();
-          } else if (this.currentPhase === 3) {
-            this.processPhase2Results();
-            this.buildPhase3Sequence();
-          } else if (this.currentPhase === 4) {
-            this.buildPhase4Sequence();
-          }
-          document.getElementById('questionnaireSection').classList.add('active');
-          this.renderCurrentQuestion();
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.currentPhase = data.currentPhase || 1;
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.nodeScores = data.nodeScores || {};
+      this.prioritizedChannels = data.prioritizedChannels || [];
+      this.assessedChannels = data.assessedChannels || [];
+      this.analysisData = data.analysisData || this.analysisData;
+      
+      // Restore questionnaire state
+      if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
+        if (this.currentPhase === 1) {
+          await this.buildPhase1Sequence();
+        } else if (this.currentPhase === 2) {
+          await this.analyzePhase1Results();
+          await this.buildPhase2Sequence();
+        } else if (this.currentPhase === 3) {
+          await this.processPhase2Results();
+          await this.buildPhase3Sequence();
+        } else if (this.currentPhase === 4) {
+          await this.buildPhase4Sequence();
         }
-      } catch (e) {
-        console.error('Error loading stored data:', e);
+        
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.renderCurrentQuestion();
       }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 
@@ -1013,11 +1204,3 @@ class ChannelsEngine {
   }
 }
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.channelsEngine = new ChannelsEngine();
-  });
-} else {
-  window.channelsEngine = new ChannelsEngine();
-}

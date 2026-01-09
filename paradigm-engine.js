@@ -1,15 +1,23 @@
-// Paradigm Engine - Version 2
+// Paradigm Engine - Version 2.1
 // 3-Phase Questionnaire Architecture
-// Optimized for nuanced data collection and pattern recognition
-// Based on "The Good Life" and "God" frameworks
+// Enhanced with lazy loading, error handling, and debug reporting
 
-import { GOOD_LIFE_PARADIGMS } from './paradigm-data/good-life-paradigms.js';
-import { GOD_PERSPECTIVES } from './paradigm-data/god-perspectives.js';
-import { PARADIGM_SCORING } from './paradigm-data/paradigm-mapping.js';
-import { PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS } from './paradigm-data/paradigm-questions.js';
+import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { createDebugReporter } from './shared/debug-reporter.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
-class ParadigmEngine {
+// Data modules - will be loaded lazily
+let GOOD_LIFE_PARADIGMS, GOD_PERSPECTIVES, PARADIGM_SCORING;
+let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS;
+
+/**
+ * Paradigm Engine - Identifies paradigm frameworks through multi-phase assessment
+ */
+export class ParadigmEngine {
+  /**
+   * Initialize the paradigm engine
+   */
   constructor() {
     this.selectedCategories = [];
     this.currentPhase = 1;
@@ -35,12 +43,73 @@ class ParadigmEngine {
       questionSequence: []
     };
     
+    // Initialize debug reporter
+    this.debugReporter = createDebugReporter('ParadigmEngine');
+    setDebugReporter(this.debugReporter);
+    this.debugReporter.markInitialized();
+    
+    // Initialize data store
+    this.dataStore = new DataStore('paradigm-assessment', '1.0.0');
+    
     this.init();
   }
 
+  /**
+   * Initialize the engine
+   */
   init() {
     this.attachEventListeners();
-    this.loadStoredData();
+    this.loadStoredData().catch(error => {
+      this.debugReporter.logError(error, 'init');
+    });
+  }
+
+  /**
+   * Load paradigm data modules asynchronously
+   * @returns {Promise<void>}
+   */
+  async loadParadigmData() {
+    if (GOOD_LIFE_PARADIGMS && PHASE_1_QUESTIONS) {
+      return; // Already loaded
+    }
+
+    try {
+      // Load good life paradigms data
+      const goodLifeModule = await loadDataModule(
+        './paradigm-data/good-life-paradigms.js',
+        'Good Life Paradigms'
+      );
+      GOOD_LIFE_PARADIGMS = goodLifeModule.GOOD_LIFE_PARADIGMS;
+
+      // Load god perspectives data
+      const godModule = await loadDataModule(
+        './paradigm-data/god-perspectives.js',
+        'God Perspectives'
+      );
+      GOD_PERSPECTIVES = godModule.GOD_PERSPECTIVES;
+
+      // Load scoring data
+      const scoringModule = await loadDataModule(
+        './paradigm-data/paradigm-mapping.js',
+        'Paradigm Scoring'
+      );
+      PARADIGM_SCORING = scoringModule.PARADIGM_SCORING;
+
+      // Load questions data
+      const questionsModule = await loadDataModule(
+        './paradigm-data/paradigm-questions.js',
+        'Paradigm Questions'
+      );
+      PHASE_1_QUESTIONS = questionsModule.PHASE_1_QUESTIONS;
+      PHASE_2_QUESTIONS = questionsModule.PHASE_2_QUESTIONS;
+      PHASE_3_QUESTIONS = questionsModule.PHASE_3_QUESTIONS;
+
+      this.debugReporter.logEvent('DataLoader', 'All paradigm data loaded successfully');
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadParadigmData');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
   }
 
   attachEventListeners() {
@@ -108,22 +177,44 @@ class ParadigmEngine {
     }
   }
 
-  startAssessment() {
-    if (this.selectedCategories.length === 0) return;
+  /**
+   * Start the assessment with selected categories
+   * @returns {Promise<void>}
+   */
+  async startAssessment() {
+    if (this.selectedCategories.length === 0) {
+      ErrorHandler.showUserError('Please select at least one category to assess.');
+      return;
+    }
     
-    this.buildPhase1Sequence();
-    this.currentPhase = 1;
-    this.currentQuestionIndex = 0;
-    this.answers = {};
-    
-    document.getElementById('categorySelection').style.display = 'none';
-    document.getElementById('questionnaireSection').classList.add('active');
-    
-    this.renderCurrentQuestion();
-    this.saveProgress();
+    try {
+      await this.loadParadigmData();
+      await this.buildPhase1Sequence();
+      
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      
+      const categorySelection = document.getElementById('categorySelection');
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      if (categorySelection) categorySelection.style.display = 'none';
+      if (questionnaireSection) questionnaireSection.classList.add('active');
+      
+      this.renderCurrentQuestion();
+      this.saveProgress();
+    } catch (error) {
+      this.debugReporter.logError(error, 'startAssessment');
+      ErrorHandler.showUserError('Failed to start assessment. Please try again.');
+    }
   }
 
-  buildPhase1Sequence() {
+  /**
+   * Build Phase 1 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase1Sequence() {
+    await this.loadParadigmData();
+    
     this.questionSequence = [];
     
     this.selectedCategories.forEach(category => {
@@ -133,9 +224,18 @@ class ParadigmEngine {
         this.questionSequence.push(...PHASE_1_QUESTIONS.god);
       }
     });
+    
+    this.debugReporter.recordQuestionCount(this.questionSequence.length);
   }
 
-  analyzePhase1Results() {
+  /**
+   * Analyze Phase 1 results and proceed to Phase 2
+   * @returns {Promise<void>}
+   */
+  async analyzePhase1Results() {
+    await this.loadParadigmData();
+    
+    try {
     // Analyze Phase 1 to identify likely paradigms and build Phase 2 sequence
     const paradigmScores = {};
     const dimensionScores = {};
@@ -192,33 +292,46 @@ class ParadigmEngine {
       }
     });
     
-    this.phase1Results = {
-      paradigmScores,
-      dimensionScores,
-      identifiedParadigms: Object.keys(paradigmScores).sort((a, b) => paradigmScores[b] - paradigmScores[a]).slice(0, 3)
-    };
-    
-    // Build Phase 2 sequence based on identified paradigms
-    this.buildPhase2Sequence();
+      this.phase1Results = {
+        paradigmScores,
+        dimensionScores,
+        identifiedParadigms: Object.keys(paradigmScores).sort((a, b) => paradigmScores[b] - paradigmScores[a]).slice(0, 3)
+      };
+      
+      // Build Phase 2 sequence based on identified paradigms
+      await this.buildPhase2Sequence();
+    } catch (error) {
+      this.debugReporter.logError(error, 'analyzePhase1Results');
+      ErrorHandler.showUserError('Failed to analyze Phase 1 results. Please try again.');
+    }
   }
 
-  buildPhase2Sequence() {
-    this.questionSequence = [];
+  /**
+   * Build Phase 2 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase2Sequence() {
+    await this.loadParadigmData();
     
-    this.selectedCategories.forEach(category => {
-      if (category === 'good_life') {
-        // Add conditional questions for identified paradigms
-        this.phase1Results.identifiedParadigms.forEach(paradigm => {
-          if (PHASE_2_QUESTIONS.good_life[paradigm]) {
-            this.questionSequence.push(...PHASE_2_QUESTIONS.good_life[paradigm]);
+    try {
+      this.questionSequence = [];
+      this.currentPhase = 2;
+      this.currentQuestionIndex = 0;
+      
+      this.selectedCategories.forEach(category => {
+        if (category === 'good_life') {
+          // Add conditional questions for identified paradigms
+          this.phase1Results.identifiedParadigms.forEach(paradigm => {
+            if (PHASE_2_QUESTIONS.good_life[paradigm]) {
+              this.questionSequence.push(...PHASE_2_QUESTIONS.good_life[paradigm]);
+            }
+          });
+          
+          // Add dimension-specific questions
+          if (PHASE_2_QUESTIONS.good_life.dimensions) {
+            this.questionSequence.push(...PHASE_2_QUESTIONS.good_life.dimensions);
           }
-        });
-        
-        // Add dimension-specific questions
-        if (PHASE_2_QUESTIONS.good_life.dimensions) {
-          this.questionSequence.push(...PHASE_2_QUESTIONS.good_life.dimensions);
-        }
-      } else if (category === 'god') {
+        } else if (category === 'god') {
         // Check if literal God was selected
         const literalGodAnswer = this.answers['p1_god_literal'];
         if (literalGodAnswer && literalGodAnswer.mapsTo && literalGodAnswer.mapsTo.literalGod) {
@@ -249,26 +362,52 @@ class ParadigmEngine {
       }
     });
     
-    this.currentPhase = 2;
-    this.currentQuestionIndex = 0;
+      this.currentPhase = 2;
+      this.currentQuestionIndex = 0;
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase2Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 2. Please refresh the page.');
+    }
   }
 
-  buildPhase3Sequence() {
-    this.questionSequence = [];
+  /**
+   * Build Phase 3 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase3Sequence() {
+    await this.loadParadigmData();
     
-    this.selectedCategories.forEach(category => {
-      if (category === 'good_life' && PHASE_3_QUESTIONS.good_life) {
-        this.questionSequence.push(...PHASE_3_QUESTIONS.good_life);
-      } else if (category === 'god' && PHASE_3_QUESTIONS.god) {
-        this.questionSequence.push(...PHASE_3_QUESTIONS.god);
-      }
-    });
-    
-    this.currentPhase = 3;
-    this.currentQuestionIndex = 0;
+    try {
+      this.questionSequence = [];
+      
+      this.selectedCategories.forEach(category => {
+        if (category === 'good_life' && PHASE_3_QUESTIONS.good_life) {
+          this.questionSequence.push(...PHASE_3_QUESTIONS.good_life);
+        } else if (category === 'god' && PHASE_3_QUESTIONS.god) {
+          this.questionSequence.push(...PHASE_3_QUESTIONS.god);
+        }
+      });
+      
+      this.currentPhase = 3;
+      this.currentQuestionIndex = 0;
+      this.debugReporter.recordQuestionCount(this.questionSequence.length);
+      
+      this.renderCurrentQuestion();
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildPhase3Sequence');
+      ErrorHandler.showUserError('Failed to load Phase 3. Please refresh the page.');
+    }
   }
 
+  /**
+   * Render the current question
+   */
   renderCurrentQuestion() {
+    const renderStart = performance.now();
+    
     if (this.currentQuestionIndex >= this.questionSequence.length) {
       this.completePhase();
       return;
@@ -277,7 +416,12 @@ class ParadigmEngine {
     const question = this.questionSequence[this.currentQuestionIndex];
     const container = document.getElementById('questionContainer');
     
-    if (!container) return;
+    if (!container) {
+      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      return;
+    }
+    
+    try {
     
     let html = '';
     
@@ -299,13 +443,28 @@ class ParadigmEngine {
       html += this.renderScaledQuestion(question);
     }
     
-    container.innerHTML = html;
-    
-    // Attach event listeners for the specific question type
-    this.attachQuestionListeners(question);
-    
-    this.updateProgress();
-    this.updateNavigationButtons();
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = html;
+      
+      // Attach event listeners for the specific question type
+      this.attachQuestionListeners(question);
+      
+      this.updateProgress();
+      this.updateNavigationButtons();
+      
+      // Track render performance
+      const renderDuration = performance.now() - renderStart;
+      this.debugReporter.recordRender('question', renderDuration);
+      
+      // Focus management for accessibility
+      const firstInput = container.querySelector('input, button, select, textarea');
+      if (firstInput) {
+        DOMUtils.focusElement(firstInput);
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
+    }
   }
 
   renderBinaryQuestion(question) {
@@ -1556,59 +1715,75 @@ class ParadigmEngine {
     }
   }
 
+  /**
+   * Save assessment progress to storage
+   */
   saveProgress() {
-    const progressData = {
-      selectedCategories: this.selectedCategories,
-      currentPhase: this.currentPhase,
-      currentQuestionIndex: this.currentQuestionIndex,
-      answers: this.answers,
-      phase1Results: this.phase1Results,
-      timestamp: new Date().toISOString()
-    };
-    sessionStorage.setItem('paradigmProgress', JSON.stringify(progressData));
+    try {
+      const progressData = {
+        selectedCategories: this.selectedCategories,
+        currentPhase: this.currentPhase,
+        currentQuestionIndex: this.currentQuestionIndex,
+        answers: this.answers,
+        phase1Results: this.phase1Results,
+        analysisData: this.analysisData,
+        timestamp: new Date().toISOString()
+      };
+      this.dataStore.save('progress', progressData);
+    } catch (error) {
+      this.debugReporter.logError(error, 'saveProgress');
+    }
   }
 
-  loadStoredData() {
-    const stored = sessionStorage.getItem('paradigmProgress');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        this.selectedCategories = data.selectedCategories || [];
-        this.currentPhase = data.currentPhase || 1;
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || {};
-        this.phase1Results = data.phase1Results || {};
-        
-        // Restore category selections
-        this.selectedCategories.forEach(categoryId => {
-          const card = document.querySelector(`[data-category="${categoryId}"]`);
-          if (card) card.classList.add('selected');
-        });
-        
-        const startBtn = document.getElementById('startAssessment');
-        if (startBtn) {
-          startBtn.disabled = this.selectedCategories.length === 0;
-        }
-        
-        // If in progress, restore questionnaire state
-        if (this.currentQuestionIndex > 0 && this.selectedCategories.length > 0) {
-          if (this.currentPhase === 1) {
-            this.buildPhase1Sequence();
-          } else if (this.currentPhase === 2) {
-            this.analyzePhase1Results();
-            this.buildPhase2Sequence();
-          } else if (this.currentPhase === 3) {
-            this.analyzePhase1Results();
-            this.analyzePhase2Results();
-            this.buildPhase3Sequence();
-          }
-          document.getElementById('categorySelection').style.display = 'none';
-          document.getElementById('questionnaireSection').classList.add('active');
-          this.renderCurrentQuestion();
-        }
-      } catch (e) {
-        console.error('Error loading stored data:', e);
+  /**
+   * Load stored assessment progress
+   * @returns {Promise<void>}
+   */
+  async loadStoredData() {
+    try {
+      const data = this.dataStore.load('progress');
+      if (!data) return;
+
+      this.selectedCategories = data.selectedCategories || [];
+      this.currentPhase = data.currentPhase || 1;
+      this.currentQuestionIndex = data.currentQuestionIndex || 0;
+      this.answers = data.answers || {};
+      this.phase1Results = data.phase1Results || {};
+      this.analysisData = data.analysisData || this.analysisData;
+      
+      // Restore category selections
+      this.selectedCategories.forEach(categoryId => {
+        const card = document.querySelector(`[data-category="${categoryId}"]`);
+        if (card) card.classList.add('selected');
+      });
+      
+      const startBtn = document.getElementById('startAssessment');
+      if (startBtn) {
+        startBtn.disabled = this.selectedCategories.length === 0;
       }
+      
+      // If in progress, restore questionnaire state
+      if (this.currentQuestionIndex > 0 && this.selectedCategories.length > 0) {
+        if (this.currentPhase === 1) {
+          await this.buildPhase1Sequence();
+        } else if (this.currentPhase === 2) {
+          await this.analyzePhase1Results();
+          await this.buildPhase2Sequence();
+        } else if (this.currentPhase === 3) {
+          await this.analyzePhase1Results();
+          await this.analyzePhase2Results();
+          await this.buildPhase3Sequence();
+        }
+        
+        const categorySelection = document.getElementById('categorySelection');
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        if (categorySelection) categorySelection.style.display = 'none';
+        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.renderCurrentQuestion();
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'loadStoredData');
+      ErrorHandler.showUserError('Failed to load saved progress.');
     }
   }
 
@@ -1654,12 +1829,4 @@ class ParadigmEngine {
   }
 }
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.paradigmEngine = new ParadigmEngine();
-  });
-} else {
-  window.paradigmEngine = new ParadigmEngine();
-}
 
