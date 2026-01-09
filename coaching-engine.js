@@ -135,10 +135,10 @@ export class CoachingEngine {
     const obstaclesCard = document.createElement('div');
     obstaclesCard.className = 'section-card';
     obstaclesCard.dataset.section = 'obstacles';
-    obstaclesCard.innerHTML = `
+    SecurityUtils.safeInnerHTML(obstaclesCard, `
       <h3>15 Obstacles to Sovereignty</h3>
       <p>Identify constraints limiting your freedom, joy, and satisfaction in life. This assessment helps surface hidden and not-so-hidden forces that may be impacting your current state.</p>
-    `;
+    `);
     obstaclesCard.addEventListener('click', () => this.toggleSection('obstacles'));
     grid.appendChild(obstaclesCard);
     
@@ -146,10 +146,10 @@ export class CoachingEngine {
     const domainsCard = document.createElement('div');
     domainsCard.className = 'section-card';
     domainsCard.dataset.section = 'domains';
-    domainsCard.innerHTML = `
+    SecurityUtils.safeInnerHTML(domainsCard, `
       <h3>10 Satisfaction Domains</h3>
       <p>Evaluate areas of life that determine the depth of your satisfaction. This systematic overview reveals the most impactful domains where action will directly impact your satisfaction.</p>
-    `;
+    `);
     domainsCard.addEventListener('click', () => this.toggleSection('domains'));
     grid.appendChild(domainsCard);
   }
@@ -457,11 +457,11 @@ export class CoachingEngine {
       }
     }
     
-    container.innerHTML = `
+    SecurityUtils.safeInnerHTML(container, `
       <div class="question-block">
-        <h3>${questionText}</h3>
-        ${description ? `<p class="description">${description}</p>` : ''}
-        ${example ? `<p style="font-style: italic; color: var(--muted); margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">${example}</p>` : ''}
+        <h3>${SecurityUtils.sanitizeHTML(questionText || '')}</h3>
+        ${description ? `<p class="description">${SecurityUtils.sanitizeHTML(description || '')}</p>` : ''}
+        ${example ? `<p style="font-style: italic; color: var(--muted); margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(example || '')}</p>` : ''}
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" 
@@ -483,7 +483,7 @@ export class CoachingEngine {
           <strong>Tip:</strong> ${isObstacle ? 'Higher scores indicate greater obstacles to sovereignty.' : 'Higher scores indicate greater satisfaction in this area.'}
         </div>
       </div>
-    `;
+    `);
     
     // Attach slider event listener
     const slider = document.getElementById('questionInput');
@@ -770,8 +770,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         const severity = obstacle.rawScore >= 7 ? 'High' : obstacle.rawScore >= 4 ? 'Moderate' : 'Low';
         html += `
           <div class="obstacle-item">
-            <strong>${obstacle.name}</strong> - Score: ${obstacle.rawScore}/10 (${severity})
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);">${obstacle.description}</p>
+            <strong>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</strong> - Score: ${obstacle.rawScore}/10 (${severity})
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>
           </div>
         `;
       });
@@ -788,7 +788,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         const satisfaction = domain.combinedScore >= 7 ? 'High' : domain.combinedScore >= 4 ? 'Moderate' : 'Low';
         html += `
           <div class="domain-item">
-            <strong>${domain.name}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (${satisfaction})
+            <strong>${SecurityUtils.sanitizeHTML(domain.name || '')}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (${satisfaction})
             <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);">Overall: ${domain.overviewScore}/10 | Average Aspects: ${domain.averageAspectScore.toFixed(1)}/10</p>
           </div>
         `;
@@ -811,13 +811,13 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         html += '<p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">Focus on this axis for 30 days. Other priorities serve as background context.</p>';
         if (this.profileData.primaryAxis.obstacle) {
           html += `<div style="background: rgba(255, 255, 255, 0.8); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border-left: 4px solid #dc3545;">`;
-          html += `<p style="margin: 0; font-weight: 600; color: #dc3545;">Active Constraint: ${this.profileData.primaryAxis.obstacle.name}</p>`;
-          html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Score: ${this.profileData.primaryAxis.obstacle.rawScore}/10 | ${this.profileData.primaryAxis.obstacle.volatility}</p>`;
+          html += `<p style="margin: 0; font-weight: 600; color: #dc3545;">Active Constraint: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.name || '')}</p>`;
+          html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Score: ${this.profileData.primaryAxis.obstacle.rawScore}/10 | ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.volatility || '')}</p>`;
           html += `</div>`;
         }
         if (this.profileData.primaryAxis.domain) {
           html += `<div style="background: rgba(255, 255, 255, 0.8); padding: 1rem; border-radius: var(--radius); border-left: 4px solid #28a745;">`;
-          html += `<p style="margin: 0; font-weight: 600; color: #28a745;">Improvement Area: ${this.profileData.primaryAxis.domain.name}</p>`;
+          html += `<p style="margin: 0; font-weight: 600; color: #28a745;">Improvement Area: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.domain.name || '')}</p>`;
           html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Satisfaction: ${this.profileData.primaryAxis.domain.combinedScore.toFixed(1)}/10</p>`;
           html += `</div>`;
         }
@@ -834,7 +834,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
           const volatilityTag = obs.volatility === 'situationally amplified' 
             ? '<span style="background: rgba(255, 184, 0, 0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem;">Situational</span>'
             : '<span style="background: rgba(211, 47, 47, 0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem;">Structural</span>';
-          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${obs.name}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)}) ${volatilityTag}</li>`;
+          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${SecurityUtils.sanitizeHTML(obs.name || '')}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)}) ${volatilityTag}</li>`;
         });
         html += '</ul></div>';
       }
@@ -843,7 +843,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       if (this.profileData.priorities.stabilizingDomain) {
         html += '<div style="background: rgba(255, 184, 0, 0.15); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">';
         html += '<h4 style="color: var(--accent); margin-bottom: 1rem; font-size: 1.1rem;">⚖️ Stabilizing Domain</h4>';
-        html += `<p style="color: var(--muted); margin-bottom: 0.5rem;">When all domains show low satisfaction, start with stabilizing: <strong>${this.profileData.priorities.stabilizingDomain.name}</strong> (${this.profileData.priorities.stabilizingDomain.combinedScore.toFixed(1)}/10)</p>`;
+        html += `<p style="color: var(--muted); margin-bottom: 0.5rem;">When all domains show low satisfaction, start with stabilizing: <strong>${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</strong> (${this.profileData.priorities.stabilizingDomain.combinedScore.toFixed(1)}/10)</p>`;
         html += '<p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">Build a supportive baseline before addressing improvement areas.</p>';
         html += '</div>';
       }
@@ -861,7 +861,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
           const stabilizationFraming = `<span style="color: var(--muted); font-size: 0.9rem; font-style: italic;">Supportive baseline action: Maintain current strengths while addressing gaps</span>`;
           
           html += `<li style="margin-bottom: 1rem;">
-            <strong>${index + 1}. ${domain.name}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})
+            <strong>${index + 1}. ${SecurityUtils.sanitizeHTML(domain.name || '')}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})
             <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 2px solid rgba(0,0,0,0.1);">
               <p style="margin: 0.25rem 0; font-size: 0.9rem;">${opportunityFraming}</p>
               <p style="margin: 0.25rem 0;">${stabilizationFraming}</p>
@@ -887,7 +887,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     // Clear closure statement
     html += this.getClosureSection();
     
-    container.innerHTML = html;
+    // Sanitize HTML before rendering - all dynamic content is already sanitized above
+    SecurityUtils.safeInnerHTML(container, html);
   }
   
   getClosureSection() {
@@ -945,8 +946,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         const inquiry = DEEPER_INQUIRY.obstacles[obstacle.key];
         if (inquiry) {
           html += `<div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">`;
-          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${obstacle.name}</h4>`;
-          html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">${obstacle.description}</p>`;
+          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(obstacle.name || '')}</h4>`;
+          html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>`;
           
           html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Reflection Questions:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
           inquiry.questions.forEach(q => {
@@ -973,7 +974,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         const inquiry = DEEPER_INQUIRY.domains[domain.key];
         if (inquiry) {
           html += `<div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--accent);">`;
-          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${domain.name}</h4>`;
+          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(domain.name || '')}</h4>`;
           html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">Current Satisfaction: ${domain.combinedScore.toFixed(1)}/10</p>`;
           
           html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Reflection Questions:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
@@ -1025,7 +1026,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     html += '</div>';
 
     html += '</div>';
-    container.innerHTML = html;
+    // Sanitize HTML before rendering - all dynamic content is already sanitized above
+    SecurityUtils.safeInnerHTML(container, html);
   }
 
   exportProfile(format = 'json', includeDeeper = false) {
@@ -1070,7 +1072,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       </div>
     `;
     
-    container.innerHTML = existingContent + deploymentHTML;
+    // existingContent is already sanitized, deploymentHTML is sanitized above
+    SecurityUtils.safeInnerHTML(container, existingContent + deploymentHTML);
   }
   
   selectDeploymentContext(context) {
