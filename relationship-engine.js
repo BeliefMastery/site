@@ -161,7 +161,7 @@ export class RelationshipEngine {
     
     this.stage2TransitionShown = true;
     
-    container.innerHTML = `
+    SecurityUtils.safeInnerHTML(container, `
       <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
         <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Transitioning to Domain Deep Dive</h3>
         <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -169,7 +169,7 @@ export class RelationshipEngine {
         </p>
         <button class="btn btn-primary" id="continueFromStage2Transition" style="min-width: 150px;">Continue</button>
       </div>
-    `;
+    `);
     
     const continueBtn = document.getElementById('continueFromStage2Transition');
     if (continueBtn) {
@@ -187,7 +187,7 @@ export class RelationshipEngine {
     
     this.stage3TransitionShown = true;
     
-    container.innerHTML = `
+    SecurityUtils.safeInnerHTML(container, `
       <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
         <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Scenario-Based Reflection</h3>
         <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -195,7 +195,7 @@ export class RelationshipEngine {
         </p>
         <button class="btn btn-primary" id="continueFromStage3Transition" style="min-width: 150px;">Continue</button>
       </div>
-    `;
+    `);
     
     const continueBtn = document.getElementById('continueFromStage3Transition');
     if (continueBtn) {
@@ -217,7 +217,7 @@ export class RelationshipEngine {
     if (question.stage === 1) {
       stageLabel = 'Broad Compatibility Assessment';
     } else if (question.stage === 2) {
-      stageLabel = question.domainName ? `${question.domainName} - Deep Dive` : 'Domain-Specific Analysis';
+      stageLabel = question.domainName ? `${SecurityUtils.sanitizeHTML(question.domainName)} - Deep Dive` : 'Domain-Specific Analysis';
     } else if (question.stage === 3) {
       stageLabel = 'Scenario-Based Reflection';
     }
@@ -226,16 +226,22 @@ export class RelationshipEngine {
     if (question.example) {
       exampleText = `<div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius);">
         <strong style="color: var(--brand);">Example Scenario:</strong>
-        <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${question.example}</p>
+        <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${SecurityUtils.sanitizeHTML(question.example || '')}</p>
       </div>`;
     }
     
-    questionContainer.innerHTML = `
+    // Sanitize dynamic content
+    const sanitizedStageLabel = stageLabel ? SecurityUtils.sanitizeHTML(stageLabel) : '';
+    const sanitizedName = question.name ? SecurityUtils.sanitizeHTML(question.name) : '';
+    const sanitizedDescription = question.description ? SecurityUtils.sanitizeHTML(question.description) : '';
+    const sanitizedQuestion = SecurityUtils.sanitizeHTML(question.question || '');
+    
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
-        ${stageLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${stageLabel}</p>` : ''}
-        ${question.name ? `<h3>${question.name}</h3>` : ''}
-        ${question.description ? `<p class="description">${question.description}</p>` : ''}
-        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${question.question}</h4>
+        ${sanitizedStageLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${sanitizedStageLabel}</p>` : ''}
+        ${sanitizedName ? `<h3>${sanitizedName}</h3>` : ''}
+        ${sanitizedDescription ? `<p class="description">${sanitizedDescription}</p>` : ''}
+        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${sanitizedQuestion}</h4>
         ${exampleText}
         <div class="scale-container">
           <div class="scale-input">
@@ -252,7 +258,7 @@ export class RelationshipEngine {
           Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment). I experience... I find myself...
         </p>
       </div>
-    `;
+    `);
     
     const slider = document.getElementById('questionSlider');
     const sliderValueSpan = document.getElementById('sliderValue');
@@ -359,17 +365,17 @@ export class RelationshipEngine {
             compatibilityPoint: link.point,
             stage: 3,
             type: 'scenario',
-            example: `Example: A real situation where ${point.name.toLowerCase()} created tension or conflict in your relationship.`
+            example: `Example: A real situation where ${SecurityUtils.sanitizeHTML(point.name || '').toLowerCase()} created tension or conflict in your relationship.`
           });
           
           this.questionSequence.push({
             id: `scenario_${link.point}_2`,
-            question: `Imagine your partner's response to a ${point.name.toLowerCase()} issue feels dismissive, unsupportive, or creates conflict. What would help restore connection and understanding?`,
+            question: `Imagine your partner's response to a ${SecurityUtils.sanitizeHTML(point.name || '').toLowerCase()} issue feels dismissive, unsupportive, or creates conflict. What would help restore connection and understanding?`,
             weight: 1.0,
             compatibilityPoint: link.point,
             stage: 3,
             type: 'scenario',
-            example: `Example: Your partner's approach to ${point.name.toLowerCase()} differs significantly from yours, and it's causing ongoing friction.`
+            example: `Example: Your partner's approach to ${SecurityUtils.sanitizeHTML(point.name || '').toLowerCase()} differs significantly from yours, and it's causing ongoing friction.`
           });
         }
       }
@@ -491,7 +497,7 @@ export class RelationshipEngine {
     if (currentQ.stage === 1) {
       stageLabel = 'Broad Compatibility Assessment';
     } else if (currentQ.stage === 2) {
-      stageLabel = currentQ.domainName ? `${currentQ.domainName} - Deep Dive` : 'Domain-Specific Analysis';
+      stageLabel = currentQ.domainName ? `${SecurityUtils.sanitizeHTML(currentQ.domainName)} - Deep Dive` : 'Domain-Specific Analysis';
     } else if (currentQ.stage === 3) {
       stageLabel = 'Scenario-Based Reflection';
     }
@@ -500,16 +506,22 @@ export class RelationshipEngine {
     if (currentQ.example) {
       exampleText = `<div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius);">
         <strong style="color: var(--brand);">Example Scenario:</strong>
-        <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${currentQ.example}</p>
+        <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${SecurityUtils.sanitizeHTML(currentQ.example || '')}</p>
       </div>`;
     }
     
-    questionContainer.innerHTML = `
+    // Sanitize dynamic content
+    const sanitizedStageLabel2 = stageLabel ? SecurityUtils.sanitizeHTML(stageLabel) : '';
+    const sanitizedName2 = currentQ.name ? SecurityUtils.sanitizeHTML(currentQ.name) : '';
+    const sanitizedDescription2 = currentQ.description ? SecurityUtils.sanitizeHTML(currentQ.description) : '';
+    const sanitizedQuestion2 = SecurityUtils.sanitizeHTML(currentQ.question || '');
+    
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
-        ${stageLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${stageLabel}</p>` : ''}
-        ${currentQ.name ? `<h3>${currentQ.name}</h3>` : ''}
-        ${currentQ.description ? `<p class="description">${currentQ.description}</p>` : ''}
-        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${currentQ.question}</h4>
+        ${sanitizedStageLabel2 ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${sanitizedStageLabel2}</p>` : ''}
+        ${sanitizedName2 ? `<h3>${sanitizedName2}</h3>` : ''}
+        ${sanitizedDescription2 ? `<p class="description">${sanitizedDescription2}</p>` : ''}
+        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${sanitizedQuestion2}</h4>
         ${exampleText}
         <div class="scale-container">
           <div class="scale-input">
@@ -526,7 +538,7 @@ export class RelationshipEngine {
           Tip: Rate your current relationship experience in this area (0 = significant problems, 10 = excellent alignment). I experience... I find myself...
         </p>
       </div>
-    `;
+    `);
 
     const slider = document.getElementById('questionSlider');
     const sliderValueSpan = document.getElementById('sliderValue');
@@ -786,7 +798,7 @@ export class RelationshipEngine {
       this.crossDomainSpillover = {
         detected: true,
         domains: lowScoreDomains.map(d => d.domain),
-        message: `Cross-domain amplification detected: ${lowScoreDomains.map(d => RELATIONSHIP_DOMAINS[d.domain]?.name || d.domain).join(' and ')} both show strain. This suggests systemic patterns rather than isolated issues.`
+        message: `Cross-domain amplification detected: ${lowScoreDomains.map(d => SecurityUtils.sanitizeHTML(RELATIONSHIP_DOMAINS[d.domain]?.name || d.domain)).join(' and ')} both show strain. This suggests systemic patterns rather than isolated issues.`
       };
       this.analysisData.crossDomainSpillover = this.crossDomainSpillover;
     } else {
@@ -965,7 +977,7 @@ export class RelationshipEngine {
     // Cross-domain spillover
     if (this.crossDomainSpillover.detected) {
       html += '<div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
-      html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Cross-Domain Amplification:</strong> ${this.crossDomainSpillover.message}</p>`;
+      html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Cross-Domain Amplification:</strong> ${SecurityUtils.sanitizeHTML(this.crossDomainSpillover.message || '')}</p>`;
       html += '</div>';
     }
 
@@ -984,9 +996,9 @@ export class RelationshipEngine {
         
         html += `
           <div class="weakest-link-item ${criticalClass}">
-            <h3>${index + 1}. ${link.name} <span style="font-size: 0.9em; color: var(--muted);">(${link.impactTier} impact)</span></h3>
+            <h3>${index + 1}. ${SecurityUtils.sanitizeHTML(link.name || '')} <span style="font-size: 0.9em; color: var(--muted);">(${SecurityUtils.sanitizeHTML(link.impactTier || '')} impact)</span></h3>
             <p><strong>Score:</strong> ${link.rawScore}/10 (Weighted: ${link.weightedScore.toFixed(2)})</p>
-            <p><strong>Priority:</strong> ${link.priority} | <strong>Severity:</strong> ${link.severity}</p>
+            <p><strong>Priority:</strong> ${SecurityUtils.sanitizeHTML(link.priority || '')} | <strong>Severity:</strong> ${SecurityUtils.sanitizeHTML(link.severity || '')}</p>
             
             <div class="action-strategies" style="margin-top: 1.5rem;">
               <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
@@ -995,7 +1007,7 @@ export class RelationshipEngine {
                 <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Actions you can take independently to improve your experience:</p>
                 <ul style="margin-left: 1.5rem;">
-                  ${selfRegulation.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                  ${selfRegulation.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
@@ -1003,7 +1015,7 @@ export class RelationshipEngine {
                 <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Ways to invite mutual participation and improvement:</p>
                 <ul style="margin-left: 1.5rem;">
-                  ${relationalInvitation.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                  ${relationalInvitation.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
@@ -1011,7 +1023,7 @@ export class RelationshipEngine {
                 <h5 style="color: #d32f2f; margin-bottom: 0.5rem;">3. Structural Boundaries (Optional)</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Boundaries to reduce harm if dynamics persist:</p>
                 <ul style="margin-left: 1.5rem;">
-                  ${structuralBoundary.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                  ${structuralBoundary.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
@@ -1020,13 +1032,13 @@ export class RelationshipEngine {
                 <div style="margin-bottom: 1rem;">
                   <strong style="color: var(--brand);">Actions Aiming to Improve Dynamics:</strong>
                   <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                    ${changeStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                    ${changeStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                   </ul>
                 </div>
                 <div>
                   <strong style="color: var(--accent);">Actions Aiming to Reduce Harm if Dynamics Persist:</strong>
                   <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                    ${acceptanceStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${strategy}</li>`).join('')}
+                    ${acceptanceStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                   </ul>
                 </div>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-top: 1rem; font-style: italic;">
@@ -1064,8 +1076,8 @@ export class RelationshipEngine {
     allScores.forEach(item => {
       const scoreColor = item.rawScore <= 3 ? '#dc3545' : item.rawScore <= 5 ? '#ffc107' : '#28a745';
       html += `<li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-        <strong>${item.name}</strong>: <span style="color: ${scoreColor};">${item.rawScore}/10</span> 
-        <span style="color: var(--muted); font-size: 0.9em;">(Weighted: ${item.weightedScore.toFixed(2)}, ${item.impactTier} impact)</span>
+        <strong>${SecurityUtils.sanitizeHTML(item.name || '')}</strong>: <span style="color: ${scoreColor};">${item.rawScore}/10</span> 
+        <span style="color: var(--muted); font-size: 0.9em;">(Weighted: ${item.weightedScore.toFixed(2)}, ${SecurityUtils.sanitizeHTML(item.impactTier || '')} impact)</span>
       </li>`;
     });
     html += '</ul></div>';
@@ -1073,7 +1085,8 @@ export class RelationshipEngine {
     // Mandatory Closure Section
     html += this.getClosureSection();
 
-    resultsContainer.innerHTML = html;
+    // Sanitize HTML before rendering - all dynamic content is already sanitized above
+    SecurityUtils.safeInnerHTML(resultsContainer, html);
   }
   
   getSelfRegulationStrategies(link) {
