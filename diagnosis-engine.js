@@ -206,11 +206,11 @@ export class DiagnosisEngine {
         const categoryName = SecurityUtils.sanitizeHTML(category.name);
         const disorderCount = Object.keys(category.disorders).length;
         
-        card.innerHTML = `
+        SecurityUtils.safeInnerHTML(card, `
           <h3>${categoryName}</h3>
           <p>${disorderCount} disorder${disorderCount !== 1 ? 's' : ''} available</p>
           ${isSuggested ? '<p style="margin-top: 0.5rem; color: var(--accent); font-weight: 600; font-size: 0.85rem;">✓ Suggested for you</p>' : ''}
-        `;
+        `);
         card.addEventListener('click', () => this.toggleCategory(categoryKey, card));
         grid.appendChild(card);
       });
@@ -274,8 +274,8 @@ export class DiagnosisEngine {
       const questionText = SecurityUtils.sanitizeHTML(question.question || '');
       const warningText = question.warning ? SecurityUtils.sanitizeHTML(question.warning) : '';
       
-      // Note: HTML is generated from trusted templates
-      container.innerHTML = `
+      // questionText and warningText are already sanitized above
+      SecurityUtils.safeInnerHTML(container, `
       <div class="guide-container" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); backdrop-filter: blur(8px);">
         <h2 style="margin-bottom: 1rem;">🧭 Category Selection Guide</h2>
         <p style="margin-bottom: 2rem; color: var(--muted);">Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
@@ -305,7 +305,7 @@ export class DiagnosisEngine {
           ${isLast ? '<button class="btn btn-primary" id="guideComplete">See Recommended Categories →</button>' : '<button class="btn btn-secondary" id="guideSkip">Skip to Categories →</button>'}
         </div>
       </div>
-    `;
+    `);
     
     // Attach event listeners with error handling
     const yesBtn = document.getElementById('guideYes');
@@ -470,7 +470,7 @@ export class DiagnosisEngine {
       <div style="text-align: center; margin-top: 2rem;">
         <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
       </div>
-    `;
+    `);
     
       await this.renderCategorySelection();
       this.attachEventListeners();
@@ -889,8 +889,8 @@ export class DiagnosisEngine {
       // Sanitize question text for display
       const questionText = SecurityUtils.sanitizeHTML(question.questionText || '');
       
-      // Note: HTML is generated from trusted templates
-      container.innerHTML = `
+      // questionText is already sanitized above
+      SecurityUtils.safeInnerHTML(container, `
       <div class="question-block">
         <h3>${questionText}</h3>
         <div class="scale-container">
@@ -1077,8 +1077,8 @@ export class DiagnosisEngine {
     comorbidityGroups.forEach(group => {
       html += `
         <li style="margin-bottom: 0.5rem;">
-          <strong>${group.name}:</strong> ${group.disorders.join(', ')}<br>
-          <em style="font-size: 0.9rem; color: var(--muted);">${group.message}</em>
+          <strong>${SecurityUtils.sanitizeHTML(group.name || '')}:</strong> ${group.disorders.map(d => SecurityUtils.sanitizeHTML(d || '')).join(', ')}<br>
+          <em style="font-size: 0.9rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(group.message || '')}</em>
         </li>
       `;
     });
@@ -1099,7 +1099,8 @@ export class DiagnosisEngine {
       </div>
     `;
     
-    container.innerHTML = html;
+    // Sanitize HTML before rendering - all dynamic content is already sanitized above
+    SecurityUtils.safeInnerHTML(container, html);
     
     const refinementCheckbox = document.getElementById('requestRefinement');
     if (refinementCheckbox) {
@@ -1656,9 +1657,9 @@ export class DiagnosisEngine {
           </p>
           ${vector.comorbidity.map(group => `
             <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.7); border-radius: var(--radius);">
-              <strong style="display: block; margin-bottom: 0.5rem;">${group.name}</strong>
-              <div style="margin-bottom: 0.5rem;">Related disorders: ${group.disorders.join(', ')}</div>
-              <em style="font-size: 0.9rem; color: var(--muted);">${group.message}</em>
+              <strong style="display: block; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(group.name || '')}</strong>
+              <div style="margin-bottom: 0.5rem;">Related disorders: ${group.disorders.map(d => SecurityUtils.sanitizeHTML(d || '')).join(', ')}</div>
+              <em style="font-size: 0.9rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(group.message || '')}</em>
             </div>
           `).join('')}
           <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Note:</strong> Professional evaluation is essential for accurate differential diagnosis when multiple disorders are suspected.</p>
@@ -1672,7 +1673,7 @@ export class DiagnosisEngine {
           <h4>Additional Inquiry Recommended</h4>
           <p>The following conditions showed moderate probability and may benefit from more detailed assessment:</p>
           <ul>
-            ${vector.requiresSubInquiry.map(d => `<li>${d}</li>`).join('')}
+            ${vector.requiresSubInquiry.map(d => `<li>${SecurityUtils.sanitizeHTML(d || '')}</li>`).join('')}
           </ul>
           <p style="margin-top: 1rem;"><em>Note: This would require professional evaluation to properly differentiate.</em></p>
         </div>
@@ -1691,8 +1692,8 @@ export class DiagnosisEngine {
       </div>
     `;
     
-      // Note: HTML is generated from trusted templates, sanitization applied to user content
-      container.innerHTML = html;
+      // HTML is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       
       // Make instance globally accessible for integration step
       window.diagnosisEngine = this;
@@ -1723,14 +1724,16 @@ export class DiagnosisEngine {
     
     if (detailsSection && treatmentData) {
       detailsSection.style.display = 'block';
-      detailsSection.innerHTML = this.renderTreatmentInformation(disorderName, treatmentData);
+      // renderTreatmentInformation should return sanitized HTML
+      const treatmentHTML = this.renderTreatmentInformation(disorderName, treatmentData);
+      SecurityUtils.safeInnerHTML(detailsSection, treatmentHTML);
       detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
   renderTreatmentInformation(disorderName, treatmentData) {
     let html = `<div class="treatment-section" style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.9); border-radius: var(--radius); box-shadow: var(--shadow);">`;
-    html += `<h2 style="margin-bottom: 2rem; color: var(--brand);">Pattern Information: ${disorderName}</h2>`;
+    html += `<h2 style="margin-bottom: 2rem; color: var(--brand);">Pattern Information: ${SecurityUtils.sanitizeHTML(disorderName || '')}</h2>`;
     
     // Non-directive framing
     html += `<div style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">`;
@@ -1744,7 +1747,7 @@ export class DiagnosisEngine {
       if (treatmentData.treatments.behavioral?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Behavioral Treatments</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.treatments.behavioral.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1752,7 +1755,7 @@ export class DiagnosisEngine {
       if (treatmentData.treatments.dietary?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Dietary Interventions</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.treatments.dietary.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1760,7 +1763,7 @@ export class DiagnosisEngine {
       if (treatmentData.treatments.pharmacological?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Pharmacological Treatments</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.treatments.pharmacological.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1768,7 +1771,7 @@ export class DiagnosisEngine {
       if (treatmentData.treatments.alternativeHealth?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Alternative Health Approaches</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.treatments.alternativeHealth.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1776,7 +1779,7 @@ export class DiagnosisEngine {
       if (treatmentData.treatments.westernMedicine?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Western Medical Interventions</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.treatments.westernMedicine.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1784,7 +1787,7 @@ export class DiagnosisEngine {
       if (treatmentData.treatments.easternMedicine?.length > 0) {
         html += `<div class="treatment-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Eastern Medicine Approaches</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.treatments.easternMedicine.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1799,7 +1802,7 @@ export class DiagnosisEngine {
       if (treatmentData.theories.biophysical?.length > 0) {
         html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Biophysical Perspectives</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.theories.biophysical.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1807,7 +1810,7 @@ export class DiagnosisEngine {
       if (treatmentData.theories.metaphysical?.length > 0) {
         html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Metaphysical Perspectives</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.theories.metaphysical.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1815,7 +1818,7 @@ export class DiagnosisEngine {
       if (treatmentData.theories.biochemical?.length > 0) {
         html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Biochemical Factors</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.theories.biochemical.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -1823,7 +1826,7 @@ export class DiagnosisEngine {
       if (treatmentData.theories.mythopoetical?.length > 0) {
         html += `<div class="theory-subcategory"><h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Mythopoetical Perspectives</h4><ul style="margin-left: 1.5rem; line-height: 1.8;">`;
         treatmentData.theories.mythopoetical.forEach(item => {
-          html += `<li>${item}</li>`;
+          html += `<li>${SecurityUtils.sanitizeHTML(item || '')}</li>`;
         });
         html += `</ul></div>`;
       }
@@ -2012,7 +2015,7 @@ export class DiagnosisEngine {
     // Reset UI
     const categorySelection = document.getElementById('categorySelection');
     categorySelection.style.display = 'block';
-    categorySelection.innerHTML = `
+    SecurityUtils.safeInnerHTML(categorySelection, `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
