@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sovereignty Spectrum Analysis - Belief Mastery</title>
+  <meta name="description" content="Map your position on the sovereignty spectrum from nihilistic fragmentation to paradigm-integrated mastery. Assess alignment with 18 philosophical and spiritual paradigms.">
+  <meta name="keywords" content="sovereignty, spectrum, paradigms, philosophy, spirituality, assessment, analysis">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/sovereignty-spectrum.html">
+  <meta property="og:title" content="Sovereignty Spectrum Analysis - Belief Mastery">
+  <meta property="og:description" content="Map your position on the sovereignty spectrum from nihilistic fragmentation to paradigm-integrated mastery.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/sovereignty-spectrum-cover.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/sovereignty-spectrum.html">
+  <meta name="twitter:title" content="Sovereignty Spectrum Analysis - Belief Mastery">
+  <meta name="twitter:description" content="Map your position on the sovereignty spectrum from nihilistic fragmentation to paradigm-integrated mastery.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/sovereignty-spectrum-cover.jpg">
+  
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Page-specific styles for sovereignty-spectrum.html */
+    body {
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('./images/sovereignty-spectrum-background.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .spectrum-container {
+      position: relative;
+      z-index: 2;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--brand);
+    }
+
+    .intro-section h2 {
+      color: var(--brand);
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .paradigm-selection {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .paradigm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .paradigm-category {
+      margin-bottom: 2rem;
+    }
+
+    .paradigm-category h4 {
+      color: var(--brand);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .paradigm-card {
+      background: var(--glass);
+      border: 2px solid transparent;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 1rem;
+    }
+
+    .paradigm-card:hover {
+      border-color: var(--brand);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .paradigm-card.selected {
+      border-color: var(--brand);
+      background: rgba(255, 184, 0, 0.1);
+    }
+
+    .paradigm-card h5 {
+      margin-bottom: 0.5rem;
+      color: var(--brand);
+      font-size: 1.1rem;
+    }
+
+    .paradigm-description {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .paradigm-values {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .questionnaire-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .questionnaire-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .question-block {
+      margin-bottom: 2rem;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .phase-indicator, .question-counter {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .question-text {
+      margin-bottom: 1.5rem;
+      color: var(--brand);
+      font-size: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .likert-container {
+      margin-top: 1.5rem;
+    }
+
+    .likert-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .likert-option {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: var(--glass);
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .likert-option:hover {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: var(--brand);
+    }
+
+    .likert-option input[type="radio"] {
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+
+    .likert-option input[type="radio"]:checked + span {
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .text-input-container textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .results-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .spectrum-bar-container {
+      margin: 2rem 0;
+      padding: 2rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+    }
+
+    .spectrum-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .spectrum-bar {
+      position: relative;
+      width: 100%;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .spectrum-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d32f2f, #ff9800, #4caf50, #2196f3);
+      transition: width 0.5s ease;
+      border-radius: 20px;
+    }
+
+    .spectrum-value {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--brand);
+      margin-top: 0.5rem;
+    }
+
+    .selected-paradigms, .derailer-scores, .remediation-paths {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: var(--glass);
+      border-radius: var(--radius);
+    }
+
+    .paradigm-result-card {
+      background: rgba(255, 255, 255, 0.7);
+      border-left: 4px solid var(--brand);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .derailer-item {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: var(--radius);
+    }
+
+    .derailer-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .remediation-item {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+      border-left: 4px solid var(--brand);
+      border-radius: var(--radius);
+    }
+
+    .remediation-item.critical {
+      border-left-color: #d32f2f;
+    }
+
+    .remediation-item.high {
+      border-left-color: #ff9800;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--brand);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .spectrum-container {
+        padding: 1rem;
+      }
+
+      .paradigm-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span style="font-size:0.8em;">▼</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Sovereignty Simulacrum</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Diagnosis System</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Coaching Agent</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Temperament Analyzer</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html">Needs Dependency Loop</a></li>
+            <li role="none"><a role="menuitem" href="archetype.html">Archetype Analysis</a></li>
+            <li role="none"><a role="menuitem" href="character-sheet.html">Character Sheet Generator</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty.html">AI Sovereignty Analysis</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty-spectrum.html" class="active">Sovereignty Spectrum Analysis</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 2;" id="main-content">
+    <div class="spectrum-container">
+      <section class="intro-section">
+        <h2>Sovereignty Spectrum Analysis</h2>
+        <p style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 1.5rem; line-height: 1.5;">
+          Where do you stand on the sovereignty spectrum? Map your position from nihilistic fragmentation to paradigm-integrated mastery. Discover your alignment!
+        </p>
+        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);"><strong style="color: var(--brand);">Assessment Purpose:</strong> This tool maps your alignment with 18 distinct philosophical, spiritual, and psychological paradigms. It assesses how well your actions align with your values, identifies derailing forces (hypocrisy, reluctance, nihilism), and positions you on a 0-100 spectrum of sovereignty integration.</p>
+        </div>
+        <p><strong>This assessment evaluates:</strong></p>
+        <ul style="margin-left: 1.5rem; line-height: 1.8;">
+          <li><strong>Paradigm Alignment:</strong> How well your values, ideals, and intents align with selected frameworks</li>
+          <li><strong>Practical Integration:</strong> How consistently you live according to your stated values</li>
+          <li><strong>Derailer Detection:</strong> Hypocrisy (value-action gaps), reluctance (inertial resistance), and nihilism (despair-induced abdication)</li>
+          <li><strong>Spectrum Position:</strong> Your position from 0 (Nihilistic Fragmentation) to 100 (Paradigm-Transcendent Sovereignty)</li>
+        </ul>
+        <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">
+          <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">Note:</strong> This tool illuminates patterns and provides diagnostic clarity. It is not a substitute for professional coaching or therapy. Results reflect your current organization of meaning, not a fixed identity.</p>
+        </div>
+      </section>
+
+      <section class="paradigm-selection" id="paradigmSelection">
+        <!-- Paradigm selection will be rendered by JavaScript -->
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <span id="progressText">0 / 0</span>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions will be populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next Question</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsSection">
+        <h2>Your Sovereignty Spectrum Results</h2>
+        <div id="resultsContainer">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn btn-primary" id="newAssessment">Start New Assessment</button>
+          <button class="btn btn-secondary" id="exportJSON">Export JSON</button>
+          <button class="btn btn-secondary" id="exportCSV">Export CSV</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer style="position: relative; z-index: 2;">
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
+  </footer>
+
+  <link rel="modulepreload" href="./sovereignty-spectrum-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/export-utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
+  
+  <script type="module">
+    import { SovereigntySpectrumEngine } from './sovereignty-spectrum-engine.js';
+    import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
+    
+    // Initialize performance monitoring
+    initializePerformanceMonitoring();
+    
+    // Initialize engine
+    window.spectrumEngine = new SovereigntySpectrumEngine();
+  </script>
+
+  <script src="./shared/accessibility.js"></script>
+</body>
+</html>
+
