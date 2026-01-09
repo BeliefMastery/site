@@ -201,6 +201,171 @@
       font-style: italic;
     }
 
+    /* Single paradigm card (one at a time) */
+    .paradigm-card-single {
+      background: var(--glass);
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      margin: 2rem 0;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .paradigm-card-single h4 {
+      color: var(--brand);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .paradigm-selection-intro {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .paradigm-selection-intro h3 {
+      color: var(--brand);
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .paradigm-selection-intro p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    .paradigm-progress {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      max-width: 400px;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+      margin: 0.5rem auto 0;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #ffb800);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* Slider styles */
+    .paradigm-rating-slider {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .paradigm-rating-slider label {
+      display: block;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    .slider-container {
+      position: relative;
+      padding: 1.5rem 0;
+    }
+
+    .paradigm-slider {
+      width: 100%;
+      height: 12px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, hsl(240, 60%, 85%) 0%, hsl(240, 60%, 85%) 100%);
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      --thumb-hue: 240;
+      --thumb-saturation: 60%;
+      --thumb-lightness: 70%;
+    }
+
+    .paradigm-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      background: hsl(var(--thumb-hue, 240), var(--thumb-saturation, 60%), var(--thumb-lightness, 70%));
+      border: 3px solid #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .paradigm-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .paradigm-slider::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      background: hsl(var(--thumb-hue, 240), var(--thumb-saturation, 60%), var(--thumb-lightness, 70%));
+      border: 3px solid #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .paradigm-slider::-moz-range-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .paradigm-slider::-moz-range-track {
+      height: 12px;
+      background: linear-gradient(to right, hsl(240, 60%, 85%) 0%, hsl(240, 60%, 85%) 100%);
+      border-radius: 6px;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .slider-label-left,
+    .slider-label-right {
+      font-weight: 500;
+    }
+
+    /* Navigation buttons */
+    .paradigm-navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .paradigm-navigation .btn {
+      flex: 1;
+      max-width: 200px;
+    }
+
     .questionnaire-section {
       background: rgba(255, 255, 255, 0.95);
       border-radius: var(--radius);

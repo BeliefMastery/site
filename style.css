@@ -583,12 +583,12 @@ section#books .section-inner{
   grid-column:span 2;
 }
 
-/* Tools grid: 4 per row (4-4-3 grid for 11 tools) */
+/* Tools grid: 5 per row */
 .image-row.tools-grid{
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  grid-template-columns:repeat(5, 1fr);
   gap:2.5rem;
-  max-width:1400px;
+  max-width:1600px;
   margin-left:auto;
   margin-right:auto;
   overflow:visible;
@@ -1096,13 +1096,13 @@ blockquote{
 /* ---------- Responsive ---------- */
 @media (min-width:1200px){
   .image-row.tools-grid{
-    grid-template-columns:repeat(4, 1fr);
+    grid-template-columns:repeat(5, 1fr);
   }
 }
 
 @media (max-width:1199px) and (min-width:821px){
   .image-row.tools-grid{
-    grid-template-columns:repeat(3, 1fr);
+    grid-template-columns:repeat(4, 1fr);
   }
 }
 

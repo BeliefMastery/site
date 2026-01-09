@@ -20,7 +20,8 @@ export class SovereigntySpectrumEngine {
    */
   constructor() {
     this.selectedParadigms = [];
-    this.paradigmRatings = {}; // Store ratings for all paradigms
+    this.paradigmRatings = {}; // Store ratings for all paradigms (0-100 continuous values)
+    this.currentParadigmIndex = 0; // Track which paradigm is currently being shown
     this.currentPhase = 1; // 1 = Paradigm rating, 2 = Intents/Practicalities, 3 = Derailers, 4 = Results
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -129,30 +130,72 @@ export class SovereigntySpectrumEngine {
   }
 
   /**
-   * Rate a paradigm (1-5 scale)
+   * Rate a paradigm (0-100 continuous scale)
    * @param {string} paradigmId - ID of paradigm to rate
-   * @param {number} rating - Rating value (1-5)
+   * @param {number} rating - Rating value (0-100)
    */
   rateParadigm(paradigmId, rating) {
-    this.paradigmRatings[paradigmId] = parseInt(rating);
+    // Store continuous value (0-100)
+    this.paradigmRatings[paradigmId] = parseFloat(rating);
     
-    // Update UI
-    const card = document.querySelector(`[data-paradigm="${paradigmId}"]`);
-    if (card) {
-      const ratingInput = card.querySelector(`input[type="radio"]:checked`);
-      if (ratingInput) {
-        // Visual feedback
-        card.classList.add('rated');
-        const ratingDisplay = card.querySelector('.rating-display');
-        if (ratingDisplay) {
-          ratingDisplay.textContent = `Rating: ${rating}/5`;
-        }
-      }
+    // Update slider visual feedback
+    const slider = document.getElementById(`paradigm-slider-${paradigmId}`);
+    if (slider) {
+      this.updateSliderAppearance(slider, parseFloat(rating));
     }
     
-    // Check if all paradigms are rated
-    this.checkParadigmRatingComplete();
     this.saveProgress();
+  }
+
+  /**
+   * Update slider appearance based on value (color and darkness)
+   */
+  updateSliderAppearance(slider, value) {
+    // Value is 0-100, convert to 0-1 for calculations
+    const normalized = value / 100;
+    const percentage = value;
+    
+    // Calculate color: from light blue/gray (low) to dark gold/brand (high)
+    // Hue shifts from blue (240) to gold/yellow (45) as value increases
+    const hue = 240 - (normalized * 195); // 240 (blue) to 45 (gold)
+    const saturation = 60 + (normalized * 40); // 60% to 100%
+    const lightness = 85 - (normalized * 50); // 85% (light) to 35% (dark)
+    
+    // Calculate colors for gradient
+    const startColor = `hsl(240, 60%, 85%)`; // Light blue-gray at start
+    const currentColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`; // Dynamic color at current position
+    
+    // Update slider track background with gradient
+    slider.style.background = `linear-gradient(to right, ${startColor} 0%, ${currentColor} ${percentage}%, ${currentColor} 100%)`;
+    
+    // Update thumb color (darker as value increases)
+    const thumbLightness = 70 - (normalized * 40); // 70% to 30%
+    const thumbColor = `hsl(${hue}, ${saturation}%, ${thumbLightness}%)`;
+    slider.style.setProperty('--thumb-color', thumbColor);
+    
+    // Update thumb for WebKit browsers
+    slider.style.setProperty('--thumb-hue', hue);
+    slider.style.setProperty('--thumb-saturation', saturation);
+    slider.style.setProperty('--thumb-lightness', thumbLightness);
+  }
+
+  /**
+   * Show next paradigm or finish if all are rated
+   */
+  nextParadigm() {
+    if (!SOVEREIGNTY_PARADIGMS) return;
+    
+    // Move to next paradigm
+    this.currentParadigmIndex++;
+    
+    // If all paradigms are rated, proceed to assessment
+    if (this.currentParadigmIndex >= SOVEREIGNTY_PARADIGMS.length) {
+      this.startAssessment();
+      return;
+    }
+    
+    // Render next paradigm
+    this.renderCurrentParadigm();
   }
 
   /**
@@ -178,7 +221,7 @@ export class SovereigntySpectrumEngine {
   }
 
   /**
-   * Select top paradigms based on ratings
+   * Select top paradigms based on continuous ratings (0-100)
    */
   selectTopParadigms() {
     if (!SOVEREIGNTY_PARADIGMS) return;
@@ -233,102 +276,103 @@ export class SovereigntySpectrumEngine {
   }
 
   /**
-   * Render paradigm rating (Phase 1)
+   * Render paradigm rating (Phase 1) - Shows one paradigm at a time with slider
    */
   async renderParadigmSelection() {
     await this.loadSpectrumData();
     
+    // Reset to first paradigm if needed
+    if (this.currentParadigmIndex >= SOVEREIGNTY_PARADIGMS.length) {
+      this.currentParadigmIndex = 0;
+    }
+    
+    // Render the current paradigm
+    this.renderCurrentParadigm();
+  }
+
+  /**
+   * Render the current paradigm with slider
+   */
+  renderCurrentParadigm() {
+    if (!SOVEREIGNTY_PARADIGMS) return;
+    
     const container = document.getElementById('paradigmSelection');
     if (!container) return;
     
+    const paradigm = SOVEREIGNTY_PARADIGMS[this.currentParadigmIndex];
+    if (!paradigm) return;
+    
+    const currentRating = this.paradigmRatings[paradigm.id] || 50; // Default to middle (50)
+    const progress = ((this.currentParadigmIndex + 1) / SOVEREIGNTY_PARADIGMS.length) * 100;
+    
     let html = '<div class="paradigm-selection-intro">';
     html += '<h3>Rate Each Paradigm</h3>';
-    html += '<p>Rate how much each philosophical, spiritual, or psychological framework resonates with your values and worldview. Use a scale of 1 (Not at all) to 5 (Strongly resonates). The system will automatically select your top 3-5 paradigms based on your ratings.</p>';
+    html += '<p>Use the slider to indicate how much this framework resonates with your values and worldview. The system will automatically select your top 3-5 paradigms based on your ratings.</p>';
+    html += `<div class="paradigm-progress">Paradigm ${this.currentParadigmIndex + 1} of ${SOVEREIGNTY_PARADIGMS.length}</div>`;
+    html += '<div class="progress-bar-container"><div class="progress-bar-fill" style="width: ' + progress + '%"></div></div>';
     html += '</div>';
-    html += '<div class="paradigm-grid">';
     
-    // Group paradigms by category
-    const categories = {
-      'Philosophical (Ancient)': ['stoicism', 'epicureanism', 'cynicism'],
-      'Philosophical (Modern)': ['existentialism', 'kantian_deontology', 'utilitarianism', 'libertarianism'],
-      'Spiritual/Religious': ['buddhism', 'taoism', 'christianity', 'humanism'],
-      'Psychological/Self-Help': ['positive_psychology', 'cognitive_behavioral', 'mindfulness_secular'],
-      'Counter/Edge Paradigms': ['nihilism', 'postmodern_relativism', 'absurdism']
-    };
+    html += '<div class="paradigm-card-single">';
+    html += `<h4>${SecurityUtils.sanitizeHTML(paradigm.name)}</h4>`;
+    html += `<p class="paradigm-description">${SecurityUtils.sanitizeHTML(paradigm.description)}</p>`;
+    html += '<div class="paradigm-values">';
+    html += `<strong>Core Values:</strong> ${SecurityUtils.sanitizeHTML(paradigm.values.join(', '))}`;
+    html += '</div>';
     
-    Object.entries(categories).forEach(([categoryName, paradigmIds]) => {
-      html += `<div class="paradigm-category"><h4>${SecurityUtils.sanitizeHTML(categoryName)}</h4>`;
-      
-      paradigmIds.forEach(paradigmId => {
-        const paradigm = SOVEREIGNTY_PARADIGMS.find(p => p.id === paradigmId);
-        if (!paradigm) return;
-        
-        const currentRating = this.paradigmRatings[paradigmId] || null;
-        const ratedClass = currentRating ? 'rated' : '';
-        
-        html += `
-          <div class="paradigm-card ${ratedClass}" data-paradigm="${paradigmId}">
-            <h5>${SecurityUtils.sanitizeHTML(paradigm.name)}</h5>
-            <p class="paradigm-description">${SecurityUtils.sanitizeHTML(paradigm.description)}</p>
-            <div class="paradigm-values">
-              <strong>Values:</strong> ${SecurityUtils.sanitizeHTML(paradigm.values.join(', '))}
-            </div>
-            <div class="paradigm-rating">
-              <label>How much does this resonate with you?</label>
-              <div class="rating-scale">
-                <label class="rating-option">
-                  <input type="radio" name="paradigm_${paradigmId}" value="1" ${currentRating === 1 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
-                  <span>1 - Not at all</span>
-                </label>
-                <label class="rating-option">
-                  <input type="radio" name="paradigm_${paradigmId}" value="2" ${currentRating === 2 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
-                  <span>2 - Slightly</span>
-                </label>
-                <label class="rating-option">
-                  <input type="radio" name="paradigm_${paradigmId}" value="3" ${currentRating === 3 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
-                  <span>3 - Moderately</span>
-                </label>
-                <label class="rating-option">
-                  <input type="radio" name="paradigm_${paradigmId}" value="4" ${currentRating === 4 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
-                  <span>4 - Strongly</span>
-                </label>
-                <label class="rating-option">
-                  <input type="radio" name="paradigm_${paradigmId}" value="5" ${currentRating === 5 ? 'checked' : ''} data-paradigm-id="${paradigmId}">
-                  <span>5 - Very strongly</span>
-                </label>
-              </div>
-              ${currentRating ? `<div class="rating-display">Rating: ${currentRating}/5</div>` : ''}
-            </div>
-          </div>
-        `;
-      });
-      
-      html += '</div>';
-    });
+    html += '<div class="paradigm-rating-slider">';
+    html += '<label for="paradigm-slider-' + paradigm.id + '">How much does this resonate with you?</label>';
+    html += '<div class="slider-container">';
+    html += '<input type="range" id="paradigm-slider-' + paradigm.id + '" class="paradigm-slider" ';
+    html += 'min="0" max="100" value="' + currentRating + '" ';
+    html += 'data-paradigm-id="' + paradigm.id + '">';
+    html += '<div class="slider-labels">';
+    html += '<span class="slider-label-left">Not at all</span>';
+    html += '<span class="slider-label-right">Very strongly</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
     
     html += '</div>';
-    html += '<div style="text-align: center; margin-top: 2rem;">';
-    const ratedCount = Object.keys(this.paradigmRatings).filter(id => this.paradigmRatings[id] !== undefined && this.paradigmRatings[id] !== null).length;
-    const totalParadigms = SOVEREIGNTY_PARADIGMS ? SOVEREIGNTY_PARADIGMS.length : 18;
-    html += `<button class="btn btn-primary" id="startAssessment" ${ratedCount < totalParadigms ? 'disabled' : ''}>${ratedCount < totalParadigms ? `Rate All Paradigms (${ratedCount}/${totalParadigms})` : 'Continue to Assessment'}</button>`;
+    
+    html += '<div class="paradigm-navigation">';
+    if (this.currentParadigmIndex > 0) {
+      html += '<button class="btn btn-outline" id="prevParadigm">Previous</button>';
+    }
+    html += '<button class="btn btn-primary" id="nextParadigm">';
+    html += this.currentParadigmIndex < SOVEREIGNTY_PARADIGMS.length - 1 ? 'Next Paradigm' : 'Continue to Assessment';
+    html += '</button>';
     html += '</div>';
     
     SecurityUtils.safeInnerHTML(container, html);
     
-    // Attach rating listeners
-    const ratingInputs = container.querySelectorAll('input[type="radio"][data-paradigm-id]');
-    ratingInputs.forEach(input => {
-      input.addEventListener('change', (e) => {
+    // Attach slider listener
+    const slider = document.getElementById(`paradigm-slider-${paradigm.id}`);
+    if (slider) {
+      // Initialize slider appearance
+      this.updateSliderAppearance(slider, currentRating);
+      
+      // Update on input (real-time)
+      slider.addEventListener('input', (e) => {
         const paradigmId = e.target.dataset.paradigmId;
         const rating = e.target.value;
         this.rateParadigm(paradigmId, rating);
       });
-    });
+    }
     
-    // Re-attach start button listener
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
+    // Attach navigation listeners
+    const nextBtn = document.getElementById('nextParadigm');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => this.nextParadigm());
+    }
+    
+    const prevBtn = document.getElementById('prevParadigm');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (this.currentParadigmIndex > 0) {
+          this.currentParadigmIndex--;
+          this.renderCurrentParadigm();
+        }
+      });
     }
   }
 
