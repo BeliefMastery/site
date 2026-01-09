@@ -4,7 +4,7 @@
 
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
-import { ErrorHandler, DataStore, DOMUtils } from './shared/utils.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
@@ -599,7 +599,7 @@ export class ArchetypeEngine {
       return `
         <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
           <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
-          <span style="flex: 1;">${option.text}</span>
+          <span style="flex: 1;">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
           ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
         </label>
       `;
@@ -633,7 +633,7 @@ export class ArchetypeEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="options-container">
           ${optionsHTML}
         </div>
@@ -689,7 +689,7 @@ export class ArchetypeEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="likert-scale" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1rem;">
           ${scaleHTML}
         </div>
@@ -707,7 +707,7 @@ export class ArchetypeEngine {
       return `
         <label class="narrative-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: block; padding: 1.5rem; margin: 1rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedLockedStyle}">
           <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.5rem;">
-          <div style="font-style: italic; color: var(--muted); line-height: 1.7;">${vignette.text}</div>
+          <div style="font-style: italic; color: var(--muted); line-height: 1.7;">${SecurityUtils.sanitizeHTML(vignette.text || '')}</div>
           ${isSelected ? '<div style="margin-top: 0.5rem; color: var(--brand); font-weight: 700; font-size: 0.9rem;">✓ Selected</div>' : ''}
         </label>
       `;
@@ -741,7 +741,7 @@ export class ArchetypeEngine {
 
     return `
       <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${question.question}</h3>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="narrative-container">
           ${vignettesHTML}
         </div>
@@ -1363,11 +1363,11 @@ export class ArchetypeEngine {
 
         <!-- Primary Archetype -->
         <div class="archetype-card primary" style="background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border: 2px solid var(--brand);">
-          <h3 style="color: var(--brand); margin-top: 0; font-size: 1.5rem;">Primary Archetype: ${primary.name}</h3>
+          <h3 style="color: var(--brand); margin-top: 0; font-size: 1.5rem;">Primary Archetype: ${SecurityUtils.sanitizeHTML(primary.name || '')}</h3>
           <p style="color: var(--muted); margin: 0.5rem 0; font-size: 1.1rem;"><strong>Confidence:</strong> ${primary.confidence.toFixed(1)}%</p>
           ${primary.explanation ? `<div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin: 1rem 0;"><p style="margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-style: italic;">${primary.explanation}</p></div>` : ''}
-          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${primary.socialRole}</p>
-          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${primary.description}</p>
+          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(primary.socialRole || '')}</p>
+          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(primary.description || '')}</p>
           
           <div style="margin-top: 1.5rem;">
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Key Characteristics:</h4>
@@ -1441,11 +1441,11 @@ export class ArchetypeEngine {
     if (secondary) {
       resultsHTML += `
         <div class="archetype-card secondary" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: var(--brand); margin-top: 0;">Secondary Influence: ${secondary.name}</h3>
+          <h3 style="color: var(--brand); margin-top: 0;">Secondary Influence: ${SecurityUtils.sanitizeHTML(secondary.name || '')}</h3>
           <p style="color: var(--muted); margin: 0.5rem 0;"><strong>Confidence:</strong> ${secondary.confidence.toFixed(1)}%</p>
           ${secondary.explanation ? `<div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin: 1rem 0;"><p style="margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-style: italic;">${secondary.explanation}</p></div>` : ''}
-          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${secondary.socialRole}</p>
-          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${secondary.description}</p>
+          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(secondary.socialRole || '')}</p>
+          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(secondary.description || '')}</p>
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype influences you in specific contexts or situations, complementing your primary archetype.
           </p>
@@ -1457,10 +1457,10 @@ export class ArchetypeEngine {
     if (tertiary) {
       resultsHTML += `
         <div class="archetype-card tertiary" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: var(--brand); margin-top: 0;">Tertiary Influence: ${tertiary.name}</h3>
+          <h3 style="color: var(--brand); margin-top: 0;">Tertiary Influence: ${SecurityUtils.sanitizeHTML(tertiary.name || '')}</h3>
           <p style="color: var(--muted); margin: 0.5rem 0;"><strong>Confidence:</strong> ${tertiary.confidence.toFixed(1)}%</p>
-          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${tertiary.socialRole}</p>
-          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${tertiary.description}</p>
+          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(tertiary.socialRole || '')}</p>
+          <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(tertiary.description || '')}</p>
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype may emerge under stress, represent aspirational qualities, or appear in specific life domains.
           </p>
@@ -1478,7 +1478,7 @@ export class ArchetypeEngine {
             These patterns may emerge under stress or represent areas for healing and integration.
           </p>
           <ul style="color: var(--muted); line-height: 1.8;">
-            ${shadowPatterns.map(shadow => `<li><strong>${shadow.name}:</strong> ${ARCHETYPES[shadow.id]?.description}</li>`).join('')}
+            ${shadowPatterns.map(shadow => `<li><strong>${SecurityUtils.sanitizeHTML(shadow.name || '')}:</strong> ${SecurityUtils.sanitizeHTML(ARCHETYPES[shadow.id]?.description || '')}</li>`).join('')}
           </ul>
         </div>
       `;
@@ -1516,7 +1516,7 @@ export class ArchetypeEngine {
             Areas you identified as aspirational - qualities you'd like to develop further.
           </p>
           <ul style="color: var(--muted); line-height: 1.8;">
-            ${aspirational.map(asp => `<li><strong>${asp.name}:</strong> ${asp.description}</li>`).join('')}
+            ${aspirational.map(asp => `<li><strong>${SecurityUtils.sanitizeHTML(asp.name || '')}:</strong> ${SecurityUtils.sanitizeHTML(asp.description || '')}</li>`).join('')}
           </ul>
         </div>
       `;
@@ -1524,7 +1524,8 @@ export class ArchetypeEngine {
 
     resultsHTML += `</div>`;
 
-    container.innerHTML = resultsHTML;
+    // Sanitize results HTML before rendering
+    SecurityUtils.safeInnerHTML(container, resultsHTML);
     this.showResultsContainer();
   }
 

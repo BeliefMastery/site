@@ -39,6 +39,40 @@ export const SecurityUtils = {
       return sanitized;
     }
     return obj;
+  },
+
+  /**
+   * Safely set innerHTML with automatic sanitization
+   * @param {HTMLElement} element - Element to set innerHTML on
+   * @param {string} content - HTML content to set (will be sanitized)
+   */
+  safeInnerHTML(element, content) {
+    if (!element) {
+      console.warn('SecurityUtils.safeInnerHTML: element is null or undefined');
+      return;
+    }
+    if (typeof content !== 'string') {
+      console.warn('SecurityUtils.safeInnerHTML: content is not a string', typeof content);
+      element.innerHTML = '';
+      return;
+    }
+    element.innerHTML = this.sanitizeHTML(content);
+  },
+
+  /**
+   * Safely set innerHTML with template function (sanitizes all string values)
+   * @param {HTMLElement} element - Element to set innerHTML on
+   * @param {Function} templateFn - Template function that returns HTML string
+   * @param {any} data - Data object to pass to template (will be sanitized)
+   */
+  safeTemplate(element, templateFn, data) {
+    if (!element || typeof templateFn !== 'function') {
+      console.warn('SecurityUtils.safeTemplate: invalid arguments');
+      return;
+    }
+    const sanitized = this.sanitizeForDisplay(data);
+    const html = templateFn(sanitized);
+    element.innerHTML = this.sanitizeHTML(html);
   }
 };
 
