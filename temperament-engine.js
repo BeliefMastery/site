@@ -332,13 +332,13 @@ export class TemperamentEngine {
     const questionContainer = document.getElementById('questionContainer');
     const currentAnswer = this.answers[question.id];
     
-    questionContainer.innerHTML = `
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
         <div class="question-header">
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">Orientation</span>
         </div>
-        <h3 class="question-text">${question.question}</h3>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="three-point-options">
           ${question.options.map((option, index) => `
             <label class="three-point-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -349,7 +349,7 @@ export class TemperamentEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${option.text}</span>
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
             </label>
           `).join('')}
         </div>
@@ -357,7 +357,7 @@ export class TemperamentEngine {
           <strong>Tip:</strong> Answer based on what feels most natural to you, not what you think you "should" be.
         </div>
       </div>
-    `;
+    `);
     
     // Attach event listeners
     const inputs = document.querySelectorAll(`input[name="question_${question.id}"]`);
@@ -386,20 +386,20 @@ export class TemperamentEngine {
 
     let categoryInfo = '';
     if (currentQ.dimensionName) {
-      categoryInfo = `<p class="description" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${currentQ.dimensionName}</p>`;
+      categoryInfo = `<p class="description" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(currentQ.dimensionName)}</p>`;
     } else if (currentQ.categoryName) {
-      categoryInfo = `<p class="description" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${currentQ.categoryName}</p>`;
+      categoryInfo = `<p class="description" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(currentQ.categoryName)}</p>`;
     }
 
-    questionContainer.innerHTML = `
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
         <div class="question-header">
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">Deep Mapping</span>
         </div>
         ${categoryInfo}
-        <h3>${currentQ.question}</h3>
-        ${currentQ.description ? `<p class="description" style="margin-top: 0.5rem; font-style: italic; color: var(--muted);">${currentQ.description}</p>` : ''}
+        <h3>${SecurityUtils.sanitizeHTML(currentQ.question || '')}</h3>
+        ${currentQ.description ? `<p class="description" style="margin-top: 0.5rem; font-style: italic; color: var(--muted);">${SecurityUtils.sanitizeHTML(currentQ.description)}</p>` : ''}
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider" step="1">
@@ -456,12 +456,12 @@ export class TemperamentEngine {
       rangeDescription = 'Your initial responses suggest a tendency toward feminine-leaning expression patterns. The detailed assessment will help clarify the specific dimensions and contexts where this shows up.';
     }
     
-    questionContainer.innerHTML = `
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
         <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Orientation Complete</h3>
         <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">${rangeLabel}</h4>
-          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">${rangeDescription}</p>
+          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">${SecurityUtils.sanitizeHTML(rangeLabel)}</h4>
+          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(rangeDescription)}</p>
           <div style="position: relative; height: 30px; background: linear-gradient(to right, rgba(0,123,255,0.3), rgba(255,192,203,0.3)); border-radius: var(--radius); margin-top: 1rem; border: 2px solid var(--brand);">
             <div style="position: absolute; top: 50%; left: ${score * 100}%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--brand); border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>
           </div>
@@ -747,7 +747,7 @@ export class TemperamentEngine {
     const questionContainer = document.getElementById('questionContainer');
     if (!questionContainer) return;
     
-    questionContainer.innerHTML = `
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
         <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Intimate Dynamics Section</h3>
         <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -756,7 +756,7 @@ export class TemperamentEngine {
         <button class="btn btn-primary" id="continueToIntimate" style="min-width: 150px;">Continue</button>
         <button class="btn btn-secondary" id="skipIntimate" style="min-width: 150px; margin-left: 1rem;">Skip This Section</button>
       </div>
-    `;
+    `);
     
     const continueBtn = document.getElementById('continueToIntimate');
     const skipBtn = document.getElementById('skipIntimate');
@@ -799,11 +799,11 @@ export class TemperamentEngine {
       categoryLabel = question.dimensionName || 'Behavioral Patterns';
     }
     
-    questionContainer.innerHTML = `
+    SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
-        ${categoryLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${categoryLabel}</p>` : ''}
-        ${question.description ? `<p class="description" style="margin-bottom: 1rem; color: var(--muted);">${question.description}</p>` : ''}
-        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${question.question}</h4>
+        ${categoryLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${SecurityUtils.sanitizeHTML(categoryLabel)}</p>` : ''}
+        ${question.description ? `<p class="description" style="margin-bottom: 1rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(question.description)}</p>` : ''}
+        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${SecurityUtils.sanitizeHTML(question.question || '')}</h4>
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider">
@@ -892,18 +892,18 @@ export class TemperamentEngine {
       <div style="background: rgba(255, 184, 0, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;">
         <h2 style="color: var(--brand); margin-bottom: 1rem; font-size: 1.5rem;">Temperament Expression Profile</h2>
         <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
-          <h3 style="color: var(--brand); margin-bottom: 1rem;">${interpretation.label}</h3>
-          <p style="color: var(--muted); line-height: 1.6; margin-bottom: 1rem;">${interpretation.description}</p>
+          <h3 style="color: var(--brand); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(interpretation.label || '')}</h3>
+          <p style="color: var(--muted); line-height: 1.6; margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(interpretation.description || '')}</p>
           
           <div style="margin-top: 1.5rem;">
             <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Expression Patterns:</h4>
             <ul style="margin-left: 1.5rem; line-height: 1.8;">
-              ${interpretation.characteristics.map(char => `<li style="margin-bottom: 0.5rem;">${char}</li>`).join('')}
+              ${interpretation.characteristics.map(char => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(char || '')}</li>`).join('')}
             </ul>
           </div>
           
           <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: var(--radius);">
-            <p style="font-style: italic; color: var(--muted); line-height: 1.6;"><strong>Note on Variation:</strong> ${interpretation.variations}</p>
+            <p style="font-style: italic; color: var(--muted); line-height: 1.6;"><strong>Note on Variation:</strong> ${SecurityUtils.sanitizeHTML(interpretation.variations || '')}</p>
           </div>
         </div>
 
@@ -939,7 +939,7 @@ export class TemperamentEngine {
       
       html += `
         <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: var(--radius); border-left: 3px solid var(--brand);">
-          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">${dimName}</h4>
+          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(dimName || '')}</h4>
           <div style="position: relative; height: 30px; background: linear-gradient(to right, rgba(0,123,255,0.2), rgba(255,192,203,0.2)); border-radius: 4px; margin-bottom: 0.5rem;">
             <div style="position: absolute; top: 50%; left: ${normalizedDimScore * 100}%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--brand); border-radius: 50%; border: 2px solid white;"></div>
           </div>
@@ -962,7 +962,7 @@ export class TemperamentEngine {
         const dimName = this.questionSequence.find(q => (q.dimension || q.category) === variation.dimension)?.dimensionName || 
                        this.questionSequence.find(q => (q.dimension || q.category) === variation.dimension)?.categoryName || 
                        variation.dimension;
-        html += `<li style="margin-bottom: 0.5rem;">${dimName}</li>`;
+        html += `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(dimName || '')}</li>`;
       });
       html += '</ul></div>';
     }

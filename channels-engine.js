@@ -307,7 +307,7 @@ export class ChannelsEngine {
         const fromNode = NODES[channel.from];
         const toNode = NODES[channel.to];
         return {
-          text: `${fromNode.name} → ${toNode.name}: ${channel.description}`,
+          text: `${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}: ${SecurityUtils.sanitizeHTML(channel.description || '')}`,
           mapsTo: { channel: ch.id, priority: ch.priority },
           channel: ch.id
         };
