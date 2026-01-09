@@ -244,31 +244,45 @@ export class DiagnosisEngine {
     }
   }
 
-  renderGuideQuestion() {
-    const container = document.getElementById('categorySelection');
-    if (!container) {
-      this.logDebug('ERROR: categorySelection container not found in renderGuideQuestion');
-      return;
-    }
-    
-    const question = CATEGORY_GUIDE_QUESTIONS[this.currentGuideQuestion];
-    if (!question) {
-      this.logDebug('ERROR: Guide question not found at index', this.currentGuideQuestion);
-      this.completeGuide();
-      return;
-    }
-    
-    const isLast = this.currentGuideQuestion === CATEGORY_GUIDE_QUESTIONS.length - 1;
-    
-    container.style.display = 'block';
-    container.innerHTML = `
+  /**
+   * Render guide question
+   * @returns {Promise<void>}
+   */
+  async renderGuideQuestion() {
+    try {
+      await this.loadDiagnosisData(); // Ensure guide questions are loaded
+      
+      const container = document.getElementById('categorySelection');
+      if (!container) {
+        this.logDebug('ERROR: categorySelection container not found in renderGuideQuestion');
+        ErrorHandler.showUserError('Category selection container not found.');
+        return;
+      }
+      
+      const question = CATEGORY_GUIDE_QUESTIONS?.[this.currentGuideQuestion];
+      if (!question) {
+        this.logDebug('ERROR: Guide question not found at index', this.currentGuideQuestion);
+        await this.completeGuide();
+        return;
+      }
+      
+      const isLast = this.currentGuideQuestion === CATEGORY_GUIDE_QUESTIONS.length - 1;
+      
+      container.style.display = 'block';
+      
+      // Sanitize question text and warning for display
+      const questionText = SecurityUtils.sanitizeHTML(question.question || '');
+      const warningText = question.warning ? SecurityUtils.sanitizeHTML(question.warning) : '';
+      
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = `
       <div class="guide-container" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); backdrop-filter: blur(8px);">
         <h2 style="margin-bottom: 1rem;">🧭 Category Selection Guide</h2>
         <p style="margin-bottom: 2rem; color: var(--muted);">Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
         
         <div class="guide-question" style="margin-bottom: 2rem;">
-          <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem; line-height: 1.5;">${question.question}</h3>
-          ${question.warning ? `<div style="padding: 1rem; background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); margin-bottom: 1.5rem;"><strong>⚠️ Important:</strong> ${question.warning}</div>` : ''}
+          <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem; line-height: 1.5;">${questionText}</h3>
+          ${warningText ? `<div style="padding: 1rem; background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); margin-bottom: 1.5rem;"><strong>⚠️ Important:</strong> ${warningText}</div>` : ''}
           
           <div class="guide-options" style="display: flex; flex-direction: column; gap: 1rem;">
             <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideYes">
@@ -307,12 +321,22 @@ export class DiagnosisEngine {
       backBtn.addEventListener('click', () => this.prevGuideQuestion());
     }
     
-    if (isLast) {
-      const completeBtn = document.getElementById('guideComplete');
-      if (completeBtn) completeBtn.addEventListener('click', () => this.completeGuide());
-    } else {
-      const skipBtn = document.getElementById('guideSkip');
-      if (skipBtn) skipBtn.addEventListener('click', () => this.skipGuide());
+      if (isLast) {
+        const completeBtn = document.getElementById('guideComplete');
+        if (completeBtn) completeBtn.addEventListener('click', () => this.completeGuide());
+      } else {
+        const skipBtn = document.getElementById('guideSkip');
+        if (skipBtn) skipBtn.addEventListener('click', () => this.skipGuide());
+      }
+      
+      // Focus management for accessibility
+      const firstButton = container.querySelector('button');
+      if (firstButton) {
+        DOMUtils.focusElement(firstButton);
+      }
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderGuideQuestion');
+      ErrorHandler.showUserError('Failed to render guide question. Please refresh the page.');
     }
   }
 
@@ -349,24 +373,40 @@ export class DiagnosisEngine {
     this.completeGuide();
   }
 
-  completeGuide() {
-    this.guideMode = false;
-    
-    // Show category selection with suggestions highlighted
-    const container = document.getElementById('categorySelection');
-    if (!container) {
-      this.logDebug('ERROR: categorySelection container not found in completeGuide');
-      return;
-    }
-    
-    container.style.display = 'block';
-    
-    // Generate recommendation summary
-    const recommendationText = this.suggestedCategories.length > 0 
-      ? this.generateRecommendationSummary()
-      : 'Based on your answers, we recommend exploring categories that match your concerns.';
-    
-    container.innerHTML = `
+  /**
+   * Complete guide and show category selection
+   * @returns {Promise<void>}
+   */
+  async completeGuide() {
+    try {
+      await this.loadDiagnosisData(); // Ensure category data is loaded
+      
+      this.guideMode = false;
+      
+      // Show category selection with suggestions highlighted
+      const container = document.getElementById('categorySelection');
+      if (!container) {
+        this.logDebug('ERROR: categorySelection container not found in completeGuide');
+        ErrorHandler.showUserError('Category selection container not found.');
+        return;
+      }
+      
+      container.style.display = 'block';
+      
+      // Generate recommendation summary
+      const recommendationText = this.suggestedCategories.length > 0 
+        ? this.generateRecommendationSummary()
+        : 'Based on your answers, we recommend exploring categories that match your concerns.';
+      
+      // Sanitize recommendation text
+      const sanitizedRecommendation = SecurityUtils.sanitizeHTML(recommendationText);
+      const categoryNames = this.suggestedCategories.map(cat => {
+        const catDesc = CATEGORY_DESCRIPTIONS?.[cat];
+        return SecurityUtils.sanitizeHTML(catDesc?.name || cat);
+      }).join(', ');
+      
+      // Note: HTML is generated from trusted templates
+      container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
@@ -380,11 +420,11 @@ export class DiagnosisEngine {
         <div style="padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; color: var(--brand);">💡 Recommended Categories Based on Your Answers:</h3>
           <p style="margin-bottom: 1rem; line-height: 1.6;">
-            ${recommendationText}
+            ${sanitizedRecommendation}
           </p>
           <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 184, 0, 0.3);">
             <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">
-              <strong>Recommended categories:</strong> ${this.suggestedCategories.map(cat => CATEGORY_DESCRIPTIONS[cat]?.name || cat).join(', ')}
+              <strong>Recommended categories:</strong> ${categoryNames}
             </p>
             <p style="font-size: 0.85rem; color: var(--muted); font-style: italic;">
               These categories are pre-selected for you, but you can change your selection or add others.
@@ -394,7 +434,7 @@ export class DiagnosisEngine {
       ` : `
         <div style="padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius); margin-bottom: 1.5rem;">
           <p style="color: var(--muted); line-height: 1.6;">
-            ${recommendationText} Review the categories below and select those that seem most relevant to your concerns.
+            ${sanitizedRecommendation} Review the categories below and select those that seem most relevant to your concerns.
           </p>
         </div>
       `}
@@ -404,24 +444,28 @@ export class DiagnosisEngine {
       </div>
     `;
     
-    this.renderCategorySelection();
-    this.attachEventListeners();
-    
-    // Auto-select suggested categories
-    this.suggestedCategories.forEach(categoryKey => {
-      if (!this.selectedCategories.includes(categoryKey)) {
-        this.selectedCategories.push(categoryKey);
+      await this.renderCategorySelection();
+      this.attachEventListeners();
+      
+      // Auto-select suggested categories
+      this.suggestedCategories.forEach(categoryKey => {
+        if (!this.selectedCategories.includes(categoryKey)) {
+          this.selectedCategories.push(categoryKey);
+        }
+        const card = document.querySelector(`[data-category="${categoryKey}"]`);
+        if (card) {
+          card.classList.add('selected');
+          card.classList.add('suggested');
+        }
+      });
+      
+      if (this.selectedCategories.length > 0) {
+        const startBtn = document.getElementById('startAssessment');
+        if (startBtn) startBtn.disabled = false;
       }
-      const card = document.querySelector(`[data-category="${categoryKey}"]`);
-      if (card) {
-        card.classList.add('selected');
-        card.classList.add('suggested');
-      }
-    });
-    
-    if (this.selectedCategories.length > 0) {
-      const startBtn = document.getElementById('startAssessment');
-      if (startBtn) startBtn.disabled = false;
+    } catch (error) {
+      this.debugReporter.logError(error, 'completeGuide');
+      ErrorHandler.showUserError('Failed to complete guide. Please try again.');
     }
   }
 
@@ -1041,7 +1085,7 @@ export class DiagnosisEngine {
     document.getElementById('proceedToRefinement').addEventListener('click', () => {
       // Check refinement ceiling
       if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
-        alert('Maximum refinement passes reached. Proceeding to results.');
+        ErrorHandler.showUserError('Maximum refinement passes reached. Proceeding to results.');
         await this.showResults();
         return;
       }
@@ -1055,9 +1099,12 @@ export class DiagnosisEngine {
       this.startRefinementQuestions();
     });
     
-    document.getElementById('skipToResults').addEventListener('click', () => {
-      this.showResults();
-    });
+    const skipToResultsBtn = document.getElementById('skipToResults');
+    if (skipToResultsBtn) {
+      skipToResultsBtn.addEventListener('click', async () => {
+        await this.showResults();
+      });
+    }
   }
 
   startRefinementQuestions() {
@@ -1954,8 +2001,4 @@ export class DiagnosisEngine {
   }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.diagnosisEngine = new DiagnosisEngine();
-});
 
