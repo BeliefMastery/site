@@ -198,28 +198,11 @@ export const Storage = {
 };
 
 /**
- * User-friendly error message display
+ * User-friendly error message display (convenience function)
+ * Calls ErrorHandler.showUserError for consistency
  */
 export function showError(message) {
-  // Remove any existing error
-  const existing = document.querySelector('.user-error');
-  if (existing) existing.remove();
-  
-  // Create error message
-  const errorDiv = document.createElement('div');
-  errorDiv.className = 'user-error';
-  errorDiv.setAttribute('role', 'alert');
-  errorDiv.innerHTML = `
-    <span>⚠️ ${SecurityUtils.sanitizeHTML(message)}</span>
-    <button onclick="this.parentElement.remove()" aria-label="Dismiss error message">×</button>
-  `;
-  document.body.appendChild(errorDiv);
-  
-  // Auto-remove after 5 seconds
-  setTimeout(() => errorDiv.remove(), 5000);
-  
-  // Focus for screen readers
-  errorDiv.focus();
+  return ErrorHandler.showUserError(message);
 }
 
 /**
