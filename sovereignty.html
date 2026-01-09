@@ -298,8 +298,11 @@
   </div>
 
   <!-- Performance: Preload critical resources -->
-  <link rel="preload" href="./sovereignty-engine.js" as="script" crossorigin>
-  <link rel="preload" href="./sovereignty-data/cognitive-bands.js" as="script" crossorigin>
+  <link rel="modulepreload" href="./sovereignty-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
   
   <script type="module" defer>
     import { SovereigntyEngine } from './sovereignty-engine.js';

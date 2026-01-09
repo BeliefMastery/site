@@ -180,3 +180,89 @@ export function getPageLoadMetrics() {
   };
 }
 
+/**
+ * Initialize performance monitoring using PerformanceObserver
+ * Tracks Web Vitals (FCP, LCP, CLS, FID)
+ */
+export function initializePerformanceMonitoring() {
+  if (!window.PerformanceObserver) {
+    console.warn('PerformanceObserver not supported. Performance monitoring disabled.');
+    return;
+  }
+
+  const performanceMetrics = {
+    fcp: null,
+    lcp: null,
+    cls: null,
+    fid: null,
+    tti: null // Time to Interactive (estimated)
+  };
+
+  // First Contentful Paint (FCP)
+  try {
+    new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        if (entry.name === 'first-contentful-paint') {
+          performanceMetrics.fcp = entry.startTime;
+          console.log('FCP:', entry.startTime);
+        }
+      }
+    }).observe({ type: 'paint', buffered: true });
+  } catch (e) {
+    console.warn('FCP observation not supported:', e);
+  }
+
+  // Largest Contentful Paint (LCP)
+  try {
+    new PerformanceObserver((entryList) => {
+      const entries = entryList.getEntries();
+      const lastEntry = entries[entries.length - 1];
+      performanceMetrics.lcp = lastEntry.startTime;
+      console.log('LCP:', lastEntry.startTime);
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
+  } catch (e) {
+    console.warn('LCP observation not supported:', e);
+  }
+
+  // Cumulative Layout Shift (CLS)
+  try {
+    new PerformanceObserver((entryList) => {
+      let cls = 0;
+      for (const entry of entryList.getEntries()) {
+        if (!entry.hadRecentInput) {
+          cls += entry.value;
+        }
+      }
+      performanceMetrics.cls = cls;
+      console.log('CLS:', cls);
+    }).observe({ type: 'layout-shift', buffered: true });
+  } catch (e) {
+    console.warn('CLS observation not supported:', e);
+  }
+
+  // First Input Delay (FID)
+  try {
+    new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        performanceMetrics.fid = entry.processingStart - entry.startTime;
+        console.log('FID:', performanceMetrics.fid);
+      }
+    }).observe({ type: 'first-input', buffered: true });
+  } catch (e) {
+    console.warn('FID observation not supported:', e);
+  }
+
+  // Optional: Measure Time to Interactive (TTI) - more complex, often estimated
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      performanceMetrics.tti = performance.now();
+      console.log('Estimated TTI:', performanceMetrics.tti);
+    }, 0);
+  });
+
+  // Expose metrics for debugging
+  window.performanceMetrics = performanceMetrics;
+  
+  return performanceMetrics;
+}
+
