@@ -1,7 +1,7 @@
 // Debug Reporter for Assessment Engines
 // Provides comprehensive debugging and verification tools for data loading and engine performance
 
-import { ErrorHandler } from './utils.js';
+import { ErrorHandler, SecurityUtils } from './utils.js';
 
 /**
  * DebugReporter - Tracks and reports on engine initialization, data loading, and performance
@@ -338,12 +338,7 @@ export class DebugReporter {
       </div>
     `;
     
-    // Use SecurityUtils if available, otherwise fallback to innerHTML
-    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeInnerHTML) {
-      SecurityUtils.safeInnerHTML(container, reportHTML);
-    } else {
-      container.innerHTML = reportHTML;
-    }
+    SecurityUtils.safeInnerHTML(container, reportHTML);
   }
 
   /**
