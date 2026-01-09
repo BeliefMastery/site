@@ -1362,8 +1362,15 @@ export class SovereigntyEngine {
     this.analysisData.sovereignSplitPosition = this.determineSovereignSplitPosition();
     
     // Store all answers
-    this.analysisData.allAnswers = this.answers;
-    this.analysisData.questionSequence = this.questionSequence.map(q => q.id);
+    this.analysisData.allAnswers = { ...this.answers };
+    // Store full question objects with text for export
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question || q.questionText || '',
+      section: q.section,
+      category: q.category,
+      type: q.type
+    }));
     
     // Display results
     this.displayResults();

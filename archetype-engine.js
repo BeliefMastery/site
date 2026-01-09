@@ -1310,8 +1310,16 @@ export class ArchetypeEngine {
   async finalizeResults() {
     await this.loadArchetypeData(); // Ensure data is loaded
     this.identifyArchetypes();
-    this.analysisData.allAnswers = this.answers;
-    this.analysisData.questionSequence = this.questionSequence.map(q => q.id);
+    this.analysisData.allAnswers = { ...this.answers };
+    // Store full question objects with text for export
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question || q.questionText || '',
+      phase: q.phase,
+      category: q.category,
+      archetype: q.archetype,
+      dimension: q.dimension
+    }));
     this.renderResults();
     this.saveProgress();
     
