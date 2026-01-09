@@ -188,7 +188,7 @@ export class DiagnosisEngine {
         return;
       }
       
-      grid.innerHTML = '';
+      SecurityUtils.safeInnerHTML(grid, '');
       
       Object.keys(DSM5_CATEGORIES).forEach(categoryKey => {
         const category = DSM5_CATEGORIES[categoryKey];
@@ -923,7 +923,7 @@ export class DiagnosisEngine {
         ${question.type === 'refinement' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent);"><em>Additional detail for ${question.disorder}</em></p>` : ''}
         ${question.type === 'differential' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent);"><em>Differential diagnosis question</em></p>` : ''}
       </div>
-    `;
+    `);
     
     const slider = document.getElementById('questionInput');
     const valueDisplay = document.getElementById('scaleValue');
