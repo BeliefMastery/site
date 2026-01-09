@@ -576,8 +576,6 @@ export const PHASE_3_QUESTIONS = [
       { text: 'Omega\'s powerlessness and tendency to be overlooked', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
       { text: 'Phi\'s detachment and difficulty engaging with normal life', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
     ]
-  }
-    ]
   },
   {
     id: 'p3_q5',

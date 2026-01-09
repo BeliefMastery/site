@@ -478,7 +478,7 @@ export class ChannelsEngine {
       this.debugReporter.logError(error, 'renderCurrentQuestion');
       ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
-  }
+    
     this.updateStageIndicator();
   }
 

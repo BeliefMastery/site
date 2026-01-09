@@ -330,6 +330,10 @@ export class TemperamentEngine {
     
     // Phase 2: Render slider-based questions (existing logic)
     this.renderSliderQuestion(currentQ);
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
+    }
   }
 
   renderThreePointQuestion(question) {

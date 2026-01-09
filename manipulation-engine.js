@@ -1192,6 +1192,10 @@ export class ManipulationEngine {
     
     // Sanitize results HTML before rendering - all dynamic content is already sanitized above
     SecurityUtils.safeInnerHTML(container, html);
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderResults');
+      ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
+    }
   }
 
   exportAnalysis(format = 'json') {
