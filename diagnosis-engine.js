@@ -108,7 +108,7 @@ export class DiagnosisEngine {
         </div>
       `;
     });
-    debugLogElement.innerHTML = html;
+    SecurityUtils.safeInnerHTML(debugLogElement, html);
     debugLogElement.scrollTop = debugLogElement.scrollHeight;
   }
 

@@ -1116,8 +1116,8 @@ export class NeedsDependencyEngine {
       
       html += '</div>';
       
-      // Note: HTML is generated from trusted templates, sanitization applied to user content
-      container.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       
       // Display debug report if in development mode
       if (window.location.search.includes('debug=true')) {

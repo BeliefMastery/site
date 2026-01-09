@@ -542,7 +542,7 @@ export class ArchetypeEngine {
     }
 
     // Replace content instead of appending - only show current question
-    container.innerHTML = html;
+    SecurityUtils.safeInnerHTML(container, html);
     this.updateNavigation();
     
     // Track render performance
@@ -581,11 +581,12 @@ export class ArchetypeEngine {
     };
 
     const exp = explanations[phase];
+    if (!exp) return '';
     return `
       <div class="phase-explanation" style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 0.5rem;">${exp.title}</h3>
-        <p style="margin: 0.5rem 0; color: var(--muted); line-height: 1.6;">${exp.description}</p>
-        <p style="margin: 0.5rem 0 0 0; color: var(--muted); font-size: 0.9rem; font-style: italic;">${exp.purpose}</p>
+        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(exp.title || '')}</h3>
+        <p style="margin: 0.5rem 0; color: var(--muted); line-height: 1.6;">${SecurityUtils.sanitizeHTML(exp.description || '')}</p>
+        <p style="margin: 0.5rem 0 0 0; color: var(--muted); font-size: 0.9rem; font-style: italic;">${SecurityUtils.sanitizeHTML(exp.purpose || '')}</p>
       </div>
     `;
   }

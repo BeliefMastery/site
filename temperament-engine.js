@@ -967,8 +967,8 @@ export class TemperamentEngine {
       html += '</ul></div>';
     }
 
-      // Note: HTML is generated from trusted templates, sanitization applied to user content
-      container.innerHTML = html;
+      // Sanitize HTML before rendering - all dynamic content is already sanitized above
+      SecurityUtils.safeInnerHTML(container, html);
       this.saveProgress();
       
       // Display debug report if in development mode

@@ -1459,7 +1459,7 @@ export class ParadigmEngine {
     // Integration section
     html += this.getIntegrationSection();
     
-    container.innerHTML = html;
+    SecurityUtils.safeInnerHTML(container, html);
   }
 
   renderCategoryResults(category, title) {
