@@ -1,5 +1,5 @@
 // Coaching Engine - Version 2.0
-// Manages questionnaire flow, weighting, and profile generation for AI coaching agent
+// Manages questionnaire flow, weighting, and profile generation for Life Domain Review
 // Enhanced with lazy loading, error handling, and debug reporting
 
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
@@ -1083,20 +1083,20 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
   }
 
   exportJSON() {
-    const json = exportJSON(this.profileData, 'coaching', 'Personal Coaching Agent Builder');
+    const json = exportJSON(this.profileData, 'life-domain-review', 'Life Domain Review');
     downloadFile(json, `coaching-profile-${Date.now()}.json`, 'application/json');
   }
 
   exportCSV() {
     // Use shared export utility for consistency, but keep existing detailed CSV format
-    const csv = exportForAIAgent(this.profileData, 'coaching', 'Personal Coaching Agent Builder');
+    const csv = exportForAIAgent(this.profileData, 'life-domain-review', 'Life Domain Review');
     downloadFile(csv, `coaching-profile-${Date.now()}.csv`, 'text/csv');
   }
 
   exportCSV_legacy() {
     // Legacy detailed CSV export - keeping for reference but using shared utility above
     // Build CSV with comprehensive explanations
-    let csv = 'Personal Coaching Agent Profile\n';
+    let csv = 'Life Domain Review Profile\n';
     csv += 'Generated: ' + new Date().toISOString() + '\n';
     csv += '\n';
     csv += '=== HOW TO USE THIS DATA ===\n';

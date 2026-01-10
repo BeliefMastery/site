@@ -1452,13 +1452,13 @@ export class DiagnosisEngine {
     // Determine overall alignment level
     if (vector.primaryAlignment >= SCORING_THRESHOLDS.high_probability) {
       vector.overallAlignment = 'high';
-      vector.recommendation = 'High pattern alignment detected. Consider professional evaluation for clinical assessment.';
+      vector.recommendation = 'High pathology indicators detected. Consider professional evaluation for clinical assessment.';
     } else if (vector.primaryAlignment >= SCORING_THRESHOLDS.moderate_probability) {
       vector.overallAlignment = 'moderate';
-      vector.recommendation = 'Moderate pattern alignment. Professional consultation recommended for accurate assessment.';
+      vector.recommendation = 'Moderate pathology indicators. Professional consultation recommended for accurate assessment.';
     } else {
       vector.overallAlignment = 'low';
-      vector.recommendation = 'Low pattern alignment. Continue self-monitoring and reflection.';
+      vector.recommendation = 'Low pathology indicators. Continue self-monitoring and reflection.';
     }
     
     // Add comorbidity note to recommendation
@@ -1591,7 +1591,7 @@ export class DiagnosisEngine {
       });
     });
     
-    html += '<h3 style="margin-bottom: 1rem;">Pattern Alignment Results by Category</h3>';
+    html += '<h3 style="margin-bottom: 1rem;">Pathology Assessment Results by Category</h3>';
     
     Object.keys(categoryGroups).forEach(categoryName => {
       html += `<div style="margin-bottom: 1.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius); overflow: hidden;">`;
@@ -1974,14 +1974,14 @@ export class DiagnosisEngine {
       const exportData = {
         ...this.analysisData,
         nonDiagnosticLock: {
-          statement: "This profile reflects self-reported pattern alignment. It does not establish diagnosis, identity, or prognosis.",
+          statement: "This profile reflects self-reported pathology assessment. It does not establish diagnosis, identity, or prognosis.",
           forbiddenLanguage: ["You have", "You are"],
           replacementLanguage: "This pattern sometimes expresses as",
           questionFirstBias: "Agent must inquire before interpreting. Default to inquiry before suggestion."
         }
       };
       
-      const json = exportJSON(exportData, 'pattern-alignment', 'DSM-5 Pattern Alignment Assessment');
+      const json = exportJSON(exportData, 'pathology-assessment', 'Pathology Assessment');
       downloadFile(json, `diagnosis-analysis-${Date.now()}.json`, 'application/json');
     }
   }

@@ -266,7 +266,7 @@ function generateChannelsExport(data) {
 }
 
 function generateParadigmExport(data) {
-  let csv = '=== PARADIGM CLARIFICATION DATA ===\n';
+  let csv = '=== LOGOS STRUCTURE DATA ===\n';
   
   // Include ALL questions with their answers (ensure comprehensive coverage)
   if (data.questionSequence && data.questionSequence.length > 0) {
@@ -646,7 +646,7 @@ function generateNeedsDependencyExport(data) {
 }
 
 function generateArchetypeExport(data) {
-  let csv = '=== ARCHETYPE ANALYSIS DATA ===\n';
+  let csv = '=== MODERN ARCHETYPE IDENTIFICATION DATA ===\n';
   
   // Include ALL questions with their answers (ensure comprehensive coverage)
   if (data.questionSequence && data.questionSequence.length > 0) {

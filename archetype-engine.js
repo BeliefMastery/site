@@ -1,4 +1,4 @@
-// Archetype Analysis Engine
+// Modern Archetype Identification Engine
 // Multi-Tier Assessment System for identifying primary, secondary, and tertiary archetypes
 // Version 1.1 - Optimized with lazy loading and debug reporting
 
@@ -1687,12 +1687,12 @@ export class ArchetypeEngine {
     }
 
     if (format === 'json') {
-      const json = exportJSON(this.analysisData, 'archetype-analysis', 'Archetype Analysis');
+      const json = exportJSON(this.analysisData, 'modern-archetype-identification', 'Modern Archetype Identification');
       downloadFile(json, `archetype-analysis-${Date.now()}.json`, 'application/json');
     } else if (format === 'csv') {
       // Use shared export utility to ensure question-answer pairs are included
       // Note: Need to add archetype support to export-utils.js or use generic format
-      const csv = exportForAIAgent(this.analysisData, 'archetype', 'Archetype Analysis');
+      const csv = exportForAIAgent(this.analysisData, 'modern-archetype-identification', 'Modern Archetype Identification');
       downloadFile(csv, `archetype-analysis-${Date.now()}.csv`, 'text/csv');
     }
   }

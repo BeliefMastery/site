@@ -1,5 +1,5 @@
 // Sovereignty Spectrum Engine - Version 1.0
-// Maps users on 0-100 spectrum from Nihilistic Fragmentation to Paradigm-Integrated Sovereignty
+// Identifies user's sovereignty paradigm and measures their integration level with that identified paradigm
 // Enhanced with lazy loading, error handling, and debug reporting
 
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
@@ -999,21 +999,13 @@ export class SovereigntySpectrumEngine {
     if (resultsSection) resultsSection.classList.add('active');
     
     let html = '<div class="spectrum-results">';
-    html += '<h3>Sovereignty Spectrum Analysis Results</h3>';
-    html += '<p>Based on your responses, here is your position on the sovereignty spectrum.</p>';
+    html += '<h3>Your Sovereignty Paradigm Results</h3>';
+    html += '<p>Based on your responses, here is your identified sovereignty paradigm and your integration level with that paradigm.</p>';
     
-    // Spectrum bar
-    html += '<div class="spectrum-bar-container">';
-    html += `<div class="spectrum-label">${SecurityUtils.sanitizeHTML(this.analysisData.spectrumLabel)}</div>`;
-    html += `<div class="spectrum-bar">`;
-    html += `<div class="spectrum-fill" style="width: ${this.spectrumPosition}%"></div>`;
-    html += `<div class="spectrum-value">${this.spectrumPosition.toFixed(1)}/100</div>`;
-    html += `</div>`;
-    html += '</div>';
-    
-    // Selected paradigms
+    // Selected paradigms (show first - identification is primary)
     html += '<div class="selected-paradigms">';
-    html += '<h4>Your Selected Paradigms</h4>';
+    html += '<h4>Your Identified Sovereignty Paradigm(s)</h4>';
+    html += '<p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem;">These are the paradigms that best describe your approach to sovereignty. This is about identification and clarification, not ranking paradigms as superior or inferior.</p>';
     this.selectedParadigms.forEach(paradigmId => {
       const paradigm = SOVEREIGNTY_PARADIGMS.find(p => p.id === paradigmId);
       if (paradigm) {
@@ -1025,8 +1017,19 @@ export class SovereigntySpectrumEngine {
     });
     html += '</div>';
     
+    // Integration level (secondary - how well they live according to their identified paradigm)
+    html += '<div class="spectrum-bar-container" style="margin-top: 2rem;">';
+    html += '<h4>Integration Level with Your Identified Paradigm</h4>';
+    html += '<p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem;">This measures how consistently you live according to your identified paradigm, accounting for value-action alignment and derailing forces. It does not rank paradigms themselves.</p>';
+    html += `<div class="spectrum-label">${SecurityUtils.sanitizeHTML(this.analysisData.spectrumLabel)}</div>`;
+    html += `<div class="spectrum-bar">`;
+    html += `<div class="spectrum-fill" style="width: ${this.spectrumPosition}%"></div>`;
+    html += `<div class="spectrum-value">${this.spectrumPosition.toFixed(1)}/100</div>`;
+    html += `</div>`;
+    html += '</div>';
+    
     // Derailer scores
-    html += '<div class="derailer-scores">';
+    html += '<div class="derailer-scores" style="margin-top: 2rem;">';
     html += '<h4>Derailer Analysis</h4>';
     Object.entries(this.derailerScores).forEach(([key, score]) => {
       const derailer = DERAILERS[key];
@@ -1069,7 +1072,7 @@ export class SovereigntySpectrumEngine {
    */
   exportAnalysis(format = 'json') {
     if (format === 'csv') {
-      const csv = exportForAIAgent(this.analysisData, 'sovereignty-spectrum', 'Sovereignty Spectrum Analysis');
+      const csv = exportForAIAgent(this.analysisData, 'sovereignty-paradigm', 'Technical Title for your Sovereignty Paradigm');
       downloadFile(csv, 'sovereignty-spectrum-analysis.csv', 'text/csv');
     } else {
       const json = exportJSON(this.analysisData, 'sovereignty-spectrum-analysis');

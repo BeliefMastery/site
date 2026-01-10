@@ -1707,10 +1707,10 @@ export class ParadigmEngine {
 
   exportAnalysis(format = 'json') {
     if (format === 'csv') {
-      const csv = exportForAIAgent(this.analysisData, 'paradigm', 'Paradigm Clarification System');
+      const csv = exportForAIAgent(this.analysisData, 'logos-structure', 'Logos Structure');
       downloadFile(csv, `paradigm-analysis-${Date.now()}.csv`, 'text/csv');
     } else {
-      const json = exportJSON(this.analysisData, 'paradigm', 'Paradigm Clarification System');
+      const json = exportJSON(this.analysisData, 'logos-structure', 'Logos Structure');
       downloadFile(json, `paradigm-analysis-${Date.now()}.json`, 'application/json');
     }
   }
