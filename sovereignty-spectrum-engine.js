@@ -577,28 +577,45 @@ export class SovereigntySpectrumEngine {
    * @returns {string} HTML string
    */
   renderLikertQuestion(question, currentAnswer) {
-    const value = currentAnswer || 3;
+    // Ensure currentAnswer is properly parsed as a number or null if undefined/null
+    // Convert to number if it's a string, otherwise use null if undefined/null
+    let value = null;
+    if (currentAnswer !== undefined && currentAnswer !== null) {
+      value = typeof currentAnswer === 'string' ? parseInt(currentAnswer, 10) : Number(currentAnswer);
+      // Only use if it's a valid number between 1-5
+      if (isNaN(value) || value < 1 || value > 5) {
+        value = null;
+      }
+    }
+    
+    // Build checked attribute only if value matches exactly (strict equality)
+    const checked1 = value === 1 ? 'checked' : '';
+    const checked2 = value === 2 ? 'checked' : '';
+    const checked3 = value === 3 ? 'checked' : '';
+    const checked4 = value === 4 ? 'checked' : '';
+    const checked5 = value === 5 ? 'checked' : '';
+    
     return `
       <div class="likert-container">
         <div class="likert-scale">
           <label class="likert-option">
-            <input type="radio" name="question_${question.id}" value="1" ${value === 1 ? 'checked' : ''} data-question-id="${question.id}">
+            <input type="radio" name="question_${question.id}" value="1" ${checked1} data-question-id="${question.id}">
             <span>1 - Strongly Disagree</span>
           </label>
           <label class="likert-option">
-            <input type="radio" name="question_${question.id}" value="2" ${value === 2 ? 'checked' : ''} data-question-id="${question.id}">
+            <input type="radio" name="question_${question.id}" value="2" ${checked2} data-question-id="${question.id}">
             <span>2 - Disagree</span>
           </label>
           <label class="likert-option">
-            <input type="radio" name="question_${question.id}" value="3" ${value === 3 ? 'checked' : ''} data-question-id="${question.id}">
+            <input type="radio" name="question_${question.id}" value="3" ${checked3} data-question-id="${question.id}">
             <span>3 - Neutral</span>
           </label>
           <label class="likert-option">
-            <input type="radio" name="question_${question.id}" value="4" ${value === 4 ? 'checked' : ''} data-question-id="${question.id}">
+            <input type="radio" name="question_${question.id}" value="4" ${checked4} data-question-id="${question.id}">
             <span>4 - Agree</span>
           </label>
           <label class="likert-option">
-            <input type="radio" name="question_${question.id}" value="5" ${value === 5 ? 'checked' : ''} data-question-id="${question.id}">
+            <input type="radio" name="question_${question.id}" value="5" ${checked5} data-question-id="${question.id}">
             <span>5 - Strongly Agree</span>
           </label>
         </div>
@@ -680,8 +697,15 @@ export class SovereigntySpectrumEngine {
    */
   nextQuestion() {
     const currentQuestion = this.questionSequence[this.currentQuestionIndex];
-    if (currentQuestion && !this.answers[currentQuestion.id]) {
-      ErrorHandler.showUserError('Please answer the current question before continuing.');
+    if (!currentQuestion) {
+      return;
+    }
+    
+    // Check if answer exists and is valid (not null, undefined, empty string, or invalid)
+    const answer = this.answers[currentQuestion.id];
+    if (answer === undefined || answer === null || answer === '' || 
+        (typeof answer === 'number' && (isNaN(answer) || answer < 1 || answer > 5))) {
+      ErrorHandler.showUserError('Please select an answer before continuing.');
       return;
     }
     
