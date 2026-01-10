@@ -1,5 +1,5 @@
-// AI Sovereignty Analysis Engine
-// Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and sovereignty capacity
+// Cognitive Resistance Capacity Assessment Engine
+// Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and resistance capacity
 
 import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
@@ -1357,7 +1357,7 @@ export class SovereigntyEngine {
     // Calculate vulnerability risks
     this.analysisData.vulnerabilityRisks = this.calculateVulnerabilityRisks();
     
-    // Calculate sovereignty score (0-100)
+    // Calculate resistance capacity score (0-100)
     this.analysisData.sovereigntyScore = this.calculateSovereigntyScore();
     
     // Determine sovereign split position
@@ -1464,7 +1464,7 @@ export class SovereigntyEngine {
   }
 
   calculateSovereigntyScore() {
-    // Calculate sovereignty score (0-100)
+    // Calculate resistance capacity score (0-100)
     // Based on sovereignty indicators, dependency, and attachment
     let score = 50; // Base score
     
@@ -1539,7 +1539,7 @@ export class SovereigntyEngine {
         </div>
 
         <div class="sovereignty-score" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
-          <h3 style="color: var(--brand); margin-top: 0;">Sovereignty Score</h3>
+          <h3 style="color: var(--brand); margin-top: 0;">Resistance Capacity Score</h3>
           <div style="font-size: 3rem; font-weight: 700; color: var(--brand); margin: 1rem 0;">${sovereigntyScore}/100</div>
           <div style="width: 100%; height: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; margin: 1rem 0;">
             <div style="width: ${sovereigntyScore}%; height: 100%; background: var(--brand); transition: width 0.5s;"></div>
@@ -1594,7 +1594,7 @@ export class SovereigntyEngine {
       recommendations.push({
         priority: 'Critical',
         title: 'Immediate Sovereignty Building',
-        description: 'Your sovereignty score is low. Implement daily practices to maintain independence.',
+        description: 'Your resistance capacity score is low. Implement daily practices to build cognitive resistance and maintain independence.',
         practices: [
           'One 48-hour AI-free period per month',
           'Daily analog practice (handwriting, physical art)',
@@ -1871,11 +1871,11 @@ export class SovereigntyEngine {
 
   exportAnalysis(format) {
     if (format === 'json') {
-      const json = exportJSON(this.analysisData, 'sovereignty-analysis', 'AI Sovereignty Analysis');
+      const json = exportJSON(this.analysisData, 'cognitive-resistance-capacity-assessment', 'Cognitive Resistance Capacity Assessment');
       downloadFile(json, `sovereignty-analysis-${Date.now()}.json`, 'application/json');
     } else if (format === 'csv') {
       // Use shared export utility to ensure question-answer pairs are included
-      const csv = exportForAIAgent(this.analysisData, 'sovereignty', 'AI Sovereignty Analysis');
+      const csv = exportForAIAgent(this.analysisData, 'cognitive-resistance-capacity', 'Cognitive Resistance Capacity Assessment');
       downloadFile(csv, `sovereignty-analysis-${Date.now()}.csv`, 'text/csv');
     }
   }
@@ -1887,12 +1887,12 @@ export class SovereigntyEngine {
       ['Timestamp', this.analysisData.timestamp],
       ['Cognitive Band', this.analysisData.cognitiveBand?.name || ''],
       ['IQ Range', this.analysisData.cognitiveBand?.iqRange || ''],
-      ['Sovereignty Score', this.analysisData.sovereigntyScore],
+      ['Resistance Capacity Score', this.analysisData.sovereigntyScore],
       ['Attachment Mode', this.analysisData.attachmentMode],
       ['Sovereign Split Position', this.analysisData.sovereignSplitPosition?.name || ''],
       ['Dependency Score', this.scores.dependency],
       ['Attachment Score', this.scores.attachment],
-      ['Sovereignty Score', this.scores.sovereignty],
+      ['Resistance Capacity Score', this.scores.sovereignty],
       ['Cognitive Complexity', this.scores.cognitiveComplexity]
     ];
     
