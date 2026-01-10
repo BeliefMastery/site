@@ -571,6 +571,88 @@ export class SovereigntySpectrumEngine {
   }
 
   /**
+   * Determine appropriate scale type based on question text or explicit scaleType
+   * @param {Object} question - Question object
+   * @returns {string} Scale type: 'agreement', 'frequency', 'extent', or 'practice'
+   */
+  determineScaleType(question) {
+    // If explicit scaleType is provided, use it
+    if (question.scaleType) {
+      return question.scaleType;
+    }
+    
+    const text = question.text.toLowerCase();
+    
+    // Practice/Behavioral frequency questions - use practice scale (highest priority)
+    // These indicate ongoing behaviors, practices, or regular activities
+    // Check for "I practice" at start, or "practice " followed by verb/noun
+    if (text.match(/^i practice|practice\s+(staying|thinking|helping|acting|prayer|kindness|living|unconditional|staying aware)|work on\s+(building|reducing|creating|helping)|regular daily|actively work on/)) {
+      return 'practice';
+    }
+    
+    // Frequency indicators with temporal words - use frequency scale
+    // "regularly think", "regularly", etc. (but not "practice... regularly" which is already caught above)
+    if (text.match(/\b(regularly|often|always|never|sometimes|daily|weekly|routinely|frequently|consistently|each moment|each time)\b/)) {
+      return 'frequency';
+    }
+    
+    // Extent/Intensity questions - use extent scale
+    // Questions about how much, to what degree, or how well
+    if (text.match(/\b(try to|attempt|strive|seek|aim to|work toward|understand|feel\s+(free|connected)|see myself as|do things well|find balance)\b/)) {
+      return 'extent';
+    }
+    
+    // Belief/Opinion/Agreement questions - use agreement scale (default)
+    // Questions about what you believe, think, prefer, judge, prioritize, or value
+    if (text.match(/\b(believe|think\s+(about|that)|prefer|agree|disagree|consider|judge|prioritize|see as|choose|should|matters more|is a mistake|value|take responsibility|do what's right)\b/)) {
+      return 'agreement';
+    }
+    
+    // Default to agreement scale
+    return 'agreement';
+  }
+
+  /**
+   * Get scale labels for a given scale type
+   * @param {string} scaleType - Type of scale: 'agreement', 'frequency', 'extent', or 'practice'
+   * @returns {Object} Object with labels for values 1-5
+   */
+  getScaleLabels(scaleType) {
+    const scales = {
+      'agreement': {
+        1: 'Strongly Disagree',
+        2: 'Disagree',
+        3: 'Neutral',
+        4: 'Agree',
+        5: 'Strongly Agree'
+      },
+      'frequency': {
+        1: 'Never',
+        2: 'Rarely',
+        3: 'Sometimes',
+        4: 'Often',
+        5: 'Always'
+      },
+      'extent': {
+        1: 'Not at all',
+        2: 'A little',
+        3: 'Somewhat',
+        4: 'Mostly',
+        5: 'Completely'
+      },
+      'practice': {
+        1: 'Not at all',
+        2: 'Rarely',
+        3: 'Sometimes',
+        4: 'Often',
+        5: 'Every opportunity'
+      }
+    };
+    
+    return scales[scaleType] || scales['agreement'];
+  }
+
+  /**
    * Render Likert scale question
    * @param {Object} question - Question object
    * @param {number} currentAnswer - Current answer value
@@ -588,6 +670,10 @@ export class SovereigntySpectrumEngine {
       }
     }
     
+    // Determine scale type and get labels
+    const scaleType = this.determineScaleType(question);
+    const labels = this.getScaleLabels(scaleType);
+    
     // Build checked attribute only if value matches exactly (strict equality)
     const checked1 = value === 1 ? 'checked' : '';
     const checked2 = value === 2 ? 'checked' : '';
@@ -600,23 +686,23 @@ export class SovereigntySpectrumEngine {
         <div class="likert-scale">
           <label class="likert-option">
             <input type="radio" name="question_${question.id}" value="1" ${checked1} data-question-id="${question.id}">
-            <span>1 - Strongly Disagree</span>
+            <span>1 - ${SecurityUtils.sanitizeHTML(labels[1])}</span>
           </label>
           <label class="likert-option">
             <input type="radio" name="question_${question.id}" value="2" ${checked2} data-question-id="${question.id}">
-            <span>2 - Disagree</span>
+            <span>2 - ${SecurityUtils.sanitizeHTML(labels[2])}</span>
           </label>
           <label class="likert-option">
             <input type="radio" name="question_${question.id}" value="3" ${checked3} data-question-id="${question.id}">
-            <span>3 - Neutral</span>
+            <span>3 - ${SecurityUtils.sanitizeHTML(labels[3])}</span>
           </label>
           <label class="likert-option">
             <input type="radio" name="question_${question.id}" value="4" ${checked4} data-question-id="${question.id}">
-            <span>4 - Agree</span>
+            <span>4 - ${SecurityUtils.sanitizeHTML(labels[4])}</span>
           </label>
           <label class="likert-option">
             <input type="radio" name="question_${question.id}" value="5" ${checked5} data-question-id="${question.id}">
-            <span>5 - Strongly Agree</span>
+            <span>5 - ${SecurityUtils.sanitizeHTML(labels[5])}</span>
           </label>
         </div>
       </div>
