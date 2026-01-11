@@ -95,17 +95,33 @@
     
     /* Tool card styling */
     .tool-card{
-      background:rgba(255,255,255,0.1);
+      background:rgba(25, 35, 50, 0.85);
       border:2px solid var(--accent);
       border-radius:var(--radius);
       padding:1.5rem;
       backdrop-filter:blur(8px);
       cursor:pointer;
       transition:all var(--transition);
+      color:var(--brand);
     }
     .tool-card:hover{
       transform:scale(1.02);
-      box-shadow:0 4px 16px rgba(0,0,0,0.1);
+      box-shadow:0 4px 16px rgba(0,0,0,0.4);
+      background:rgba(30, 40, 55, 0.9);
+    }
+    /* Ensure all text in tool cards is readable (light colors override inline dark styles) */
+    .tool-card,
+    .tool-card p,
+    .tool-card li,
+    .tool-card ul,
+    .tool-card strong{
+      color:var(--brand) !important;
+    }
+    .tool-card p:not(.tool-card h3 + p){
+      color:var(--muted) !important;
+    }
+    .tool-card h3{
+      color:var(--brand) !important;
     }
     .tool-details{
       display:none;

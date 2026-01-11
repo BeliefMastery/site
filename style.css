@@ -475,6 +475,25 @@ section#books .section-inner{
   transition:var(--transition);
 }
 
+/* Invert card contrast when nested inside sections (dark theme) */
+section .card,
+.section-inner .card{
+  background:rgba(25, 35, 50, 0.85);
+  color:var(--brand);
+  border:1px solid rgba(50, 100, 220, 0.2);
+  box-shadow:0 8px 26px rgba(0,0,0,0.3);
+}
+
+section .card strong,
+.section-inner .card strong{
+  color:#e0e8f0;
+}
+
+section .card p,
+.section-inner .card p{
+  color:var(--muted);
+}
+
 .card:hover{
   transform:translateY(-2px);
   z-index:1000;
