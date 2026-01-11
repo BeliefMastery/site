@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -178,11 +178,11 @@
 
   <header class="site-header" role="banner">
     <nav class="nav" aria-label="Primary navigation">
-      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">?</button>
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="index.html">Home</a></li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">▼</span></a>
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">?</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
             <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
@@ -194,26 +194,20 @@
           </ul>
         </li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">▼</span></a>
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">?</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
-            <li role="separator" style="border-top:1px solid rgba(255,255,255,0.2);margin:0.5rem 0;"><span style="padding:0.5rem 1rem;font-size:0.85rem;color:var(--muted);font-weight:600;">Psychological</span></li>
             <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
             <li role="none"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
             <li role="none"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
-            <li role="separator" style="border-top:1px solid rgba(255,255,255,0.2);margin:0.5rem 0;"><span style="padding:0.5rem 1rem;font-size:0.85rem;color:var(--muted);font-weight:600;">Defensive/Protective</span></li>
             <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
-            <li role="separator" style="border-top:1px solid rgba(255,255,255,0.2);margin:0.5rem 0;"><span style="padding:0.5rem 1rem;font-size:0.85rem;color:var(--muted);font-weight:600;">Philosophical</span></li>
             <li role="none"><a role="menuitem" href="sovereignty-spectrum.html">Technical Title for your Sovereignty Paradigm</a></li>
             <li role="none"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
-            <li role="separator" style="border-top:1px solid rgba(255,255,255,0.2);margin:0.5rem 0;"><span style="padding:0.5rem 1rem;font-size:0.85rem;color:var(--muted);font-weight:600;">Relational</span></li>
             <li role="none"><a role="menuitem" href="relationship.html">Relationship Bottleneck Analysis</a></li>
             <li role="none"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
             <li role="none"><a role="menuitem" href="archetype.html" class="active">Modern Archetype Identification</a></li>
-            <li role="separator" style="border-top:1px solid rgba(255,255,255,0.2);margin:0.5rem 0;"><span style="padding:0.5rem 1rem;font-size:0.85rem;color:var(--muted);font-weight:600;">Esoteric</span></li>
             <li role="none"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
             <li role="none"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
-            <li role="separator" style="border-top:1px solid rgba(255,255,255,0.2);margin:0.5rem 0;"><span style="padding:0.5rem 1rem;font-size:0.85rem;color:var(--muted);font-weight:600;">Technological/AI</span></li>
             <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
             <li role="none"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity Assessment</a></li>
           </ul>
@@ -226,7 +220,7 @@
   <main style="position: relative; z-index: 2;">
     <div class="archetype-container">
       <div style="text-align: center; margin-bottom: 2rem;">
-        <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" style="max-width: 300px; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1); display: block; margin: 0 auto;">
+        $10 auto 2rem auto 2rem auto;">
       </div>
       <section class="intro-section">
         <h2>Modern Archetype Identification</h2>
@@ -346,7 +340,7 @@
       console.log('Start button style:', startBtn?.style.cssText);
       
       if (!startBtn) {
-        console.error('❌ START BUTTON NOT FOUND IN DOM!');
+        console.error('? START BUTTON NOT FOUND IN DOM!');
         console.log('Available elements with IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
         return;
       }
@@ -362,7 +356,7 @@
       
       // Method 1: addEventListener
       startBtn.addEventListener('click', function(e) {
-        console.log('✅ CLICK EVENT FIRED (addEventListener)');
+        console.log('? CLICK EVENT FIRED (addEventListener)');
         console.log('Event:', e);
         console.log('Target:', e.target);
         e.preventDefault();
@@ -377,14 +371,14 @@
             console.error('Error calling startAssessment:', error);
           }
         } else {
-          console.error('❌ Engine not found on window object');
+          console.error('? Engine not found on window object');
         }
       });
       console.log('addEventListener attached');
       
       // Method 2: onclick (backup)
       startBtn.onclick = function(e) {
-        console.log('✅ CLICK EVENT FIRED (onclick)');
+        console.log('? CLICK EVENT FIRED (onclick)');
         console.log('Event:', e);
         e.preventDefault();
         e.stopPropagation();
