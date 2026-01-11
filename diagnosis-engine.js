@@ -2034,7 +2034,7 @@ export class DiagnosisEngine {
       <div style="text-align: center; margin-top: 2rem;">
         <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
       </div>
-    `;
+    `);
     
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
