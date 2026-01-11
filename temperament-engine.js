@@ -482,7 +482,7 @@ export class TemperamentEngine {
         </p>
         <button class="btn btn-primary" id="continueToPhase2" style="min-width: 200px;">Continue to Detailed Assessment</button>
       </div>
-    `;
+    `);
     
     const continueBtn = document.getElementById('continueToPhase2');
     if (continueBtn) {

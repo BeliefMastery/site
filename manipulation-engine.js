@@ -1261,8 +1261,7 @@ export class ManipulationEngine {
         this.renderCurrentQuestion();
       }
     } catch (e) {
-        console.error('Error loading stored data:', e);
-      }
+      console.error('Error loading stored data:', e);
     }
   }
 
