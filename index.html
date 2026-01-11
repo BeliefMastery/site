@@ -100,12 +100,12 @@
       background: 
         /* Deep space base - lighter */
         radial-gradient(ellipse 120% 100% at 50% 0%, rgba(20, 20, 25, 1) 0%, rgba(15, 15, 20, 1) 40%, rgba(12, 12, 18, 1) 100%),
-        /* Primary nebula cloud - golden accent */
-        radial-gradient(ellipse 80% 60% at 25% 35%, rgba(255, 184, 0, 0.18) 0%, rgba(255, 200, 50, 0.12) 30%, transparent 70%),
-        /* Secondary nebula cloud - subtle amber */
-        radial-gradient(ellipse 70% 50% at 75% 55%, rgba(255, 200, 80, 0.15) 0%, rgba(255, 184, 0, 0.10) 35%, transparent 65%),
-        /* Tertiary cloud - deep space glow */
-        radial-gradient(ellipse 60% 80% at 50% 80%, rgba(255, 220, 100, 0.12) 0%, rgba(255, 184, 0, 0.08) 40%, transparent 70%),
+        /* Primary nebula cloud - blue-white accent */
+        radial-gradient(ellipse 80% 60% at 25% 35%, rgba(200, 225, 255, 0.25) 0%, rgba(135, 206, 250, 0.18) 30%, transparent 70%),
+        /* Secondary nebula cloud - cyan-blue */
+        radial-gradient(ellipse 70% 50% at 75% 55%, rgba(100, 149, 237, 0.22) 0%, rgba(70, 130, 180, 0.15) 35%, transparent 65%),
+        /* Tertiary cloud - deep blue glow */
+        radial-gradient(ellipse 60% 80% at 50% 80%, rgba(30, 144, 255, 0.18) 0%, rgba(0, 191, 255, 0.12) 40%, transparent 70%),
         /* Ambient starfield base */
         radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
         /* Cosmic gradient overlay - lighter */
@@ -434,10 +434,11 @@
         }
       `;
       
-      // Fragment Shader (nebula with golden/amber colors, gentle movement)
+      // Fragment Shader (nebula with blue-white colors, scroll-enhanced movement)
       const fsSource = `
         precision mediump float;
         uniform float time;
+        uniform float scrollY;
         uniform vec2 resolution;
         varying vec2 uv;
         
@@ -465,17 +466,20 @@
         
         void main() {
           vec2 pos = uv * resolution / min(resolution.x, resolution.y); // Aspect-correct
-          pos += vec2(time * 0.02, sin(time * 0.01) * 0.5); // Gentle horizontal drift + subtle vertical wave
-          float n = fbm(pos * 1.5 + time * 0.005); // Slow, layered noise for clouds
+          // Enhanced scroll-based parallax movement (scroll affects vertical position)
+          float scrollOffset = scrollY * 0.0003; // Parallax effect - adjust multiplier for speed
+          pos += vec2(time * 0.02, sin(time * 0.01) * 0.5 + scrollOffset); // Horizontal drift + scroll parallax
+          float n = fbm(pos * 1.5 + time * 0.005 + scrollY * 0.0001); // Scroll also affects noise offset
           
-          // Golden/amber color scheme (matching site theme)
-          vec3 color1 = vec3(0.08, 0.08, 0.10); // Deep space base (slightly warm)
-          vec3 color2 = vec3(1.0, 0.72, 0.0) * 0.4; // Golden glow (rgba(255, 184, 0) normalized)
-          vec3 color3 = vec3(1.0, 0.86, 0.39) * 0.3; // Soft amber (rgba(255, 220, 100) normalized)
-          vec3 color = mix(color1, mix(color2, color3, n * 0.6), smoothstep(0.3, 0.7, n));
+          // Blue-white color scheme (matching image frames)
+          vec3 color1 = vec3(0.08, 0.10, 0.14); // Deep blue space base
+          vec3 color2 = vec3(0.78, 0.88, 1.0) * 0.5; // Light blue-white (rgba(200, 225, 255) normalized)
+          vec3 color3 = vec3(0.12, 0.56, 1.0) * 0.4; // Bright blue (rgba(30, 144, 255) normalized)
+          vec3 color4 = vec3(0.0, 0.75, 1.0) * 0.35; // Cyan-blue (rgba(0, 191, 255) normalized)
+          vec3 color = mix(color1, mix(mix(color2, color3, n * 0.5), color4, n * 0.3), smoothstep(0.3, 0.7, n));
           
-          // Subtle horizontal streaks for depth
-          color += vec3(0.05, 0.04, 0.02) * sin(pos.y * 10.0 + time * 0.1);
+          // Blue-tinted horizontal streaks for depth
+          color += vec3(0.03, 0.05, 0.07) * sin(pos.y * 10.0 + time * 0.1 + scrollY * 0.0002);
           
           // Soft fade at edges for seamless blending
           float edgeFade = smoothstep(0.0, 0.1, uv.x) * smoothstep(1.0, 0.9, uv.x) *
@@ -528,7 +532,16 @@
       
       // Uniforms
       const timeLocation = gl.getUniformLocation(program, 'time');
+      const scrollYLocation = gl.getUniformLocation(program, 'scrollY');
       const resolutionLocation = gl.getUniformLocation(program, 'resolution');
+      
+      // Scroll tracking for parallax effect
+      let scrollY = 0;
+      function updateScroll() {
+        scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      }
+      window.addEventListener('scroll', updateScroll, { passive: true });
+      updateScroll();
       
       // Animation loop
       let startTime = Date.now();
@@ -536,6 +549,7 @@
       function render() {
         const elapsed = (Date.now() - startTime) / 1000;
         gl.uniform1f(timeLocation, elapsed);
+        gl.uniform1f(scrollYLocation, scrollY);
         gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         animationId = requestAnimationFrame(render);
@@ -546,6 +560,7 @@
       window.addEventListener('beforeunload', () => {
         if (animationId) cancelAnimationFrame(animationId);
         window.removeEventListener('resize', resize);
+        window.removeEventListener('scroll', updateScroll);
       });
     })();
 
