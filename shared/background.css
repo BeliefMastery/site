@@ -50,7 +50,7 @@
     center,
     center;
   pointer-events:none;
-  animation: nebulaDrift 40s ease-in-out infinite, nebulaBreath 10s ease-in-out infinite alternate;
+  animation: nebulaDrift 25s ease-in-out infinite, nebulaBreath 6s ease-in-out infinite alternate;
   will-change: background-position, opacity;
 }
 
