@@ -384,7 +384,83 @@
 
   <!-- ---------- Scripts (deferred via placement at bottom; non-blocking) ---------- -->
   <script>
-    // Background is now CSS gradient - no image loading needed
+    // Lightweight nebula canvas enhancement (optional, gracefully degrades)
+    (function() {
+      const canvas = document.getElementById('nebula-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      let animationId = null;
+      let time = 0;
+      
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      function render() {
+        time += 0.01;
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        ctx.clearRect(0, 0, width, height);
+        
+        // Create gradient for nebula glow
+        const gradient = ctx.createRadialGradient(
+          width * (0.25 + Math.sin(time * 0.2) * 0.1),
+          height * (0.35 + Math.cos(time * 0.15) * 0.1),
+          0,
+          width * (0.25 + Math.sin(time * 0.2) * 0.1),
+          height * (0.35 + Math.cos(time * 0.15) * 0.1),
+          width * 0.6
+        );
+        
+        gradient.addColorStop(0, 'rgba(255, 184, 0, 0.15)');
+        gradient.addColorStop(0.5, 'rgba(255, 200, 80, 0.08)');
+        gradient.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Secondary glow
+        const gradient2 = ctx.createRadialGradient(
+          width * (0.75 + Math.cos(time * 0.25) * 0.1),
+          height * (0.55 + Math.sin(time * 0.2) * 0.1),
+          0,
+          width * (0.75 + Math.cos(time * 0.25) * 0.1),
+          height * (0.55 + Math.sin(time * 0.2) * 0.1),
+          width * 0.5
+        );
+        
+        gradient2.addColorStop(0, 'rgba(255, 220, 100, 0.12)');
+        gradient2.addColorStop(0.6, 'rgba(255, 184, 0, 0.06)');
+        gradient2.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = gradient2;
+        ctx.fillRect(0, 0, width, height);
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      // Start animation (throttled to ~30fps for performance)
+      let lastTime = 0;
+      function animate(currentTime) {
+        if (currentTime - lastTime >= 33) { // ~30fps
+          render();
+          lastTime = currentTime;
+        }
+        animationId = requestAnimationFrame(animate);
+      }
+      animationId = requestAnimationFrame(animate);
+      
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', () => {
+        if (animationId) cancelAnimationFrame(animationId);
+      });
+    })();
 
     // Active nav highlighting based on center intersection
     (function(){
