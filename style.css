@@ -217,35 +217,37 @@ header.site-header{
   transition:var(--transition);
 }
 
-/* Mobile navigation styles */
+/* Mobile navigation styles - replicate desktop layout */
 @media (max-width:768px){
   .nav-list{
-    display:none;
-    position:absolute;
-    top:100%;
-    left:0;
-    right:0;
-    flex-direction:column;
-    background:var(--glass);
-    padding:1rem;
-    box-shadow:0 4px 16px rgba(0,0,0,0.06);
-    z-index:1000;
-  }
-  .nav-list.open{
     display:flex;
-  }
-  .nav-list li{
-    width:100%;
+    flex-wrap:wrap;
+    gap:0.3rem;
+    justify-content:center;
   }
   .nav-list a{
-    display:block;
-    padding:1rem;
-    font-size:1.1rem;
-    border-radius:8px;
-    text-align:center;
+    padding:0.4rem 0.6rem;
+    font-size:0.75rem;
+    white-space:nowrap;
+  }
+  .dropdown-menu{
+    font-size:0.8rem;
+    min-width:180px;
+  }
+  .dropdown-menu a{
+    padding:0.6rem 1rem;
+    font-size:0.8rem;
   }
   .hamburger{
-    display:block;
+    display:none;
+  }
+  header.site-header{
+    height:auto;
+    min-height:68px;
+    padding:0.5rem 0.5rem;
+  }
+  .nav{
+    padding:0;
   }
 }
 
