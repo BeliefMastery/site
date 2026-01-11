@@ -92,38 +92,92 @@
   </script>
 
   <style>
-    /* ---------- Performance-optimized gradient background (Perplexity-style) ---------- */
+    /* ---------- Nebula-style cosmic background (Perplexity-inspired) ---------- */
     .bg-gradient{
       position:fixed;
       inset:0;
       z-index:0;
       background: 
-        radial-gradient(ellipse at top, rgba(17, 17, 17, 0.95) 0%, rgba(17, 17, 17, 0.98) 50%, rgba(10, 10, 10, 1) 100%),
-        radial-gradient(ellipse at 30% 40%, rgba(255, 184, 0, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 60%, rgba(255, 184, 0, 0.05) 0%, transparent 50%),
-        linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0f0f0f 100%);
-      background-size: 100% 100%, 80% 80%, 70% 70%, 100% 100%;
-      background-position: center, 30% 40%, 70% 60%, center;
+        /* Deep space base */
+        radial-gradient(ellipse 120% 100% at 50% 0%, rgba(10, 10, 15, 1) 0%, rgba(8, 8, 12, 1) 40%, rgba(5, 5, 10, 1) 100%),
+        /* Primary nebula cloud - golden accent */
+        radial-gradient(ellipse 80% 60% at 25% 35%, rgba(255, 184, 0, 0.12) 0%, rgba(255, 200, 50, 0.08) 30%, transparent 70%),
+        /* Secondary nebula cloud - subtle amber */
+        radial-gradient(ellipse 70% 50% at 75% 55%, rgba(255, 200, 80, 0.1) 0%, rgba(255, 184, 0, 0.06) 35%, transparent 65%),
+        /* Tertiary cloud - deep space glow */
+        radial-gradient(ellipse 60% 80% at 50% 80%, rgba(255, 220, 100, 0.08) 0%, rgba(255, 184, 0, 0.04) 40%, transparent 70%),
+        /* Ambient starfield base */
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        /* Cosmic gradient overlay */
+        linear-gradient(135deg, rgba(5, 5, 10, 0.95) 0%, rgba(8, 8, 15, 0.98) 50%, rgba(5, 5, 10, 0.95) 100%);
+      background-size: 
+        100% 100%,
+        90% 70%,
+        80% 65%,
+        85% 75%,
+        100% 100%,
+        100% 100%;
+      background-position: 
+        center,
+        25% 35%,
+        75% 55%,
+        50% 80%,
+        center,
+        center;
       pointer-events:none;
-      animation: subtleShift 20s ease-in-out infinite;
+      animation: nebulaDrift 25s ease-in-out infinite;
     }
     
-    @keyframes subtleShift {
+    @keyframes nebulaDrift {
       0%, 100% {
-        background-position: center, 30% 40%, 70% 60%, center;
+        background-position: 
+          center,
+          25% 35%,
+          75% 55%,
+          50% 80%,
+          center,
+          center;
         opacity: 1;
       }
-      50% {
-        background-position: center, 35% 45%, 65% 55%, center;
+      33% {
+        background-position: 
+          center,
+          30% 40%,
+          70% 50%,
+          45% 75%,
+          center,
+          center;
         opacity: 0.98;
       }
+      66% {
+        background-position: 
+          center,
+          20% 30%,
+          80% 60%,
+          55% 85%,
+          center,
+          center;
+        opacity: 0.99;
+      }
+    }
+    
+    /* Canvas overlay for enhanced nebula effect (optional enhancement) */
+    #nebula-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.4;
+      mix-blend-mode: screen;
     }
     
     .bg-overlay{
       position:fixed;
       inset:0;
       z-index:1;
-      background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 100%);
+      background: 
+        radial-gradient(ellipse at top, rgba(0, 0, 0, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.08) 100%);
       pointer-events:none;
     }
     
@@ -132,13 +186,24 @@
       position: relative;
       z-index: 2;
     }
+    
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      .bg-gradient {
+        animation: none;
+      }
+      #nebula-canvas {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Performance-optimized gradient background -->
+  <!-- Nebula-style cosmic background -->
   <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
   <div class="bg-overlay"></div>
 
     <header class="site-header" role="banner">
