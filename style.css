@@ -482,9 +482,18 @@ section .card,
     inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
+section .card:hover,
+.section-inner .card:hover{
+  background:rgba(25, 35, 50, 0.95);
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 40px rgba(30, 100, 220, 0.08);
+}
+
 section .card strong,
 .section-inner .card strong{
-  color:#e0e8f0;
+  color:var(--brand);
 }
 
 section .card p,
