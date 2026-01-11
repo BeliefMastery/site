@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Tool page: https://beliefmastery.github.io/site/diagnosis.html

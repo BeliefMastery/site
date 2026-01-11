@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# This book section is part of books.html
+# Full URL: https://beliefmastery.github.io/site/books.html#belief-mastery
