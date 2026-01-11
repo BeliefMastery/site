@@ -273,16 +273,6 @@ section{
   color:var(--brand);
 }
 
-/* Transparent sections for index.html */
-section.minimal-section,
-section#books,
-section#tools{
-  background:transparent !important;
-  box-shadow:none !important;
-  padding:0 !important;
-  margin:0 !important;
-}
-
 section:hover{
   box-shadow:0 12px 40px rgba(0,0,0,0.1);
 }
@@ -292,12 +282,6 @@ section:hover{
   margin:0 auto;
   background:var(--glass);
   color:var(--brand);
-}
-
-/* Transparent section-inner only for index.html minimal sections */
-section.minimal-section .section-inner,
-section#books .section-inner{
-  background:transparent !important;
 }
 
 /* ---------- Hero ---------- */
