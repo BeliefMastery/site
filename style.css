@@ -2,12 +2,12 @@
 
 /* ---------- Variables & Reset ---------- */
 :root{
-  --brand:#111;
-  --muted:#4a4a4a; /* Improved contrast for WCAG AA compliance */
+  --brand:#e0e8f0;
+  --muted:#b0b8c8; /* Improved contrast for WCAG AA compliance */
   --accent:#ffb800;
-  --bg:#fafafa;
-  --glass:rgba(255,255,255,0.92);
-  --shadow:0 8px 32px rgba(0,0,0,0.08);
+  --bg:#050810;
+  --glass:rgba(15, 20, 30, 0.92);
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
   --radius:12px;
   --transition: all .22s cubic-bezier(.4,0,.2,1);
 }
@@ -83,10 +83,10 @@ header.site-header{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78));
+  background:linear-gradient(180deg,rgba(15, 20, 30, 0.95),rgba(10, 15, 25, 0.90));
   backdrop-filter:blur(12px) saturate(1.1);
-  border-bottom:1px solid rgba(0,0,0,0.05);
-  box-shadow:0 6px 20px rgba(0,0,0,0.06);
+  border-bottom:1px solid rgba(50, 100, 220, 0.2);
+  box-shadow:0 6px 20px rgba(0,0,0,0.3);
   transition:var(--transition);
   padding:0 1rem;
 }
@@ -124,9 +124,10 @@ header.site-header{
   top:100%;
   left:0;
   margin-top:0.5rem;
-  background:var(--glass);
+  background:rgba(15, 20, 30, 0.98);
   backdrop-filter:blur(12px) saturate(1.1);
   border-radius:var(--radius);
+  border:1px solid rgba(50, 100, 220, 0.3);
   box-shadow:0 8px 32px rgba(0,0,0,0.12);
   list-style:none;
   padding:0.5rem 0;
@@ -268,6 +269,8 @@ section{
   position:relative;
   overflow:visible;
   transition:var(--transition);
+  border:1px solid rgba(50, 100, 220, 0.2);
+  color:var(--brand);
 }
 
 /* Transparent sections for index.html */
@@ -288,6 +291,7 @@ section:hover{
   max-width:980px;
   margin:0 auto;
   background:var(--glass);
+  color:var(--brand);
 }
 
 /* Transparent section-inner only for index.html minimal sections */

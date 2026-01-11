@@ -64,23 +64,25 @@
       max-width: 900px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
+      color: var(--brand);
     }
 
     .disclaimer-acknowledgement {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(15, 20, 30, 0.95);
       border-radius: var(--radius);
       padding: 1rem 1.5rem;
       margin-bottom: 2rem;
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
       border-left: 4px solid #d32f2f;
+      border: 1px solid rgba(50, 100, 220, 0.2);
       cursor: pointer;
       transition: var(--transition);
     }
 
     .disclaimer-acknowledgement:hover {
-      background: rgba(255, 255, 255, 0.98);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      background: rgba(20, 25, 35, 0.98);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     }
 
     .disclaimer-acknowledgement-text {
@@ -104,17 +106,19 @@
     }
 
     .disclaimer-section {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(15, 20, 30, 0.95);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
       border-left: 4px solid #d32f2f;
+      border: 1px solid rgba(50, 100, 220, 0.2);
       max-height: 0;
       overflow: hidden;
       opacity: 0;
       padding: 0;
       margin: 0;
       transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+      color: var(--brand);
     }
 
     .disclaimer-section.expanded {
@@ -195,12 +199,14 @@
     }
 
     .category-selection {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(15, 20, 30, 0.95);
       border-radius: var(--radius);
       padding: 2rem;
       margin-bottom: 2rem;
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
+      border: 1px solid rgba(50, 100, 220, 0.2);
+      color: var(--brand);
     }
 
     .category-selection h2 {
@@ -217,12 +223,13 @@
 
     .category-card {
       background: var(--glass);
-      border: 2px solid transparent;
+      border: 2px solid rgba(50, 100, 220, 0.3);
       border-radius: var(--radius);
       padding: 1.5rem;
       cursor: pointer;
       transition: var(--transition);
       text-align: center;
+      color: var(--brand);
     }
 
     .category-card:hover {
