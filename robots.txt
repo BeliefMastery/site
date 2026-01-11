@@ -1,112 +1,33 @@
-# robots.txt for Belief Mastery & Sovereign of Mind Website
-# Optimized for AI crawlers and search engines
-
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://beliefmastery.github.io/site/sitemap.xml
+
+# Disallow example reports (internal use)
+Disallow: /example-reports/
+
+# Disallow archive directories
+Disallow: /archive/
+Disallow: /PRBV/
+Disallow: /coaching/
+
+# Allow main pages and tools
 Allow: /index.html
+Allow: /books.html
+Allow: /tools.html
 Allow: /about-the-author.html
 Allow: /diagnosis.html
 Allow: /coaching.html
-Allow: /manipulation.html
-Allow: /channels.html
-Allow: /paradigm.html
-Allow: /paradigm-engine.js
-Allow: /paradigm-data/
-Allow: /relationship.html
-Allow: /relationship-engine.js
-Allow: /relationship-data/
-Allow: /temperament.html
-Allow: /temperament-engine.js
-Allow: /temperament-data/
 Allow: /needs-dependency.html
-Allow: /needs-dependency-engine-v2.js
-Allow: /needs-dependency-data/
+Allow: /manipulation.html
+Allow: /sovereignty-spectrum.html
+Allow: /paradigm.html
+Allow: /relationship.html
+Allow: /temperament.html
 Allow: /archetype.html
-Allow: /archetype-engine.js
-Allow: /archetype-data/
-Allow: /example-reports/
-Allow: /style.css
+Allow: /channels.html
+Allow: /character-sheet.html
+Allow: /sovereignty.html
 Allow: /images/
-Allow: /diagnosis-engine.js
-Allow: /treatment-database.js
-Allow: /coaching-engine.js
-Allow: /manipulation-engine.js
-Allow: /channels-engine.js
-Allow: /dsm5-data/
-Allow: /coaching-data/
-Allow: /manipulation-data/
-Allow: /channel-data/
-Allow: /paradigm-data/
-Allow: /relationship-data/
-
-# Allow all major AI crawlers
-User-agent: GPTBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: ChatGPT-User
-Allow: /
-Crawl-delay: 1
-
-User-agent: CCBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: anthropic-ai
-Allow: /
-Crawl-delay: 1
-
-User-agent: Claude-Web
-Allow: /
-Crawl-delay: 1
-
-User-agent: Google-Extended
-Allow: /
-Crawl-delay: 1
-
-User-agent: PerplexityBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Applebot-Extended
-Allow: /
-Crawl-delay: 1
-
-# Allow standard search engines
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Slurp
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
-
-# Disallow archive and development files
-Disallow: /archive/
-Disallow: /PRBV/
-Disallow: /files/
-Disallow: /*.html~
-Disallow: /*.bak
-Disallow: /index2.html
-Disallow: /indexzz.html
-Disallow: /agent-protocol.html
-Disallow: /ChatGPT.html
-Disallow: /claude.html
-Disallow: /gemini.html
-Disallow: /grok.html
-Disallow: /simulacra.html
-Disallow: /belief-mastery.html
-Disallow: /sovereign-of-mind.html
-Disallow: /distortion-codex.html
-Disallow: /purchase.html
-
-# Sitemap location (if you create one)
-# Sitemap: https://beliefmastery.github.io/site/sitemap.xml
-
-# Crawl-delay for all bots (optional, adjust as needed)
-Crawl-delay: 1
-
+Allow: /style.css
