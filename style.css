@@ -3,7 +3,7 @@
 /* ---------- Variables & Reset ---------- */
 :root{
   --brand:#111;
-  --muted:#5a5a5a;
+  --muted:#4a4a4a; /* Improved contrast for WCAG AA compliance */
   --accent:#ffb800;
   --bg:#fafafa;
   --glass:rgba(255,255,255,0.92);
