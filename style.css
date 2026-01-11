@@ -819,9 +819,8 @@ figure.image-card:hover a::after{
   }
 }
 
-/* Minimal section styling - remove white backing */
+/* Minimal section styling */
 .minimal-section{
-  background:transparent !important;
   padding:2rem 1rem;
 }
 
