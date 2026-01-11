@@ -178,14 +178,11 @@ export class SovereigntyEngine {
           </div>
         </div>
         
-        <div style="margin: 2rem 0; text-align: center; color: var(--muted); font-size: 0.9rem;">
-          <strong>OR</strong> select manually below:
-        </div>
-        
-        <p style="color: var(--brand); margin-bottom: 1.5rem; line-height: 1.6; font-size: 0.9rem; font-style: italic;">
+        <p style="color: var(--brand); margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.6; font-size: 0.9rem; font-style: italic;">
           <strong>Note:</strong> IQ brackets have crossover at boundaries (±5 points). The system automatically detects border positions and includes patterns from adjacent brackets.
         </p>
-        <div style="display: grid; gap: 1rem; max-width: 600px; margin: 0 auto;">
+        
+        <div style="display: none;">
           <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
             <strong>80-100 IQ</strong> - Routine Guided Thinkers (~34% of population)
           </button>
@@ -283,62 +280,7 @@ export class SovereigntyEngine {
         });
       }
       
-      // Manual bracket selection handlers
-      const iqBrackets = {
-        // Core brackets
-        'selectIQ80_100': { primary: '80_100', secondary: null },
-        'selectIQ100_115': { primary: '100_115', secondary: null },
-        'selectIQ115_130': { primary: '115_130', secondary: null },
-        'selectIQ130_145': { primary: '130_145', secondary: null },
-        'selectIQ145_plus': { primary: '145_plus', secondary: null },
-        'selectIQUnknown': { primary: 'unknown', secondary: null },
-        // Border selections with crossover
-        'selectIQ80_100_border': { primary: '80_100', secondary: '100_115' },
-        'selectIQ100_115_border_low': { primary: '100_115', secondary: '80_100' },
-        'selectIQ100_115_border_high': { primary: '100_115', secondary: '115_130' },
-        'selectIQ115_130_border_low': { primary: '115_130', secondary: '100_115' },
-        'selectIQ115_130_border_high': { primary: '115_130', secondary: '130_145' },
-        'selectIQ130_145_border_low': { primary: '130_145', secondary: '115_130' },
-        'selectIQ130_145_border_high': { primary: '130_145', secondary: '145_plus' },
-        'selectIQ145_plus_border': { primary: '145_plus', secondary: '130_145' }
-      };
-
-      Object.keys(iqBrackets).forEach(buttonId => {
-        const button = document.getElementById(buttonId);
-        if (button) {
-          button.addEventListener('click', () => {
-            const bracket = iqBrackets[buttonId];
-            this.iqBracket = bracket.primary;
-            this.iqBracketSecondary = bracket.secondary;
-            this.analysisData.iqBracket = bracket.primary;
-            this.analysisData.iqBracketSecondary = bracket.secondary;
-            this.currentSection = 1;
-            this.buildSectionSequence(1).then(() => {
-              this.renderCurrentQuestion();
-              this.updateNavigation();
-              this.saveProgress();
-            });
-          });
-
-          // Add hover effects
-          button.addEventListener('mouseenter', () => {
-            if (buttonId !== 'selectIQUnknown') {
-              button.style.background = 'rgba(255, 184, 0, 0.2)';
-              button.style.transform = 'translateY(-2px)';
-            } else {
-              button.style.background = 'rgba(200, 200, 200, 0.2)';
-            }
-          });
-          button.addEventListener('mouseleave', () => {
-            if (buttonId !== 'selectIQUnknown') {
-              button.style.background = 'rgba(255, 184, 0, 0.1)';
-              button.style.transform = 'translateY(0)';
-            } else {
-              button.style.background = 'rgba(200, 200, 200, 0.1)';
-            }
-          });
-        }
-      });
+      // Manual bracket selection is now hidden - auto-detection only
     }, 100);
   }
 

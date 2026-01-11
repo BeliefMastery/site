@@ -1250,17 +1250,17 @@ export class ManipulationEngine {
       if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
         if (this.currentPhase === 1) {
           await this.buildPhase1Sequence();
-          } else if (this.currentPhase === 2) {
-            await this.analyzePhase1Results();
-            await this.buildPhase2Sequence();
-          } else if (this.currentPhase === 3) {
-            await this.processPhase2Results();
-            await this.buildPhase3Sequence();
-          }
-          document.getElementById('questionnaireSection').classList.add('active');
-          this.renderCurrentQuestion();
+        } else if (this.currentPhase === 2) {
+          await this.analyzePhase1Results();
+          await this.buildPhase2Sequence();
+        } else if (this.currentPhase === 3) {
+          await this.processPhase2Results();
+          await this.buildPhase3Sequence();
         }
-      } catch (e) {
+        document.getElementById('questionnaireSection').classList.add('active');
+        this.renderCurrentQuestion();
+      }
+    } catch (e) {
         console.error('Error loading stored data:', e);
       }
     }

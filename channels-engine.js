@@ -443,19 +443,22 @@ export class ChannelsEngine {
     
     let html = '';
     
-    // Render based on question type
-    if (question.type === 'three_point') {
-      html = this.renderThreePointQuestion(question);
-    } else if (question.type === 'binary_unsure') {
-      html = this.renderBinaryUnsureQuestion(question);
-    } else if (question.type === 'scenario') {
-      html = this.renderScenarioQuestion(question);
-    } else if (question.type === 'frequency') {
-      html = this.renderFrequencyQuestion(question);
-    } else if (question.type === 'multiselect') {
-      html = this.renderMultiselectQuestion(question);
-    }
+    const renderStart = performance.now();
     
+    try {
+      // Render based on question type
+      if (question.type === 'three_point') {
+        html = this.renderThreePointQuestion(question);
+      } else if (question.type === 'binary_unsure') {
+        html = this.renderBinaryUnsureQuestion(question);
+      } else if (question.type === 'scenario') {
+        html = this.renderScenarioQuestion(question);
+      } else if (question.type === 'frequency') {
+        html = this.renderFrequencyQuestion(question);
+      } else if (question.type === 'multiselect') {
+        html = this.renderMultiselectQuestion(question);
+      }
+      
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, html);
       
@@ -474,12 +477,12 @@ export class ChannelsEngine {
       if (firstInput) {
         DOMUtils.focusElement(firstInput);
       }
+      
+      this.updateStageIndicator();
     } catch (error) {
       this.debugReporter.logError(error, 'renderCurrentQuestion');
       ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
-    
-    this.updateStageIndicator();
   }
 
   renderThreePointQuestion(question) {

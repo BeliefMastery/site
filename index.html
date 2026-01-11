@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <base href="https://beliefmastery.github.io/site/">
   <title>Sovereign of Mind — Online Sovereignty Tools & Cognitive Defense</title>
-  <meta name="description" content="Sovereignty tools and cognitive defense frameworks. Assess your AI dependency, identify manipulation vectors, analyze archetypes, and build sovereignty through diagnostic clarity. For those who sense the silent structural war for human agency.">
+  <meta name="description" content="Sovereignty tools and cognitive defense frameworks. Assess your cognitive resistance capacity, identify manipulation vectors, discover your modern archetypes, and build sovereignty through diagnostic clarity. For those who sense the silent structural war for human agency.">
 
   <!-- Open Graph / Twitter Cards for social previews -->
   <meta property="og:title" content="Sovereign of Mind — Online Sovereignty Tools & Cognitive Defense">
-  <meta property="og:description" content="Comprehensive sovereignty tools: AI dependency analysis, manipulation vector identification, archetype assessment, channel taxonomy, and cognitive defense frameworks. Stand guard over the mind itself.">
+  <meta property="og:description" content="Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, modern archetype identification, channel flow diagnostics, logos structure, pathology assessment, and cognitive defense frameworks. Stand guard over the mind itself.">
   <meta property="og:image" content="https://beliefmastery.github.io/site/images/SoM-cover.jpg">
   <meta property="og:url" content="https://beliefmastery.github.io/site/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Sovereign of Mind — Online Sovereignty Tools & Cognitive Defense">
-  <meta name="twitter:description" content="Comprehensive sovereignty tools: AI dependency analysis, manipulation vector identification, archetype assessment, channel taxonomy, and cognitive defense frameworks. Stand guard over the mind itself.">
+  <meta name="twitter:description" content="Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, modern archetype identification, channel flow diagnostics, logos structure, pathology assessment, and cognitive defense frameworks. Stand guard over the mind itself.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/SoM-cover.jpg">
 
   <!-- Performance: Resource hints -->
@@ -92,21 +92,53 @@
   </script>
 
   <style>
-    /* ---------- Background crossfade layers (index.html specific) ---------- */
-    .bg-layer{
-      position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
-      transition:opacity .9s ease, filter .9s ease;pointer-events:none;
+    /* ---------- Performance-optimized gradient background (Perplexity-style) ---------- */
+    .bg-gradient{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      background: 
+        radial-gradient(ellipse at top, rgba(17, 17, 17, 0.95) 0%, rgba(17, 17, 17, 0.98) 50%, rgba(10, 10, 10, 1) 100%),
+        radial-gradient(ellipse at 30% 40%, rgba(255, 184, 0, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(255, 184, 0, 0.05) 0%, transparent 50%),
+        linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0f0f0f 100%);
+      background-size: 100% 100%, 80% 80%, 70% 70%, 100% 100%;
+      background-position: center, 30% 40%, 70% 60%, center;
+      pointer-events:none;
+      animation: subtleShift 20s ease-in-out infinite;
     }
-    .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
-    .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
+    
+    @keyframes subtleShift {
+      0%, 100% {
+        background-position: center, 30% 40%, 70% 60%, center;
+        opacity: 1;
+      }
+      50% {
+        background-position: center, 35% 45%, 65% 55%, center;
+        opacity: 0.98;
+      }
+    }
+    
+    .bg-overlay{
+      position:fixed;
+      inset:0;
+      z-index:1;
+      background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 100%);
+      pointer-events:none;
+    }
+    
+    /* Ensure content is above background */
+    main, header {
+      position: relative;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Background layers for crossfade -->
-  <div id="bgA" class="bg-layer" style="background-image:url('./images/shoggoth.jpg');"></div>
-  <div id="bgB" class="bg-layer hidden" style="background-image:url('./images/shoggoth.jpg');"></div>
+  <!-- Performance-optimized gradient background -->
+  <div class="bg-gradient"></div>
   <div class="bg-overlay"></div>
 
     <header class="site-header" role="banner">
@@ -159,7 +191,7 @@
   <main class="container" id="main-content" role="main">
 
     <!-- Online Sovereignty Tools and Analysis Section -->
-    <section id="tools" data-bg="./images/shoggoth.jpg" aria-labelledby="tools-title">
+    <section id="tools" aria-labelledby="tools-title">
       <div class="section-inner minimal-section">
         <a href="tools.html" class="section-title-btn" id="tools-title">Online Sovereignty Tools and Analysis</a>
         <div class="image-row tools-grid" aria-hidden="false" role="presentation" style="margin-top:1rem;">
@@ -229,7 +261,7 @@
     <div style="height:2rem;background:transparent;position:relative;z-index:0;pointer-events:none;margin:0;padding:0;"></div>
 
     <!-- Books Section -->
-    <section id="books" data-bg="./images/shoggoth.jpg" aria-labelledby="books-title">
+    <section id="books" aria-labelledby="books-title">
       <div class="section-inner minimal-section">
         <a href="books.html" class="section-title-btn" id="books-title">Books</a>
         <div class="image-row books-grid" aria-hidden="false" role="presentation">
@@ -259,7 +291,7 @@
     <div style="height:2rem;background:transparent;position:relative;z-index:0;pointer-events:none;margin:0;padding:0;"></div>
 
     <!-- Short orientation -->
-    <section id="orientation" data-bg="./images/shoggoth.jpg">
+    <section id="orientation">
       <div class="section-inner minimal-section">
         <div style="max-width:72ch;margin:4rem auto;color:var(--muted);line-height:1.7;">
           <h2 id="orientation-title" style="text-align:center;margin-bottom:2rem;color:var(--brand);font-size:1.8rem;">A short orientation</h2>
@@ -287,24 +319,7 @@
 
   <!-- ---------- Scripts (deferred via placement at bottom; non-blocking) ---------- -->
   <script>
-    // Static background (all sections use the same background)
-    (function(){
-      const sections = Array.from(document.querySelectorAll('section[data-bg]'));
-      if(!sections.length) return;
-      const bgA = document.getElementById('bgA');
-      const bgB = document.getElementById('bgB');
-      
-      // Get the background from the first section (all sections should have the same)
-      const staticBg = sections[0].dataset.bg;
-      
-      // Set both background layers to the same static image
-      bgA.style.backgroundImage = `url('${staticBg}')`;
-      bgB.style.backgroundImage = `url('${staticBg}')`;
-      
-      // Keep bgA visible, hide bgB (no crossfade needed for static background)
-      bgA.classList.remove('hidden');
-      bgB.classList.add('hidden');
-    })();
+    // Background is now CSS gradient - no image loading needed
 
     // Active nav highlighting based on center intersection
     (function(){

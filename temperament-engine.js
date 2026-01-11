@@ -423,7 +423,7 @@ export class TemperamentEngine {
           <strong>Tip:</strong> Answer based on your authentic experience and preferences, not what you think you "should" be.
         </div>
       </div>
-    `;
+    `);
 
     const slider = document.getElementById('questionSlider');
     const sliderValueSpan = document.getElementById('sliderValue');
