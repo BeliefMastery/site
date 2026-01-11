@@ -1615,7 +1615,7 @@ export class DiagnosisEngine {
               ${this.analysisData.validationConsistency === 'low' ? '<span style="color: #d32f2f;">(Low confidence due to response inconsistency)</span>' : ''}
             </p>
           </div>
-        `;
+        `);
       });
       
       html += `</div></div>`;

@@ -71,11 +71,11 @@
       pos += vec2(time * 0.02, sin(time * 0.01) * 0.5 + scrollOffset); // Horizontal drift + scroll parallax
       float n = fbm(pos * 1.5 + time * 0.005 + scrollY * 0.0001); // Scroll also affects noise offset
       
-      // Blue-white color scheme (matching image frames)
-      vec3 color1 = vec3(0.08, 0.10, 0.14); // Deep blue space base
-      vec3 color2 = vec3(0.78, 0.88, 1.0) * 0.5; // Light blue-white (rgba(200, 225, 255) normalized)
-      vec3 color3 = vec3(0.12, 0.56, 1.0) * 0.4; // Bright blue (rgba(30, 144, 255) normalized)
-      vec3 color4 = vec3(0.0, 0.75, 1.0) * 0.35; // Cyan-blue (rgba(0, 191, 255) normalized)
+            // White-blue color scheme (matching image frames)
+            vec3 color1 = vec3(0.96, 0.97, 1.0); // Light white-blue space base (rgba(245, 248, 255) normalized)
+            vec3 color2 = vec3(0.78, 0.88, 1.0) * 0.7; // Light blue-white (rgba(200, 225, 255) normalized)
+            vec3 color3 = vec3(0.12, 0.56, 1.0) * 0.5; // Bright blue (rgba(30, 144, 255) normalized)
+            vec3 color4 = vec3(0.0, 0.75, 1.0) * 0.4; // Cyan-blue (rgba(0, 191, 255) normalized)
       vec3 color = mix(color1, mix(mix(color2, color3, n * 0.5), color4, n * 0.3), smoothstep(0.3, 0.7, n));
       
       // Blue-tinted horizontal streaks for depth

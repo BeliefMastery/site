@@ -3,9 +3,9 @@
   position:fixed;
   inset:0;
   z-index:0;
-  background: 
-    /* Deep space base - lighter */
-    radial-gradient(ellipse 120% 100% at 50% 0%, rgba(20, 20, 25, 1) 0%, rgba(15, 15, 20, 1) 40%, rgba(12, 12, 18, 1) 100%),
+        background: 
+          /* White-blue space base */
+          radial-gradient(ellipse 120% 100% at 50% 0%, rgba(245, 248, 255, 1) 0%, rgba(235, 242, 255, 1) 40%, rgba(230, 238, 255, 1) 100%),
     /* Primary nebula cloud - blue-white accent */
     radial-gradient(ellipse 80% 60% at 25% 35%, rgba(200, 225, 255, 0.25) 0%, rgba(135, 206, 250, 0.18) 30%, transparent 70%),
     /* Secondary nebula cloud - cyan-blue */
@@ -14,8 +14,8 @@
     radial-gradient(ellipse 60% 80% at 50% 80%, rgba(30, 144, 255, 0.18) 0%, rgba(0, 191, 255, 0.12) 40%, transparent 70%),
     /* Ambient starfield base */
     radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-    /* Cosmic gradient overlay - lighter */
-    linear-gradient(135deg, rgba(15, 15, 20, 0.9) 0%, rgba(18, 18, 25, 0.95) 50%, rgba(15, 15, 20, 0.9) 100%);
+          /* Cosmic gradient overlay - white-blue */
+          linear-gradient(135deg, rgba(245, 248, 255, 0.9) 0%, rgba(240, 245, 255, 0.95) 50%, rgba(245, 248, 255, 0.9) 100%);
   background-size: 
     100% 100%,
     90% 70%,
