@@ -66,20 +66,34 @@
     
     void main() {
       vec2 pos = uv * resolution / min(resolution.x, resolution.y); // Aspect-correct
-      // Enhanced scroll-based parallax movement (scroll affects vertical position)
-      float scrollOffset = scrollY * 0.0003; // Parallax effect - adjust multiplier for speed
-      pos += vec2(time * 0.02, sin(time * 0.01) * 0.5 + scrollOffset); // Horizontal drift + scroll parallax
-      float n = fbm(pos * 1.5 + time * 0.005 + scrollY * 0.0001); // Scroll also affects noise offset
       
-            // Black-blue color scheme
-            vec3 color1 = vec3(0.03, 0.05, 0.08); // Dark black-blue space base (rgba(8, 12, 20) normalized)
-            vec3 color2 = vec3(0.12, 0.31, 0.78) * 0.6; // Blue accent (rgba(30, 80, 200) normalized)
-            vec3 color3 = vec3(0.20, 0.39, 0.86) * 0.5; // Bright blue (rgba(50, 100, 220) normalized)
-            vec3 color4 = vec3(0.08, 0.35, 0.86) * 0.55; // Deep blue (rgba(20, 90, 220) normalized)
+      // Multi-layered organic movement - creates abstract shifting shapes
+      float scrollOffset = scrollY * 0.0003;
+      vec2 drift1 = vec2(time * 0.015, sin(time * 0.008) * 0.3 + scrollOffset);
+      vec2 drift2 = vec2(cos(time * 0.012) * 0.2, time * 0.01 + scrollOffset * 0.5);
+      vec2 drift3 = vec2(sin(time * 0.018) * 0.25, cos(time * 0.014) * 0.2);
+      
+      // Multiple FBM layers at different scales for organic cloud shapes
+      float n1 = fbm(pos * 1.2 + drift1);
+      float n2 = fbm(pos * 2.3 + drift2) * 0.6;
+      float n3 = fbm(pos * 4.1 + drift3) * 0.3;
+      float n = (n1 + n2 + n3) / 1.9; // Combine layers for organic texture
+      
+      // Add subtle radial variations for cloud-like formations
+      float dist = length(pos - vec2(0.5, 0.5));
+      float radial = sin(dist * 3.0 + time * 0.02) * 0.1;
+      n += radial;
+      
+      // Black-blue color scheme
+      vec3 color1 = vec3(0.03, 0.05, 0.08); // Dark black-blue space base
+      vec3 color2 = vec3(0.12, 0.31, 0.78) * 0.6; // Blue accent
+      vec3 color3 = vec3(0.20, 0.39, 0.86) * 0.5; // Bright blue
+      vec3 color4 = vec3(0.08, 0.35, 0.86) * 0.55; // Deep blue
       vec3 color = mix(color1, mix(mix(color2, color3, n * 0.5), color4, n * 0.3), smoothstep(0.3, 0.7, n));
       
-      // Blue-tinted horizontal streaks for depth
-      color += vec3(0.10, 0.15, 0.25) * sin(pos.y * 10.0 + time * 0.1 + scrollY * 0.0002);
+      // Subtle ambient glow instead of horizontal streaks
+      float ambient = sin(n * 6.28 + time * 0.05) * 0.05 + 0.05;
+      color += vec3(0.08, 0.12, 0.18) * ambient;
       
       // Soft fade at edges for seamless blending
       float edgeFade = smoothstep(0.0, 0.1, uv.x) * smoothstep(1.0, 0.9, uv.x) *
