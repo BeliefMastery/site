@@ -1021,7 +1021,7 @@ footer a{
 .content-section p{
   margin-bottom:1.5rem;
   line-height:1.7;
-  color:#333;
+  color: var(--brand);
 }
 
 .content-section a{
