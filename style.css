@@ -881,6 +881,17 @@ button:disabled,
     gap: .6rem;
 }
 
+.card p,
+.card li {
+    color: var(--brand); /* Ensure all text is ice blue */
+}
+
+.card h3,
+.card h4,
+.card strong {
+    color: var(--accent); /* Gold for headings */
+}
+
 /* Unified Grid Layout for Selections and Sections (Paradigm, Category, etc.) */
 .paradigm-options,
 .selection-grid,
@@ -1044,7 +1055,8 @@ section .card p {
     border-color: var(--brand);
 }
 
-.tool-card .tool-details {
+.tool-card,
+.tool-details {
     animation: fadeIn 0.3s ease-in;
 }
 
@@ -1053,17 +1065,36 @@ section .card p {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--brand); /* Ice blue for readability */
 }
 
 .tool-details.expanded {
     display: block;
+    color: var(--brand); /* Ensure visibility when expanded */
+}
+
+.tool-details h3,
+.tool-details h4,
+.tool-details strong {
+    color: var(--accent); /* Gold for emphasis */
+}
+
+.tool-details p,
+.tool-details li {
+    color: var(--muted); /* Blue-gray for body text */
+    line-height: 1.6;
+}
+
+.tool-details ul {
+    color: var(--muted);
 }
 
 .tool-expand-indicator {
     text-align: center;
     margin-top: 0.5rem;
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--accent); /* Gold for interactive elements */
+    font-weight: 600;
 }
 
 @keyframes fadeIn {
@@ -1156,11 +1187,15 @@ section .card p {
 }
 
 .portal-card p {  /* Body text */
-    color: var(--muted);  /* Muted blue-gray */
+    color: var(--brand);  /* Ice blue for better contrast */
     line-height: 1.55;
     margin-bottom: 1rem;
     flex: 1;  /* Fills space evenly */
     max-width: 60ch;  /* Readable width */
+}
+
+.portal-card li {
+    color: var(--muted); /* Blue-gray for list items */
 }
 
 .portal-card .btn {  /* Button integration */
