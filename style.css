@@ -1012,28 +1012,42 @@ footer a{
   color:var(--accent);
 }
 
-/* ---------- Content sections ---------- */
-.content-section{
-  max-width:72ch;
-  margin:0 auto;
+/* ---------- Content sections - FULL COSMIC FIX ---------- */
+.content-section {
+  max-width: 72ch;
+  margin: 0 auto;
+  color: var(--brand); /* Sets base color for everything inside */
 }
 
-.content-section p{
-  margin-bottom:1.5rem;
-  line-height:1.7;
+/* Fixes Headings (the big issue on Coaching page) */
+.content-section h1, 
+.content-section h2, 
+.content-section h3 {
+  color: var(--brand);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(100, 160, 255, 0.2); /* Subtle cosmic lift */
+}
+
+.content-section p,
+.content-section li { /* Added li to fix list contrast */
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
   color: var(--brand);
 }
 
-.content-section a{
-  color:var(--accent);
-  text-decoration:none;
-  font-weight:600;
-  transition:color 0.3s ease;
+.content-section a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px dotted transparent; /* Better UX than just color */
+  transition: var(--transition);
 }
 
-.content-section a:hover{
-  color:#ffc800;
-  text-decoration:underline;
+.content-section a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  border-bottom-color: var(--accent);
 }
 
 /* ========== MISC ========== */
