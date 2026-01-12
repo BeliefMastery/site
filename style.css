@@ -868,11 +868,11 @@ button:disabled,
     position: relative;
     z-index: 1;
     isolation: isolate;
-    background: var(--card-bg);
+    background: var(--glass-light); /* Lighter glass for better distinction */
     padding: 1.1rem;
     border-radius: 10px;
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border-medium); /* More visible border */
     color: var(--brand);
     transition: var(--transition);
     min-height: 130px;
@@ -883,13 +883,18 @@ button:disabled,
 
 .card p,
 .card li {
-    color: var(--brand); /* Ensure all text is ice blue */
+    color: var(--brand); /* Ice blue for all card text */
 }
 
 .card h3,
 .card h4,
 .card strong {
     color: var(--accent); /* Gold for headings */
+}
+
+/* Collapsed card preview text */
+.card .tool-details:not(.expanded) p {
+    color: var(--muted); /* Blue-gray for preview text */
 }
 
 /* Unified Grid Layout for Selections and Sections (Paradigm, Category, etc.) */
@@ -1055,6 +1060,20 @@ section .card p {
     border-color: var(--brand);
 }
 
+.tool-card {
+    background: rgba(20, 35, 55, 0.85); /* More opaque background */
+    border: 1px solid var(--border-medium); /* More visible border */
+}
+
+.tool-card p {
+    color: var(--brand); /* Ice blue for all tool card text */
+}
+
+.tool-card h3,
+.tool-card strong {
+    color: var(--accent); /* Gold for emphasis */
+}
+
 .tool-card,
 .tool-details {
     animation: fadeIn 0.3s ease-in;
@@ -1134,9 +1153,9 @@ section .card p {
 }
 
 .portal-card {
-    background: var(--glass-light);  /* Lighter glass for cloud bleed-through */
-    border: 2px solid var(--border-subtle);  /* Subtle edge, ties to theme */
-    box-shadow: var(--shadow-sm);  /* Softer base shadow */
+    background: rgba(20, 35, 55, 0.85); /* More opaque for better contrast */
+    border: 2px solid var(--border-medium);  /* More visible border */
+    box-shadow: var(--shadow-md);  /* Stronger shadow for depth */
     color: var(--brand);  /* Ice blue base text */
     padding: 2rem;
     border-radius: var(--radius);
