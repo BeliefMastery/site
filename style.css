@@ -189,13 +189,16 @@ header.site-header {
     box-shadow: var(--shadow-md), 0 0 40px var(--glow-blue);
     list-style: none;
     padding: 0.5rem 0;
-    min-width: 220px;
+    min-width: 250px; /* ← Increased from 220px to fit "Pathology Assessment" + padding */
+    max-width: 300px; /* ← Added: Caps width to prevent mega-wide on super-long future items */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     z-index: 1001;
     color: var(--brand);
+    box-sizing: border-box; /* ← Ensures padding doesn't add to width */
+    overflow: hidden; /* ← Safety: Clips any text that still overflows (rare now) */
 }
 
 .nav-dropdown:hover .dropdown-menu,
@@ -214,8 +217,11 @@ header.site-header {
     display: block;
     padding: 0.75rem 1.25rem;
     font-size: 0.9rem;
-    white-space: nowrap;
+    white-space: normal; /* ← Changed: Allows wrapping to multiple lines */
+    word-wrap: break-word; /* ← Added: Breaks long words if needed (e.g., URLs) */
     border-radius: 0;
+    width: 100%;
+    line-height: 1.4; /* ← Improves readability on wrapped lines */
 }
 
 .dropdown-menu a:hover {
