@@ -400,11 +400,34 @@ header.site-header{
 
 
 /* ========== SECTIONS ========== */
-.container{
-  max-width:1180px;
-  margin:calc(68px + 60px) auto 80px;
-  padding:0 1rem;
-  overflow: visible;
+.container {
+  width: 90%;
+  max-width: 1200px; /* The "Master" width for the whole site */
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* This specifically handles the text-heavy sections */
+.content-section {
+  max-width: 850px; /* Slightly wider than 72ch for better tool layout */
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+/* Constrain the questionnaire to match the Book page feel */
+.questionnaire-container, 
+#questionnaire-form,
+.tool-wrapper {
+  max-width: 850px; 
+  margin: 2rem auto;
+}
+
+/* Ensure individual question blocks don't feel "loomy" */
+.question-block {
+  background: var(--glass);
+  padding: 2rem;
+  border-radius: var(--radius);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-subtle);
 }
 
 section{
