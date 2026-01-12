@@ -881,10 +881,26 @@ button:disabled, .btn:disabled {
   transition:var(--transition);
 }
 
-section .card{
-  background:var(--card-bg);
-  border:1px solid var(--border-subtle);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+.section-card, 
+.paradigm-card, 
+.category-card, 
+.assessment-card,
+.diagnosis-card,
+.pathology-card
+.paradigm-option {
+    background: var(--glass-light);
+    border: 2px solid var(--border-medium);
+    border-radius: var(--radius);
+    padding: 2rem;
+    cursor: pointer;
+    text-align: center;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    height: 100%;
 }
 
 section .card:hover{
@@ -942,30 +958,17 @@ section .card p{
     width: 100%;
 }
 
-/* Add these to your card styles */
-.diagnosis-card,
-.assessment-card,
-.pathology-card {
-    background: var(--glass-light);
-    border: 2px solid var(--border-medium);
-    border-radius: var(--radius);
-    padding: 2rem;
-    cursor: pointer;
-    text-align: center;
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
 /* Ensure the hover and selected states apply here too */
 .diagnosis-card:hover, .assessment-card:hover {
     border-color: var(--brand);
     box-shadow: 0 0 30px var(--glow-blue);
 }
 
-.diagnosis-card.selected, .assessment-card.selected {
+.diagnosis-card.selected,
+.assessment-card.selected,
+.category-card.selected,
+.section-card.selected,
+.paradigm-card.selected {
     border-color: var(--accent) !important;
     background: rgba(255, 215, 0, 0.08) !important;
     box-shadow: 0 0 40px var(--glow-accent) !important;
