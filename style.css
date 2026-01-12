@@ -431,7 +431,15 @@ header.site-header{
 .manipulation-container, 
 .archetype-container, 
 .dependency-container,
-.channels-container {
+.channels-container,
+.coaching-container,
+.needs-dependency-container
+.sovereignty-spectrum-container,
+.paradigm-container,
+.relationship-container,
+.temperament-container,
+.character-sheet-container.
+.sovereignty-container{
   max-width: 850px; /* Matches the "Books" page feel */
   margin: 2rem auto;
   padding: 2rem;
