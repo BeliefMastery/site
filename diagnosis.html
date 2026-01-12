@@ -5,535 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pathology Assessment</title>
   <meta name="description" content="Pathology assessment and clinical education mapping system based on DSM-5 criteria. For educational and self-reflection purposes only.">
-  
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://beliefmastery.github.io/site/diagnosis.html">
   <meta property="og:title" content="Pathology Assessment">
   <meta property="og:description" content="Pathology assessment and clinical education mapping system based on DSM-5 criteria. For educational and self-reflection purposes only.">
   <meta property="og:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
-  
+
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://beliefmastery.github.io/site/diagnosis.html">
   <meta name="twitter:title" content="Pathology Assessment">
   <meta name="twitter:description" content="Pathology assessment and clinical education mapping system based on DSM-5 criteria. For educational and self-reflection purposes only.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
+
   <link rel="stylesheet" href="style.css">
   <!-- Universal background styles -->
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* Page-specific styles for diagnosis.html */
-    body {
-      background: var(--bg);
-      position: relative;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('./images/diagnosis.background.jpg');
-      background-size: contain;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .diagnosis-container {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-      color: var(--brand);
-    }
-
-    .disclaimer-acknowledgement {
-      background: rgba(15, 20, 30, 0.95);
-      border-radius: var(--radius);
-      padding: 1rem 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border-left: 4px solid #d32f2f;
-      border: 1px solid rgba(50, 100, 220, 0.2);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .disclaimer-acknowledgement:hover {
-      background: rgba(20, 25, 35, 0.98);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-    }
-
-    .disclaimer-acknowledgement-text {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-weight: 600;
-      color: var(--brand);
-      font-size: 1rem;
-    }
-
-    .disclaimer-acknowledgement-text::after {
-      content: '?';
-      font-size: 0.8rem;
-      transition: transform 0.3s ease;
-      margin-left: 0.5rem;
-    }
-
-    .disclaimer-acknowledgement.expanded .disclaimer-acknowledgement-text::after {
-      transform: rotate(180deg);
-    }
-
-    .disclaimer-section {
-      background: rgba(15, 20, 30, 0.95);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border-left: 4px solid #d32f2f;
-      border: 1px solid rgba(50, 100, 220, 0.2);
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      padding: 0;
-      margin: 0;
-      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
-      color: var(--brand);
-    }
-
-    .disclaimer-section.expanded {
-      max-height: 2000px;
-      opacity: 1;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .disclaimer-section h2 {
-      color: #d32f2f;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .disclaimer-section ul {
-      margin: 1rem 0;
-      padding-left: 1.5rem;
-    }
-
-    .disclaimer-section li {
-      margin: 0.5rem 0;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-
-    .instructions-toggle {
-      background: rgba(255, 184, 0, 0.1);
-      border: 2px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 1rem 1.5rem;
-      margin-bottom: 1.5rem;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .instructions-toggle:hover {
-      background: rgba(255, 184, 0, 0.15);
-      box-shadow: 0 4px 12px rgba(255, 184, 0, 0.2);
-    }
-
-    .instructions-toggle-text {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-weight: 600;
-      color: var(--brand);
-      font-size: 1rem;
-    }
-
-    .instructions-toggle-text::after {
-      content: '?';
-      font-size: 0.8rem;
-      transition: transform 0.3s ease;
-      margin-left: 0.5rem;
-    }
-
-    .instructions-toggle.expanded .instructions-toggle-text::after {
-      transform: rotate(180deg);
-    }
-
-    .instructions-panel {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
-      padding-top: 0;
-      padding-bottom: 0;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-
-    .instructions-panel.expanded {
-      max-height: 2000px;
-      opacity: 1;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .category-selection {
-      background: rgba(15, 20, 30, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(50, 100, 220, 0.2);
-      color: var(--brand);
-    }
-
-    .category-selection h2 {
-      margin-bottom: 1.5rem;
-      font-size: 1.75rem;
-    }
-
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .category-card {
-      background: var(--glass);
-      border: 2px solid rgba(50, 100, 220, 0.3);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: var(--transition);
-      text-align: center;
-      color: var(--brand);
-    }
-
-    .category-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .category-card.selected {
-      border-color: var(--accent);
-      background: rgba(255, 184, 0, 0.1);
-    }
-
-    .category-card.suggested {
-      border-color: var(--accent);
-      border-width: 2px;
-      box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
-    }
-
-    .guide-container {
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .guide-question h3 {
-      line-height: 1.5;
-    }
-
-    .guide-options button {
-      display: flex;
-      align-items: center;
-    }
-
-    .conditions-section {
-      background: rgba(15, 20, 30, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(50, 100, 220, 0.2);
-      color: var(--brand);
-    }
-
-    #conditionSearch:focus {
-      outline: none;
-      border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
-    }
-
-    .category-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .category-card p {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .questionnaire-section {
-      background: rgba(15, 20, 30, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(50, 100, 220, 0.2);
-      color: var(--brand);
-      display: none;
-    }
-
-    .questionnaire-section.active {
-      display: block;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-      margin-bottom: 2rem;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      transition: width 0.3s ease;
-      width: 0%;
-    }
-
-    .question-block {
-      margin-bottom: 2.5rem;
-      padding: 1.5rem;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: var(--radius);
-      border-left: 3px solid var(--accent);
-    }
-
-    .question-block h3 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
-
-    .scale-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      margin: 1.5rem 0;
-      flex-wrap: wrap;
-    }
-
-    .scale-labels {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 0.5rem;
-    }
-
-    .scale-input {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .scale-input input[type="range"] {
-      width: 100%;
-      height: 8px;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.1);
-      outline: none;
-      -webkit-appearance: none;
-    }
-
-    .scale-input input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .scale-input input[type="range"]::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .scale-value {
-      min-width: 60px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: var(--brand);
-    }
-
-    .navigation-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .btn {
-      padding: 0.75rem 2rem;
-      border-radius: var(--radius);
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      border: none;
-      font-size: 1rem;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--brand);
-    }
-
-    .btn-primary:hover {
-      background: #ffa000;
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .btn-secondary {
-      background: rgba(0, 0, 0, 0.1);
-      color: var(--brand);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(0, 0, 0, 0.15);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .results-section {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      display: none;
-    }
-
-    .results-section.active {
-      display: block;
-    }
-
-    .diagnosis-result {
-      margin: 1.5rem 0;
-      padding: 1.5rem;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: var(--radius);
-      border-left: 4px solid var(--accent);
-    }
-
-    .diagnosis-result h3 {
-      margin-bottom: 0.5rem;
-      color: var(--brand);
-    }
-
-    .probability-bar {
-      width: 100%;
-      height: 24px;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      margin: 0.5rem 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .probability-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), #ffa000);
-      transition: width 0.5s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--brand);
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .probability-label {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .sub-inquiry-prompt {
-      background: rgba(255, 184, 0, 0.1);
-      border: 2px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-    }
-
-    .sub-inquiry-prompt h4 {
-      margin-bottom: 1rem;
-      color: var(--brand);
-    }
-
-    @media (max-width: 768px) {
-      .category-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .scale-container {
-        flex-direction: column;
-      }
-
-      .navigation-buttons {
-        flex-direction: column;
-      }
-
-      .btn {
-        width: 100%;
-      }
-    }
-  </style>
 </head>
-<body>
-      <a href="#main-content" class="skip-link">Skip to main content</a>`r`n`r`n  <!-- Nebula-style cosmic background -->`r`n  <div class="bg-gradient"></div>`r`n  <canvas id="nebula-canvas" aria-hidden="true"></canvas>`r`n  <div class="bg-overlay"></div>`r`n`r`n  <header class="site-header" role="banner">
+<body data-page="diagnosis">
+
+  <!-- Skip to content -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
     <nav class="nav" aria-label="Primary navigation">
-      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">?</button>
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="index.html">Home</a></li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">?</span></a>
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span aria-hidden="true" style="font-size:0.8em;">▼</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
             <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
@@ -545,7 +52,7 @@
           </ul>
         </li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span style="font-size:0.8em;">?</span></a>
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span aria-hidden="true" style="font-size:0.8em;">▼</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
             <li role="none"><a role="menuitem" href="diagnosis.html" class="active">Pathology Assessment</a></li>
@@ -559,7 +66,7 @@
             <li role="none"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
             <li role="none"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
             <li role="none"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
-            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener noreferrer">Unlocked GPT</a></li>
             <li role="none"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity Assessment</a></li>
           </ul>
         </li>
@@ -568,283 +75,291 @@
     </nav>
   </header>
 
-  <main style="position: relative; z-index: 2;">
-    <div class="diagnosis-container">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <img src="./images/DSM5-cover.jpg" alt="Pathology Assessment" style="max-width: 300px; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1); display: block; margin: 0 auto 2rem auto;">
-      </div>
-      <div class="disclaimer-acknowledgement" id="disclaimerToggle">
-        <div class="disclaimer-acknowledgement-text">
-          <span>Disclaimers</span>
-        </div>
-      </div>
-      <div style="background: rgba(15, 20, 30, 0.95); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); backdrop-filter: blur(8px); border-left: 3px solid var(--accent); border: 1px solid rgba(50, 100, 220, 0.2);">
-        <p style="margin: 0; font-size: 0.95rem; color: var(--muted); line-height: 1.6;">
-          By participating in this analysis, I acknowledge that this pathology assessment is for educational pattern recognition, self-reflection, and preparation for professional dialogue. It does not provide diagnosis, replace clinicians, or predict outcomes.
-        </p>
-      </div>
-      <section class="disclaimer-section" id="disclaimerSection">
-        <h2>Important Disclaimers</h2>
-        <p><strong>This diagnostic assessment system is for informational and educational purposes only.</strong></p>
-        <ul>
-          <li><strong>Not a substitute for professional evaluation:</strong> This self-reporting questionnaire cannot replace a comprehensive clinical assessment by a licensed mental health professional.</li>
-          <li><strong>Self-reporting limitations:</strong> Self-reporting is subject to bias, including response distortion, social desirability bias, and lack of insight into one's own condition.</li>
-          <li><strong>Diagnostic accuracy:</strong> The DSM-5 requires clinical judgment, observation, and often collateral information that cannot be captured through self-reporting alone.</li>
-          <li><strong>No medical advice:</strong> Results should not be used to self-diagnose or make treatment decisions without professional consultation.</li>
-          <li><strong>Cultural and contextual factors:</strong> This system may not account for cultural variations, contextual factors, or individual circumstances that affect diagnosis.</li>
-          <li><strong>Differential diagnosis:</strong> Many conditions share overlapping symptoms. Only a trained professional can properly differentiate between similar conditions.</li>
-        </ul>
-        <p style="margin-top: 1rem; font-weight: 600;">By proceeding, you acknowledge that you understand these limitations and that this tool is intended for educational exploration only.</p>
-      </section>
-
-      <section class="category-selection" id="categorySelection">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <p style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 1rem; line-height: 1.5;">
-              What patterns align with your experience? Map your symptoms to understand what's happening. Discover your pathology indicators!
-            </p>
-            <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
-            <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
-          </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
-              ð§­ Start Here - Not Sure?
-            </button>
-            <button class="btn btn-secondary" id="clearCacheBtn" style="white-space: nowrap; font-size: 0.9rem;">
-              ðï¸ Reset Test / Clear Cached Data
-            </button>
-          </div>
-        </div>
-
-        <div class="instructions-toggle" id="instructionsToggle">
-          <div class="instructions-toggle-text">
-            <span>ð How to Use This Assessment</span>
-          </div>
-        </div>
-        <div class="instructions-panel" id="instructionsPanel" style="background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius);">
-          <h3 style="margin-bottom: 1rem; color: var(--brand); display: flex; align-items: center; gap: 0.5rem;">
-            <span>ð</span> How to Use This Assessment
-          </h3>
-          <div style="line-height: 1.7;">
-            <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
-            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
-              <li><strong>0-2 (Not at all / Never):</strong> The symptom or experience does not apply to you at all, or occurs extremely rarely.</li>
-              <li><strong>3-4 (Minimal / Rarely):</strong> The symptom occurs occasionally but has minimal impact on your life.</li>
-              <li><strong>5-6 (Moderate / Sometimes):</strong> The symptom is present with moderate frequency or intensity, and has some noticeable impact.</li>
-              <li><strong>7-8 (Significant / Often):</strong> The symptom occurs frequently or with significant intensity, and has a noticeable impact on daily functioning.</li>
-              <li><strong>9-10 (Extreme / Always):</strong> The symptom is nearly constant or extremely intense, and significantly impairs daily functioning.</li>
-            </ul>
-            <p style="margin-bottom: 0.5rem;"><strong>Guidelines for Accurate Assessment:</strong></p>
-            <ul style="margin-left: 1.5rem; margin-bottom: 0;">
-              <li>Answer based on your experiences over the <strong>past 2-4 weeks</strong>, unless the question specifies otherwise.</li>
-              <li>Be honest with yourself - there are no "wrong" answers.</li>
-              <li>Consider how the symptom affects your daily life, relationships, and functioning.</li>
-              <li>If unsure, choose the middle range (4-6) and proceed - the system will refine based on your responses.</li>
-              <li>You can go back and change answers using the "Previous" button.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="category-grid" id="categoryGrid">
-          <!-- Categories will be populated by JavaScript -->
-        </div>
-        <div style="text-align: center; margin-top: 2rem;">
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="example-reports/diagnosis-example.html" target="_blank" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
-            <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="questionnaire-section" id="questionnaireSection">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div id="questionContainer">
-          <!-- Questions will be populated by JavaScript -->
-        </div>
-        <div class="navigation-buttons">
-          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
-          <button class="btn btn-primary" id="nextQuestion">Next</button>
-        </div>
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); text-align: center;">
-          <button class="btn btn-secondary" id="abandonAssessment" style="background: transparent; color: var(--muted); border: 1px solid var(--muted);">ð Abandon / Restart</button>
-        </div>
-      </section>
-
-      <section class="results-section" id="resultsSection">
-        <h2>Assessment Results</h2>
-        <div id="resultsContainer">
-          <!-- Results will be populated by JavaScript -->
-        </div>
-        <div style="text-align: center; margin-top: 2rem;">
-          <button class="btn btn-primary" id="newAssessment">Start New Assessment</button>
-          <button class="btn btn-secondary" id="viewData">View Analysis Data</button>
-        </div>
-      </section>
-
-      <section class="conditions-section" id="conditionsSection" style="display: none;">
-        <h2>Comprehensive Condition Directory</h2>
-        <p style="text-align: center; color: var(--muted); margin-bottom: 2rem;">
-          Browse all available conditions and view comprehensive treatment breakdowns, theoretical frameworks, and management strategies.
-        </p>
-        
-        <div style="margin-bottom: 2rem;">
-          <input type="text" id="conditionSearch" placeholder="Search conditions..." style="width: 100%; max-width: 500px; padding: 0.75rem; border: 2px solid var(--accent); border-radius: var(--radius); font-size: 1rem; margin: 0 auto; display: block;">
-        </div>
-        
-        <div id="conditionsList">
-          <!-- Conditions will be populated by JavaScript -->
-        </div>
-        
-        <div id="conditionDetail" style="display: none; margin-top: 3rem;">
-          <!-- Selected condition detail will be populated here -->
-        </div>
-        
-        <div style="text-align: center; margin-top: 2rem;">
-          <button class="btn btn-secondary" id="backToMain">Back to Assessment</button>
-        </div>
-      </section>
+  <main id="main-content" class="diagnosis-container">  <!-- Scoped for page styles -->
+    <!-- Hero Image -->
+    <div class="hero-image">
+      <img src="./images/DSM5-cover.jpg" alt="DSM-5 Cover - Pathology Assessment Reference" class="hero-img">
     </div>
+
+    <!-- Acknowledgment Box -->
+    <div class="ack-box">
+      <p>By participating in this analysis, I acknowledge that this pathology assessment is for educational pattern recognition, self-reflection, and preparation for professional dialogue. It does not provide diagnosis, replace clinicians, or predict outcomes.</p>
+    </div>
+
+    <!-- Disclaimer Toggle -->
+    <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+      <div class="disclaimer-acknowledgement-text">
+        <span>Disclaimers</span>
+        <span aria-hidden="true">▼</span>  <!-- Fixed arrow -->
+      </div>
+    </div>
+
+    <!-- Disclaimer Section -->
+    <section class="disclaimer-section" id="disclaimerSection">
+      <h2>Important Disclaimers</h2>
+      <p><strong>This diagnostic assessment system is for informational and educational purposes only.</strong></p>
+      <ul>
+        <li><strong>Not a substitute for professional evaluation:</strong> This self-reporting questionnaire cannot replace a comprehensive clinical assessment by a licensed mental health professional.</li>
+        <li><strong>Self-reporting limitations:</strong> Self-reporting is subject to bias, including response distortion, social desirability bias, and lack of insight into one's own condition.</li>
+        <li><strong>Diagnostic accuracy:</strong> The DSM-5 requires clinical judgment, observation, and often collateral information that cannot be captured through self-reporting alone.</li>
+        <li><strong>No medical advice:</strong> Results should not be used to self-diagnose or make treatment decisions without professional consultation.</li>
+        <li><strong>Cultural and contextual factors:</strong> This system may not account for cultural variations, contextual factors, or individual circumstances that affect diagnosis.</li>
+        <li><strong>Differential diagnosis:</strong> Many conditions share overlapping symptoms. Only a trained professional can properly differentiate between similar conditions.</li>
+      </ul>
+      <p class="disclaimer-cta">By proceeding, you acknowledge that you understand these limitations and that this tool is intended for educational exploration only.</p>
+    </section>
+
+    <!-- Category Selection -->
+    <section class="category-selection" id="categorySelection">
+      <div class="section-header">
+        <div class="intro-text">
+          <p class="lead-text">What patterns align with your experience? Map your symptoms to understand what's happening. Discover your pathology indicators!</p>
+          <h1>Pathology Assessment</h1>
+          <p class="description">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="startHereGuide">
+            🧭 Start Here - Not Sure?
+          </button>
+          <button class="btn btn-secondary" id="clearCacheBtn">
+            🔄 Reset Test / Clear Cached Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Instructions Toggle -->
+      <div class="instructions-toggle" id="instructionsToggle">
+        <div class="instructions-toggle-text">
+          <span>📋 How to Use This Assessment</span>
+          <span aria-hidden="true">▼</span>
+        </div>
+      </div>
+
+      <!-- Instructions Panel -->
+      <div class="instructions-panel" id="instructionsPanel">
+        <h3 class="instructions-title">
+          <span aria-hidden="true">📋</span> How to Use This Assessment
+        </h3>
+        <div class="instructions-content">
+          <p class="scale-guide"><strong>Understanding the Scale (0-10):</strong></p>
+          <ul class="scale-list">
+            <li><strong>0-2 (Not at all / Never):</strong> The symptom or experience does not apply to you at all, or occurs extremely rarely.</li>
+            <li><strong>3-4 (Minimal / Rarely):</strong> The symptom occurs occasionally but has minimal impact on your life.</li>
+            <li><strong>5-6 (Moderate / Sometimes):</strong> The symptom is present with moderate frequency or intensity, and has some noticeable impact.</li>
+            <li><strong>7-8 (Significant / Often):</strong> The symptom occurs frequently or with significant intensity, and has a noticeable impact on daily functioning.</li>
+            <li><strong>9-10 (Extreme / Always):</strong> The symptom is nearly constant or extremely intense, and significantly impairs daily functioning.</li>
+          </ul>
+          <p class="guidelines"><strong>Guidelines for Accurate Assessment:</strong></p>
+          <ul class="guidelines-list">
+            <li>Answer based on your experiences over the <strong>past 2-4 weeks</strong>, unless the question specifies otherwise.</li>
+            <li>Be honest with yourself - there are no "wrong" answers.</li>
+            <li>Consider how the symptom affects your daily life, relationships, and functioning.</li>
+            <li>If unsure, choose the middle range (4-6) and proceed - the system will refine based on your responses.</li>
+            <li>You can go back and change answers using the "Previous" button.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Category Grid -->
+      <div class="category-grid" id="categoryGrid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Action Links -->
+      <div class="action-links">
+        <div class="link-group">
+          <a href="example-reports/diagnosis-example.html" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            📄 View Example Report
+          </a>
+          <button class="btn btn-primary" id="startAssessment" disabled>
+            Begin Assessment
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Questionnaire Section -->
+    <section class="questionnaire-section" id="questionnaireSection">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div id="questionContainer">
+        <!-- Questions populated by JS -->
+      </div>
+      <div class="navigation-buttons">
+        <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+        <button class="btn btn-primary" id="nextQuestion">Next</button>
+      </div>
+      <div class="abandon-link">
+        <button class="btn btn-secondary" id="abandonAssessment">
+          🔄 Abandon / Restart
+        </button>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section" id="resultsSection">
+      <h2>Assessment Results</h2>
+      <div id="resultsContainer">
+        <!-- Results populated by JS -->
+      </div>
+      <div class="results-actions">
+        <button class="btn btn-primary" id="newAssessment">Start New Assessment</button>
+        <button class="btn btn-secondary" id="viewData">View Analysis Data</button>
+      </div>
+    </section>
+
+    <!-- Conditions Section -->
+    <section class="conditions-section" id="conditionsSection">
+      <h2>Comprehensive Condition Directory</h2>
+      <p class="directory-intro">Browse all available conditions and view comprehensive treatment breakdowns, theoretical frameworks, and management strategies.</p>
+
+      <!-- Search Input -->
+      <div class="search-wrapper">
+        <input type="text" id="conditionSearch" placeholder="Search conditions..." class="search-input">
+      </div>
+
+      <!-- Conditions List -->
+      <div id="conditionsList" class="conditions-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Condition Detail -->
+      <div id="conditionDetail" class="condition-detail">
+        <!-- Selected detail populated by JS -->
+      </div>
+
+      <!-- Back Button -->
+      <div class="back-actions">
+        <button class="btn btn-secondary" id="backToMain">Back to Assessment</button>
+      </div>
+    </section>
   </main>
 
-  <footer style="position: relative; z-index: 2;">
-    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <p>&copy; 2026 Warwick Marshall | Belief Mastery | <a href="privacy.html">Privacy Policy</a></p>
     <p>
-      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
-      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a> | 
-      <a href="#" id="viewAllConditions" style="color: var(--accent); font-weight: 600;">?? View All Conditions & Breakdowns</a>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener noreferrer">@belief.mastery</a> on Instagram |
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener noreferrer">Facebook</a> |
+      <a href="#conditionsSection" id="viewAllConditions" class="footer-link">📖 View All Conditions & Breakdowns</a>
     </p>
   </footer>
 
-  <!-- Hamburger menu toggle -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Disclaimer toggle functionality
-      const disclaimerToggle = document.getElementById('disclaimerToggle');
-      const disclaimerSection = document.getElementById('disclaimerSection');
-      
-      if (disclaimerToggle && disclaimerSection) {
-        disclaimerToggle.addEventListener('click', function() {
-          disclaimerToggle.classList.toggle('expanded');
-          disclaimerSection.classList.toggle('expanded');
-        });
-      }
-
-      // Instructions toggle functionality
-      const instructionsToggle = document.getElementById('instructionsToggle');
-      const instructionsPanel = document.getElementById('instructionsPanel');
-      
-      if (instructionsToggle && instructionsPanel) {
-        instructionsToggle.addEventListener('click', function() {
-          instructionsToggle.classList.toggle('expanded');
-          instructionsPanel.classList.toggle('expanded');
-        });
-      }
-
-      const hamburger = document.querySelector('.hamburger');
-      const nav = document.querySelector('#top-nav');
-      
-      if (hamburger) {
-        hamburger.addEventListener('click', function() {
-          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
-          hamburger.setAttribute('aria-expanded', !isExpanded);
-          nav.classList.toggle('active');
-        });
-      }
-
-      // Dropdown menu toggle
-      const dropdownToggle = document.querySelector('.dropdown-toggle');
-      const dropdownMenu = document.querySelector('.dropdown-menu');
-      
-      if (dropdownToggle && dropdownMenu) {
-        dropdownToggle.addEventListener('click', function(e) {
-          e.preventDefault();
-          dropdownMenu.classList.toggle('active');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-          if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
-
   <!-- Debug Panel -->
-  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)">ð</button>
+  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)" aria-label="Toggle Debug">🐛</button>
   <div class="debug-panel" id="debugPanel">
-    <div class="debug-panel-header">
+    <div class="debug-header">
       <h3>Debug Log</h3>
-      <div>
+      <div class="debug-controls">
         <button id="debugClear">Clear</button>
-        <button id="debugClose">?</button>
+        <button id="debugClose">×</button>
       </div>
     </div>
     <div class="debug-log" id="debugLog">
-      <!-- Debug entries will be populated here -->
+      <!-- Entries populated by JS -->
     </div>
   </div>
 
-  <script>
-    // Debug panel toggle
-    document.addEventListener('DOMContentLoaded', function() {
-      const debugToggle = document.getElementById('debugToggle');
-      const debugPanel = document.getElementById('debugPanel');
-      const debugClose = document.getElementById('debugClose');
-      const debugClear = document.getElementById('debugClear');
-      const debugLog = document.getElementById('debugLog');
-      
-      if (debugToggle && debugPanel) {
-        debugToggle.addEventListener('click', function() {
-          debugPanel.classList.toggle('active');
-        });
-        
-        if (debugClose) {
-          debugClose.addEventListener('click', function() {
-            debugPanel.classList.remove('active');
-          });
-        }
-        
-        if (debugClear && debugLog) {
-          debugClear.addEventListener('click', function() {
-            debugLog.innerHTML = '';
-            if (window.diagnosisEngine) {
-              window.diagnosisEngine.debugLog = [];
-            }
-          });
-        }
-      }
-      
-      // Enable debug mode with keyboard shortcut (Ctrl+D or Cmd+D)
-      document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-          e.preventDefault();
-          if (window.diagnosisEngine) {
-            window.diagnosisEngine.debugMode = !window.diagnosisEngine.debugMode;
-            console.log('Debug mode:', window.diagnosisEngine.debugMode ? 'ENABLED' : 'DISABLED');
-            if (window.diagnosisEngine.debugMode) {
-              debugPanel.classList.add('active');
-            }
-          }
-        }
-      });
-    });
-  </script>
-
+  <!-- Scripts (defer for perf; modulepreload for modules) -->
   <link rel="modulepreload" href="./diagnosis-engine.js">
   <link rel="modulepreload" href="./shared/data-loader.js">
   <link rel="modulepreload" href="./shared/debug-reporter.js">
   <link rel="modulepreload" href="./shared/utils.js">
   <link rel="modulepreload" href="./shared/performance-monitor.js">
-  
-  <!-- Universal background JavaScript -->
 
-  
-  <script src="./shared/background.js"></script>
+  <script src="./shared/background.js" defer></script>
+  <script type="module" src="diagnosis-engine.js" defer></script>
 
-  
-  <script type="module" src="diagnosis-engine.js"></script>
+  <!-- Inline JS for Toggles (non-module for simplicity) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Disclaimer Toggle
+      const disclaimerToggle = document.getElementById('disclaimerToggle');
+      const disclaimerSection = document.getElementById('disclaimerSection');
+      if (disclaimerToggle && disclaimerSection) {
+        disclaimerToggle.addEventListener('click', () => {
+          [disclaimerToggle, disclaimerSection].forEach(el => el.classList.toggle('expanded'));
+        });
+      }
+
+      // Instructions Toggle
+      const instructionsToggle = document.getElementById('instructionsToggle');
+      const instructionsPanel = document.getElementById('instructionsPanel');
+      if (instructionsToggle && instructionsPanel) {
+        instructionsToggle.addEventListener('click', () => {
+          [instructionsToggle, instructionsPanel].forEach(el => el.classList.toggle('expanded'));
+        });
+      }
+
+      // Hamburger Menu
+      const hamburger = document.querySelector('.hamburger');
+      const navList = document.getElementById('top-nav');
+      if (hamburger && navList) {
+        hamburger.addEventListener('click', () => {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          navList.classList.toggle('active');
+        });
+      }
+
+      // Dropdown Toggles (Books/Tools)
+      document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        const menu = toggle.nextElementSibling;
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          menu.classList.toggle('active');
+        });
+      });
+
+      // Close dropdowns on outside click
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('active'));
+        }
+      });
+
+      // Debug Panel
+      const debugToggle = document.getElementById('debugToggle');
+      const debugPanel = document.getElementById('debugPanel');
+      const debugClose = document.getElementById('debugClose');
+      const debugClear = document.getElementById('debugClear');
+      const debugLog = document.getElementById('debugLog');
+
+      if (debugToggle && debugPanel) {
+        debugToggle.addEventListener('click', () => debugPanel.classList.toggle('active'));
+
+        if (debugClose) debugClose.addEventListener('click', () => debugPanel.classList.remove('active'));
+
+        if (debugClear && debugLog) {
+          debugClear.addEventListener('click', () => {
+            debugLog.innerHTML = '';
+            if (window.diagnosisEngine) window.diagnosisEngine.debugLog = [];
+          });
+        }
+      }
+
+      // Keyboard shortcut for debug (Ctrl/Cmd + D)
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+          e.preventDefault();
+          if (window.diagnosisEngine) {
+            window.diagnosisEngine.debugMode = !window.diagnosisEngine.debugMode;
+            console.log('Debug mode:', window.diagnosisEngine.debugMode ? 'ENABLED' : 'DISABLED');
+            if (window.diagnosisEngine.debugMode) debugPanel.classList.add('active');
+          }
+        }
+      });
+
+      // View All Conditions Link
+      const viewAllBtn = document.getElementById('viewAllConditions');
+      if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.getElementById('conditionsSection').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
 </body>
 </html>
