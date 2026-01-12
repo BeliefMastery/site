@@ -1,4 +1,4 @@
-// Universal WebGL Nebula Background (blue-white-pink clouds, lighter & vivid)
+// Universal WebGL Nebula Background (vivid blue-white clouds, organic swimming motion)
 (function() {
   const canvas = document.getElementById('nebula-canvas');
   if (!canvas) return;
@@ -34,7 +34,7 @@
     }
   `;
 
-  // Fragment Shader (lighter nebula: airy blues/whites/pinks, reduced darkness)
+  // Fragment Shader (faster swimming, more distinct blue-white clouds, breathing effect)
   const fsSource = `
     precision mediump float;
     uniform float time;
@@ -42,7 +42,7 @@
     uniform vec2 resolution;
     varying vec2 uv;
 
-    // Simple noise function (approximates Perlin - unchanged)
+    // Simple noise function (approximates Perlin)
     float hash(vec2 p) {
       return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
     }
@@ -56,7 +56,7 @@
     float fbm(vec2 p) { // Fractional Brownian Motion for organic texture
       float v = 0.0;
       float a = 0.5;
-      for (int i = 0; i < 3; ++i) {  // Reduced iterations for perf
+      for (int i = 0; i < 4; ++i) {  // Increased iterations for more detail
         v += a * noise(p);
         p *= 2.0;
         a *= 0.5;
@@ -67,36 +67,55 @@
     void main() {
       vec2 pos = uv * resolution / min(resolution.x, resolution.y); // Aspect-correct
 
-      // Multi-layered organic movement - creates abstract shifting shapes (unchanged)
+      // Faster, more organic swimming motion - clouds morph and roam
       float scrollOffset = scrollY * 0.0003;
-      vec2 drift1 = vec2(time * 0.015, sin(time * 0.008) * 0.3 + scrollOffset);
-      vec2 drift2 = vec2(cos(time * 0.012) * 0.2, time * 0.01 + scrollOffset * 0.5);
-      vec2 drift3 = vec2(sin(time * 0.018) * 0.25, cos(time * 0.014) * 0.2);
+      float breathe = sin(time * 0.3) * 0.5 + 0.5; // Breathing pulse (faster)
+      
+      // Multiple drift layers with different speeds for swimming effect
+      vec2 drift1 = vec2(time * 0.035, sin(time * 0.025) * 0.5 + scrollOffset); // 2x+ faster
+      vec2 drift2 = vec2(cos(time * 0.028) * 0.4, time * 0.03 + scrollOffset * 0.5); // More lateral movement
+      vec2 drift3 = vec2(sin(time * 0.042) * 0.45, cos(time * 0.032) * 0.4); // Counter-rotating
+      vec2 drift4 = vec2(cos(time * 0.05) * 0.3, sin(time * 0.04) * 0.35); // Additional layer
+      
+      // Add rotational swirl for organic morphing
+      float angle = time * 0.08;
+      mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
 
-      // Multiple FBM layers at different scales for organic cloud shapes (lighter blend)
-      float n1 = fbm(pos * 1.2 + drift1);
-      float n2 = fbm(pos * 2.3 + drift2) * 0.6;
-      float n3 = fbm(pos * 4.1 + drift3) * 0.3;
-      float n = (n1 + n2 + n3) / 1.9; // Combine layers for organic texture
+      // Multiple FBM layers with breathing and rotation
+      float n1 = fbm((pos + drift1) * (1.2 + breathe * 0.2));
+      float n2 = fbm((rot * (pos + drift2)) * 2.5) * 0.7;
+      float n3 = fbm((pos + drift3) * 4.5) * 0.4;
+      float n4 = fbm((rot * (pos + drift4)) * 3.2) * 0.3; // Extra morphing layer
+      float n = (n1 + n2 + n3 + n4) / 2.4; // Combine for rich texture
 
-      // Add subtle radial variations for cloud-like formations (unchanged)
+      // Dynamic radial variations (breathing clouds)
       float dist = length(pos - vec2(0.5, 0.5));
-      float radial = sin(dist * 3.0 + time * 0.02) * 0.1;
+      float radial = sin(dist * 4.0 + time * 0.15) * 0.15 * breathe; // Pulsing
       n += radial;
 
-      // Lighter blue-white-pink scheme (vivid clouds, less dark base)
-      vec3 color1 = vec3(0.15, 0.18, 0.25); // Soft navy base (up from 0.03-0.08)
-      vec3 color2 = vec3(0.4, 0.6, 1.0) * 0.8; // Airy blue (brighter)
-      vec3 color3 = vec3(0.8, 0.9, 1.0) * 0.7; // White cloud highlights
-      vec3 color4 = vec3(0.2, 0.5, 1.0) * 0.75; // Pinkish-blue accents
-      vec3 color = mix(color1, mix(mix(color2, color3, n * 0.6), color4, n * 0.4), smoothstep(0.2, 0.8, n));  // More white/pink mix
+      // More distinct blue-white scheme (no pink, stronger contrast)
+      vec3 color1 = vec3(0.08, 0.12, 0.20); // Deep space base
+      vec3 color2 = vec3(0.2, 0.5, 0.95); // Rich electric blue
+      vec3 color3 = vec3(0.75, 0.85, 1.0); // Bright white-blue highlights
+      vec3 color4 = vec3(0.35, 0.65, 1.0); // Mid-tone cyan-blue
+      
+      // More aggressive color mixing for distinct clouds
+      vec3 baseColor = mix(color1, color2, smoothstep(0.25, 0.55, n));
+      vec3 midColor = mix(color2, color4, smoothstep(0.4, 0.7, n));
+      vec3 highlightColor = mix(midColor, color3, smoothstep(0.6, 0.9, n));
+      vec3 color = mix(baseColor, highlightColor, smoothstep(0.3, 0.8, n));
 
-      // Enhanced ambient glow (brighter, less dark)
-      float ambient = sin(n * 6.28 + time * 0.05) * 0.15 + 0.1;  // Up from 0.05
-      color += vec3(0.2, 0.25, 0.35) * ambient;  // Lighter glow (0.08->0.2)
+      // Breathing glow effect (pulses with time)
+      float glowIntensity = sin(time * 0.25) * 0.15 + 0.25;
+      float glow = sin(n * 6.28 + time * 0.2) * glowIntensity * breathe;
+      color += vec3(0.15, 0.25, 0.4) * glow;
 
-      // Softer edge fade (less vignette masking)
-      float edgeFade = smoothstep(0.0, 0.05, uv.x) * smoothstep(1.0, 0.95, uv.x) *  // Gentler edges
+      // Sharper cloud edges (more distinct formations)
+      n = pow(n, 1.2); // Increase contrast
+      color *= (0.7 + n * 0.6); // Darker darks, brighter brights
+
+      // Softer edge fade
+      float edgeFade = smoothstep(0.0, 0.05, uv.x) * smoothstep(1.0, 0.95, uv.x) *
                        smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
       color *= edgeFade;
 
@@ -104,7 +123,7 @@
     }
   `;
 
-  // Compile shader (unchanged)
+  // Compile shader
   function createShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -117,7 +136,7 @@
     return shader;
   }
 
-  // Program setup (unchanged)
+  // Program setup
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
   if (!vertexShader || !fragmentShader) {
@@ -136,7 +155,7 @@
   }
   gl.useProgram(program);
 
-  // Quad vertices (unchanged)
+  // Quad vertices
   const positionLocation = gl.getAttribLocation(program, 'position');
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -144,12 +163,12 @@
   gl.enableVertexAttribArray(positionLocation);
   gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-  // Uniforms (unchanged)
+  // Uniforms
   const timeLocation = gl.getUniformLocation(program, 'time');
   const scrollYLocation = gl.getUniformLocation(program, 'scrollY');
   const resolutionLocation = gl.getUniformLocation(program, 'resolution');
 
-  // Scroll tracking for parallax effect (unchanged)
+  // Scroll tracking for parallax effect
   let scrollY = 0;
   function updateScroll() {
     scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -157,7 +176,7 @@
   window.addEventListener('scroll', updateScroll, { passive: true });
   updateScroll();
 
-  // Animation loop (unchanged)
+  // Animation loop
   let startTime = Date.now();
   let animationId = null;
   function render() {
@@ -170,7 +189,7 @@
   }
   render();
 
-  // Cleanup on page unload (unchanged)
+  // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     if (animationId) cancelAnimationFrame(animationId);
     window.removeEventListener('resize', resize);
