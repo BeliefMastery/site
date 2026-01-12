@@ -289,14 +289,9 @@ header.site-header{
 .results-section, 
 .disclaimer-section, 
 .instructions-panel {
-  display: none; /* Hide by default */
-  overflow: hidden;
-  transition: var(--transition);
-  
-  /* Apply the "Cosmic Card" look here so it populates everywhere */
-  background: var(--glass);
-  border-radius: var(--radius);
-  border: 1px solid var(--border-subtle);
+    display: none; /* Hidden by default */
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 /* JavaScript triggers these */
@@ -306,18 +301,16 @@ header.site-header{
 }
 
 /* When the Disclaimer or Instructions are expanded */
-.disclaimer-section.expanded, 
-.instructions-panel.expanded {
-  display: block !important;
-  max-height: 2000px;
-  opacity: 1;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  
-  /* Visual Fix: High contrast styling */
-  border-left: 4px solid var(--accent); /* Golden Lightning indicator */
-  color: var(--brand); /* Ice Blue text visibility */
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+.disclaimer-section.expanded,
+.instructions-panel.expanded,
+.questionnaire-section.active,
+.results-section.active {
+    display: block !important;
+    opacity: 1;
+    padding: 1.5rem;
+    background: rgba(255, 215, 0, 0.05);
+    border-left: 4px solid var(--accent);
+    margin: 1rem 0;
 }
 
 /* Ensure headings inside these panels are also visible */
