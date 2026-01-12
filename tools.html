@@ -84,67 +84,12 @@
   }
   </script>
 
-  <style>
-    /* ---------- Background crossfade layers ---------- */
-    .bg-layer{
-      position:fixed;inset:0;z-index:0;background-size:contain;background-position:center;background-repeat:no-repeat;
-      transition:opacity .9s ease, filter .9s ease;pointer-events:none;
-    }
-    .bg-layer.hidden{opacity:0;filter:blur(8px) saturate(.86)}
-    .bg-overlay{position:fixed;inset:0;z-index:1;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));pointer-events:none}
-    
-    /* Tool card styling */
-    .tool-card{
-      background:rgba(25, 35, 50, 0.85);
-      border:2px solid var(--accent);
-      border-radius:var(--radius);
-      padding:1.5rem;
-      backdrop-filter:blur(8px);
-      cursor:pointer;
-      transition:all var(--transition);
-      color:var(--brand);
-    }
-    .tool-card:hover{
-      transform:scale(1.02);
-      box-shadow:0 4px 16px rgba(0,0,0,0.4);
-      background:rgba(30, 40, 55, 0.9);
-    }
-    /* Ensure all text in tool cards is readable (light colors override inline dark styles) */
-    .tool-card{
-      color:var(--brand);
-    }
-    .tool-card h3,
-    .tool-card strong{
-      color:var(--brand) !important;
-    }
-    .tool-card p,
-    .tool-card li{
-      color:var(--muted) !important;
-    }
-    .tool-details{
-      display:none;
-      margin-top:1rem;
-      padding-top:1rem;
-      border-top:1px solid rgba(255,255,255,0.2);
-    }
-    .tool-details.expanded{
-      display:block;
-    }
-    .tool-expand-indicator{
-      text-align:center;
-      margin-top:0.5rem;
-      font-size:0.85rem;
-      color:var(--muted);
-    }
-  </style>
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- Nebula-style cosmic background -->
   <div class="bg-gradient"></div>
   <canvas id="nebula-canvas" aria-hidden="true"></canvas>
-  <div class="bg-overlay"></div>
 
     <header class="site-header" role="banner">
     <nav class="nav" aria-label="Primary navigation">
