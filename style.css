@@ -2285,6 +2285,73 @@ img[data-src].loaded {
     }
 }
 
+Since the Paradigm page uses a similar structure to the Coaching page, moving its styles into style.css ensures it adopts the same cohesive "Cosmic" design.
+
+On the Paradigm page, the missing styles typically affect the interactive selection blocks (like the "Active vs. Passive" or "Internal vs. External" choices).
+
+Add this block to your style.css (you can place it right after the coaching styles we just added):
+
+CSS
+
+/* ==========================================================================
+   PARADIGM & SELECTION COMPONENT STYLES
+   ========================================================================== */
+
+/* Container for Paradigm selection options */
+.paradigm-options, .selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+/* Individual Option Cards */
+.paradigm-card, .option-card {
+    background: var(--glass-light);
+    border: 2px solid var(--border-medium);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.paradigm-card:hover, .option-card:hover {
+    background: var(--card-hover);
+    border-color: var(--brand);
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px var(--glow-blue);
+}
+
+/* Selected State */
+.paradigm-card.selected, .option-card.selected {
+    border-color: var(--accent);
+    background: rgba(255, 215, 0, 0.05);
+    box-shadow: 0 0 35px var(--glow-accent);
+}
+
+/* Specific styling for the text inside paradigm cards */
+.paradigm-card h3, .option-card h3 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+}
+
+.paradigm-card p, .option-card p {
+    color: var(--brand);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .paradigm-options {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Ensure the background stays in the background */
 .bg-gradient, #nebula-canvas, .bg-overlay {
   position: fixed;
