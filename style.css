@@ -875,7 +875,7 @@ button:disabled,
     gap: .6rem;
 }
 
-/* Selection Cards (Paradigm, Coaching, etc.) */
+/* Unified Grid Layout for Selections and Sections (Paradigm, Category, etc.) */
 .paradigm-options,
 .selection-grid,
 .section-selection,
@@ -883,21 +883,16 @@ button:disabled,
 .options-container,
 .diagnosis-options,
 .assessment-grid,
-.pathology-selection {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-    width: 100%;
-    clear: both; /* Prevents overlapping from floating elements */
-}
-
+.pathology-selection,
 .section-grid,
-.category-grid,
-.paradigm-options {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    margin-top: 1rem;
-    align-items: stretch;
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Unified min-width; adjust to 300px if needed */
+    gap: 1.5rem;
+    margin: 2rem 0 1rem; /* Combines vertical margins for consistency */
+    width: 100%;
+    align-items: stretch; /* Ensures cards stretch to match tallest in row */
+    clear: both; /* Prevents overlapping from any floating elements */
 }
 
 .coaching-container,
