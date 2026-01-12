@@ -2201,19 +2201,27 @@ img[data-src].loaded {
 }
 
 /* ==========================================================================
-   COACHING PAGE SPECIFIC COMPONENTS
+   UNIVERSAL SELECTION CARDS (Paradigm, Coaching, Tools)
    ========================================================================== */
 
-/* The outer container for the two choices */
-.section-selection {
+/* 1. The Containers */
+.paradigm-options, 
+.selection-grid, 
+.section-selection, 
+.options-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     margin: 2rem 0;
 }
 
-/* The Individual Selection Buttons (Obstacles vs Satisfaction) */
-.section-card {
+/* 2. The Buttons/Cards - Mapping ALL potential names */
+.paradigm-card, 
+.paradigm-option, 
+.option-card, 
+.section-card, 
+.choice-box,
+.paradigm-choice {
     background: var(--glass-light);
     border: 2px solid var(--border-medium);
     border-radius: var(--radius);
@@ -2224,125 +2232,51 @@ img[data-src].loaded {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    height: 100%; /* Ensures all cards in a row are same height */
 }
 
-.section-card:hover {
+/* 3. Hover State */
+.paradigm-card:hover, 
+.paradigm-option:hover, 
+.option-card:hover, 
+.section-card:hover, 
+.choice-box:hover {
     background: var(--card-hover);
     border-color: var(--brand);
     transform: translateY(-4px);
     box-shadow: 0 0 30px var(--glow-blue);
 }
 
-/* The Selected State (Golden Highlight) */
-.section-card.selected {
-    border-color: var(--accent);
-    background: rgba(255, 215, 0, 0.08);
-    box-shadow: 0 0 40px var(--glow-accent);
+/* 4. Selected State (The Gold Glow) */
+.paradigm-card.selected, 
+.paradigm-option.selected, 
+.option-card.selected, 
+.section-card.selected, 
+.choice-box.selected,
+.active-choice {
+    border-color: var(--accent) !important;
+    background: rgba(255, 215, 0, 0.08) !important;
+    box-shadow: 0 0 40px var(--glow-accent) !important;
 }
 
-.section-card h3 {
+/* 5. Typography inside Cards */
+.paradigm-card h3, .option-card h3, .section-card h3, .paradigm-option h3 {
     color: var(--accent);
     margin: 0;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.section-card p {
+.paradigm-card p, .option-card p, .section-card p, .paradigm-option p {
     color: var(--brand);
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 0;
-}
-
-/* The Navigation Stepper (Stage 1, Stage 2, etc.) */
-.stage-indicator {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 3rem;
-}
-
-.stage-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--border-medium);
-    transition: var(--transition);
-}
-
-.stage-dot.active {
-    background: var(--accent);
-    box-shadow: 0 0 15px var(--accent);
-    transform: scale(1.3);
-}
-
-/* Responsive adjustment for the two buttons */
-@media (max-width: 600px) {
-    .section-selection {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-/* ==========================================================================
-   PARADIGM & SELECTION COMPONENT STYLES
-   ========================================================================== */
-
-/* Container for Paradigm selection options */
-.paradigm-options, .selection-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-/* Individual Option Cards */
-.paradigm-card, .option-card {
-    background: var(--glass-light);
-    border: 2px solid var(--border-medium);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.paradigm-card:hover, .option-card:hover {
-    background: var(--card-hover);
-    border-color: var(--brand);
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px var(--glow-blue);
-}
-
-/* Selected State */
-.paradigm-card.selected, .option-card.selected {
-    border-color: var(--accent);
-    background: rgba(255, 215, 0, 0.05);
-    box-shadow: 0 0 35px var(--glow-accent);
-}
-
-/* Specific styling for the text inside paradigm cards */
-.paradigm-card h3, .option-card h3 {
-    color: var(--accent);
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-}
-
-.paradigm-card p, .option-card p {
-    color: var(--brand);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 0;
-}
-
-/* Mobile adjustments */
-@media (max-width: 600px) {
-    .paradigm-options {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Ensure the background stays in the background */
