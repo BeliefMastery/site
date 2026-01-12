@@ -964,19 +964,26 @@ button:disabled,
 .paradigm-card h3,
 .option-card h3,
 .section-card h3,
-.paradigm-option h3 {
-    color: var(--accent);
-    margin: 0;
+.paradigm-option h3,
+.diagnosis-card h3,
+.assessment-card h3,
+.category-card h3 {
+    color: var(--accent); /* Consistent Gold Titles */
+    margin: 0 0 0.5rem 0;
     font-size: 1.3rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: 700;
 }
 
 .paradigm-card p,
 .option-card p,
 .section-card p,
-.paradigm-option p {
-    color: var(--brand);
+.paradigm-option p,
+.diagnosis-card p,
+.assessment-card p,
+.category-card p {
+    color: var(--muted); /* Clearer contrast using Blue-Gray */
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 0;
@@ -989,8 +996,9 @@ section .card:hover {
     transform: translateY(-2px);
 }
 
+/* Specific override for cards nested inside standard <section> tags */
 section .card strong {
-    color: var(--brand);
+    color: var(--accent); /* Matches the title gold */
 }
 
 section .card p {
