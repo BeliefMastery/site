@@ -407,10 +407,19 @@ header.site-header{
   padding: 0 2rem;
 }
 
-.manipulation-container, .tool-container {
-    max-width: 850px; /* Matches the comfortable reading width of your books page */
-    margin: 0 auto;
-    padding: 2rem;
+/* This replaces all individual page containers */
+.tool-container, 
+.manipulation-container, 
+.archetype-container, 
+.dependency-container,
+.channels-container {
+  max-width: 850px; /* Matches the "Books" page feel */
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--glass);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
 }
 
 /* This specifically handles the text-heavy sections */
