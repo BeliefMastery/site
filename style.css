@@ -2379,3 +2379,28 @@ img[data-src].loaded {
 }
 
 
+* Add this to force the main container and sections to be transparent enough */
+.paradigm-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Tone down the sections so the background feature shines through */
+section {
+    background: rgba(15, 25, 45, 0.4) !important; /* Made much more transparent */
+    backdrop-filter: blur(8px) saturate(1.2) !important; /* Reduced blur */
+    border: 1px solid var(--border-subtle) !important;
+}
+
+/* Ensure the canvas is behind everything */
+#nebula-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.bg-overlay {
+    z-index: 0;
+}
