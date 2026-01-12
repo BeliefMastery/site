@@ -4,8 +4,8 @@
 import re
 import os
 
-# Standard header template (without active class - will be added per page)
-STANDARD_HEADER = '''  <header class="site-header" role="banner">
+# Standard header template (Corrected without hidden characters)
+STANDARD_HEADER = '''<header class="site-header" role="banner">
     <nav class="nav" aria-label="Primary navigation">
       <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
       <ul class="nav-list" id="top-nav" role="menubar">
@@ -31,7 +31,7 @@ STANDARD_HEADER = '''  <header class="site-header" role="banner">
             <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Analysis</a></li>
             <li role="none"><a role="menuitem" href="channels.html">Channel Analysis</a></li>
             <li role="none"><a role="menuitem" href="paradigm.html">Paradigm Clarification</a></li>
-            <li role="none"><a role="menuitem" href="relationship.html">Relationship Optimization</a></li>
+            <li role="none"><a role="member" href="relationship.html">Relationship Optimization</a></li>
             <li role="none"><a role="menuitem" href="temperament.html">Temperament Analyzer</a></li>
           </ul>
         </li>
