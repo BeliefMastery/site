@@ -407,6 +407,12 @@ header.site-header{
   padding: 0 2rem;
 }
 
+.manipulation-container, .tool-container {
+    max-width: 850px; /* Matches the comfortable reading width of your books page */
+    margin: 0 auto;
+    padding: 2rem;
+}
+
 /* This specifically handles the text-heavy sections */
 .content-section {
   max-width: 850px; /* Slightly wider than 72ch for better tool layout */
