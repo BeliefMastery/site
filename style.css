@@ -469,78 +469,121 @@ section:hover{
   line-height:1.7;
 }
 
-/* ---------- Buttons ---------- */
-.cta{
-  display:flex;
-  gap:.75rem;
-  flex-wrap:wrap;
-  justify-content:center;
+/* ==========================================================================
+   BUTTONS & ACTIONS
+   ========================================================================== */
+
+.cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 2rem 0;
 }
 
-.btn{
-  display:inline-block;
-  padding:.9rem 1.5rem;
-  border-radius:10px;
-  border:0;
-  font-weight:700;
-  cursor:pointer;
-  font-size:1rem;
-  box-shadow:0 8px 22px rgba(0,0,0,0.1);
-  transition:var(--transition);
-  text-decoration:none;
-  position:relative;
-  overflow:hidden;
+/* Base Button Styles */
+.btn, button, .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.8rem;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: var(--transition);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  gap: 0.5rem;
 }
 
-.btn::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-75%;
-  width:50%;
-  height:100%;
-  background:rgba(255,255,255,0.25);
-  transform:skewX(-25deg);
-  transition:left 0.5s ease;
+/* The Shine Effect Layer */
+.btn::before, button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
 }
 
-.btn:hover::before{
-  left:130%;
+.btn:hover::before, button:hover::before {
+  left: 130%;
 }
 
-.btn:hover{
-  transform:translateY(-1px) scale(1.02);
+/* Primary "Golden Lightning" Button (High Contrast) */
+.btn-primary, 
+button:not(.secondary):not(.close-btn), 
+#calculate-btn, 
+.next-btn {
+  background: linear-gradient(135deg, var(--accent), #ffb700) !important;
+  color: #050a15 !important; /* Deep space dark text on gold background */
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
 }
 
-/* ========== BUTTONS ========== */
-.btn-primary{
-  background:linear-gradient(135deg, #ffd700, #ffb700);
-  color:#0a0a0a;
-  font-weight:700;
-  padding:.9rem 1.5rem;
-  border-radius:10px;
-  box-shadow:var(--shadow-sm);
-  transition:var(--transition);
+.btn-primary:hover, 
+button:not(.secondary):not(.close-btn):hover {
+  background: linear-gradient(135deg, var(--accent-hover), #ffc820) !important;
+  box-shadow: 0 0 30px var(--glow-accent);
+  transform: translateY(-3px) scale(1.02);
 }
 
-.btn-primary:hover{
-  background:linear-gradient(135deg, #ffe84d, #ffc820);
-  box-shadow: var(--shadow-md), 0 0 30px var(--glow-accent);
-  transform:translateY(-2px) scale(1.02);
+/* Outline / Secondary Button (Ice Blue) */
+.btn-outline, 
+.btn-secondary, 
+button.secondary, 
+.prev-btn {
+  background: rgba(232, 240, 248, 0.05) !important;
+  border: 2px solid var(--border-medium) !important;
+  color: var(--brand) !important; /* Ice blue text on dark background */
+  backdrop-filter: blur(5px);
 }
 
-.btn-outline{
-  background:transparent;
-  border:2px solid var(--border-medium);
-  color:var(--brand);
-  padding:.9rem 1.5rem;
-  border-radius:10px;
+.btn-outline:hover, 
+button.secondary:hover {
+  background: rgba(255, 215, 0, 0.1) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  transform: translateY(-2px);
 }
 
-.btn-outline:hover{
-  background:rgba(255, 215, 0, 0.1);
-  border-color:var(--accent);
-  color:var(--accent);
+/* Special Case: Choice/Option Cards (found in your Tools) */
+.choice-btn, .option-card, .three-point-option {
+  background: var(--glass-light);
+  border: 1px solid var(--border-subtle);
+  color: var(--brand);
+  padding: 1.2rem;
+  border-radius: var(--radius);
+  text-align: left;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.choice-btn:hover {
+  border-color: var(--brand);
+  background: var(--card-hover);
+}
+
+.choice-btn.selected {
+  border-color: var(--accent);
+  background: rgba(255, 215, 0, 0.05);
+  box-shadow: 0 0 15px var(--glow-accent);
+}
+
+/* Disabled State */
+button:disabled, .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(1);
+  transform: none !important;
 }
 
 /* Section title buttons - styled headings with framing */
