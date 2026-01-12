@@ -2222,28 +2222,6 @@ img[data-src].loaded {
 }
 
 /* ========== BACKGROUND ELEMENTS ========== */
-/* Page-Specific Backgrounds (via data-page on body) */
-body[data-page="channels"]::before {
-    background-image: url('./images/channels-background.jpg');
-}
-
-body[data-page="character-sheet"]::before {
-    background-image: url('./images/astrology-background.jpg');
-}
-
-body[data-page="coaching"]::before {
-    background-image: url('./images/coaching-background.jpg');
-}
-
-body[data-page="sovereignty"]::before {
-    background-image: url('./images/vulnerability-vector-background.jpg');
-    background-size: cover;
-    opacity: 0.3;
-}
-
-body[data-page="temperament"]::before {
-    background-image: url('./images/temperament-background.jpg');
-}
 
 /* Ensure the background stays in the background */
 .bg-gradient,
