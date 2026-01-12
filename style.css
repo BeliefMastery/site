@@ -317,7 +317,8 @@ header.site-header {
     }
 }
 
-/* ========== SECTIONS & CONTAINERS ========== */
+/* ========== CONTAINERS & SECTIONS ========== */
+/* Master Container (site-wide width constraint) */
 .container {
     width: 90%;
     max-width: 1200px; /* The "Master" width for the whole site */
@@ -349,7 +350,7 @@ header.site-header {
     box-shadow: var(--shadow-lg);
 }
 
-/* Page-Specific Containers */
+/* Page-Specific Container Overrides */
 .channels-container,
 .coaching-container,
 .temperament-container {
@@ -368,7 +369,7 @@ header.site-header {
     padding: 2rem 1.5rem;
 }
 
-/* Content Sections */
+/* Content Sections (text-heavy pages) */
 .content-section {
     max-width: 72ch;
     margin: 0 auto;
@@ -407,6 +408,7 @@ header.site-header {
     border-bottom-color: var(--accent);
 }
 
+/* Questionnaire & Tool Wrappers */
 .questionnaire-container,
 #questionnaire-form,
 .tool-wrapper {
@@ -422,16 +424,18 @@ header.site-header {
     border: 1px solid var(--border-subtle);
 }
 
+/* Sections (consolidated: gradient base with transparent fallback) */
 section {
-    background: linear-gradient(135deg, rgba(15, 25, 45, 0.82) 0%, rgba(10, 20, 38, 0.9) 50%, rgba(15, 25, 45, 0.82) 100%);
-    backdrop-filter: blur(20px) saturate(1.3);
+    background: rgba(15, 25, 45, 0.4); /* Transparent for cloud visibility (overrides gradient) */
+    backdrop-filter: blur(8px) saturate(1.2);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
     padding: 28px;
     margin: 32px 0;
     box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 60px var(--glow-blue);
-    border: 1px solid var(--border-medium);
     color: var(--brand);
     transition: var(--transition);
+    position: relative;
 }
 
 section:hover {
@@ -446,20 +450,14 @@ section:hover {
     color: var(--brand);
 }
 
-/* Tone down sections for background visibility */
+/* Paradigm Container (transparent override) */
 .paradigm-container {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-section {
-    background: rgba(15, 25, 45, 0.4) !important; /* Made much more transparent */
-    backdrop-filter: blur(8px) saturate(1.2) !important; /* Reduced blur */
-    border: 1px solid var(--border-subtle) !important;
-}
-
-/* ========== HERO ========== */
+/* ========== HERO & HEADER ELEMENTS ========== */
 .hero {
     display: flex;
     flex-direction: column;
@@ -495,6 +493,185 @@ section {
     margin: 0 auto 1.2rem;
     font-size: 1rem;
     line-height: 1.7;
+}
+
+/* Diagnosis-Specific Header & Layout */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.intro-text {
+    flex: 1;
+}
+
+.lead-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--brand);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.description {
+    color: var(--muted);
+    margin: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Hero Image (Diagnosis Cover) */
+.hero-image {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.hero-img {
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: block;
+    margin: 0 auto;
+}
+
+/* Acknowledgment Box */
+.ack-box {
+    background: rgba(15, 20, 30, 0.95);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    border-left: 3px solid var(--accent);
+    border: 1px solid rgba(50, 100, 220, 0.2);
+}
+
+.ack-box p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.disclaimer-cta {
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+/* Instructions Panel */
+.instructions-title {
+    margin-bottom: 1rem;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.instructions-content {
+    line-height: 1.7;
+}
+
+.scale-guide,
+.guidelines {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.scale-list,
+.guidelines-list {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.scale-list li,
+.guidelines-list li {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* Action Links & Navigation */
+.action-links {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.link-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.abandon-link {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.results-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Conditions Directory */
+.directory-intro {
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 2rem;
+}
+
+.search-wrapper {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 0.75rem;
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    margin: 0 auto;
+    display: block;
+}
+
+.conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.condition-detail {
+    margin-top: 3rem;
+}
+
+.back-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Footer Links */
+.footer-link {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.debug-controls {
+    display: flex;
+    gap: 0.5rem;
 }
 
 /* ========== BUTTONS & ACTIONS ========== */
