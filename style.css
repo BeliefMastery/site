@@ -907,20 +907,20 @@ section .card p {
     color: var(--brand);
 }
 
-/* Portal Cards */
+/* Portal Cards (Updated for cosmic consistency) */
 .portal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));  /* Keeps responsive 3-4 cols on desktop */
     gap: 2rem;
     margin: 2rem 0;
     align-items: start;
 }
 
 .portal-card {
-    background: rgba(18, 28, 48, 0.92);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-md);
-    color: var(--brand);
+    background: var(--glass-light);  /* Lighter glass for cloud bleed-through */
+    border: 2px solid var(--border-subtle);  /* Subtle edge, ties to theme */
+    box-shadow: var(--shadow-sm);  /* Softer base shadow */
+    color: var(--brand);  /* Ice blue base text */
     padding: 2rem;
     border-radius: var(--radius);
     transition: var(--transition);
@@ -928,6 +928,9 @@ section .card p {
     overflow: hidden;
     cursor: pointer;
     text-align: center;
+    display: flex;
+    flex-direction: column;  /* Ensures even height/alignment */
+    height: 100%;  /* Stretches to match grid row */
 }
 
 .portal-card::before {
@@ -937,36 +940,78 @@ section .card p {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--accent), transparent);
+    background: linear-gradient(90deg, var(--accent), transparent);  /* Retained gold accent bar */
+    z-index: 1;
 }
 
 .portal-card:hover {
-    box-shadow: var(--shadow-lg), 0 0 60px var(--glow-blue);
-    border-color: var(--border-bright);
-    transform: translateY(-4px);
+    box-shadow: var(--shadow-md), 0 0 30px var(--glow-accent);  /* Gold glow on hover for cosmic pop */
+    border-color: var(--border-medium);  /* Brighter border */
+    transform: translateY(-4px);  /* Lift effect */
 }
 
-.portal-card blockquote {
+.portal-card h3 {  /* Title consistency */
+    color: var(--accent);  /* Gold for headings */
+    font-size: 1.3rem;
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;  /* Subtle emphasis */
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.portal-card blockquote {  /* If using quotes */
     font-style: italic;
     font-size: 1.1rem;
     color: var(--brand);
-    margin: 0 0 1rem;
+    margin: 1rem 0;
     line-height: 1.4;
+    border-left: 3px solid var(--accent);  /* Gold accent for quotes */
+    padding-left: 1rem;
 }
 
-.portal-card p {
-    color: var(--muted);
+.portal-card p {  /* Body text */
+    color: var(--muted);  /* Muted blue-gray */
     line-height: 1.55;
     margin-bottom: 1rem;
-    max-width: 60ch;
-    margin-left: auto;
-    margin-right: auto;
+    flex: 1;  /* Fills space evenly */
+    max-width: 60ch;  /* Readable width */
 }
 
-.portal-card .btn {
+.portal-card .btn {  /* Button integration */
     font-size: .95rem;
     padding: .7rem 1.2rem;
-    margin-top: .5rem;
+    margin-top: auto;  /* Pushes to bottom */
+    align-self: center;  /* Centers if needed */
+}
+
+/* Expand indicator/link (from screenshot) */
+.portal-card .tool-expand-indicator,
+.portal-card .selection-limit {  /* "Click to expand" text */
+    color: var(--accent);  /* Gold for CTAs */
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    text-align: center;
+    text-decoration: underline;  /* Subtle underline for interactivity */
+    transition: color var(--transition);
+}
+
+.portal-card .tool-expand-indicator:hover {
+    color: var(--accent-hover);  /* Brighter gold on hover */
+}
+
+/* Image/Icon Support (if cards have imgs, from screenshot) */
+.portal-card img {  /* Assumes icon/image in card */
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;  /* Circular for cosmic feel */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);  /* Subtle lift */
+    transition: transform var(--transition);
+}
+
+.portal-card:hover img {
+    transform: scale(1.05);  /* Gentle zoom on hover */
 }
 
 /* Image Rows & Grids */
