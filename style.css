@@ -2058,6 +2058,7 @@ img[data-src].loaded {
     page-break-after: avoid;
   }
 }
+
 /* Ensure the background stays in the background */
 .bg-gradient, #nebula-canvas, .bg-overlay {
   position: fixed;
@@ -2073,6 +2074,26 @@ img[data-src].loaded {
   background: radial-gradient(circle at center, transparent 0%, var(--bg) 100%);
   opacity: 0.6;
 }
+/* Fix for Character Sheet Interaction */
+#nebula-canvas, .bg-gradient, .bg-overlay {
+    z-index: -1 !important;
+    pointer-events: none !important;
+}
 
+/* Re-insert the essential Character Sheet Grid logic */
+.character-sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.attribute-node {
+    background: var(--glass-light);
+    border: 1px solid var(--border-subtle);
+    padding: 1rem;
+    border-radius: var(--radius);
+    color: var(--brand);
+}
 
 
