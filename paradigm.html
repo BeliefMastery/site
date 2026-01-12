@@ -88,14 +88,12 @@
           <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);"> This engine maps how meaning is currently organized in you.</p>
         </div>
         
-        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle" style="cursor: pointer;">
           <div class="disclaimer-acknowledgement-text">
-            <span>Disclaimer</span>
+            <span>Disclaimer (Click to View)</span>
           </div>
         </div>
 
-        <div class="acknowledgement-box">
-        </div>
         <section class="disclaimer-section" id="disclaimerSection">
           <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
           <p><strong>This analysis does not determine what is real, correct, or ultimate. Paradigms are lenses for understanding, not commitments to truth status.</strong></p>
@@ -104,24 +102,24 @@
       
      <section class="category-selection" id="categorySelection">
           <h2 style="text-align: center; margin-bottom: 2rem;">Select One or Both Categories to Explore</h2>
-      <div class="category-grid" id="categoryGrid">
-          <section>
-          <div class="category-card" data-category="good_life">
-            <h3>The Good Life</h3>
-            <p>Active, Contemplative, Hedonistic and Service.</p>
+          
+          <div class="category-grid" id="categoryGrid">
+              <div class="category-card" data-category="good_life">
+                <h3>The Good Life</h3>
+                <p>Active, Contemplative, Hedonistic and Service.</p>
+              </div>
+              <div class="category-card" data-category="god">
+                <h3>God Perspectives</h3>
+                <p>There are so many different ways to conceive of God; become clear on which particular one is yours.</p>
+              </div>
           </div>
-          <div class="category-card" data-category="god">
-            <h3>God Perspectives</h3>
-            <p>There are so many different ways to conceive of God; become clear on which particular one is yours.</p>
+
+          <div style="text-align: center; margin-top: 2rem;">
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+              <a href="example-reports/paradigm-example.html" target="_blank" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
+              <button class="btn btn-primary" id="startAssessment" disabled>Start Assessment</button>
+            </div>
           </div>
-          </section>
-      </div>
-         <div style="text-align: center; margin-top: 2rem;">
-           <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-             <a href="example-reports/paradigm-example.html" target="_blank" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
-             <button class="btn btn-primary" id="startAssessment" disabled>Start Assessment</button>
-           </div>
-         </div>
      </section>
 
       <section class="questionnaire-section" id="questionnaireSection">
