@@ -2285,13 +2285,6 @@ img[data-src].loaded {
     }
 }
 
-Since the Paradigm page uses a similar structure to the Coaching page, moving its styles into style.css ensures it adopts the same cohesive "Cosmic" design.
-
-On the Paradigm page, the missing styles typically affect the interactive selection blocks (like the "Active vs. Passive" or "Internal vs. External" choices).
-
-Add this block to your style.css (you can place it right after the coaching styles we just added):
-
-CSS
 
 /* ==========================================================================
    PARADIGM & SELECTION COMPONENT STYLES
