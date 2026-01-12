@@ -2250,7 +2250,8 @@ img[data-src].loaded {
 /* 1. The Containers */
 .paradigm-options, 
 .selection-grid, 
-.section-selection, 
+.section-selection,
+.category-selection,
 .options-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -2260,7 +2261,9 @@ img[data-src].loaded {
     clear: both; /* Prevents overlapping from floating elements */
 }
 
-.section-grid, .paradigm-options {
+.section-grid,
+.category-grid,
+.paradigm-options {
     display: grid;
     /* This ensures it handles 1 or 2 cards gracefully without stretching them weirdly */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
