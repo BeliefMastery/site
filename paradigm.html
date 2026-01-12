@@ -99,16 +99,16 @@
 <section class="category-selection" id="categorySelection">
   <h2 style="text-align: center; margin-bottom: 2rem;">Select One or Both Categories to Explore</h2>
   
-  <div class="category-grid" id="categoryGrid">
-      <div class="category-card" data-category="good_life">
+<div class="category-grid" id="categoryGrid">
+    <div class="category-card" data-category="good_life">
         <h3>The Good Life</h3>
         <p>Active, Contemplative, Hedonistic and Service.</p>
-      </div>
-      <div class="category-card" data-category="god">
+    </div>
+    <div class="category-card" data-category="god">
         <h3>God Perspectives</h3>
         <p>There are so many different ways to conceive of God; become clear on which particular one is yours.</p>
-      </div>
-  </div>
+    </div>
+</div>
 </section>
 <section>
           <div style="text-align: center; margin-top: 2rem;">
@@ -233,6 +233,18 @@
         }
       });
     });
+document.addEventListener('DOMContentLoaded', function() {
+    const dToggle = document.getElementById('disclaimerToggle');
+    const dSection = document.getElementById('disclaimerSection');
+
+    if (dToggle && dSection) {
+        dToggle.addEventListener('click', function() {
+            this.classList.toggle('expanded');
+            dSection.classList.toggle('expanded');
+        });
+    }
+});
+
   </script>
 </body>
 </html>
