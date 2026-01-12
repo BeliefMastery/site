@@ -145,23 +145,21 @@ export class ArchetypeEngine {
     this.saveProgress();
   }
 
-  showGenderSelection() {
-    const container = document.getElementById('questionContainer');
-    if (!container) return;
+showGenderSelection() {
+  const container = document.getElementById('questionContainer');
+  if (!container) return;
 
-    SecurityUtils.safeInnerHTML(container, `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
-        <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your Gender</h2>
-        <p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.6;">This assessment adapts questions based on gender to provide more accurate archetype identification. Your selection is used only for question branching and does not affect the validity of results.</p>
-        <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-          <button id="selectMale" class="gender-btn" style="padding: 1.5rem 3rem; font-size: 1.1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600;">
-            Male
-          </button>
-          <button id="selectFemale" class="gender-btn" style="padding: 1.5rem 3rem; font-size: 1.1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600;">
-            Female
-          </button>
-        </div>
+  // We remove the hardcoded 'white' background and use our new CSS classes
+  SecurityUtils.safeInnerHTML(container, `
+    <div class="question-card selection-panel">
+      <h2>Select Your Gender</h2>
+      <p>This assessment adapts questions based on gender to provide more accurate archetype identification.</p>
+      
+      <div class="gender-options">
+        <button id="selectMale" class="btn btn-outline gender-btn">Male</button>
+        <button id="selectFemale" class="btn btn-outline gender-btn">Female</button>
       </div>
+    </div>
     `);
 
     // Add hover effects
