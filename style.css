@@ -2426,10 +2426,6 @@ footer a {
     animation: skeleton-shimmer 1.5s infinite;
 }
 
-@keyframes skeleton-shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
 
 .skeleton-header {
     height: 28px;
