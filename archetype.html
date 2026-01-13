@@ -85,53 +85,54 @@
       <div style="text-align: center; margin-bottom: 2rem;">
         <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" style="max-width: 300px; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1); display: block; margin: 0 auto 2rem auto;">
       </div>
-      <section class="intro-section">
-        <h2>Modern Archetype Identification</h2>
-        <p style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 1.5rem; line-height: 1.5;">
+      
+<section class="intro-section">
+      <h2>Modern Archetype Identification</h2>
+        <p>
           Identify your primary, secondary, and tertiary modern archetypes. Discover your behavioral patterns and social role alignment!
         </p>
-        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
-          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);">
+        <div>
+          <p>
             <strong style="color: var(--brand);">Descriptive Framework:</strong> This assessment maps behavioral patterns and social roles. 
             Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
             Results reflect current patterns, not fixed identity.
           </p>
         </div>
         <p><strong>This multi-tier assessment system identifies your dominant archetype through four phases:</strong></p>
-        <ul style="color: var(--muted); line-height: 1.8; margin: 1rem 0;">
+        <ul>
           <li><strong>Phase 1 - Core Orientation:</strong> Identifies your primary archetype group (Alpha, Beta, Gamma, Delta, Sigma, Omega, or Phi) through concrete behavioral scenarios.</li>
           <li><strong>Phase 2 - Dimensional Refinement:</strong> Distinguishes between main types and their variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha) through detailed behavioral statements.</li>
           <li><strong>Phase 3 - Shadow & Integration:</strong> Reveals situational variability, stress responses, and potential shadow expressions.</li>
           <li><strong>Phase 4 - Validation:</strong> Confirms archetype resonance through narrative scenarios.</li>
         </ul>
-        <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">
-          <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);">
+        <div>
+          <p>
             <strong style="color: var(--brand);">Note:</strong> This assessment uses gender-neutral behavioral patterns. 
             Archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex.
           </p>
         </div>
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <div>
           <a href="example-reports/archetype-example.html" target="_blank" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
           <button class="btn btn-primary" id="startAssessment" style="flex: 1;">Begin Modern Archetype Assessment</button>
         </div>
-      </section>
+</section>
 
       <section class="questionnaire-section" id="questionnaireSection">
         <div class="progress-bar">
           <div class="progress-fill" id="progressBar"></div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
           <span id="questionCounter" style="color: var(--muted); font-size: 0.9rem;"></span>
         </div>
         <div id="questionContainer">
           <!-- Questions will be populated by JavaScript -->
         </div>
         <div class="navigation-buttons">
-          <button class="btn btn-secondary" id="prevQuestion" style="display: none;">Previous</button>
+          <button class="btn btn-secondary" id="prevQuestion">Previous</button>
           <button class="btn btn-primary" id="nextQuestion">Next</button>
         </div>
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); text-align: center;">
-          <button class="btn btn-secondary" id="abandonAssessment" style="background: transparent; color: var(--muted); border: 1px solid var(--muted);">Abandon / Restart</button>
+        <div>
+          <button class="btn btn-secondary" id="abandonAssessment">
         </div>
       </section>
 
@@ -139,19 +140,19 @@
         <div id="resultsContent">
           <!-- Results will be populated by JavaScript -->
         </div>
-        <div class="export-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid rgba(0,0,0,0.1);">
-          <h3 style="color: var(--brand); margin-bottom: 1rem;">Export Your Analysis</h3>
-          <p style="color: var(--muted); margin-bottom: 1rem; line-height: 1.6;">
+        <div class="export-section">
+          <h3>Export Your Analysis</h3>
+          <p>
               Export your modern archetype identification results in JSON or CSV format for integration with your personal AI coaching agent or for personal reference.
           </p>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div>
             <button class="btn btn-primary" id="exportJSON">Export JSON</button>
             <button class="btn btn-primary" id="exportCSV">Export CSV</button>
             <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
           </div>
         </div>
         <!-- Debug Report Container (visible when ?debug=true in URL) -->
-        <div id="debug-report" style="display: none;"></div>
+        <div id="debug-report"></div>
       </section>
     </div>
   </main>
