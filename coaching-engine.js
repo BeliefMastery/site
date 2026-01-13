@@ -461,7 +461,7 @@ export class CoachingEngine {
       <div class="question-block">
         <h3>${SecurityUtils.sanitizeHTML(questionText || '')}</h3>
         ${description ? `<p class="description">${SecurityUtils.sanitizeHTML(description || '')}</p>` : ''}
-        ${example ? `<p style="font-style: italic; color: var(--muted); margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(example || '')}</p>` : ''}
+        ${example ? `<p>${SecurityUtils.sanitizeHTML(example || '')}</p>` : ''}
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" 
@@ -479,7 +479,7 @@ export class CoachingEngine {
           <span>Moderate / Somewhat / Average / Sometimes (5-6)</span>
           <span>Very High / Strong / Potent / Frequent / Always (9-10)</span>
         </div>
-        <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
+        <div>
           <strong>Tip:</strong> ${isObstacle ? 'Higher scores indicate greater obstacles to sovereignty.' : 'Higher scores indicate greater satisfaction in this area.'}
         </div>
       </div>
@@ -761,7 +761,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     
     // Obstacles summary
     if (Object.keys(this.profileData.obstacles).length > 0) {
-      html += '<h4 style="margin-top: 1.5rem; color: var(--brand);">Obstacles to Sovereignty</h4>';
+      html += '<h4>Obstacles to Sovereignty</h4>';
       const sortedObstacles = Object.entries(this.profileData.obstacles)
         .map(([key, data]) => ({ key, ...data }))
         .sort((a, b) => b.weightedScore - a.weightedScore);
@@ -771,7 +771,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         html += `
           <div class="obstacle-item">
             <strong>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</strong> - Score: ${obstacle.rawScore}/10 (${severity})
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>
+            <p">${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>
           </div>
         `;
       });
@@ -779,7 +779,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     
     // Domains summary
     if (Object.keys(this.profileData.domains).length > 0) {
-      html += '<h4 style="margin-top: 1.5rem; color: var(--brand);">Satisfaction Domains</h4>';
+      html += '<h4>Satisfaction Domains</h4>';
       const sortedDomains = Object.entries(this.profileData.domains)
         .map(([key, data]) => ({ key, ...data }))
         .sort((a, b) => b.combinedScore - a.combinedScore);
@@ -789,7 +789,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         html += `
           <div class="domain-item">
             <strong>${SecurityUtils.sanitizeHTML(domain.name || '')}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (${satisfaction})
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted);">Overall: ${domain.overviewScore}/10 | Average Aspects: ${domain.averageAspectScore.toFixed(1)}/10</p>
+            <p>Overall: ${domain.overviewScore}/10 | Average Aspects: ${domain.averageAspectScore.toFixed(1)}/10</p>
           </div>
         `;
       });
@@ -800,71 +800,71 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     
     // Key Priorities Section - Highlighted prominently
     if (this.profileData.priorities.topObstacles.length > 0 || this.profileData.priorities.topImprovementAreas.length > 0) {
-      html += '<div style="background: rgba(255, 184, 0, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-top: 2rem; margin-bottom: 2rem;">';
-      html += '<h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.4rem;">🎯 Areas of Greatest Impact</h3>';
-      html += '<p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6;">These are the areas that will provide the greatest positive impact when addressed:</p>';
+      html += '<div>';
+      html += '<h3>🎯 Areas of Greatest Impact</h3>';
+      html += '<p>These are the areas that will provide the greatest positive impact when addressed:</p>';
       
       // Show primary axis prominently
       if (this.profileData.primaryAxis && (this.profileData.primaryAxis.obstacle || this.profileData.primaryAxis.domain)) {
-        html += '<div style="background: rgba(0, 123, 255, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;">';
-        html += '<h3 style="color: var(--brand); margin-bottom: 1rem; font-size: 1.3rem;">🎯 Primary Coaching Axis</h3>';
-        html += '<p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">Focus on this axis for 30 days. Other priorities serve as background context.</p>';
+        html += '<div>';
+        html += '<h3>🎯 Primary Coaching Axis</h3>';
+        html += '<p>Focus on this axis for 30 days. Other priorities serve as background context.</p>';
         if (this.profileData.primaryAxis.obstacle) {
-          html += `<div style="background: rgba(255, 255, 255, 0.8); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border-left: 4px solid #dc3545;">`;
-          html += `<p style="margin: 0; font-weight: 600; color: #dc3545;">Active Constraint: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.name || '')}</p>`;
-          html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Score: ${this.profileData.primaryAxis.obstacle.rawScore}/10 | ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.volatility || '')}</p>`;
+          html += `<div>`;
+          html += `<p>Active Constraint: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.name || '')}</p>`;
+          html += `<p>Score: ${this.profileData.primaryAxis.obstacle.rawScore}/10 | ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.volatility || '')}</p>`;
           html += `</div>`;
         }
         if (this.profileData.primaryAxis.domain) {
-          html += `<div style="background: rgba(255, 255, 255, 0.8); padding: 1rem; border-radius: var(--radius); border-left: 4px solid #28a745;">`;
-          html += `<p style="margin: 0; font-weight: 600; color: #28a745;">Improvement Area: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.domain.name || '')}</p>`;
-          html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--muted);">Satisfaction: ${this.profileData.primaryAxis.domain.combinedScore.toFixed(1)}/10</p>`;
+          html += `<div>`;
+          html += `<p>Improvement Area: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.domain.name || '')}</p>`;
+          html += `<p>Satisfaction: ${this.profileData.primaryAxis.domain.combinedScore.toFixed(1)}/10</p>`;
           html += `</div>`;
         }
-        html += `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted); font-style: italic;">Axis valid until: ${new Date(this.profileData.primaryAxis.validUntil).toLocaleDateString()}</p>`;
+        html += `<p>Axis valid until: ${new Date(this.profileData.primaryAxis.validUntil).toLocaleDateString()}</p>`;
         html += '</div>';
       }
       
       if (this.profileData.priorities.topObstacles.length > 0) {
-        html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid #dc3545;">';
-        html += '<h4 style="color: #dc3545; margin-bottom: 1rem; font-size: 1.1rem;">🔥 Currently Active Constraints</h4>';
-        html += '<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem; font-style: italic;">These are currently active constraints, not fixed identity traits.</p>';
-        html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+        html += '<div>';
+        html += '<h4>🔥 Currently Active Constraints</h4>';
+        html += '<p>These are currently active constraints, not fixed identity traits.</p>';
+        html += '<ul>';
         this.profileData.priorities.topObstacles.forEach((obs, index) => {
           const volatilityTag = obs.volatility === 'situationally amplified' 
-            ? '<span style="background: rgba(255, 184, 0, 0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem;">Situational</span>'
-            : '<span style="background: rgba(211, 47, 47, 0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem;">Structural</span>';
-          html += `<li style="margin-bottom: 0.5rem;"><strong>${index + 1}. ${SecurityUtils.sanitizeHTML(obs.name || '')}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)}) ${volatilityTag}</li>`;
+            ? '<span>Situational</span>'
+            : '<span>Structural</span>';
+          html += `<li><strong>${index + 1}. ${SecurityUtils.sanitizeHTML(obs.name || '')}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)}) ${volatilityTag}</li>`;
         });
         html += '</ul></div>';
       }
       
       // Show stabilizing domain if all domains are low
       if (this.profileData.priorities.stabilizingDomain) {
-        html += '<div style="background: rgba(255, 184, 0, 0.15); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">';
-        html += '<h4 style="color: var(--accent); margin-bottom: 1rem; font-size: 1.1rem;">⚖️ Stabilizing Domain</h4>';
-        html += `<p style="color: var(--muted); margin-bottom: 0.5rem;">When all domains show low satisfaction, start with stabilizing: <strong>${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</strong> (${this.profileData.priorities.stabilizingDomain.combinedScore.toFixed(1)}/10)</p>`;
-        html += '<p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">Build a supportive baseline before addressing improvement areas.</p>';
+        html += '<div>';
+        html += '<h4>⚖️ Stabilizing Domain</h4>';
+        html += `<p>When all domains show low satisfaction, start with stabilizing: <strong>${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</strong> (${this.profileData.priorities.stabilizingDomain.combinedScore.toFixed(1)}/10)</p>`;
+        html += '<p>Build a supportive baseline before addressing improvement areas.</p>';
         html += '</div>';
       }
       
       if (this.profileData.priorities.topImprovementAreas.length > 0) {
-        html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); border-left: 4px solid #28a745;">';
-        html += '<h4 style="color: #28a745; margin-bottom: 1rem; font-size: 1.1rem;">✨ Areas for Improvement (Lowest Satisfaction)</h4>';
-        html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+        html += '<div>';
+        html += '<h4>✨ Areas for Improvement (Lowest Satisfaction)</h4>';
+        html += '<ul>';
         this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
           // Dual-read output: opportunity + stabilization
           const isLow = domain.combinedScore < 4;
           const opportunityFraming = isLow 
-            ? `<span style="color: #28a745; font-weight: 600;">Growth edge:</span> Significant opportunity for improvement`
-            : `<span style="color: var(--brand); font-weight: 600;">Enhancement:</span> Room for refinement`;
-          const stabilizationFraming = `<span style="color: var(--muted); font-size: 0.9rem; font-style: italic;">Supportive baseline action: Maintain current strengths while addressing gaps</span>`;
+            ? `<span>Growth edge:</span> Significant opportunity for improvement`
+            : `<spa>Enhancement:</span> Room for refinement`;
+          const stabilizationFraming = `<span>Supportive baseline action: Maintain current strengths while addressing gaps</span>`;
           
-          html += `<li style="margin-bottom: 1rem;">
+          html += `<li>
             <strong>${index + 1}. ${SecurityUtils.sanitizeHTML(domain.name || '')}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})
-            <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 2px solid rgba(0,0,0,0.1);">
-              <p style="margin: 0.25rem 0; font-size: 0.9rem;">${opportunityFraming}</p>
-              <p style="margin: 0.25rem 0;">${stabilizationFraming}</p>
+            <div>
+              <p>${opportunityFraming}</p>
+              <p>${stabilizationFraming}</p>
             </div>
           </li>`;
         });
@@ -877,10 +877,10 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     html += '</div>';
     
     // Add weight provenance declaration
-    html += '<div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-top: 2rem;">';
-    html += '<p style="margin: 0; font-size: 0.9rem; color: var(--muted); line-height: 1.6;"><strong style="color: var(--accent);">Weight Provenance:</strong> Weights reflect Sovereign of Mind prioritization logic. They encode framework values, not universal truths.</p>';
+    html += '<div>';
+    html += '<p>Weight Provenance:</strong> Weights reflect Sovereign of Mind prioritization logic. They encode framework values, not universal truths.</p>';
     if (this.profileData.userWeightAdjustment !== 1.0) {
-      html += `<p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--muted);">User weight adjustment applied: ${(this.profileData.userWeightAdjustment * 100).toFixed(0)}%</p>`;
+      html += `<p>User weight adjustment applied: ${(this.profileData.userWeightAdjustment * 100).toFixed(0)}%</p>`;
     }
     html += '</div>';
     
@@ -893,15 +893,15 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
   
   getClosureSection() {
     return `
-      <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border: 2px solid var(--brand); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <h3 style="color: var(--brand); margin-bottom: 1rem; text-align: center;">Orientation → Selection → Application</h3>
-        <div style="line-height: 1.8;">
-          <p style="color: var(--muted); margin-bottom: 1rem; text-align: center; font-size: 1.05rem;">This coaching profile is complete. You have received a map of your current constraints and satisfaction domains, along with a primary coaching axis.</p>
-          <div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Exit Cue:</strong> Do not re-run this assessment immediately. Apply the primary axis for 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
+      <div>
+        <h3>Orientation → Selection → Application</h3>
+        <div>
+          <p>This coaching profile is complete. You have received a map of your current constraints and satisfaction domains, along with a primary coaching axis.</p>
+          <div>
+            <p><strong style="color: #d32f2f;">Exit Cue:</strong> Do not re-run this assessment immediately. Apply the primary axis for 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
           </div>
-          <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-radius: var(--radius);">
-            <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">What this engine is not:</strong> Therapy replacement, diagnosis, or truth oracle. This is a self-inquiry tool for sovereignty support.</p>
+          <div>
+            <p><strong style="color: var(--brand);">What this engine is not:</strong> Therapy replacement, diagnosis, or truth oracle. This is a self-inquiry tool for sovereignty support.</p>
           </div>
         </div>
       </div>
@@ -933,14 +933,14 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     if (!container) return;
 
     let html = '<div class="deeper-inquiry-content">';
-    html += '<p style="margin-bottom: 2rem; color: var(--muted); line-height: 1.7;">';
+    html += '<p>';
     html += 'The following deeper inquiry questions are designed to help you explore your top priorities more thoroughly. ';
     html += 'These questions will help clarify specific actions, identify support needs, and create strategic action plans.';
     html += '</p>';
 
     // Top Obstacles - Deeper Inquiry
     if (this.profileData.priorities.topObstacles.length > 0) {
-      html += '<h3 style="color: var(--brand); margin-top: 2rem; margin-bottom: 1rem;">Deeper Inquiry: Top Obstacles</h3>';
+      html += '<h3>Deeper Inquiry: Top Obstacles</h3>';
       
       this.profileData.priorities.topObstacles.forEach((obstacle, index) => {
         const inquiry = DEEPER_INQUIRY.obstacles[obstacle.key];
@@ -1017,7 +1017,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     html += '<p style="line-height: 1.7; margin-bottom: 0.75rem;">';
     html += 'Use the reflection questions above to clarify your specific actions. Consider:';
     html += '</p>';
-    html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+    html += '<ul>';
     html += '<li>What is one specific action you can take this week in your top priority area?</li>';
     html += '<li>What support or resources do you need to take this action?</li>';
     html += '<li>What would success look like in 30 days? 90 days? 6 months?</li>';
@@ -1068,7 +1068,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
           <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('decision-audit')" style="padding: 1rem;">⚖️ Decision Audit</button>
           <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('coaching-dialogue')" style="padding: 1rem;">💬 Coaching Dialogue</button>
         </div>
-        <p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">This selection helps focus the agent's initial application and prevents abstract deployment.</p>
+        <p>This selection helps focus the agent's initial application and prevents abstract deployment.</p>
       </div>
     `;
     
