@@ -102,6 +102,7 @@ main {
     position: relative;
     z-index: 2;
     padding-top: 88px;
+    background: rgba(0, 0, 0, 0.0);
 }
 
 ul {
