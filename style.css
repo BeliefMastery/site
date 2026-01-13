@@ -347,7 +347,7 @@ header.site-header {
 .character-sheet-container,
 .diagnosis-container,
 .sovereignty-container {
-    max-width: 850px; /* Matches the "Books" page feel */
+    max-width: 900px; /* Matches the "Books" page feel */
     margin: 2rem auto;
     padding: 2rem;
     background: var(--glass);
@@ -356,21 +356,11 @@ header.site-header {
     box-shadow: var(--shadow-lg);
 }
 
-/* Page-Specific Container Overrides */
-.channels-container,
-.coaching-container,
-.temperament-container {
-    max-width: 900px;
-}
-
-.character-sheet-container {
-    max-width: 1000px;
-}
 
 .main-content {
     position: relative;
     z-index: 2;
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
 }
