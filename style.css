@@ -446,12 +446,6 @@ section:hover {
     color: var(--brand);
 }
 
-/* Paradigm Container (transparent override) */
-.paradigm-container {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
 
 /* ========== HERO & HEADER ELEMENTS ========== */
 .hero {
@@ -907,11 +901,6 @@ button:disabled,
     clear: both; /* Prevents overlapping from any floating elements */
 }
 
-.coaching-container,
-.paradigm-container {
-    overflow: hidden; /* Contains the internal grid shadows and floats */
-    display: flow-root; /* Modern clearfix */
-}
 
 .paradigm-card,
 .paradigm-option,
