@@ -903,11 +903,6 @@ button:disabled,
     color: var(--accent);
 }
 
-.btn-outline:hover {
-    background: rgba(255, 184, 0, 0.08);
-    border-color: var(--accent);
-}
-
 /* ========== GRIDS & CARDS ========== */
 .grid {
     position: relative;
@@ -3085,9 +3080,7 @@ img {
 
 /* ========== PAGE-SPECIFIC STYLES ========== */
 /* Channels-Specific */
-.channels-container {
-    max-width: 900px;
-}
+/* Channels container - Consolidated with main container definition above */
 
 /* Character Sheet-Specific */
 .character-form {
@@ -3442,10 +3435,7 @@ img {
     max-width: 200px;
 }
 
-/* Sovereignty-Specific */
-.sovereignty-container {
-    max-width: 1000px;
-}
+/* Sovereignty-Specific - Consolidated with main container definition above */
 
 /* Temperament-Specific */
 .question-block {
@@ -4136,19 +4126,8 @@ img {
 }
 
 /* Temperament Engine Classes */
-.temperament-orientation-card {
-    padding: 2.5rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-}
-
-.temperament-orientation-card h3 {
-    color: var(--brand);
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-}
+/* Temperament orientation card - Uses same base as transition-card */
+/* temperament-orientation-card consolidated with transition-card above */
 
 .temperament-info-box {
     background: rgba(0, 123, 255, 0.1);
@@ -4581,9 +4560,7 @@ img {
 }
 
 /* Sovereignty Spectrum Engine Classes */
-.spectrum-bar-container {
-    margin-top: 2rem;
-}
+/* Spectrum bar container - Consolidated with main definition above */
 
 .derailer-scores {
     margin-top: 2rem;
