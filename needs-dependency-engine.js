@@ -1331,9 +1331,14 @@ export class NeedsDependencyEngine {
       localStorage.removeItem('needsDependencyProgress');
       localStorage.removeItem('needsDependencyResults');
       
-      document.getElementById('resultsSection').classList.remove('active');
-      document.getElementById('introSection').classList.remove('hidden');
-      document.getElementById('questionnaireSection').classList.remove('active');
+      const resultsSection = document.getElementById('resultsSection');
+      const introSection = document.getElementById('introSection');
+      const actionButtonsSection = document.getElementById('actionButtonsSection');
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      if (resultsSection) resultsSection.classList.remove('active');
+      if (introSection) introSection.classList.remove('hidden');
+      if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+      if (questionnaireSection) questionnaireSection.classList.remove('active');
       
       this.buildPhase1Sequence();
     }
