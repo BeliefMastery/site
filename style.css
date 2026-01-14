@@ -253,6 +253,59 @@ main {
     color: #28a745;
 }
 
+.about-author-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.about-author-photo {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.about-author-intro {
+    text-align: center;
+}
+
+.about-author-tagline {
+    font-size: 1.125rem;
+    font-style: italic;
+    color: var(--muted);
+    margin-top: 0.5rem;
+}
+
+.about-author-body {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.about-author-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.about-author-paragraph {
+    margin-bottom: 1rem;
+}
+
+.about-author-links {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--muted);
+}
+
+.about-author-link {
+    color: var(--brand);
+    font-weight: 600;
+}
+
 .text-left {
     text-align: left;
 }
