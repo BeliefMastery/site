@@ -1144,9 +1144,12 @@ export class SovereigntySpectrumEngine {
         
         // Restore UI state
         if (this.currentPhase === 1) {
+          // Phase 1: Paradigm selection - show action buttons and paradigm selection
+          const actionButtonsSection = document.getElementById('actionButtonsSection');
+          if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
           await this.renderParadigmSelection();
         } else if (this.currentPhase > 1) {
-          // Show questionnaire and render current question
+          // Phase 2+: Assessment in progress - hide action buttons, show questionnaire
           const actionButtonsSection = document.getElementById('actionButtonsSection');
           const paradigmSelection = document.getElementById('paradigmSelection');
           const questionnaireSection = document.getElementById('questionnaireSection');
@@ -1156,7 +1159,9 @@ export class SovereigntySpectrumEngine {
           this.renderCurrentQuestion();
         }
       } else {
-        // First time - render paradigm selection
+        // First time - show action buttons and render paradigm selection
+        const actionButtonsSection = document.getElementById('actionButtonsSection');
+        if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
         await this.renderParadigmSelection();
       }
     } catch (error) {
