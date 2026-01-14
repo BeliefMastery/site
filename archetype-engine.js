@@ -128,6 +128,46 @@ init() {
           // Only process if we have a valid question object (Phases 1-4)
           if (question) {
             this.processAnswer(question, value);
+            
+            // Update visual selection immediately
+            // Remove selected class from all options of the same type
+            const questionContainer = input.closest('.question-card');
+            if (questionContainer) {
+              // For Likert options
+              if (optionLabel.classList.contains('likert-option')) {
+                questionContainer.querySelectorAll('label.likert-option').forEach(label => {
+                  label.classList.remove('selected');
+                  // Update inline styles
+                  label.style.background = 'rgba(255, 255, 255, 0.1)';
+                  label.style.border = '2px solid transparent';
+                });
+                optionLabel.classList.add('selected');
+                optionLabel.style.background = 'rgba(255, 184, 0, 0.2)';
+                optionLabel.style.border = '2px solid var(--brand)';
+              }
+              // For forced choice options
+              else if (optionLabel.classList.contains('option-label')) {
+                questionContainer.querySelectorAll('label.option-label').forEach(label => {
+                  label.classList.remove('selected');
+                  label.style.background = 'rgba(255, 255, 255, 0.1)';
+                  label.style.border = '2px solid transparent';
+                });
+                optionLabel.classList.add('selected');
+                optionLabel.style.background = 'rgba(255, 184, 0, 0.25)';
+                optionLabel.style.border = '2px solid var(--brand)';
+              }
+              // For narrative options
+              else if (optionLabel.classList.contains('narrative-option')) {
+                questionContainer.querySelectorAll('label.narrative-option').forEach(label => {
+                  label.classList.remove('selected');
+                  label.style.background = 'rgba(255, 255, 255, 0.1)';
+                  label.style.border = '2px solid transparent';
+                });
+                optionLabel.classList.add('selected');
+                optionLabel.style.background = 'rgba(255, 184, 0, 0.2)';
+                optionLabel.style.border = '2px solid var(--brand)';
+              }
+            }
           }
         }
       });
