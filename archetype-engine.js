@@ -137,35 +137,22 @@ init() {
               if (optionLabel.classList.contains('likert-option')) {
                 questionContainer.querySelectorAll('label.likert-option').forEach(label => {
                   label.classList.remove('selected');
-                  // Update inline styles
-                  label.style.background = 'rgba(255, 255, 255, 0.1)';
-                  label.style.border = '2px solid transparent';
                 });
                 optionLabel.classList.add('selected');
-                optionLabel.style.background = 'rgba(255, 184, 0, 0.2)';
-                optionLabel.style.border = '2px solid var(--brand)';
               }
               // For forced choice options
               else if (optionLabel.classList.contains('option-label')) {
                 questionContainer.querySelectorAll('label.option-label').forEach(label => {
                   label.classList.remove('selected');
-                  label.style.background = 'rgba(255, 255, 255, 0.1)';
-                  label.style.border = '2px solid transparent';
                 });
                 optionLabel.classList.add('selected');
-                optionLabel.style.background = 'rgba(255, 184, 0, 0.25)';
-                optionLabel.style.border = '2px solid var(--brand)';
               }
               // For narrative options
               else if (optionLabel.classList.contains('narrative-option')) {
                 questionContainer.querySelectorAll('label.narrative-option').forEach(label => {
                   label.classList.remove('selected');
-                  label.style.background = 'rgba(255, 255, 255, 0.1)';
-                  label.style.border = '2px solid transparent';
                 });
                 optionLabel.classList.add('selected');
-                optionLabel.style.background = 'rgba(255, 184, 0, 0.2)';
-                optionLabel.style.border = '2px solid var(--brand)';
               }
             }
           }
@@ -668,10 +655,8 @@ showGenderSelection() {
     const currentAnswer = this.answers[question.id];
     let optionsHTML = question.options.map((option, index) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
-      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
-      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       return `
-        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
+        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
           <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
           <span>${SecurityUtils.sanitizeHTML(option.text || '')}</span>
           ${isSelected ? '<span class="selected-check">✓</span>' : ''}
@@ -699,11 +684,11 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="options-container">
           ${optionsHTML}
         </div>
@@ -720,13 +705,11 @@ showGenderSelection() {
     let scaleHTML = '';
     for (let i = 1; i <= scale; i++) {
       const isSelected = currentAnswer && currentAnswer.value === i;
-      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
-      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       scaleHTML += `
-        <label class="likert-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: inline-block; padding: 0.75rem 1rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedLockedStyle}">
-          <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="display: none;">
+        <label class="likert-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
+          <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
           <span>${i}</span>
-          <div style="font-size: 0.75rem; margin-top: 0.25rem; color: var(--muted);">${labels[i - 1] || ''}</div>
+          <div class="likert-label">${labels[i - 1] || ''}</div>
         </label>
       `;
     }
@@ -751,12 +734,12 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        <div class="likert-scale" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1rem;">
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <div class="likert-scale">
           ${scaleHTML}
         </div>
         ${lockedNotice}
@@ -799,11 +782,11 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="narrative-container">
           ${vignettesHTML}
         </div>
@@ -1737,17 +1720,31 @@ showGenderSelection() {
   }
 
   resetAssessment() {
+    // Clear all stored data
+    if (this.dataStore) {
+      this.dataStore.clear();
+    }
     sessionStorage.removeItem('archetypeAssessmentProgress');
-    this.currentPhase = 1;
+    localStorage.removeItem('archetype-assessment');
+    
+    // Reset all state to initial values
+    this.currentPhase = 0; // Start at gender selection
     this.currentQuestionIndex = 0;
+    this.gender = null;
+    this.iqBracket = null;
     this.answers = {};
+    this.aspirationAnswers = {};
+    this.questionSequence = [];
     this.initializeScores();
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      gender: null,
+      iqBracket: null,
       phase1Results: {},
       phase2Results: {},
       phase3Results: {},
       phase4Results: {},
+      aspirationAnalysis: {},
       primaryArchetype: null,
       secondaryArchetype: null,
       tertiaryArchetype: null,
@@ -1756,16 +1753,28 @@ showGenderSelection() {
       questionSequence: []
     };
     
+    // Hide results and questionnaire, show intro section
     const questionContainer = document.getElementById('questionContainer');
+    const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsContainer = document.getElementById('resultsContainer');
+    const resultsSection = document.getElementById('resultsContainer');
     const introSection = document.querySelector('.intro-section');
+    const actionButtonsSection = document.querySelector('.action-buttons')?.closest('.content-section');
     
     if (questionContainer) {
-      questionContainer.style.display = 'none';
+      questionContainer.classList.add('hidden');
       questionContainer.innerHTML = '';
     }
-    if (resultsContainer) resultsContainer.classList.add('hidden');
+    if (questionnaireSection) questionnaireSection.classList.add('hidden');
+    if (resultsContainer || resultsSection) {
+      const container = resultsContainer || resultsSection;
+      if (container) container.classList.add('hidden');
+    }
     if (introSection) introSection.classList.remove('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+    
+    // Restart the assessment from the beginning
+    this.startAssessment();
   }
 
   exportAnalysis(format) {

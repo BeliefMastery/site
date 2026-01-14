@@ -3826,6 +3826,11 @@ img {
     opacity: 0.6;
 }
 
+.likert-option.locked.selected {
+    background: rgba(255, 184, 0, 0.3);
+    border: 3px solid var(--brand);
+}
+
 .likert-option input[type="radio"] {
     display: none;
 }
@@ -3834,6 +3839,49 @@ img {
     font-size: 0.75rem;
     margin-top: 0.25rem;
     color: var(--muted);
+}
+
+.narrative-option {
+    display: block;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.narrative-option.selected {
+    background: rgba(255, 184, 0, 0.2);
+    border-color: var(--brand);
+}
+
+.narrative-option.locked:not(.selected) {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.narrative-option.locked.selected {
+    background: rgba(255, 184, 0, 0.3);
+    border: 3px solid var(--brand);
+}
+
+.narrative-option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.narrative-text {
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.narrative-selected {
+    margin-top: 0.5rem;
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 0.9rem;
 }
 
 .error-text {
