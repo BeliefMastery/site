@@ -850,7 +850,18 @@ showGenderSelection() {
     // Likert scale: 1-5, convert to -2 to +2 for scoring
     const normalizedValue = value - 3; // -2 to +2
     
+    if (!question.archetypes || !Array.isArray(question.archetypes)) {
+      this.debugReporter.logError(new Error('Phase 2 question missing archetypes array'), 'scorePhase2Answer');
+      return;
+    }
+    
     question.archetypes.forEach(arch => {
+      // Skip if arch or arch.id is missing
+      if (!arch || !arch.id) {
+        this.debugReporter.logError(new Error('Phase 2 archetype missing id'), 'scorePhase2Answer');
+        return;
+      }
+      
       // Initialize score object if it doesn't exist
       if (!this.archetypeScores[arch.id]) {
         this.archetypeScores[arch.id] = {
