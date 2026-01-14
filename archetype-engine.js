@@ -49,22 +49,31 @@ export class ArchetypeEngine {
     this.init();
   }
 
-  init() {
-    // Ensure DOM is ready before attaching event listeners
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', async () => {
-        this.attachEventListeners();
-        await this.loadStoredData();
-        this.initializeScores();
-      });
-    } else {
-      this.attachEventListeners();
-      this.loadStoredData().catch(error => {
-        this.debugReporter.logError(error, 'init');
-      });
+init() {
+  const setup = async () => {
+    // 1. Attach listeners first so the 'Begin' button is functional
+    this.attachEventListeners();
+    
+    // 2. Load the data silently in the background
+    try {
+      await this.loadStoredData();
       this.initializeScores();
+      
+      // 3. LOGIC CHECK: If we loaded a mid-assessment state, 
+      // we DON'T call renderCurrentQuestion() yet. 
+      // We wait for the user to click "Begin" or "Resume".
+      console.log('ArchetypeEngine: Data restored. Current Phase:', this.currentPhase);
+    } catch (error) {
+      this.debugReporter.logError(error, 'init');
     }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
   }
+}
 
   initializeScores() {
     // Initialize scores dynamically as archetypes are scored
@@ -160,17 +169,38 @@ export class ArchetypeEngine {
     }
   }
 
-  startAssessment() {
-    console.log('startAssessment called');
-    this.currentPhase = 0; // Start with gender selection
-    this.currentQuestionIndex = 0;
-    this.gender = null;
-    this.answers = {};
-    this.initializeScores();
-    this.showQuestionContainer(); // Show questionnaire section first
-    this.showGenderSelection();
-    this.saveProgress();
+startAssessment() {
+  console.log('startAssessment called');
+  
+  // 1. Reset Internal State
+  this.currentPhase = 0; 
+  this.currentQuestionIndex = 0;
+  this.gender = null;
+  this.answers = {};
+  
+  // 2. Clear stale data from local storage so Phase 2 doesn't "ghost" in
+  if (this.dataStore) {
+    this.dataStore.clear(); 
   }
+
+  this.initializeScores();
+
+  // 3. Force UI Visibility
+  // Ensure the landing page hidden and the container is visible
+  const landingUI = document.getElementById('landing-section'); // Update with your actual ID
+  const containerUI = document.getElementById('questionContainer');
+  
+  if (landingUI) landingUI.style.display = 'none';
+  if (containerUI) {
+    containerUI.style.display = 'block';
+    containerUI.innerHTML = ''; // Clear any "ghost" Phase 2 boxes
+  }
+
+  // 4. Trigger First View
+  this.showQuestionContainer(); 
+  this.showGenderSelection();
+  this.saveProgress();
+}
 
 showGenderSelection() {
   const container = document.getElementById('questionContainer');
