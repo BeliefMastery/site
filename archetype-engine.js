@@ -851,6 +851,18 @@ showGenderSelection() {
     const normalizedValue = value - 3; // -2 to +2
     
     question.archetypes.forEach(arch => {
+      // Initialize score object if it doesn't exist
+      if (!this.archetypeScores[arch.id]) {
+        this.archetypeScores[arch.id] = {
+          phase1: 0,
+          phase2: 0,
+          phase3: 0,
+          phase4: 0,
+          total: 0,
+          weighted: 0
+        };
+      }
+      
       const weight = arch.weight || 1;
       this.archetypeScores[arch.id].phase2 += normalizedValue * weight * 2; // Phase 2 gets 2x multiplier
     });
