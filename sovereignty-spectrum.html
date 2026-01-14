@@ -79,22 +79,64 @@
       </div>
       <section class="intro-section">
         <h2>Technical Title for your Sovereignty Paradigm</h2>
-        <p style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 1.5rem; line-height: 1.5;">
+        
+        <p class="lead-text">
           Discover the technical title that identifies your sovereignty paradigm. Which philosophical, spiritual, or psychological framework best describes your approach to sovereignty?
         </p>
-        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;">
-          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);"><strong style="color: var(--brand);">Assessment Purpose:</strong> This tool clarifies which of 25 distinct philosophical, spiritual, and psychological paradigms best identifies your sovereignty framework. It assesses how well your actions align with your values, identifies derailing forces (hypocrisy, reluctance, nihilism), and provides the technical title that describes your sovereignty paradigm. The goal is identification and clarification, not ranking paradigms as superior or inferior.</p>
+        
+        <p>This tool clarifies which of 25 distinct philosophical, spiritual, and psychological paradigms best identifies your sovereignty framework. It assesses how well your actions align with your values, identifies derailing forces (hypocrisy, reluctance, nihilism), and provides the technical title that describes your sovereignty paradigm.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
         </div>
-        <p><strong>This assessment evaluates:</strong></p>
-        <ul style="margin-left: 1.5rem; line-height: 1.8;">
-          <li><strong>Paradigm Rating:</strong> Rate all 25 paradigms on how much they resonate with you using a continuous 0-100 slider</li>
-          <li><strong>Automatic Selection:</strong> System selects your top 3-5 paradigms based on your ratings to identify which frameworks best describe your approach</li>
-          <li><strong>Practical Integration:</strong> How consistently you live according to your stated values within your identified paradigm</li>
-          <li><strong>Derailer Detection:</strong> Hypocrisy (value-action gaps), reluctance (inertial resistance), and nihilism (despair-induced abdication) that may undermine your paradigm alignment</li>
-          <li><strong>Paradigm Identification:</strong> Provides the technical title that best describes your sovereignty paradigm based on your responses</li>
-        </ul>
-        <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">
-          <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">Note:</strong> This tool illuminates patterns and provides diagnostic clarity. It is not a substitute for professional coaching or therapy. Results reflect your current organization of meaning, not a fixed identity.</p>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--brand);">Assessment Purpose:</strong> The goal is identification and clarification, not ranking paradigms as superior or inferior.
+              </p>
+            </div>
+            
+            <p><strong>This assessment evaluates:</strong></p>
+            <ul class="feature-list">
+              <li><strong>Paradigm Rating:</strong> Rate all 25 paradigms on how much they resonate with you using a continuous 0-100 slider</li>
+              <li><strong>Automatic Selection:</strong> System selects your top 3-5 paradigms based on your ratings to identify which frameworks best describe your approach</li>
+              <li><strong>Practical Integration:</strong> How consistently you live according to your stated values within your identified paradigm</li>
+              <li><strong>Derailer Detection:</strong> Hypocrisy (value-action gaps), reluctance (inertial resistance), and nihilism (despair-induced abdication) that may undermine your paradigm alignment</li>
+              <li><strong>Paradigm Identification:</strong> Provides the technical title that best describes your sovereignty paradigm based on your responses</li>
+            </ul>
+            
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--brand);">Note:</strong> This tool illuminates patterns and provides diagnostic clarity. It is not a substitute for professional coaching or therapy. Results reflect your current organization of meaning, not a fixed identity.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer Toggle -->
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimer</span>
+          </div>
+        </div>
+
+        <section class="disclaimer-section" id="disclaimerSection">
+          <div class="ack-box">
+            <p><strong>This assessment is for self-awareness and paradigm identification.</strong> Results reflect your current organization of meaning, not a fixed identity or mandate.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section">
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="startAssessment">Begin Paradigm Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
       </section>
 
@@ -161,6 +203,66 @@
 <!-- Universal background JavaScript -->
 
 <script src="./shared/background.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle helper function
+    const setupToggle = (btnId, panelId) => {
+      const btn = document.getElementById(btnId);
+      const panel = document.getElementById(panelId);
+      if (btn && panel) {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('expanded');
+          panel.classList.toggle('expanded');
+        });
+      }
+    };
+
+    // Setup toggles
+    setupToggle('disclaimerToggle', 'disclaimerSection');
+    setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+
+    // Hamburger menu
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.querySelector('#top-nav');
+    
+    if (hamburger && nav) {
+      hamburger.addEventListener('click', function() {
+        const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+        hamburger.setAttribute('aria-expanded', !isExpanded);
+        nav.classList.toggle('active');
+      });
+    }
+
+    // Dropdown menu
+    const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+    
+    if (dropdownToggles.length) {
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          const dropdown = toggle.closest('.nav-dropdown');
+          if (dropdown) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              if (dd !== dropdown) {
+                dd.classList.remove('active');
+              }
+            });
+            dropdown.classList.toggle('active');
+          }
+        });
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+    }
+  });
+</script>
 
 </body>
 </html>

@@ -97,12 +97,19 @@
           How do you make sense of life and the divine? Map your Logos structure across four dimensions of truth. Discover your worldview foundation!
         </p>
         
-        <div class="content-section">
-          <p><strong>Clarify your current dominant framing of "The Good Life" and "God" across four dimensions of truth.</strong></p>
-          
-          <p>
-            This system helps you identify your primary alignment with different ways of understanding life and the divine. By mapping your responses across literal, symbolic, esoteric, and mystical dimensions, you'll gain clarity on your worldview structure and how it shapes your experience.
-          </p>
+        <p>This system helps you identify your primary alignment with different ways of understanding life and the divine. By mapping your responses across literal, symbolic, esoteric, and mystical dimensions, you'll gain clarity on your worldview structure and how it shapes your experience.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
+        </div>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <p><strong>Clarify your current dominant framing of "The Good Life" and "God" across four dimensions of truth.</strong></p>
+          </div>
         </div>
         
         <!-- Disclaimer Toggle -->
@@ -145,6 +152,7 @@
         <div class="action-buttons">
           <a href="example-reports/paradigm-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
           <button class="btn btn-primary" id="startAssessment" disabled>Start Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
       </section>
 
@@ -195,16 +203,21 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Disclaimer toggle
-      const disclaimerToggle = document.getElementById('disclaimerToggle');
-      const disclaimerSection = document.getElementById('disclaimerSection');
-      
-      if (disclaimerToggle && disclaimerSection) {
-        disclaimerToggle.addEventListener('click', function() {
-          this.classList.toggle('expanded');
-          disclaimerSection.classList.toggle('expanded');
-        });
-      }
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      // Setup toggles
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
 
       // Hamburger menu
       const hamburger = document.querySelector('.hamburger');

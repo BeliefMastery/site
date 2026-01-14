@@ -85,21 +85,28 @@
       <section class="intro-section">
         <h2>Astrology Character Sheet Generator</h2>
         
-        <div class="content-section">
-          <p class="lead-text">
-            Transform your astrological profile into a D&D-style character sheet! This fun tool combines Western, Chinese, and Mayan astrology to create a unique roleplay character based on your birth chart.
-          </p>
-          
-          <p>
-            Your character sheet includes Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Skills, Class Features, and Character Flaws—all derived from your astrological influences.
-          </p>
+        <p class="lead-text">
+          Transform your astrological profile into a D&D-style character sheet! This fun tool combines Western, Chinese, and Mayan astrology to create a unique roleplay character based on your birth chart.
+        </p>
+        
+        <p>Your character sheet includes Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Skills, Class Features, and Character Flaws—all derived from your astrological influences.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
         </div>
 
-        <!-- Acknowledgment Box -->
-        <div class="ack-box">
-          <p>
-            <strong style="color: var(--accent);">Note:</strong> For the most accurate character sheet, you'll need your Sun, Moon, and Ascendant signs from Western astrology. The Sun sign can be auto-calculated from your birth date, but Moon and Ascendant require your exact birth time and location. You can get these from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar astrology calculators.
-          </p>
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <!-- Acknowledgment Box -->
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--accent);">Note:</strong> For the most accurate character sheet, you'll need your Sun, Moon, and Ascendant signs from Western astrology. The Sun sign can be auto-calculated from your birth date, but Moon and Ascendant require your exact birth time and location. You can get these from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar astrology calculators.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -260,6 +267,20 @@
     
     // Initialize engine when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      // Setup toggles
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
       window.characterSheetEngine = new CharacterSheetEngine();
     });
   </script>

@@ -99,51 +99,57 @@
           Are you being manipulated? Recognize the patterns and tactics being used against you. Identify the vectors and reclaim your sovereignty!
         </p>
         
-        <!-- Warning Box (red border) -->
-        <div class="ack-box" style="border-left-color: #d32f2f; background: rgba(211, 47, 47, 0.1);">
-          <p>
-            <strong style="color: #d32f2f;">Epistemic Note:</strong> This system identifies manipulation patterns based on reported effects. It does not determine intent, morality, or full relational context. The analysis maps patterns consistent with manipulation vectors—not accusations of manipulator identity.
-          </p>
+        <p>This system guides you through questions about symptoms, effects, situational developments, and consequences to identify which manipulation vectors show patterns consistent with your experiences. Based on the <strong>Tactical Manipulation Compendium</strong> from <em>Sovereign of Mind</em>, this tool helps you recognize patterns of coercion, control, and psychological sabotage.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
         </div>
-        
-        <div class="content-section">
-          <p><strong>Identify patterns consistent with manipulation through comprehensive symptom, effect, and consequence analysis.</strong></p>
-          
-          <p>
-            This system guides you through questions about symptoms, effects, situational developments, and consequences to identify which manipulation vectors show patterns consistent with your experiences. Based on the <strong>Tactical Manipulation Compendium</strong> from <em>Sovereign of Mind</em>, this tool helps you recognize patterns of coercion, control, and psychological sabotage.
-          </p>
-          
-          <p style="margin-top: 1rem; font-weight: 600;">The assessment covers:</p>
-          <ul class="feature-list">
-            <li><strong>Symptoms:</strong> Emotional, behavioral, cognitive, relational, and physical indicators</li>
-            <li><strong>Effects:</strong> Impact on self-worth, autonomy, relationships, and daily functioning</li>
-            <li><strong>Consequences:</strong> Situational developments and long-term consequences</li>
-          </ul>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <!-- Warning Box (red border) -->
+            <div class="ack-box" style="border-left-color: #d32f2f; background: rgba(211, 47, 47, 0.1);">
+              <p>
+                <strong style="color: #d32f2f;">Epistemic Note:</strong> This system identifies manipulation patterns based on reported effects. It does not determine intent, morality, or full relational context. The analysis maps patterns consistent with manipulation vectors—not accusations of manipulator identity.
+              </p>
+            </div>
+            
+            <p><strong>Identify patterns consistent with manipulation through comprehensive symptom, effect, and consequence analysis.</strong></p>
+            
+            <p style="margin-top: 1rem; font-weight: 600;">The assessment covers:</p>
+            <ul class="feature-list">
+              <li><strong>Symptoms:</strong> Emotional, behavioral, cognitive, relational, and physical indicators</li>
+              <li><strong>Effects:</strong> Impact on self-worth, autonomy, relationships, and daily functioning</li>
+              <li><strong>Consequences:</strong> Situational developments and long-term consequences</li>
+            </ul>
+          </div>
         </div>
         
         <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
           <div class="disclaimer-acknowledgement-text">
-            <span>Disclaimers</span>
+            <span>Disclaimer</span>
           </div>
         </div>
 
-        <div class="acknowledgement-box">
-          <p>
-            By participating in this analysis, I acknowledge that this tool is designed for self-awareness and recognition. Understanding manipulation patterns is the first step toward reclaiming sovereignty.
-          </p>
-        </div>
-        
         <section class="disclaimer-section" id="disclaimerSection">
-          <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
-          <p><strong>This tool is designed for self-awareness and recognition.</strong></p>
-          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">Understanding manipulation patterns is the first step toward reclaiming sovereignty. Use this knowledge responsibly - awareness without integrity can become a tool of control.</p>
+          <div class="acknowledgement-box">
+            <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
+            <p><strong>This tool is designed for self-awareness and recognition.</strong></p>
+            <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">Understanding manipulation patterns is the first step toward reclaiming sovereignty. Use this knowledge responsibly - awareness without integrity can become a tool of control.</p>
+          </div>
         </section>
-        
-        <!-- Action Buttons -->
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section">
         <div class="action-buttons">
           <a href="example-reports/manipulation-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
           <button class="btn btn-primary" id="startAssessment">Begin Manipulation Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
       </section>
 
@@ -266,27 +272,22 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Disclaimer toggle
-      const disclaimerToggle = document.getElementById('disclaimerToggle');
-      const disclaimerSection = document.getElementById('disclaimerSection');
-      
-      if (disclaimerToggle && disclaimerSection) {
-        disclaimerToggle.addEventListener('click', function() {
-          disclaimerToggle.classList.toggle('expanded');
-          disclaimerSection.classList.toggle('expanded');
-        });
-      }
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
 
-      // Instructions toggle
-      const instructionsToggle = document.getElementById('instructionsToggle');
-      const instructionsPanel = document.getElementById('instructionsPanel');
-      
-      if (instructionsToggle && instructionsPanel) {
-        instructionsToggle.addEventListener('click', function() {
-          instructionsToggle.classList.toggle('expanded');
-          instructionsPanel.classList.toggle('expanded');
-        });
-      }
+      // Setup toggles
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+      setupToggle('instructionsToggle', 'instructionsPanel');
 
       // Hamburger menu
       const hamburger = document.querySelector('.hamburger');
