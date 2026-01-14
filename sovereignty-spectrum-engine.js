@@ -1127,8 +1127,10 @@ export class SovereigntySpectrumEngine {
           await this.renderParadigmSelection();
         } else if (this.currentPhase > 1) {
           // Show questionnaire and render current question
+          const actionButtonsSection = document.getElementById('actionButtonsSection');
           const paradigmSelection = document.getElementById('paradigmSelection');
           const questionnaireSection = document.getElementById('questionnaireSection');
+          if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
           if (paradigmSelection) paradigmSelection.classList.add('hidden');
           if (questionnaireSection) questionnaireSection.classList.add('active');
           this.renderCurrentQuestion();

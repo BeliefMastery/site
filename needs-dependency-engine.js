@@ -1297,7 +1297,9 @@ export class NeedsDependencyEngine {
       
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
+        const actionButtonsSection = document.getElementById('actionButtonsSection');
         const questionnaireSection = document.getElementById('questionnaireSection');
+        if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
         if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
