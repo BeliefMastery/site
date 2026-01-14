@@ -1198,11 +1198,16 @@ export class SovereigntySpectrumEngine {
     
     this.dataStore.clear('progress');
     
-    // Reset UI
+    // Reset UI - show action buttons and paradigm selection, hide questionnaire and results
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const paradigmSelection = document.getElementById('paradigmSelection');
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsSection = document.getElementById('resultsSection');
-    const actionButtonsSection = document.getElementById('actionButtonsSection');
     if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+    if (paradigmSelection) {
+      paradigmSelection.style.display = '';
+      paradigmSelection.classList.remove('hidden');
+    }
     if (questionnaireSection) questionnaireSection.classList.remove('active');
     if (resultsSection) resultsSection.classList.remove('active');
     
