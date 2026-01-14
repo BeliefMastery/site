@@ -43,7 +43,7 @@ export class ArchetypeEngine {
     setDebugReporter(this.debugReporter);
     this.debugReporter.markInitialized();
 
-    // Initialize data store
+// Initialize data store
     this.dataStore = new DataStore('archetype-assessment', '1.0.0');
 
     this.init();
@@ -67,37 +67,64 @@ export class ArchetypeEngine {
   }
 
   initializeScores() {
-    // Initialize scores dynamically as archetypes are scored (to support gender-specific archetypes)
+    // Initialize scores dynamically as archetypes are scored
     this.archetypeScores = {};
   }
 
   attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', (e) => {
+    // 1. START BUTTON LOGIC
+    const setupStartBtn = (btn) => {
+      btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         console.log('Start button clicked');
         this.startAssessment();
       });
+    };
+
+    const startBtn = document.getElementById('startAssessment');
+    if (startBtn) {
+      setupStartBtn(startBtn);
       console.log('Start button event listener attached');
     } else {
-      console.error('Start button not found!');
-      // Try again after a short delay in case DOM isn't ready
+      // Retry logic if DOM wasn't fully ready
       setTimeout(() => {
         const retryBtn = document.getElementById('startAssessment');
-        if (retryBtn) {
-          retryBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Start button clicked (retry)');
-            this.startAssessment();
-          });
-          console.log('Start button event listener attached (retry)');
-        }
+        if (retryBtn) setupStartBtn(retryBtn);
       }, 500);
     }
 
+    // 2. THE GLOBAL "WATCHER" (Event Delegation)
+    // This handles Phase 1, 2, 3, and 4 selections automatically.
+    const container = document.getElementById('questionContainer');
+    if (container) {
+      container.addEventListener('click', (e) => {
+        // Find if the click was on or inside an option label
+        const optionLabel = e.target.closest('.option-label, .likert-option, .narrative-option, .gender-btn, .iq-btn');
+        
+        // Ignore if no option found or if the question is locked
+        if (!optionLabel || optionLabel.classList.contains('locked')) return;
+
+        // Find the radio input inside the clicked label
+        const input = optionLabel.querySelector('input[type="radio"]');
+        
+        if (input) {
+          input.checked = true;
+          const questionId = input.name.replace('question_', '');
+          const value = parseInt(input.value);
+          const question = this.questionSequence[this.currentQuestionIndex];
+
+          console.log(`Phase ${this.currentPhase} Input Captured:`, value);
+          
+          // Only process if we have a valid question object (Phases 1-4)
+          if (question) {
+            this.processAnswer(question, value);
+          }
+        }
+      });
+    }
+
+    // 3. NAVIGATION & UTILITY BUTTONS
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
