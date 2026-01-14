@@ -713,6 +713,11 @@ section:hover {
     color: var(--brand);
 }
 
+.section-inner-padded {
+    padding: 2rem;
+    border-radius: var(--radius);
+}
+
 
 /* ========== HERO & HEADER ELEMENTS ========== */
 .hero {
