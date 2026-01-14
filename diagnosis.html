@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pathology Assessment</title>
+  <meta name="description" content="Pathology assessment and clinical education mapping system based on DSM-5 criteria.">
+
+  <!-- CRITICAL: Universal styles MUST load first -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./shared/background.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-page="diagnosis">
+
+  <!-- Cosmic background (from universal system) -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html" class="active">Pathology Assessment</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty-spectrum.html">Technical Title for your Sovereignty Paradigm</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Bottleneck Analysis</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
+            <li role="none"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity Assessment</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Universal Tool Container -->
+    <div class="diagnosis-container">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/DSM5-cover.jpg" alt="DSM-5 Cover" class="hero-img">
+      </div>
+
+      <!-- Intro Section -->
+      <section class="intro-section">
+        <h2>Pathology Assessment</h2>
+        
+        <p class="lead-text">
+          What patterns align with your experience? Map your symptoms to understand what's happening. Discover your pathology indicators.
+        </p>
+        
+        <!-- Educational Mode Box -->
+        <div class="ack-box">
+          <p>
+            <strong style="color: var(--accent);">Educational Mode:</strong> This analysis is for educational pattern recognition and preparation for professional dialogue. It does not provide diagnosis or replace clinicians.
+          </p>
+        </div>
+
+        <p>Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+
+        <!-- Disclaimer Toggle -->
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimers</span>
+          </div>
+        </div>
+
+        <section class="disclaimer-section" id="disclaimerSection">
+          <div class="ack-box" style="border-left-color: var(--error); background: rgba(248, 113, 113, 0.1);">
+            <h3 style="color: var(--error); margin-top: 0;">Important</h3>
+            <ul>
+              <li><strong>This diagnostic assessment system is for informational and educational purposes only.</strong></li>
+              <li><strong>Not as a substitute for professional evaluation: This self-reporting questionnaire cannot replace a comprehensive clinical assessment by a licensed mental health professional.</strong></li>               
+              <li>Self-reporting limitations: Self-reporting is subject to bias, including response distortion, social desirability bias, and lack of insight into one's own condition.</li>
+              <li>Diagnostic accuracy: The DSM-5 requires clinical judgment, observation, and often collateral information that cannot be captured through self-reporting alone.</li>
+              <li>No medical advice: Results should not be used to self-diagnose or make treatment decisions without professional consultation.</li>
+              <li>Cultural and contextual factors: This system may not account for cultural variations, contextual factors, or individual circumstances that affect diagnosis.</li>                    
+              <li>Differential diagnosis: Many conditions share overlapping symptoms. Only a trained professional can properly differentiate between similar conditions.</li>                    
+              <li><strong>By proceeding, you acknowledge that you understand these limitations and that this tool is intended for educational exploration only.</strong></li>                    
+            </ul>
+          </div>
+        </section>
+      </section>
+
+      <!-- Category Selection Section -->
+      <section class="category-selection" id="categorySelection">
+        <div class="section-header">
+          <h2>Select one or more categories to continue.</h2>
+          <button class="btn btn-secondary" id="instructionsToggle">📋 How to Use</button>
+        </div>
+        
+        <div class="instructions-panel" id="instructionsPanel">
+          <h3>Assessment Guidelines</h3>
+          <p>Rate symptoms from <strong>0 (Never)</strong> to <strong>10 (Extreme/Constant)</strong> based on the last 2-4 weeks.</p>
+        </div>
+        
+        <div class="category-grid" id="categoryGrid">
+          <!-- Categories populated by JavaScript -->
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <a href="example-reports/diagnosis-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
+          <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
+        </div>
+      </section>
+
+      <!-- Questionnaire Section -->
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">Abandon / Restart</button>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section class="results-section" id="resultsSection">
+        <h2>Assessment Results</h2>
+        <div id="resultsContainer">
+          <!-- Results populated by JavaScript -->
+        </div>
+        <div class="results-actions">
+          <button class="btn btn-primary" id="newAssessment">New Assessment</button>
+          <button class="btn btn-secondary" id="viewData">View Data</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener" class="footer-link">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener" class="footer-link">Facebook</a>
+    </p>
+  </footer>
+
+  <!-- Universal background JavaScript -->
+  <script src="./shared/background.js"></script>
+  
+  <script type="module" src="diagnosis-engine.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      // Setup toggles
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+      setupToggle('instructionsToggle', 'instructionsPanel');
+
+      // Hamburger menu
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', function() {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      // Dropdown menu
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      
+      if (dropdownToggles.length) {
+        dropdownToggles.forEach(toggle => {
+          toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdown = toggle.closest('.nav-dropdown');
+            if (dropdown) {
+              document.querySelectorAll('.nav-dropdown').forEach(dd => {
+                if (dd !== dropdown) {
+                  dd.classList.remove('active');
+                }
+              });
+              dropdown.classList.toggle('active');
+            }
+          });
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.nav-dropdown')) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              dd.classList.remove('active');
+            });
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
