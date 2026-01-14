@@ -127,6 +127,26 @@ export class SovereigntySpectrumEngine {
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
     }
+
+    // Clear cache buttons (both in action section and during assessment)
+    const clearCacheBtn = document.getElementById('clearCacheBtn');
+    const clearCacheBtnInAssessment = document.getElementById('clearCacheBtnInAssessment');
+    
+    const clearCache = () => {
+      if (confirm('Are you sure you want to clear all cached data? This will reset your progress.')) {
+        this.dataStore.clear('progress');
+        sessionStorage.removeItem('spectrum-assessment');
+        localStorage.removeItem('spectrum-assessment');
+        location.reload();
+      }
+    };
+    
+    if (clearCacheBtn) {
+      clearCacheBtn.addEventListener('click', clearCache);
+    }
+    if (clearCacheBtnInAssessment) {
+      clearCacheBtnInAssessment.addEventListener('click', clearCache);
+    }
   }
 
   /**
