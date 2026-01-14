@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Needs Dependency Loop Determinator</title>
+  <meta name="description" content="Identify dependency loops through needs and vices assessment. Based on Chapter 5: Needs and Beliefs from Belief Mastery.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/needs-dependency.html">
+  <meta property="og:title" content="Needs Dependency Loop Determinator">
+  <meta property="og:description" content="Identify dependency loops through needs and vices assessment. Based on Chapter 5: Needs and Beliefs from Belief Mastery.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/dependency-loop-cover.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/needs-dependency.html">
+  <meta name="twitter:title" content="Needs Dependency Loop Determinator">
+  <meta name="twitter:description" content="Identify dependency loops through needs and vices assessment. Based on Chapter 5: Needs and Beliefs from Belief Mastery.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/dependency-loop-cover.jpg">
+  
+  <!-- CRITICAL: Universal styles MUST load first -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./shared/background.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Performance: Preload critical resources -->
+  <link rel="modulepreload" href="./needs-dependency-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
+
+</head>
+<body>
+
+  <!-- Cosmic background (from universal system) -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html" class="active">Dependency Loop Tracer</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty-spectrum.html">Technical Title for your Sovereignty Paradigm</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Bottleneck Analysis</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
+            <li role="none"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity Assessment</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Universal Tool Container -->
+    <div class="needs-dependency-container">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/dependency-loop-cover.jpg" alt="Dependency Loop Tracer" class="hero-img">
+      </div>
+      
+      <!-- Intro Section -->
+      <section class="intro-section" id="introSection">
+        <h2>🔄 Dependency Loop Tracer</h2>
+        
+        <p class="lead-text">
+          Are you stuck in dependency loops? Trace your surface symptoms to root needs. Break the cycle and reclaim your autonomy!
+        </p>
+        
+        <!-- Info Box -->
+        <div class="ack-box">
+          <p>
+            <strong style="color: var(--accent);">Needs Consciousness Note:</strong> This system maps dependency loops through needs and vices assessment. It uses the STRICT PROPRIETARY needs and vices vocabulary from Chapter 5 of Belief Mastery. The analysis identifies patterns of unmet needs that create dependency cycles—not diagnostic labels or fixed identities.
+          </p>
+        </div>
+        
+        <div class="content-section">
+          <p><strong>Identify dependency loops through comprehensive needs and vices assessment.</strong></p>
+          
+          <p>
+            This system guides you through questions about surface experiences, needs, vices, and dependency patterns to identify how unmet needs create dependency loops. Based on <strong>Chapter 5: Needs and Beliefs</strong> from <em>Belief Mastery</em>, this tool helps you trace symptoms to root needs and break dependency cycles.
+          </p>
+          
+          <p style="margin-top: 1rem; font-weight: 600;">The assessment covers:</p>
+          <ul class="feature-list">
+            <li><strong>Surface Experiences:</strong> Irritability, withdrawal, conflict, isolation, and other surface symptoms</li>
+            <li><strong>Need Identification:</strong> Mapping experiences to specific unmet needs using the proprietary needs vocabulary</li>
+            <li><strong>Vice Identification:</strong> Recognizing vice expressions that signal unmet needs</li>
+            <li><strong>Dependency Patterns:</strong> Identifying attraction-compulsion and aversion-avoidance patterns</li>
+          </ul>
+        </div>
+        
+        <!-- Disclaimer Toggle -->
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimers</span>
+          </div>
+        </div>
+
+        <div class="acknowledgement-box">
+          <p>
+            By participating in this analysis, I acknowledge that this tool is designed for self-awareness and recognition. Understanding manipulation patterns is the first step toward reclaiming sovereignty.
+          </p>
+        </div>
+        
+        <section class="disclaimer-section" id="disclaimerSection">
+          <h3 style="color: var(--accent); font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
+          <p><strong>This tool uses the STRICT PROPRIETARY needs and vices vocabulary from Chapter 5 of Belief Mastery.</strong></p>
+          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">
+            The needs and vices vocabularies must be adhered to exactly as specified. This analysis identifies dependency loops through needs consciousness—not diagnostic labels. Dependency loops are moment-to-moment patterns that can be addressed with conscious awareness.
+          </p>
+          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">
+            <strong>Remember:</strong> Some dependency is healthy and necessary (e.g., companionship, connection). This tool helps identify unconscious dependency patterns that undermine sovereignty, not all forms of dependency.
+          </p>
+        </section>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <a href="example-reports/needs-dependency-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
+          <button class="btn btn-primary" id="startAssessment">Begin Needs Dependency Assessment</button>
+        </div>
+      </section>
+
+      <!-- Questionnaire Section -->
+      <section class="questionnaire-section" id="questionnaireSection">
+        <!-- Instructions Toggle -->
+        <div class="instructions-toggle" id="instructionsToggle">
+          <div class="instructions-toggle-text">
+            <span>❓ How to Use This Assessment</span>
+          </div>
+        </div>
+        
+        <div class="instructions-panel" id="instructionsPanel">
+          <h3>❓ How to Use This Assessment</h3>
+          <div class="instructions-content">
+            <p class="scale-guide"><strong>Understanding the Scale (0-10):</strong></p>
+            <ul class="scale-list">
+              <li><strong>0-2 (Not at all / Never):</strong> The statement does not apply to you at all.</li>
+              <li><strong>3-4 (Minimal / Rarely):</strong> The statement occurs occasionally but has minimal impact.</li>
+              <li><strong>5-6 (Moderate / Sometimes):</strong> The statement is present with moderate frequency or intensity.</li>
+              <li><strong>7-8 (Significant / Often):</strong> The statement occurs frequently or with significant intensity.</li>
+              <li><strong>9-10 (Extreme / Always):</strong> The statement is nearly constant or extremely intense.</li>
+            </ul>
+            <p class="guidelines"><strong>Guidelines:</strong></p>
+            <ul class="guidelines-list">
+              <li>Answer based on your experience in the relationship(s) you're analyzing</li>
+              <li>Be honest - recognition is the first step to protection</li>
+              <li>Consider how each pattern affects your autonomy and well-being</li>
+              <li>You can go back and change answers using the "Previous" button</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div id="questionContainer">
+          <!-- Questions populated by JavaScript -->
+        </div>
+        
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">❌ Abandon / Restart</button>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section class="results-section" id="resultsSection">
+        <h2>Dependency Loop Analysis</h2>
+        <div id="resultsContainer">
+          <!-- Results populated by JavaScript -->
+        </div>
+        
+        <div class="export-section">
+          <h3>Export Your Analysis</h3>
+          <p>Export your analysis for reference or professional consultation.</p>
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="exportAnalysisJson">📥 Export Analysis (JSON)</button>
+            <button class="btn btn-primary" id="exportAnalysisCsv">📥 Export Analysis (CSV)</button>
+            <button class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Warwick Marshall. All rights reserved.</p>
+  </footer>
+
+  <!-- Universal background JavaScript -->
+  <script src="./shared/background.js"></script>
+
+  <script type="module" src="needs-dependency-engine.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Disclaimer toggle
+      const disclaimerToggle = document.getElementById('disclaimerToggle');
+      const disclaimerSection = document.getElementById('disclaimerSection');
+      
+      if (disclaimerToggle && disclaimerSection) {
+        disclaimerToggle.addEventListener('click', function() {
+          disclaimerToggle.classList.toggle('expanded');
+          disclaimerSection.classList.toggle('expanded');
+        });
+      }
+
+      // Instructions toggle
+      const instructionsToggle = document.getElementById('instructionsToggle');
+      const instructionsPanel = document.getElementById('instructionsPanel');
+      
+      if (instructionsToggle && instructionsPanel) {
+        instructionsToggle.addEventListener('click', function() {
+          instructionsToggle.classList.toggle('expanded');
+          instructionsPanel.classList.toggle('expanded');
+        });
+      }
+
+      // Hamburger menu
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', function() {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      // Dropdown menu
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      
+      if (dropdownToggles.length) {
+        dropdownToggles.forEach(toggle => {
+          toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdown = toggle.closest('.nav-dropdown');
+            if (dropdown) {
+              document.querySelectorAll('.nav-dropdown').forEach(dd => {
+                if (dd !== dropdown) {
+                  dd.classList.remove('active');
+                }
+              });
+              dropdown.classList.toggle('active');
+            }
+          });
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.nav-dropdown')) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              dd.classList.remove('active');
+            });
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
