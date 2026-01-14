@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Astrology Character Sheet Generator - D&D Style</title>
+  <meta name="description" content="Generate a D&D-style character sheet based on your astrological profile from Western, Chinese, and Mayan astrology systems.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/character-sheet.html">
+  <meta property="og:title" content="Astrology Character Sheet Generator - D&D Style">
+  <meta property="og:description" content="Transform your astrological profile into a D&D-style character sheet combining Western, Chinese, and Mayan astrology for fun roleplay games.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/astrology-cover.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/character-sheet.html">
+  <meta name="twitter:title" content="Astrology Character Sheet Generator - D&D Style">
+  <meta name="twitter:description" content="Transform your astrological profile into a D&D-style character sheet combining Western, Chinese, and Mayan astrology for fun roleplay games.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/astrology-cover.jpg">
+  
+  <!-- CRITICAL: Universal styles MUST load first -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./shared/background.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Cosmic background (from universal system) -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty-spectrum.html">Technical Title for your Sovereignty Paradigm</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Bottleneck Analysis</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
+            <li role="none"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none"><a role="menuitem" href="character-sheet.html" class="active">Astrological Character Sheet</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity Assessment</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Universal Tool Container -->
+    <div class="character-sheet-container">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/astrology-cover.jpg" alt="Astrological Character Sheet" class="hero-img">
+      </div>
+
+      <!-- Introduction Section -->
+      <section class="intro-section">
+        <h2>Astrology Character Sheet Generator</h2>
+        
+        <div class="content-section">
+          <p class="lead-text">
+            Transform your astrological profile into a D&D-style character sheet! This fun tool combines Western, Chinese, and Mayan astrology to create a unique roleplay character based on your birth chart.
+          </p>
+          
+          <p>
+            Your character sheet includes Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Skills, Class Features, and Character Flaws—all derived from your astrological influences.
+          </p>
+        </div>
+
+        <!-- Acknowledgment Box -->
+        <div class="ack-box">
+          <p>
+            <strong style="color: var(--accent);">Note:</strong> For the most accurate character sheet, you'll need your Sun, Moon, and Ascendant signs from Western astrology. The Sun sign can be auto-calculated from your birth date, but Moon and Ascendant require your exact birth time and location. You can get these from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar astrology calculators.
+          </p>
+        </div>
+      </section>
+
+      <!-- Character Form Section -->
+      <section id="characterFormSection" class="question-block">
+        <form id="characterForm">
+          
+          <div class="form-group">
+            <label for="characterName">Character Name</label>
+            <input type="text" id="characterName" name="characterName" placeholder="Enter your name or character name">
+          </div>
+
+          <div class="form-group">
+            <label for="birthDate">Birth Date *</label>
+            <input type="date" id="birthDate" name="birthDate" required>
+            <small class="form-help">Required for calculating Chinese and Mayan astrology</small>
+          </div>
+
+          <div class="form-group">
+            <label for="birthTime">Birth Time</label>
+            <input type="time" id="birthTime" name="birthTime" value="12:00">
+            <small class="form-help">Optional: Used for calculating Moon and Ascendant (if not provided manually)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="birthLocation">Birth Location</label>
+            <input type="text" id="birthLocation" name="birthLocation" placeholder="City, Country">
+            <small class="form-help">Optional: Used for calculating Ascendant (if not provided manually)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="sunSign">Sun Sign *</label>
+            <input type="text" id="sunSign" name="sunSign" list="sunSigns" placeholder="Will auto-calculate from birth date" required>
+            <datalist id="sunSigns">
+              <option value="Aries">Aries</option>
+              <option value="Taurus">Taurus</option>
+              <option value="Gemini">Gemini</option>
+              <option value="Cancer">Cancer</option>
+              <option value="Leo">Leo</option>
+              <option value="Virgo">Virgo</option>
+              <option value="Libra">Libra</option>
+              <option value="Scorpio">Scorpio</option>
+              <option value="Sagittarius">Sagittarius</option>
+              <option value="Capricorn">Capricorn</option>
+              <option value="Aquarius">Aquarius</option>
+              <option value="Pisces">Pisces</option>
+            </datalist>
+            <small class="form-help">Auto-calculated from birth date, or enter manually</small>
+          </div>
+
+          <div class="form-group">
+            <label for="moonSign">Moon Sign</label>
+            <input type="text" id="moonSign" name="moonSign" list="moonSigns" placeholder="Enter if known">
+            <datalist id="moonSigns">
+              <option value="Aries">Aries</option>
+              <option value="Taurus">Taurus</option>
+              <option value="Gemini">Gemini</option>
+              <option value="Cancer">Cancer</option>
+              <option value="Leo">Leo</option>
+              <option value="Virgo">Virgo</option>
+              <option value="Libra">Libra</option>
+              <option value="Scorpio">Scorpio</option>
+              <option value="Sagittarius">Sagittarius</option>
+              <option value="Capricorn">Capricorn</option>
+              <option value="Aquarius">Aquarius</option>
+              <option value="Pisces">Pisces</option>
+            </datalist>
+            <small class="form-help">Get from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar calculator</small>
+          </div>
+
+          <div class="form-group">
+            <label for="ascendantSign">Ascendant (Rising) Sign</label>
+            <input type="text" id="ascendantSign" name="ascendantSign" list="ascendantSigns" placeholder="Enter if known">
+            <datalist id="ascendantSigns">
+              <option value="Aries">Aries</option>
+              <option value="Taurus">Taurus</option>
+              <option value="Gemini">Gemini</option>
+              <option value="Cancer">Cancer</option>
+              <option value="Leo">Leo</option>
+              <option value="Virgo">Virgo</option>
+              <option value="Libra">Libra</option>
+              <option value="Scorpio">Scorpio</option>
+              <option value="Sagittarius">Sagittarius</option>
+              <option value="Capricorn">Capricorn</option>
+              <option value="Aquarius">Aquarius</option>
+              <option value="Pisces">Pisces</option>
+            </datalist>
+            <small class="form-help">Get from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar calculator (requires birth time and location)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="chineseAnimal">Chinese Animal (Optional)</label>
+            <input type="text" id="chineseAnimal" name="chineseAnimal" list="chineseAnimals" placeholder="Will auto-calculate from birth year">
+            <datalist id="chineseAnimals">
+              <option value="Rat">Rat</option>
+              <option value="Ox">Ox</option>
+              <option value="Tiger">Tiger</option>
+              <option value="Rabbit">Rabbit</option>
+              <option value="Dragon">Dragon</option>
+              <option value="Snake">Snake</option>
+              <option value="Horse">Horse</option>
+              <option value="Goat">Goat</option>
+              <option value="Monkey">Monkey</option>
+              <option value="Rooster">Rooster</option>
+              <option value="Dog">Dog</option>
+              <option value="Pig">Pig</option>
+            </datalist>
+            <small class="form-help">Auto-calculated from birth year, or enter manually if you know your Chinese zodiac animal</small>
+          </div>
+
+          <div class="form-group">
+            <label for="chineseElement">Chinese Element (Optional)</label>
+            <input type="text" id="chineseElement" name="chineseElement" list="chineseElements" placeholder="Will auto-calculate from birth year">
+            <datalist id="chineseElements">
+              <option value="Wood">Wood</option>
+              <option value="Fire">Fire</option>
+              <option value="Earth">Earth</option>
+              <option value="Metal">Metal</option>
+              <option value="Water">Water</option>
+            </datalist>
+            <small class="form-help">Auto-calculated from birth year, or enter manually if you know your Chinese element</small>
+          </div>
+
+          <div class="form-group">
+            <label for="mayanSign">Mayan Dreamspell Sign (Optional)</label>
+            <input type="text" id="mayanSign" name="mayanSign" placeholder="e.g., White Solar Wind, Yellow Cosmic Star">
+            <small class="form-help">Auto-calculated from birth date, but you can override with the exact result from <a href="https://www.starroot.com/cgi/daycalc.pl" target="_blank" rel="noopener">starroot.com Dreamspell calculator</a> (format: Color Tone Seal, e.g., "White Solar Wind")</small>
+          </div>
+
+          <div class="navigation-buttons">
+            <button type="button" id="generateCharacter" class="btn btn-primary">Generate Character Sheet</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results Section -->
+      <section id="characterSheetResults" class="results-section hidden">
+        <div class="action-buttons">
+          <button type="button" id="newCharacter" class="btn btn-secondary">Create New Character</button>
+          <button type="button" id="exportCharacter" class="btn btn-secondary">Export Character Sheet</button>
+        </div>
+        
+        <div id="characterSheetDisplay"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener" class="footer-link">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener" class="footer-link">Facebook</a>
+    </p>
+  </footer>
+
+  <script type="module">
+    import { CharacterSheetEngine } from './character-sheet-engine.js';
+    
+    // Initialize engine when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      window.characterSheetEngine = new CharacterSheetEngine();
+    });
+  </script>
+
+  <script src="./shared/background.js"></script>
+
+  <script>
+    // Hamburger menu toggle
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      if(!hamburger || !nav) return;
+      
+      hamburger.addEventListener('click', () => {
+        const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+        hamburger.setAttribute('aria-expanded', !isExpanded);
+        nav.classList.toggle('active');
+      });
+    })();
+
+    // Dropdown menu toggle
+    (function(){
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      if(!dropdownToggles.length) return;
+
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dropdown = toggle.closest('.nav-dropdown');
+          if(dropdown) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              if (dd !== dropdown) {
+                dd.classList.remove('active');
+              }
+            });
+            dropdown.classList.toggle('active');
+          }
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if(!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
