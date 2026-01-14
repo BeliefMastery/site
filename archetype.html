@@ -19,8 +19,9 @@
   <meta name="twitter:title" content="Modern Archetype Identification">
   <meta name="twitter:description" content="Identify your primary, secondary, and tertiary modern archetypes through a comprehensive multi-tier assessment system mapping behavioral patterns and social roles.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/redpill-cover.jpg">
+  
+  <!-- CRITICAL: Universal styles MUST load first -->
   <link rel="stylesheet" href="style.css">
-  <!-- Universal background styles -->
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   
@@ -35,7 +36,7 @@
 </head>
 <body>
 
-  <!-- Nebula-style cosmic background -->
+  <!-- Cosmic background (from universal system) -->
   <div class="bg-gradient"></div>
   <canvas id="nebula-canvas" aria-hidden="true"></canvas>
 
@@ -80,89 +81,103 @@
     </nav>
   </header>
 
-  <main style="position: relative; z-index: 2;">
+  <main>
+    <!-- Universal Tool Container (matches diagnosis.html structure) -->
     <div class="archetype-container">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" style="max-width: 300px; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1); display: block; margin: 0 auto 2rem auto;">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" class="hero-img">
       </div>
       
-<section class="intro-section">
-      <h2>Modern Archetype Identification</h2>
-        <p>
+      <!-- Intro Section (uses universal section styling) -->
+      <section class="intro-section">
+        <h2>Modern Archetype Identification</h2>
+        <p class="lead-text">
           Identify your primary, secondary, and tertiary modern archetypes. Discover your behavioral patterns and social role alignment!
         </p>
-        <div>
+        
+        <!-- Acknowledgment Box (matches diagnosis.html pattern) -->
+        <div class="ack-box">
           <p>
-            <strong style="color: var(--brand);">Descriptive Framework:</strong> This assessment maps behavioral patterns and social roles. 
+            <strong style="color: var(--accent);">Descriptive Framework:</strong> This assessment maps behavioral patterns and social roles. 
             Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
             Results reflect current patterns, not fixed identity.
           </p>
         </div>
-        <p><strong>This multi-tier assessment system identifies your dominant archetype through four phases:</strong></p>
-        <ul>
-          <li><strong>Phase 1 - Core Orientation:</strong> Identifies your primary archetype group (Alpha, Beta, Gamma, Delta, Sigma, Omega, or Phi) through concrete behavioral scenarios.</li>
-          <li><strong>Phase 2 - Dimensional Refinement:</strong> Distinguishes between main types and their variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha) through detailed behavioral statements.</li>
-          <li><strong>Phase 3 - Shadow & Integration:</strong> Reveals situational variability, stress responses, and potential shadow expressions.</li>
-          <li><strong>Phase 4 - Validation:</strong> Confirms archetype resonance through narrative scenarios.</li>
-        </ul>
-        <div>
+        
+        <div class="content-section">
+          <p><strong>This multi-tier assessment system identifies your dominant archetype through four phases:</strong></p>
+          <ul class="feature-list">
+            <li><strong>Phase 1 - Core Orientation:</strong> Identifies your primary archetype group (Alpha, Beta, Gamma, Delta, Sigma, Omega, or Phi) through concrete behavioral scenarios.</li>
+            <li><strong>Phase 2 - Dimensional Refinement:</strong> Distinguishes between main types and their variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha) through detailed behavioral statements.</li>
+            <li><strong>Phase 3 - Shadow & Integration:</strong> Reveals situational variability, stress responses, and potential shadow expressions.</li>
+            <li><strong>Phase 4 - Validation:</strong> Confirms archetype resonance through narrative scenarios.</li>
+          </ul>
+        </div>
+        
+        <div class="ack-box">
           <p>
-            <strong style="color: var(--brand);">Note:</strong> This assessment uses gender-neutral behavioral patterns. 
+            <strong style="color: var(--accent);">Note:</strong> This assessment uses gender-neutral behavioral patterns. 
             Archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex.
           </p>
         </div>
-        <div>
-          <a href="example-reports/archetype-example.html" target="_blank" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
-          <button class="btn btn-primary" id="startAssessment" style="flex: 1;">Begin Modern Archetype Assessment</button>
+        
+        <!-- Action Buttons (matches diagnosis.html button layout) -->
+        <div class="action-buttons">
+          <a href="example-reports/archetype-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
+          <button class="btn btn-primary" id="startAssessment">Begin Modern Archetype Assessment</button>
         </div>
-</section>
+      </section>
 
+      <!-- Questionnaire Section (hidden by default, shown via JS) -->
       <section class="questionnaire-section" id="questionnaireSection">
         <div class="progress-bar">
           <div class="progress-fill" id="progressBar"></div>
         </div>
-        <div>
-          <span id="questionCounter" style="color: var(--muted); font-size: 0.9rem;"></span>
+        <div class="progress-text">
+          <span id="questionCounter"></span>
         </div>
         <div id="questionContainer">
-          <!-- Questions will be populated by JavaScript -->
+          <!-- Questions populated by JavaScript -->
         </div>
         <div class="navigation-buttons">
           <button class="btn btn-secondary" id="prevQuestion">Previous</button>
           <button class="btn btn-primary" id="nextQuestion">Next</button>
         </div>
-        <div>
-          <button class="btn btn-secondary" id="abandonAssessment">
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">Abandon Assessment</button>
         </div>
       </section>
 
+      <!-- Results Section (hidden by default) -->
       <section class="results-section" id="resultsContainer">
         <div id="resultsContent">
-          <!-- Results will be populated by JavaScript -->
+          <!-- Results populated by JavaScript -->
         </div>
         <div class="export-section">
           <h3>Export Your Analysis</h3>
           <p>
-              Export your modern archetype identification results in JSON or CSV format for integration with your personal AI coaching agent or for personal reference.
+            Export your modern archetype identification results in JSON or CSV format for integration with your personal AI coaching agent or for personal reference.
           </p>
-          <div>
+          <div class="action-buttons">
             <button class="btn btn-primary" id="exportJSON">Export JSON</button>
             <button class="btn btn-primary" id="exportCSV">Export CSV</button>
             <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
           </div>
         </div>
-        <!-- Debug Report Container (visible when ?debug=true in URL) -->
+        <!-- Debug Report Container -->
         <div id="debug-report"></div>
       </section>
     </div>
   </main>
 
-  <footer style="position: relative; z-index: 2; text-align: center; padding: 2rem 1rem; color: var(--muted);">
+  <footer>
     <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
   </footer>
 
   <script type="module">
-    // Import performance monitoring and utilities
+    // Import performance monitoring
     import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
     
     // Initialize performance monitoring
@@ -174,7 +189,7 @@
       initializePerformanceMonitoring();
     }
     
-    // Debug: Comprehensive debugging for archetype assessment button
+    // Debug logging
     console.log('=== ARCHETYPE ASSESSMENT DEBUG ===');
     console.log('Document ready state:', document.readyState);
     console.log('Script execution started');
@@ -183,7 +198,7 @@
     import { ArchetypeEngine } from './archetype-engine.js';
     console.log('ArchetypeEngine imported:', typeof ArchetypeEngine);
     
-    // Show debug report container if debug mode is enabled
+    // Show debug report if enabled
     if (window.location.search.includes('debug=true')) {
       const debugContainer = document.getElementById('debug-report');
       if (debugContainer) {
@@ -191,21 +206,15 @@
       }
     }
     
-    // Wait for DOM to be fully ready
+    // Initialize assessment
     function initializeAssessment() {
       console.log('=== INITIALIZING ASSESSMENT ===');
-      console.log('Document ready state:', document.readyState);
       
-      // Check for button
       const startBtn = document.getElementById('startAssessment');
       console.log('Start button element:', startBtn);
-      console.log('Start button ID:', startBtn?.id);
-      console.log('Start button classes:', startBtn?.className);
-      console.log('Start button style:', startBtn?.style.cssText);
       
       if (!startBtn) {
-        console.error('? START BUTTON NOT FOUND IN DOM!');
-        console.log('Available elements with IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
+        console.error('❌ START BUTTON NOT FOUND IN DOM!');
         return;
       }
       
@@ -213,16 +222,10 @@
       console.log('Creating ArchetypeEngine instance...');
       window.archetypeEngine = new ArchetypeEngine();
       console.log('Engine instance created:', window.archetypeEngine);
-      console.log('Engine startAssessment method:', typeof window.archetypeEngine?.startAssessment);
       
-      // Add multiple event listeners as backup
-      console.log('Adding event listeners...');
-      
-      // Method 1: addEventListener
+      // Add event listener
       startBtn.addEventListener('click', function(e) {
-        console.log('? CLICK EVENT FIRED (addEventListener)');
-        console.log('Event:', e);
-        console.log('Target:', e.target);
+        console.log('✅ CLICK EVENT FIRED');
         e.preventDefault();
         e.stopPropagation();
         
@@ -235,55 +238,23 @@
             console.error('Error calling startAssessment:', error);
           }
         } else {
-          console.error('? Engine not found on window object');
+          console.error('❌ Engine not found on window object');
         }
       });
-      console.log('addEventListener attached');
-      
-      // Method 2: onclick (backup)
-      startBtn.onclick = function(e) {
-        console.log('? CLICK EVENT FIRED (onclick)');
-        console.log('Event:', e);
-        e.preventDefault();
-        e.stopPropagation();
-        if (window.archetypeEngine) {
-          try {
-            window.archetypeEngine.startAssessment();
-            console.log('startAssessment called successfully (onclick)');
-          } catch (error) {
-            console.error('Error calling startAssessment (onclick):', error);
-          }
-        }
-      };
-      console.log('onclick handler attached');
-      
-      // Method 3: Test click programmatically
-      console.log('Testing button clickability...');
-      console.log('Button disabled:', startBtn.disabled);
-      console.log('Button type:', startBtn.type);
-      
-      // Verify button is visible and clickable
-      const rect = startBtn.getBoundingClientRect();
-      console.log('Button position:', { x: rect.x, y: rect.y, width: rect.width, height: rect.height });
-      console.log('Button visible:', rect.width > 0 && rect.height > 0);
       
       console.log('=== INITIALIZATION COMPLETE ===');
-      console.log('Button should now be functional. Click it to test.');
     }
     
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
-      console.log('DOM is loading, waiting for DOMContentLoaded...');
       document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOMContentLoaded event fired');
         setTimeout(() => initializeAssessment(), 100);
       });
     } else {
-      console.log('DOM already ready, initializing immediately');
       setTimeout(() => initializeAssessment(), 100);
     }
     
-    // Also try after a longer delay as backup
+    // Backup initialization
     setTimeout(() => {
       if (!window.archetypeEngine) {
         console.warn('Engine not initialized after 1 second, retrying...');
@@ -291,6 +262,7 @@
       }
     }, 1000);
   </script>
+  
   <script>
     // Hamburger menu toggle
     (function(){
@@ -333,33 +305,10 @@
         }
       });
     })();
-
-    // Update results container when results are rendered
-    document.addEventListener('DOMContentLoaded', function() {
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.type === 'childList' && mutation.target.id === 'questionContainer') {
-            const resultsContent = document.getElementById('resultsContent');
-            if (resultsContent && mutation.target.innerHTML.includes('results-container')) {
-              resultsContent.innerHTML = mutation.target.innerHTML;
-              mutation.target.innerHTML = '';
-              document.getElementById('resultsContainer').classList.add('active');
-              document.getElementById('questionnaireSection').classList.remove('active');
-            }
-          }
-        });
-      });
-
-      const questionContainer = document.getElementById('questionContainer');
-      if (questionContainer) {
-        observer.observe(questionContainer, { childList: true, subtree: true });
-      }
-    });
   </script>
-<!-- Universal background JavaScript -->
-
-<script src="./shared/background.js"></script>
+  
+  <!-- Universal background JavaScript -->
+  <script src="./shared/background.js"></script>
 
 </body>
 </html>
-
