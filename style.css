@@ -110,6 +110,149 @@ main {
     text-align: center;
 }
 
+.text-accent {
+    color: var(--accent);
+}
+
+.text-alert {
+    color: #d32f2f;
+}
+
+.spacing-bottom-sm {
+    margin-bottom: 1rem;
+}
+
+.spacing-top-lg {
+    margin-top: 2rem;
+}
+
+.section-subtitle {
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.accent-heading {
+    color: var(--accent);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.tools-section-inner {
+    padding: 3rem 1rem;
+}
+
+.tools-page-title {
+    margin-bottom: 2rem;
+    color: var(--brand);
+}
+
+.tools-intro {
+    text-align: center;
+    color: var(--muted);
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+.tools-category-title {
+    text-align: center;
+    margin: 3rem 0 1.5rem 0;
+    color: var(--brand);
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.tool-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.tool-card-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.tool-card-title {
+    margin: 0;
+    color: var(--brand);
+    font-size: 1.2rem;
+    flex: 1;
+}
+
+.tool-card-highlight {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brand);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.tool-card-note {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.tool-card-action {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+.tools-divider {
+    margin: 4rem 0;
+    border: none;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    background: transparent;
+}
+
+.tools-privacy {
+    background: rgba(40, 167, 69, 0.15);
+    border-left: 4px solid #28a745;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-top: 4rem;
+    backdrop-filter: blur(8px);
+}
+
+.tools-privacy-title {
+    color: #28a745;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tools-privacy-text {
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.tools-privacy-emphasis {
+    color: var(--brand);
+}
+
+.tools-privacy-highlight {
+    color: #28a745;
+}
+
 .text-left {
     text-align: left;
 }

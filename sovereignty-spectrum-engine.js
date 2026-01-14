@@ -147,6 +147,15 @@ export class SovereigntySpectrumEngine {
     if (clearCacheBtnInAssessment) {
       clearCacheBtnInAssessment.addEventListener('click', clearCache);
     }
+
+    const abandonBtn = document.getElementById('abandonAssessment');
+    if (abandonBtn) {
+      abandonBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+          this.resetAssessment();
+        }
+      });
+    }
   }
 
   /**
@@ -401,6 +410,21 @@ export class SovereigntySpectrumEngine {
    * @returns {Promise<void>}
    */
   async startAssessment() {
+    const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const paradigmSelection = document.getElementById('paradigmSelection');
+    const questionnaireSection = document.getElementById('questionnaireSection');
+
+    const selectionHidden = !paradigmSelection || paradigmSelection.classList.contains('hidden');
+    if (this.currentPhase === 1 && selectionHidden) {
+      await this.loadSpectrumData();
+      if (introSection) introSection.classList.add('hidden');
+      if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+      if (paradigmSelection) paradigmSelection.classList.remove('hidden');
+      await this.renderParadigmSelection();
+      return;
+    }
+
     // Check if all paradigms are rated
     if (!SOVEREIGNTY_PARADIGMS) {
       await this.loadSpectrumData();
@@ -434,10 +458,8 @@ export class SovereigntySpectrumEngine {
       this.answers = {};
       
       // Hide selection and action buttons, show questionnaire
-      const paradigmSelection = document.getElementById('paradigmSelection');
-      const actionButtonsSection = document.getElementById('actionButtonsSection');
-      const questionnaireSection = document.getElementById('questionnaireSection');
-      if (paradigmSelection) paradigmSelection.style.display = 'none';
+      if (introSection) introSection.classList.add('hidden');
+      if (paradigmSelection) paradigmSelection.classList.add('hidden');
       if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
       if (questionnaireSection) questionnaireSection.classList.add('active');
       
@@ -1144,30 +1166,46 @@ export class SovereigntySpectrumEngine {
         
         // Restore UI state
         if (this.currentPhase === 1) {
-          // Phase 1: Paradigm selection - show action buttons and paradigm selection
+          // Phase 1: Paradigm selection - resume only if ratings exist
+          const introSection = document.getElementById('introSection');
           const actionButtonsSection = document.getElementById('actionButtonsSection');
-          if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
-          await this.renderParadigmSelection();
+          const paradigmSelection = document.getElementById('paradigmSelection');
+          const hasRatings = Object.keys(this.paradigmRatings || {}).length > 0;
+          if (hasRatings) {
+            if (introSection) introSection.classList.add('hidden');
+            if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+            if (paradigmSelection) paradigmSelection.classList.remove('hidden');
+            await this.renderParadigmSelection();
+          } else {
+            if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+            if (paradigmSelection) paradigmSelection.classList.add('hidden');
+          }
         } else if (this.currentPhase > 1) {
           // Phase 2+: Assessment in progress - hide action buttons, show questionnaire
+          const introSection = document.getElementById('introSection');
           const actionButtonsSection = document.getElementById('actionButtonsSection');
           const paradigmSelection = document.getElementById('paradigmSelection');
           const questionnaireSection = document.getElementById('questionnaireSection');
+          if (introSection) introSection.classList.add('hidden');
           if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
           if (paradigmSelection) paradigmSelection.classList.add('hidden');
           if (questionnaireSection) questionnaireSection.classList.add('active');
           this.renderCurrentQuestion();
         }
       } else {
-        // First time - show action buttons and render paradigm selection
+        // First time - show action buttons only
         const actionButtonsSection = document.getElementById('actionButtonsSection');
         if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
-        await this.renderParadigmSelection();
+        const paradigmSelection = document.getElementById('paradigmSelection');
+        if (paradigmSelection) paradigmSelection.classList.add('hidden');
       }
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
       // On error, start fresh
-      await this.renderParadigmSelection();
+      const actionButtonsSection = document.getElementById('actionButtonsSection');
+      const paradigmSelection = document.getElementById('paradigmSelection');
+      if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+      if (paradigmSelection) paradigmSelection.classList.add('hidden');
     }
   }
 
@@ -1177,6 +1215,7 @@ export class SovereigntySpectrumEngine {
   resetAssessment() {
     this.selectedParadigms = [];
     this.paradigmRatings = {};
+    this.currentParadigmIndex = 0;
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -1198,20 +1237,19 @@ export class SovereigntySpectrumEngine {
     
     this.dataStore.clear('progress');
     
-    // Reset UI - show action buttons and paradigm selection, hide questionnaire and results
+    // Reset UI - show intro and action buttons, hide selection/questionnaire/results
+    const introSection = document.getElementById('introSection');
     const actionButtonsSection = document.getElementById('actionButtonsSection');
     const paradigmSelection = document.getElementById('paradigmSelection');
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsSection = document.getElementById('resultsSection');
+    if (introSection) introSection.classList.remove('hidden');
     if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
     if (paradigmSelection) {
-      paradigmSelection.style.display = '';
-      paradigmSelection.classList.remove('hidden');
+      paradigmSelection.classList.add('hidden');
     }
     if (questionnaireSection) questionnaireSection.classList.remove('active');
     if (resultsSection) resultsSection.classList.remove('active');
-    
-    this.renderParadigmSelection();
   }
 }
 

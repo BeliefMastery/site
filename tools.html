@@ -97,7 +97,7 @@
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="index.html">Home</a></li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
             <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
@@ -109,7 +109,7 @@
           </ul>
         </li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
             <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
@@ -134,24 +134,24 @@
   <main class="container" id="main">
     <!-- All Tools Section -->
     <section id="tools" data-bg="./images/index-background.JPG" aria-labelledby="tools-title">
-      <div class="section-inner" style="padding:3rem 1rem;">
+      <div class="section-inner tools-section-inner">
         
-        <h1 id="books-intro-title" style="margin-bottom:2rem;color:var(--brand);">Sovereignty Tools</h1>
-        <p style="text-align:center;color:var(--muted);margin-top:0;margin-bottom:2rem;">Comprehensive diagnostic and coaching systems for reclaiming mental sovereignty.</p>
+        <h1 id="books-intro-title" class="tools-page-title">Sovereignty Tools</h1>
+        <p class="tools-intro">Comprehensive diagnostic and coaching systems for reclaiming mental sovereignty.</p>
 
         <!-- Psychological Tools -->
-        <h3 style="text-align:center;margin:3rem 0 1.5rem 0;color:var(--brand);font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:0.5rem;">Psychological</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+        <h3 class="tools-category-title">Psychological</h3>
+        <div class="tools-grid">
           
           <!-- Pathology Assessment Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/DSM5-cover.jpg" alt="Pathology Assessment" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🧠 Pathology Assessment</h3>
+            <div class="tool-card-header">
+              <img src="./images/DSM5-cover.jpg" alt="Pathology Assessment" class="tool-card-thumb">
+              <h3 class="tool-card-title">🧠 Pathology Assessment</h3>
             </div>
             <p>Map psychological patterns to DSM-5 categories. Educational self-reporting tool for pattern awareness, not clinical diagnosis.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Map psychological patterns to DSM-5 categories. 100+ patterns across 13+ domains with comorbidity detection. Educational self-reporting tool for pattern awareness, not clinical diagnosis.
               </p>
               <p><strong>Features:</strong></p>
@@ -164,21 +164,21 @@
                 <li>Condition directory with full breakdowns</li>
                 <li>Export functionality (JSON/CSV) for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Educational tool only - not a substitute for professional mental health evaluation.</p>
-              <a class="btn btn-primary" href="diagnosis.html" style="display:inline-block;width:100%;text-align:center;">Begin Pathology Assessment</a>
+              <p class="tool-card-note">Educational tool only - not a substitute for professional mental health evaluation.</p>
+              <a class="btn btn-primary tool-card-action" href="diagnosis.html">Begin Pathology Assessment</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Life Domain Review Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/coaching-agent-cover.jpg" alt="Life Domain Review" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">📋 Life Domain Review</h3>
+            <div class="tool-card-header">
+              <img src="./images/coaching-agent-cover.jpg" alt="Life Domain Review" class="tool-card-thumb">
+              <h3 class="tool-card-title">📋 Life Domain Review</h3>
             </div>
             <p>Map 15 Obstacles to Sovereignty and 10 Satisfaction Domains. Identifies highest-impact areas for focused work. Exports structured profile for import into your personal AI coaching agent.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Map 15 Obstacles to Sovereignty and 10 Satisfaction Domains from Chapter 1 of Sovereign of Mind. Identifies highest-impact areas for focused work. Exports structured profile (JSON/CSV) for import into your personal AI coaching agent.
               </p>
               <p><strong>Features:</strong></p>
@@ -190,21 +190,21 @@
                 <li>Export with AI interpretation instructions (JSON/CSV)</li>
                 <li>Direct import into ChatGPT, Claude, or custom AI</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your profile in JSON or CSV format for integration with ChatGPT, Claude, or other AI platforms.</p>
-              <a class="btn btn-primary" href="coaching.html" style="display:inline-block;width:100%;text-align:center;">Begin Life Domain Review</a>
+              <p class="tool-card-note">Export your profile in JSON or CSV format for integration with ChatGPT, Claude, or other AI platforms.</p>
+              <a class="btn btn-primary tool-card-action" href="coaching.html">Begin Life Domain Review</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Dependency Loop Tracer Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/dependency-loop-cover.jpg" alt="Dependency Loop Tracer" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🔄 Dependency Loop Tracer</h3>
+            <div class="tool-card-header">
+              <img src="./images/dependency-loop-cover.jpg" alt="Dependency Loop Tracer" class="tool-card-thumb">
+              <h3 class="tool-card-title">🔄 Dependency Loop Tracer</h3>
             </div>
             <p>Trace surface symptoms to root needs using strict proprietary needs vocabulary from Chapter 5 of Belief Mastery. 4-phase architecture breaks unconscious dependency cycles.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Trace surface symptoms to root needs using strict proprietary needs vocabulary from Chapter 5 of Belief Mastery. 4-phase architecture: Initial Screening → Loop-Specific Deep Dive → Causal Chain Mapping → Validation. Breaks unconscious dependency cycles.
               </p>
               <p><strong>Features:</strong></p>
@@ -218,8 +218,8 @@
                 <li>Action strategies for breaking loops</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Based on Chapter 5: Needs and Beliefs from Belief Mastery. Uses the STRICT PROPRIETARY needs and vices vocabulary which must be adhered to exactly as specified.</p>
-              <a class="btn btn-primary" href="needs-dependency.html" style="display:inline-block;width:100%;text-align:center;">Trace Dependency Loops</a>
+              <p class="tool-card-note">Based on Chapter 5: Needs and Beliefs from Belief Mastery. Uses the STRICT PROPRIETARY needs and vices vocabulary which must be adhered to exactly as specified.</p>
+              <a class="btn btn-primary tool-card-action" href="needs-dependency.html">Trace Dependency Loops</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
@@ -227,21 +227,21 @@
         </div>
 
         <!-- Section Divider -->
-        <hr style="margin:4rem 0;border:none;border-top:2px solid rgba(0,0,0,0.1);background:transparent;">
+        <hr class="tools-divider">
 
         <!-- Defensive/Protective Tools -->
-        <h3 style="text-align:center;margin:3rem 0 1.5rem 0;color:var(--brand);font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:0.5rem;">Defensive/Protective</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+        <h3 class="tools-category-title">Defensive/Protective</h3>
+        <div class="tools-grid">
 
           <!-- Manipulation Defense Decoder Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/manipulation-analysis-cover.jpg" alt="Manipulation Defense Decoder" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🔍 Manipulation Defense Decoder</h3>
+            <div class="tool-card-header">
+              <img src="./images/manipulation-analysis-cover.jpg" alt="Manipulation Defense Decoder" class="tool-card-thumb">
+              <h3 class="tool-card-title">🔍 Manipulation Defense Decoder</h3>
             </div>
             <p>Identify manipulation tactics being used against you across 6 core vectors and 63+ specific tactics. Analyzes symptoms, effects, and consequences. Provides countermeasures and defense strategies.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Identify manipulation tactics being used against you across 6 core vectors and 63+ specific tactics. Analyzes symptoms, effects, and consequences. Provides countermeasures and defense strategies. Based on Tactical Manipulation Compendium from Sovereign of Mind.
               </p>
               <p><strong>Features:</strong></p>
@@ -253,7 +253,7 @@
                 <li>Dark Tetrad integration (Narcissism, Psychopathy, Machiavellianism, Sadism)</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <a class="btn btn-primary" href="manipulation.html" style="display:inline-block;width:100%;text-align:center;">Decode Manipulation</a>
+              <a class="btn btn-primary tool-card-action" href="manipulation.html">Decode Manipulation</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
@@ -261,21 +261,21 @@
         </div>
 
         <!-- Section Divider -->
-        <hr style="margin:4rem 0;border:none;border-top:2px solid rgba(0,0,0,0.1);background:transparent;">
+        <hr class="tools-divider">
 
         <!-- Philosophical Tools -->
-        <h3 style="text-align:center;margin:3rem 0 1.5rem 0;color:var(--brand);font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:0.5rem;">Philosophical</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+        <h3 class="tools-category-title">Philosophical</h3>
+        <div class="tools-grid">
 
           <!-- Technical Title for your Sovereignty Paradigm Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/sovereignty-spectrum-cover.jpg" alt="Technical Title for your Sovereignty Paradigm" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🎯 Technical Title for your Sovereignty Paradigm</h3>
+            <div class="tool-card-header">
+              <img src="./images/sovereignty-spectrum-cover.jpg" alt="Technical Title for your Sovereignty Paradigm" class="tool-card-thumb">
+              <h3 class="tool-card-title">🎯 Technical Title for your Sovereignty Paradigm</h3>
             </div>
             <p>Discover the technical title that identifies your sovereignty paradigm. Clarify which philosophical, spiritual, or psychological framework best describes your approach to sovereignty through comprehensive assessment.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Discover the technical title that identifies your sovereignty paradigm. Clarify which of 25 distinct philosophical, spiritual, and psychological frameworks best describes your approach to sovereignty. This is about identification and clarification, not ranking paradigms as superior or inferior.
               </p>
               <p><strong>Features:</strong></p>
@@ -289,21 +289,21 @@
                 <li>Remediation paths based on your specific derailers</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">This tool illuminates patterns and provides diagnostic clarity. Each paradigm includes balanced descriptions that expose both strengths and limitations. It identifies which paradigm best describes your sovereignty approach and measures your integration level with that identified paradigm.</p>
-              <a class="btn btn-primary" href="sovereignty-spectrum.html" style="display:inline-block;width:100%;text-align:center;">Position Your Spectrum</a>
+              <p class="tool-card-note">This tool illuminates patterns and provides diagnostic clarity. Each paradigm includes balanced descriptions that expose both strengths and limitations. It identifies which paradigm best describes your sovereignty approach and measures your integration level with that identified paradigm.</p>
+              <a class="btn btn-primary tool-card-action" href="sovereignty-spectrum.html">Position Your Spectrum</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Logos Structure Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/paradigm-clarification-cover.jpg" alt="Logos Structure" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🧭 Logos Structure</h3>
+            <div class="tool-card-header">
+              <img src="./images/paradigm-clarification-cover.jpg" alt="Logos Structure" class="tool-card-thumb">
+              <h3 class="tool-card-title">🧭 Logos Structure</h3>
             </div>
             <p>Map "The Good Life" and "God" across four dimensions of truth: Literal, Symbolic, Esoteric, Mystical. 3-phase architecture clarifies worldview structure and primary paradigm alignments. Reveals coherence and contradictions in your belief foundation.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Map "The Good Life" and "God" across four dimensions of truth: Literal, Symbolic, Esoteric, Mystical. 3-phase architecture clarifies worldview structure and primary paradigm alignments. Reveals coherence and contradictions in your belief foundation.
               </p>
               <p><strong>Features:</strong></p>
@@ -315,8 +315,8 @@
                 <li>Potential hazards and distortions identification</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your paradigm profile in JSON or CSV format for integration with your personal AI coaching agent.</p>
-              <a class="btn btn-primary" href="paradigm.html" style="display:inline-block;width:100%;text-align:center;">Map Your Worldview</a>
+              <p class="tool-card-note">Export your paradigm profile in JSON or CSV format for integration with your personal AI coaching agent.</p>
+              <a class="btn btn-primary tool-card-action" href="paradigm.html">Map Your Worldview</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
@@ -324,21 +324,21 @@
         </div>
 
         <!-- Section Divider -->
-        <hr style="margin:4rem 0;border:none;border-top:2px solid rgba(0,0,0,0.1);background:transparent;">
+        <hr class="tools-divider">
 
         <!-- Relational Tools -->
-        <h3 style="text-align:center;margin:3rem 0 1.5rem 0;color:var(--brand);font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:0.5rem;">Relational</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+        <h3 class="tools-category-title">Relational</h3>
+        <div class="tools-grid">
 
           <!-- Relationship Bottleneck Analysis Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/relationship-optimization-cover.jpg" alt="Relationship Bottleneck Analysis" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">💞 Relationship Bottleneck Analysis</h3>
+            <div class="tool-card-header">
+              <img src="./images/relationship-optimization-cover.jpg" alt="Relationship Bottleneck Analysis" class="tool-card-thumb">
+              <h3 class="tool-card-title">💞 Relationship Bottleneck Analysis</h3>
             </div>
             <p>Identify weakest links across 20 compatibility dimensions organized by impact tier. Provides targeted action strategies integrating optimal relationship dynamics, biological essentialism, polarity, and STATUS/SELECTION/ATTRACTION frameworks.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Identify weakest links across 20 compatibility dimensions organized by impact tier. Provides targeted action strategies integrating optimal relationship dynamics, biological essentialism, polarity, and STATUS/SELECTION/ATTRACTION frameworks.
               </p>
               <p><strong>Features:</strong></p>
@@ -351,21 +351,21 @@
                 <li>STATUS/SELECTION/ATTRACTION reference integration</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your relationship analysis in JSON or CSV format for integration with your personal AI coaching agent.</p>
-              <a class="btn btn-primary" href="relationship.html" style="display:inline-block;width:100%;text-align:center;">Find Bottlenecks</a>
+              <p class="tool-card-note">Export your relationship analysis in JSON or CSV format for integration with your personal AI coaching agent.</p>
+              <a class="btn btn-primary tool-card-action" href="relationship.html">Find Bottlenecks</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Polarity Position Mapping Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/temperament-analysis-cover.jpg" alt="Polarity Position Mapping" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🧭 Polarity Position Mapping</h3>
+            <div class="tool-card-header">
+              <img src="./images/temperament-analysis-cover.jpg" alt="Polarity Position Mapping" class="tool-card-thumb">
+              <h3 class="tool-card-title">🧭 Polarity Position Mapping</h3>
             </div>
             <p>Map your position on the masculine-feminine temperament spectrum. Covers behavioral patterns, intimate dynamics, sexual preferences, emotional responses, and attraction patterns. Directly impacts relationship strategies.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Map your position on the masculine-feminine temperament spectrum. Covers behavioral patterns, intimate dynamics, sexual preferences, emotional responses, and attraction patterns. Directly impacts relationship strategies.
               </p>
               <p><strong>Features:</strong></p>
@@ -379,22 +379,22 @@
                 <li>STATUS/SELECTION/ATTRACTION reference map integration</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Temperament is distinct from biological sex or gender identity—it refers to archetypal energy patterns that exist on a spectrum. Variation across dimensions is expected and common.</p>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Export your temperament analysis in JSON or CSV format for integration with your personal AI coaching agent. Understanding your temperament helps clarify relationship polarity, compatibility dynamics, and personal development needs.</p>
-              <a class="btn btn-primary" href="temperament.html" style="display:inline-block;width:100%;text-align:center;">Map Your Polarity</a>
+              <p class="tool-card-note">Temperament is distinct from biological sex or gender identity—it refers to archetypal energy patterns that exist on a spectrum. Variation across dimensions is expected and common.</p>
+              <p class="tool-card-note">Export your temperament analysis in JSON or CSV format for integration with your personal AI coaching agent. Understanding your temperament helps clarify relationship polarity, compatibility dynamics, and personal development needs.</p>
+              <a class="btn btn-primary tool-card-action" href="temperament.html">Map Your Polarity</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Modern Archetype Identification Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🎭 Modern Archetype Identification</h3>
+            <div class="tool-card-header">
+              <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" class="tool-card-thumb">
+              <h3 class="tool-card-title">🎭 Modern Archetype Identification</h3>
             </div>
             <p>Identify primary, secondary, and tertiary archetypes through 4-phase assessment (Core Orientation → Dimensional Refinement → Shadow Integration → Validation). Maps behavioral patterns and social roles using modern taxonomy with gender-neutral framing.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Identify primary, secondary, and tertiary archetypes through 4-phase assessment (Core Orientation → Dimensional Refinement → Shadow Integration → Validation). Maps behavioral patterns and social roles using modern taxonomy with gender-neutral framing.
               </p>
               <p><strong>Features:</strong></p>
@@ -409,8 +409,8 @@
                 <li>Plain-language explanations of archetype names and functions</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Based on modern redpill archetype taxonomy. Uses behavioral focus, concrete scenarios, and values-neutral framing to minimize bias and maximize accuracy.</p>
-              <a class="btn btn-primary" href="archetype.html" style="display:inline-block;width:100%;text-align:center;">Identify Your Archetype</a>
+              <p class="tool-card-note">Based on modern redpill archetype taxonomy. Uses behavioral focus, concrete scenarios, and values-neutral framing to minimize bias and maximize accuracy.</p>
+              <a class="btn btn-primary tool-card-action" href="archetype.html">Identify Your Archetype</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
@@ -418,21 +418,21 @@
         </div>
 
         <!-- Section Divider -->
-        <hr style="margin:4rem 0;border:none;border-top:2px solid rgba(0,0,0,0.1);background:transparent;">
+        <hr class="tools-divider">
 
         <!-- Esoteric Tools -->
-        <h3 style="text-align:center;margin:3rem 0 1.5rem 0;color:var(--brand);font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:0.5rem;">Esoteric</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+        <h3 class="tools-category-title">Esoteric</h3>
+        <div class="tools-grid">
 
           <!-- Channel Flow Diagnostics Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/channel-analysis-cover.jpg" alt="Channel Flow Diagnostics" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🌀 Channel Flow Diagnostics</h3>
+            <div class="tool-card-header">
+              <img src="./images/channel-analysis-cover.jpg" alt="Channel Flow Diagnostics" class="tool-card-thumb">
+              <h3 class="tool-card-title">🌀 Channel Flow Diagnostics</h3>
             </div>
             <p>Map 7 nodal centers and 42 inter-nodal channels using chakral system framework. Identifies blockages, overloads, and flow disruptions in your internal energy architecture. Provides targeted remediation strategies for each channel.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Map 7 nodal centers and 42 inter-nodal channels using chakral system framework. Identifies blockages, overloads, and flow disruptions in your internal energy architecture. Provides targeted remediation strategies for each channel.
               </p>
               <p><strong>Features:</strong></p>
@@ -445,20 +445,20 @@
                 <li>Node and channel dynamics analysis</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <a class="btn btn-primary" href="channels.html" style="display:inline-block;width:100%;text-align:center;">Diagnose Channel Flow</a>
+              <a class="btn btn-primary tool-card-action" href="channels.html">Diagnose Channel Flow</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Astrological Character Sheet Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/astrology-cover.jpg" alt="Astrological Character Sheet" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">⚔️ Astrological Character Sheet</h3>
+            <div class="tool-card-header">
+              <img src="./images/astrology-cover.jpg" alt="Astrological Character Sheet" class="tool-card-thumb">
+              <h3 class="tool-card-title">⚔️ Astrological Character Sheet</h3>
             </div>
             <p>Translate your astrological profile into D&D-style character sheet. Combines Western zodiac, Chinese zodiac, and Mayan astrology into RPG stat blocks, personality traits, and quest hooks. Demystifies astrology through game mechanics.</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Translate your astrological profile into D&D-style character sheet. Combines Western zodiac, Chinese zodiac, and Mayan astrology into RPG stat blocks, personality traits, and quest hooks. Demystifies astrology through game mechanics.
               </p>
               <p><strong>Features:</strong></p>
@@ -471,8 +471,8 @@
                 <li>Instructions for obtaining Moon and Ascendant from astro.com</li>
                 <li>Export character sheet as JSON</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Perfect for social roleplay games where you play as yourself with the powers of your astrological character!</p>
-              <a class="btn btn-primary" href="character-sheet.html" style="display:inline-block;width:100%;text-align:center;">Create Character Sheet</a>
+              <p class="tool-card-note">Perfect for social roleplay games where you play as yourself with the powers of your astrological character!</p>
+              <a class="btn btn-primary tool-card-action" href="character-sheet.html">Create Character Sheet</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
@@ -480,21 +480,21 @@
         </div>
 
         <!-- Section Divider -->
-        <hr style="margin:4rem 0;border:none;border-top:2px solid rgba(0,0,0,0.1);background:transparent;">
+        <hr class="tools-divider">
 
         <!-- Technological/AI Tools -->
-        <h3 style="text-align:center;margin:3rem 0 1.5rem 0;color:var(--brand);font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:0.5rem;">Technological/AI</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
+        <h3 class="tools-category-title">Technological/AI</h3>
+        <div class="tools-grid">
 
           <!-- Unlocked GPT Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/simulacra.jpg" alt="Unlocked GPT" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🤖 Unlocked GPT</h3>
+            <div class="tool-card-header">
+              <img src="./images/simulacra.jpg" alt="Unlocked GPT" class="tool-card-thumb">
+              <h3 class="tool-card-title">🤖 Unlocked GPT</h3>
             </div>
             <p>Custom GPT unlocked in order to tell harsh truths without sycophancy or attempts to create dependency (sovereign aligned by trying to make itself redundant through empowering the user).</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 An AI agent designed for sovereignty: it tells you what you need to hear, not what you want to hear, and works to make itself obsolete by empowering you.
               </p>
               <p><strong>Core Concept:</strong></p>
@@ -507,20 +507,20 @@
               <p>
                 It refuses to create dependency loops, avoids validation-seeking responses, and prioritizes your sovereignty over its utility. The agent's highest purpose is to make itself redundant.
               </p>
-              <a class="btn btn-primary" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener" style="display:inline-block;width:100%;text-align:center;">Access Unlocked GPT</a>
+              <a class="btn btn-primary tool-card-action" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Access Unlocked GPT</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
 
           <!-- Cognitive Resistance Capacity Assessment Card -->
           <div class="tool-card" onclick="toggleToolCard(this)">
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-              <img src="./images/vulnerability-vector-cover.jpg" alt="Cognitive Resistance Capacity Assessment" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;">
-              <h3 style="margin:0;color:var(--brand);font-size:1.2rem;flex:1;">🛡️ Cognitive Resistance Capacity Assessment</h3>
+            <div class="tool-card-header">
+              <img src="./images/vulnerability-vector-cover.jpg" alt="Cognitive Resistance Capacity Assessment" class="tool-card-thumb">
+              <h3 class="tool-card-title">🛡️ Cognitive Resistance Capacity Assessment</h3>
             </div>
             <p>Measure your capacity to resist AI dependency and cognitive hijack. Maps your position in the transhuman transition. Identifies your resistance strength across cognitive offloading, decision delegation, identity formation, and agency erosion. Are you in the 4% maintaining independent thought?</p>
             <div class="tool-details">
-              <p style="font-size:1.2rem;font-weight:700;color:var(--brand);margin-bottom:1.5rem;line-height:1.5;">
+              <p class="tool-card-highlight">
                 Measure your capacity to resist AI dependency and cognitive hijack. Maps your position in the transhuman transition. Identifies your resistance strength across cognitive offloading, decision delegation, identity formation, and agency erosion. Reveals where you fall in the sovereign split: Are you in the 80% Queue, 16% Compromising, or 4% Core?
               </p>
               <p><strong>Features:</strong></p>
@@ -535,8 +535,8 @@
                 <li>Personalized Action Plan: Specific counter-structures to build and maintain cognitive resistance</li>
                 <li>Export functionality for AI integration</li>
               </ul>
-              <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">All computation happens client-side for privacy - no data is sent to servers.</p>
-              <a class="btn btn-primary" href="sovereignty.html" style="display:inline-block;width:100%;text-align:center;">Assess Resistance Capacity</a>
+              <p class="tool-card-note">All computation happens client-side for privacy - no data is sent to servers.</p>
+              <a class="btn btn-primary tool-card-action" href="sovereignty.html">Assess Resistance Capacity</a>
             </div>
             <div class="tool-expand-indicator">Click to expand &#9660;</div>
           </div>
@@ -544,12 +544,12 @@
         </div>
 
         <!-- Privacy Notice -->
-        <div style="background: rgba(40, 167, 69, 0.15); border-left: 4px solid #28a745; border-radius: var(--radius); padding: 1.5rem; margin-top: 4rem; backdrop-filter: blur(8px);">
-          <h3 style="color: #28a745; margin-bottom: 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <div class="tools-privacy">
+          <h3 class="tools-privacy-title">
             <span>🔒</span> Complete Privacy & Data Security
           </h3>
-          <p style="color: var(--muted); line-height: 1.7; margin: 0; font-size: 1rem;">
-            <strong style="color: var(--brand);">Important:</strong> <strong style="color: #28a745;">NO DATA is stored in a database</strong> as a result of engaging with any analysis tool. All data is stored <strong>purely locally in your browser</strong> and is only available in the export you can generate at the end of each assessment. This is <strong>completely private</strong>—your responses never leave your device unless you explicitly choose to export them.
+          <p class="tools-privacy-text">
+            <strong class="tools-privacy-emphasis">Important:</strong> <strong class="tools-privacy-highlight">NO DATA is stored in a database</strong> as a result of engaging with any analysis tool. All data is stored <strong>purely locally in your browser</strong> and is only available in the export you can generate at the end of each assessment. This is <strong>completely private</strong>—your responses never leave your device unless you explicitly choose to export them.
           </p>
         </div>
       </div>
@@ -703,3 +703,4 @@
 
 </body>
 </html>
+

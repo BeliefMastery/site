@@ -45,7 +45,7 @@
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="index.html">Home</a></li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
             <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
@@ -57,7 +57,7 @@
           </ul>
         </li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
             <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
@@ -90,7 +90,7 @@
       </div>
       
       <!-- Intro Section -->
-      <section class="intro-section">
+      <section class="intro-section" id="introSection">
         <h2>💑 Relationship Bottleneck Analysis</h2>
         
         <p class="lead-text">
@@ -109,15 +109,15 @@
         <div class="extended-explanation-panel" id="extendedExplanationPanel">
           <div class="content-section">
             <!-- Warning Box (red border) -->
-            <div class="ack-box" style="border-left-color: #d32f2f; background: rgba(211, 47, 47, 0.1);">
+            <div class="ack-box error-box">
               <p>
-                <strong style="color: #d32f2f;">Use Condition:</strong> This engine identifies pressure points in relational structure. It does not determine compatibility, fault, or whether a relationship should continue. This assessment reflects your experience within the relationship, not an objective measure of the other person.
+                <strong class="text-alert">Use Condition:</strong> This engine identifies pressure points in relational structure. It does not determine compatibility, fault, or whether a relationship should continue. This assessment reflects your experience within the relationship, not an objective measure of the other person.
               </p>
             </div>
             
             <p><strong>Identify current strain points in your relationship and receive targeted action strategies.</strong></p>
             
-            <p style="margin-top: 1rem; font-weight: 600;">The assessment includes:</p>
+            <p class="section-subtitle">The assessment includes:</p>
             <ul class="feature-list">
               <li><strong>20 Compatibility Points:</strong> Evaluated across Very High, High, Moderate-High, and Moderate impact tiers.</li>
               <li><strong>Weakest Link Identification:</strong> Pinpoints the areas requiring immediate attention based on weighted scoring.</li>
@@ -128,7 +128,7 @@
             <!-- Related Tool Box -->
             <div class="ack-box">
               <p>
-                <strong style="color: var(--accent);">🔗 Related Tool:</strong> Understanding relationship polarity requires clarity on temperament. Use the <strong><a href="temperament.html">Polarity Position Mapping</a></strong> to discover your position on the masculine-feminine spectrum, which directly impacts relationship consequences and optimization strategies.
+                <strong class="text-accent">🔗 Related Tool:</strong> Understanding relationship polarity requires clarity on temperament. Use the <strong><a href="temperament.html">Polarity Position Mapping</a></strong> to discover your position on the masculine-feminine spectrum, which directly impacts relationship consequences and optimization strategies.
               </p>
             </div>
           </div>
@@ -151,7 +151,7 @@
       </section>
 
       <!-- Assessment Selection Section -->
-      <section class="content-section">
+      <section class="content-section" id="actionButtonsSection">
         <div class="action-buttons">
           <a href="example-reports/relationship-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
           <button class="btn btn-primary" id="startAssessment">Begin Relationship Assessment</button>

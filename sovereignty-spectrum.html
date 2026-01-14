@@ -37,7 +37,7 @@
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="index.html">Home</a></li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
             <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
@@ -49,7 +49,7 @@
           </ul>
         </li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
             <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
@@ -77,7 +77,7 @@
       <div class="hero-image">
         <img src="./images/sovereignty-spectrum-cover.jpg" alt="Technical Title for your Sovereignty Paradigm" class="hero-img">
       </div>
-      <section class="intro-section">
+      <section class="intro-section" id="introSection">
         <h2>Technical Title for your Sovereignty Paradigm</h2>
         
         <p class="lead-text">
@@ -141,7 +141,7 @@
         </div>
       </section>
 
-      <section class="paradigm-selection" id="paradigmSelection">
+      <section class="paradigm-selection hidden" id="paradigmSelection">
         <!-- Paradigm selection will be rendered by JavaScript -->
       </section>
 
@@ -149,7 +149,7 @@
         <div class="progress-bar">
           <div class="progress-fill" id="progressBar"></div>
         </div>
-        <div class="text-center" style="margin-bottom: 1rem;">
+        <div class="text-center spacing-bottom-sm">
           <span id="progressText">0 / 0</span>
         </div>
         <div id="questionContainer">
@@ -160,7 +160,7 @@
           <button class="btn btn-primary" id="nextQuestion">Next Question</button>
         </div>
         <div class="abandon-link">
-          <button class="btn btn-secondary" id="clearCacheBtnInAssessment">🔄 Reset Data</button>
+          <button class="btn btn-secondary" id="abandonAssessment">❌ Abandon / Restart</button>
         </div>
       </section>
 
@@ -169,7 +169,7 @@
         <div id="resultsContainer">
           <!-- Results will be populated by JavaScript -->
         </div>
-        <div class="text-center" style="margin-top: 2rem;">
+        <div class="text-center spacing-top-lg">
           <button class="btn btn-primary" id="newAssessment">Start New Assessment</button>
           <button class="btn btn-secondary" id="exportJSON">Export JSON</button>
           <button class="btn btn-secondary" id="exportCSV">Export CSV</button>
