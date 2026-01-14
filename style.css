@@ -105,6 +105,76 @@ main {
     background: rgba(0, 0, 0, 0.0);
 }
 
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Navigation Dropdown Arrow */
+.dropdown-toggle span {
+    font-size: 0.8em;
+}
+
+/* Error/Warning Box Variants */
+.error-box,
+.ack-box.error-box {
+    border-left-color: var(--error) !important;
+    background: rgba(248, 113, 113, 0.1) !important;
+}
+
+.error-box h3,
+.ack-box.error-box h3 {
+    color: var(--error) !important;
+    margin-top: 0;
+}
+
+.warning-box h3 {
+    color: #d32f2f;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* Disclaimer Section Styling */
+.disclaimer-section h3 {
+    color: #d32f2f;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.disclaimer-section p {
+    margin-top: 1rem;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* Extended Explanation Panel Styling */
+.extended-explanation-panel p strong {
+    color: var(--accent);
+}
+
+.extended-explanation-panel .feature-list {
+    margin-top: 1rem;
+}
+
+.feature-list-header {
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+/* Footer z-index */
+footer {
+    position: relative;
+    z-index: 2;
+}
+
 ul {
     margin: 0;
     padding-left: 1.25rem;
