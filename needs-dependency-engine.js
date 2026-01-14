@@ -443,8 +443,10 @@ export class NeedsDependencyEngine {
       await this.buildPhase1Sequence();
       
       const introSection = document.getElementById('introSection');
+      const actionButtonsSection = document.getElementById('actionButtonsSection');
       const questionnaireSection = document.getElementById('questionnaireSection');
       if (introSection) introSection.classList.add('hidden');
+      if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
       if (questionnaireSection) questionnaireSection.classList.add('active');
       
       this.renderCurrentQuestion();

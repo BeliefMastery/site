@@ -413,10 +413,12 @@ export class SovereigntySpectrumEngine {
       this.currentQuestionIndex = 0;
       this.answers = {};
       
-      // Hide selection, show questionnaire
+      // Hide selection and action buttons, show questionnaire
       const paradigmSelection = document.getElementById('paradigmSelection');
+      const actionButtonsSection = document.getElementById('actionButtonsSection');
       const questionnaireSection = document.getElementById('questionnaireSection');
       if (paradigmSelection) paradigmSelection.style.display = 'none';
+      if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
       if (questionnaireSection) questionnaireSection.classList.add('active');
       
       this.renderCurrentQuestion();
@@ -1172,6 +1174,8 @@ export class SovereigntySpectrumEngine {
     // Reset UI
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsSection = document.getElementById('resultsSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
     if (questionnaireSection) questionnaireSection.classList.remove('active');
     if (resultsSection) resultsSection.classList.remove('active');
     
