@@ -20,10 +20,17 @@
   <meta name="twitter:title" content="Life Domain Review">
   <meta name="twitter:description" content="Review your life domains and satisfaction areas based on Sovereign of Mind frameworks. Complete comprehensive questionnaires to identify highest-impact areas for maximum-impact improvement.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/coaching-agent-cover.jpg">
+  <!-- CRITICAL: Universal styles MUST load first -->
   <link rel="stylesheet" href="style.css">
-  <!-- Universal background styles -->
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Performance: Preload critical resources -->
+  <link rel="modulepreload" href="./coaching-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
 
 </head>
 <body>
@@ -73,61 +80,79 @@
     </nav>
   </header>
 
-  <main style="position: relative; z-index: 2;">
+  <main>
+    <!-- Universal Tool Container -->
     <div class="coaching-container">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <img src="./images/coaching-agent-cover.jpg" alt="Life Domain Review" style="max-width: 300px; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1); display: block; margin: 0 auto 2rem auto;">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/coaching-agent-cover.jpg" alt="Life Domain Review" class="hero-img">
       </div>
+
+      <!-- Intro Section -->
       <section class="intro-section">
         <h2>📋 Life Domain Review</h2>
-        <p><strong>Rapidly review your life domains and identify highest-impact areas for improvement.</strong></p>
-        <p>This system guides you through comprehensive questionnaires based on Chapter 1 of <em>Sovereign of Mind</em> by Warwick Marshall. (note: Your responses create a detailed profile that can be exported and imported into your custom AI to transform it into a personal coaching agent.)</p>
-        <p style="margin-top: 1rem; font-weight: 600;">The process includes:</p>
-        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-          <li><strong>15 Obstacles to Sovereignty:</strong> Identify constraints limiting your freedom and satisfaction</li>
-          <li><strong>10 Satisfaction Domains:</strong> Evaluate areas of life that determine your depth of satisfaction</li>
-        </ul>
+        
+        <p class="lead-text">
+          Rapidly review your life domains and identify highest-impact areas for improvement.
+        </p>
+        
+        <p>This system guides you through comprehensive questionnaires based on Chapter 1 of <em>Sovereign of Mind</em> by Warwick Marshall. Your responses create a detailed profile that can be exported and imported into your custom AI to transform it into a personal coaching agent.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
+        </div>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <p>The process includes:</p>
+            <ul class="feature-list">
+              <li><strong>15 Obstacles to Sovereignty:</strong> Identify constraints limiting your freedom and satisfaction</li>
+              <li><strong>10 Satisfaction Domains:</strong> Evaluate areas of life that determine your depth of satisfaction</li>
+            </ul>
+          </div>
+          <div class="instructions-content">
+            <h3>📋 How to Use This Assessment</h3>
+            <div class="scale-guide">
+              <p><strong>Understanding the Scale (0-10):</strong></p>
+              <ul class="scale-list">
+                <li><strong>0-2 (Not at all / Never):</strong> The statement does not apply to you at all, or occurs extremely rarely.</li>
+                <li><strong>3-4 (Minimal / Rarely):</strong> The statement occurs occasionally but has minimal impact.</li>
+                <li><strong>5-6 (Moderate / Sometimes):</strong> The statement is present with moderate frequency or intensity.</li>
+                <li><strong>7-8 (Significant / Often):</strong> The statement occurs frequently or with significant intensity.</li>
+                <li><strong>9-10 (Extreme / Always):</strong> The statement is nearly constant or extremely intense.</li>
+              </ul>
+              <p><strong>Guidelines:</strong></p>
+              <ul class="guidelines-list">
+                <li>Answer based on your current experience and recent patterns</li>
+                <li>Be honest with yourself - there are no "wrong" answers</li>
+                <li>Consider how each area affects your daily life and functioning</li>
+                <li>You can go back and change answers using the "Previous" button</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
           <div class="disclaimer-acknowledgement-text">
             <span>Disclaimer</span>
           </div>
         </div>
 
-        <div class="acknowledgement-box">
-        </div>
         <section class="disclaimer-section" id="disclaimerSection">
-          <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
-          <p><strong>By participating in this analysis, I acknowledge that this tool is designed for self-inquiry, not external analysis.</strong></p>
+          <div class="acknowledgement-box">
+            <h3 style="color: #d32f2f;">Important Note</h3>
+            <p><strong>By participating in this analysis, I acknowledge that this tool is designed for self-inquiry, not external analysis.</strong></p>
+          </div>
         </section>
       </section>
 
-     <section> 
+      <section class="content-section">
         <h2>Select Assessment Sections</h2>
-        <div class="instructions-toggle" id="instructionsToggle">
-          <div class="instructions-toggle-text">
-            <span>📋 How to Use This Assessment</span>
-          </div>
-        </div>
-        <div class="instructions-panel" id="instructionsPanel">
-          <h3><span>📋</span> How to Use This Assessment</h3>
-          <div style="line-height: 1.7;">
-            <p style="margin-bottom: 1rem;"><strong>Understanding the Scale (0-10):</strong></p>
-            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
-              <li><strong>0-2 (Not at all / Never):</strong> The statement does not apply to you at all, or occurs extremely rarely.</li>
-              <li><strong>3-4 (Minimal / Rarely):</strong> The statement occurs occasionally but has minimal impact.</li>
-              <li><strong>5-6 (Moderate / Sometimes):</strong> The statement is present with moderate frequency or intensity.</li>
-              <li><strong>7-8 (Significant / Often):</strong> The statement occurs frequently or with significant intensity.</li>
-              <li><strong>9-10 (Extreme / Always):</strong> The statement is nearly constant or extremely intense.</li>
-            </ul>
-            <p style="margin-bottom: 0.5rem;"><strong>Guidelines:</strong></p>
-            <ul style="margin-left: 1.5rem; margin-bottom: 0;">
-              <li>Answer based on your current experience and recent patterns</li>
-              <li>Be honest with yourself - there are no "wrong" answers</li>
-              <li>Consider how each area affects your daily life and functioning</li>
-              <li>You can go back and change answers using the "Previous" button</li>
-            </ul>
-          </div>
-        </div>
      
       <section class="section-selection" id="sectionSelection">
         <div class="section-grid" id="sectionGrid">
@@ -135,23 +160,21 @@
         </div>
       </section> 
 
-      <section>
-        <div style="text-align: center; margin-top: 2rem;">
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
-            <a href="example-reports/coaching-example.html" target="_blank" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 2px solid var(--brand); color: var(--brand); border-radius: var(--radius); text-decoration: none; font-weight: 600;">View Example Report</a>
-            <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
-          </div>
+        <div class="action-buttons">
+          <a href="example-reports/coaching-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
+          <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
+        </div>
+        <div class="abandon-link">
           <button class="btn btn-secondary" id="clearCacheBtn">🗑️ Reset Test / Clear Cached Data</button>
         </div>
       </section>
-     </section>
 
       <section class="questionnaire-section" id="questionnaireSection">
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <span id="questionCount" style="color: var(--muted); font-size: 0.9rem;"></span>
+        <div class="progress-text">
+          <span id="questionCount"></span>
         </div>
         <div id="questionContainer">
           <!-- Questions will be populated by JavaScript -->
@@ -160,8 +183,8 @@
           <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
           <button class="btn btn-primary" id="nextQuestion">Next</button>
         </div>
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); text-align: center;">
-          <button class="btn btn-secondary" id="abandonAssessment" style="background: transparent; color: var(--muted); border: 1px solid var(--muted);">Abandon / Restart</button>
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">Abandon / Restart</button>
         </div>
       </section>
 
@@ -170,17 +193,17 @@
         <div id="profileResults">
           <!-- Results will be populated by JavaScript -->
         </div>
-        <div class="export-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--accent);">
-          <div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid var(--brand);">
-            <h3 style="color: var(--brand); margin-bottom: 0.75rem;">🔍 Deepen Your Analysis</h3>
-            <p style="color: var(--muted); margin-bottom: 1rem; line-height: 1.6;">
+        <div class="export-section">
+          <div class="ack-box">
+            <h3>🔍 Deepen Your Analysis</h3>
+            <p>
               The initial analysis identifies your most impactful avenues for action. To make the greatest positive impact, consider deepening your understanding of your top priorities through targeted follow-up questions and strategic action planning.
             </p>
-            <button class="btn btn-primary" id="deepenAnalysis" style="width: 100%;">Continue to Deeper Inquiry</button>
+            <button class="btn btn-primary" id="deepenAnalysis">Continue to Deeper Inquiry</button>
           </div>
           <h3>Export Your Coaching Profile</h3>
-          <p style="color: var(--muted); margin-bottom: 1rem;">Export your profile in your preferred format. JSON is ideal for programmatic import, while CSV includes detailed explanations for how your AI agent should interpret, value, and prioritize the content.</p>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+          <p>Export your profile in your preferred format. JSON is ideal for programmatic import, while CSV includes detailed explanations for how your AI agent should interpret, value, and prioritize the content.</p>
+          <div class="action-buttons">
             <button class="btn btn-primary" id="exportProfileJSON">📥 Export JSON</button>
             <button class="btn btn-primary" id="exportProfileCSV">📊 Export CSV (with AI Instructions)</button>
             <button class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
@@ -188,13 +211,13 @@
         </div>
       </section>
 
-      <section class="deeper-inquiry-section" id="deeperInquirySection" style="display: none;">
+      <section class="deeper-inquiry-section hidden" id="deeperInquirySection">
         <h2>Deeper Inquiry & Strategic Planning</h2>
         <div id="deeperInquiryResults">
           <!-- Deeper inquiry content will be populated by JavaScript -->
         </div>
-        <div class="export-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--accent);">
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <div class="export-section">
+          <div class="action-buttons">
             <button class="btn btn-secondary" id="backToResults">← Back to Initial Results</button>
             <button class="btn btn-primary" id="exportDeepProfileJSON">📥 Export Complete Profile (JSON)</button>
             <button class="btn btn-primary" id="exportDeepProfileCSV">📊 Export Complete Profile (CSV)</button>
@@ -204,24 +227,53 @@
     </div>
   </main>
 
-  <footer style="position: relative; z-index: 2;">
+  <footer>
     <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
     <p>
-      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
-      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener" class="footer-link">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener" class="footer-link">Facebook</a>
     </p>
   </footer>
 
   <!-- Universal background JavaScript -->
-
-
   <script src="./shared/background.js"></script>
 
-
-  <script type="module" src="coaching-engine.js"></script>
   <script>
-    // Hamburger menu functionality (same as index.html)
+    // Unified navigation and UI controls
     document.addEventListener('DOMContentLoaded', function() {
+      // Hamburger menu functionality
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.getElementById('top-nav');
+      
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', function() {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      // Dropdown menu functionality
+      const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          const dropdown = toggle.closest('.nav-dropdown');
+          if (dropdown) {
+            dropdown.classList.toggle('active');
+          }
+        });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+
       // Disclaimer toggle functionality
       const disclaimerToggle = document.getElementById('disclaimerToggle');
       const disclaimerSection = document.getElementById('disclaimerSection');
@@ -234,41 +286,57 @@
       }
 
       // Instructions toggle functionality
-      const instructionsToggle = document.getElementById('instructionsToggle');
-      const instructionsPanel = document.getElementById('instructionsPanel');
+      const extendedExplanationToggle = document.getElementById('extendedExplanationToggle');
+      const extendedExplanationPanel = document.getElementById('extendedExplanationPanel');
       
-      if (instructionsToggle && instructionsPanel) {
-        instructionsToggle.addEventListener('click', function() {
-          instructionsToggle.classList.toggle('expanded');
-          instructionsPanel.classList.toggle('expanded');
+      if (extendedExplanationToggle && extendedExplanationPanel) {
+        extendedExplanationToggle.addEventListener('click', function() {
+          extendedExplanationToggle.classList.toggle('expanded');
+          extendedExplanationPanel.classList.toggle('expanded');
         });
       }
 
-      const hamburger = document.querySelector('.hamburger');
-      const nav = document.getElementById('top-nav');
-      const dropdownToggle = document.querySelector('.dropdown-toggle');
-      const dropdownMenu = document.querySelector('.dropdown-menu');
-
-      if (hamburger && nav) {
-        hamburger.addEventListener('click', function() {
-          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
-          hamburger.setAttribute('aria-expanded', !isExpanded);
-          nav.classList.toggle('active');
+      // Debug panel functionality
+      const debugToggle = document.getElementById('debugToggle');
+      const debugPanel = document.getElementById('debugPanel');
+      const debugClose = document.getElementById('debugClose');
+      const debugClear = document.getElementById('debugClear');
+      const debugLog = document.getElementById('debugLog');
+      
+      if (debugToggle && debugPanel) {
+        debugToggle.addEventListener('click', function() {
+          debugPanel.classList.toggle('active');
         });
+        
+        if (debugClose) {
+          debugClose.addEventListener('click', function() {
+            debugPanel.classList.remove('active');
+          });
+        }
+        
+        if (debugClear && debugLog) {
+          debugClear.addEventListener('click', function() {
+            debugLog.innerHTML = '';
+            if (window.coachingEngine) {
+              window.coachingEngine.debugLog = [];
+            }
+          });
+        }
       }
-
-      if (dropdownToggle && dropdownMenu) {
-        dropdownToggle.addEventListener('click', function(e) {
+      
+      // Enable debug mode with keyboard shortcut (Ctrl+D or Cmd+D)
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
           e.preventDefault();
-          dropdownMenu.classList.toggle('active');
-        });
-
-        document.addEventListener('click', function(e) {
-          if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.remove('active');
+          if (window.coachingEngine) {
+            window.coachingEngine.debugMode = !window.coachingEngine.debugMode;
+            console.log('Debug mode:', window.coachingEngine.debugMode ? 'ENABLED' : 'DISABLED');
+            if (window.coachingEngine.debugMode && debugPanel) {
+              debugPanel.classList.add('active');
+            }
           }
-        });
-      }
+        }
+      });
     });
   </script>
 
@@ -290,12 +358,6 @@
     </div>
   </div>
 
-  <link rel="modulepreload" href="./coaching-engine.js">
-  <link rel="modulepreload" href="./shared/data-loader.js">
-  <link rel="modulepreload" href="./shared/debug-reporter.js">
-  <link rel="modulepreload" href="./shared/utils.js">
-  <link rel="modulepreload" href="./shared/performance-monitor.js">
-  
   <script type="module">
     import { CoachingEngine } from './coaching-engine.js';
     import { initializePerformanceMonitoring } from './shared/performance-monitor.js';

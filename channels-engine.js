@@ -651,11 +651,11 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-          <h4 style="color: var(--brand); margin-bottom: 1rem;">Your Node Assessment Summary</h4>
-          ${weakNodes.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>Areas needing support:</strong> ${weakNodes.join(', ')}</p>` : ''}
-          ${strongNodes.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>Areas of strength:</strong> ${strongNodes.join(', ')}</p>` : ''}
-          <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);">Based on this assessment, we've identified critical channels that may reveal blockages. Select 2-3 areas you'd like to explore in depth.</p>
+        <div class="info-box info-box-accent">
+          <h4>Your Node Assessment Summary</h4>
+          ${weakNodes.length > 0 ? `<p><strong>Areas needing support:</strong> ${weakNodes.join(', ')}</p>` : ''}
+          ${strongNodes.length > 0 ? `<p><strong>Areas of strength:</strong> ${strongNodes.join(', ')}</p>` : ''}
+          <p>Based on this assessment, we've identified critical channels that may reveal blockages. Select 2-3 areas you'd like to explore in depth.</p>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
@@ -669,7 +669,7 @@ export class ChannelsEngine {
       const toNode = NODES[channel.to];
       
       html += `
-        <label class="multiselect-option ${isSelected ? 'selected' : ''}" style="padding: 1.25rem; border-left: 3px solid ${isSelected ? 'var(--brand)' : 'rgba(0,0,0,0.1)'};">
+        <label class="multiselect-option ${isSelected ? 'selected' : ''}">
           <input 
             type="checkbox" 
             name="question_${question.id}" 
@@ -677,9 +677,9 @@ export class ChannelsEngine {
             data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
             ${isSelected ? 'checked' : ''}
           />
-          <div style="flex: 1;">
-            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--brand);">${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</div>
-            <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.5;">${SecurityUtils.sanitizeHTML(channel.description || '')}</div>
+          <div class="multiselect-content">
+            <div class="multiselect-title">${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</div>
+            <div class="multiselect-description">${SecurityUtils.sanitizeHTML(channel.description || '')}</div>
           </div>
         </label>
       `;
@@ -1048,19 +1048,19 @@ export class ChannelsEngine {
       html += '</div>';
     
     // Node summary
-    html += '<div class="node-summary" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; border-left: 4px solid var(--brand);">';
+    html += '<div class="node-summary">';
     html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Node Health Summary</h4>';
     Object.keys(this.nodeScores).forEach(nodeKey => {
       const nodeScore = this.nodeScores[nodeKey];
       const stateColor = nodeScore.state === 'abundant' ? '#28a745' : nodeScore.state === 'balanced' ? '#ffc107' : '#d32f2f';
-      html += `<p style="margin-bottom: 0.5rem;"><strong>${SecurityUtils.sanitizeHTML(nodeScore.node.name || '')}:</strong> <span style="color: ${stateColor};">${SecurityUtils.sanitizeHTML(nodeScore.state || '')}</span></p>`;
+      html += `<p><strong>${SecurityUtils.sanitizeHTML(nodeScore.node.name || '')}:</strong> <span style="color: ${stateColor};">${SecurityUtils.sanitizeHTML(nodeScore.state || '')}</span></p>`;
     });
     html += '</div>';
     
     // Channel results
     if (this.analysisData.finalChannels.length > 0) {
       html += '<div class="channel-results">';
-      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Identified Channel Blockages</h4>';
+      html += '<h4>Identified Channel Blockages</h4>';
       
       this.analysisData.finalChannels.forEach(channelData => {
         const channel = channelData.channel;
@@ -1070,8 +1070,8 @@ export class ChannelsEngine {
         html += `
           <div class="channel-result">
             <h3>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</h3>
-            <p style="color: var(--muted); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
-            <p style="margin-bottom: 1rem;"><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
+            <p>${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
+            <p><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
           </div>
         `;
       });
@@ -1081,8 +1081,8 @@ export class ChannelsEngine {
     
     // Remediation strategies
     if (this.analysisData.remediationStrategies.length > 0) {
-      html += '<div class="remediation-section" style="margin-top: 2rem;">';
-      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Remediation Strategies</h4>';
+      html += '<div class="remediation-section">';
+      html += '<h4>Remediation Strategies</h4>';
       
       this.analysisData.remediationStrategies.forEach(strategy => {
         const channel = strategy.channel;
@@ -1092,7 +1092,7 @@ export class ChannelsEngine {
         html += `
           <div class="remediation-item">
             <strong>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</strong>
-            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+            <ul>
               ${Array.isArray(strategy.strategies) ? strategy.strategies.map(s => `<li>${SecurityUtils.sanitizeHTML(s || '')}</li>`).join('') : `<li>${SecurityUtils.sanitizeHTML(strategy.strategies || '')}</li>`}
             </ul>
           </div>

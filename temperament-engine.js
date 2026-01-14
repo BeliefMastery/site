@@ -394,9 +394,9 @@ export class TemperamentEngine {
 
     let categoryInfo = '';
     if (currentQ.dimensionName) {
-      categoryInfo = `<p class="description" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(currentQ.dimensionName)}</p>`;
+      categoryInfo = `<p class="description">${SecurityUtils.sanitizeHTML(currentQ.dimensionName)}</p>`;
     } else if (currentQ.categoryName) {
-      categoryInfo = `<p class="description" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(currentQ.categoryName)}</p>`;
+      categoryInfo = `<p class="description">${SecurityUtils.sanitizeHTML(currentQ.categoryName)}</p>`;
     }
 
     SecurityUtils.safeInnerHTML(questionContainer, `
@@ -407,7 +407,7 @@ export class TemperamentEngine {
         </div>
         ${categoryInfo}
         <h3>${SecurityUtils.sanitizeHTML(currentQ.question || '')}</h3>
-        ${currentQ.description ? `<p class="description" style="margin-top: 0.5rem; font-style: italic; color: var(--muted);">${SecurityUtils.sanitizeHTML(currentQ.description)}</p>` : ''}
+        ${currentQ.description ? `<p class="description">${SecurityUtils.sanitizeHTML(currentQ.description)}</p>` : ''}
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider" step="1">
@@ -480,7 +480,7 @@ export class TemperamentEngine {
         <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
           Now we'll explore the detailed dimensions to map your temperament expression across different contexts and relationships.
         </p>
-        <button class="btn btn-primary" id="continueToPhase2" style="min-width: 200px;">Continue to Detailed Assessment</button>
+        <button class="btn btn-primary" id="continueToPhase2">Continue to Detailed Assessment</button>
       </div>
     `);
     
@@ -513,7 +513,7 @@ export class TemperamentEngine {
       }
       
       const progress = totalQuestions > 0 ? (currentProgress / totalQuestions) * 100 : 0;
-      progressFill.style.width = `${progress}%`;
+      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
     }
     
     const questionCount = document.getElementById('questionCount');
@@ -761,8 +761,8 @@ export class TemperamentEngine {
         <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
           The next section explores intimate and attraction patterns. These questions help map how energy organizes in relational and intimate contexts. <strong>Skip any question that feels misaligned.</strong> Your responses are for pattern recognition, not judgment.
         </p>
-        <button class="btn btn-primary" id="continueToIntimate" style="min-width: 150px;">Continue</button>
-        <button class="btn btn-secondary" id="skipIntimate" style="min-width: 150px; margin-left: 1rem;">Skip This Section</button>
+        <button class="btn btn-primary" id="continueToIntimate">Continue</button>
+        <button class="btn btn-secondary" id="skipIntimate">Skip This Section</button>
       </div>
     `);
     
@@ -823,7 +823,7 @@ export class TemperamentEngine {
           </div>
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>
         </div>
-        <p style="font-size: 0.9em; color: var(--muted); margin-top: 0.5rem; font-style: italic;">
+        <p class="question-help">
           Tip: Rate the degree to which this pattern is present in your experience.
         </p>
       </div>
@@ -888,9 +888,9 @@ export class TemperamentEngine {
     // Context sensitivity flag
     if (this.analysisData.contextSensitivity && this.analysisData.contextSensitivity.detected) {
       html += `
-        <div style="background: rgba(255, 184, 0, 0.15); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 2rem;">
-          <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);">
-            <strong style="color: var(--accent);">Context-Responsive Temperament:</strong> ${this.analysisData.contextSensitivity.message}
+        <div class="info-box info-box-accent">
+          <p>
+            <strong>Context-Responsive Temperament:</strong> ${this.analysisData.contextSensitivity.message}
           </p>
         </div>
       `;
@@ -946,12 +946,12 @@ export class TemperamentEngine {
       const normalizedDimScore = (netScore + 1) / 2;
       
       html += `
-        <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: var(--radius); border-left: 3px solid var(--brand);">
-          <h4 style="color: var(--brand); margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(dimName || '')}</h4>
-          <div style="position: relative; height: 30px; background: linear-gradient(to right, rgba(0,123,255,0.2), rgba(255,192,203,0.2)); border-radius: 4px; margin-bottom: 0.5rem;">
-            <div style="position: absolute; top: 50%; left: ${normalizedDimScore * 100}%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--brand); border-radius: 50%; border: 2px solid white;"></div>
+        <div class="dimension-item">
+          <h4>${SecurityUtils.sanitizeHTML(dimName || '')}</h4>
+          <div class="dimension-spectrum">
+            <div class="dimension-marker" style="left: ${normalizedDimScore * 100}%;"></div>
           </div>
-          <p style="font-size: 0.85rem; color: var(--muted);">
+          <p class="dimension-score-text">
             Masculine: ${(score.masculine * 100).toFixed(0)}% | Feminine: ${(score.feminine * 100).toFixed(0)}% | Net: ${(netScore * 100).toFixed(0)}%
           </p>
         </div>
@@ -962,15 +962,15 @@ export class TemperamentEngine {
 
     // Variation analysis
     if (this.analysisData.variationAnalysis.expectedVariations.length > 0) {
-      html += '<div style="background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">';
-      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Expected Variations</h4>';
-      html += '<p style="color: var(--muted); line-height: 1.6; margin-bottom: 1rem;">The following dimensions commonly show variation across themes and dynamics. This is normal and expected:</p>';
-      html += '<ul style="margin-left: 1.5rem; line-height: 1.8;">';
+      html += '<div class="variations-box">';
+      html += '<h4>Expected Variations</h4>';
+      html += '<p>The following dimensions commonly show variation across themes and dynamics. This is normal and expected:</p>';
+      html += '<ul>';
       this.analysisData.variationAnalysis.expectedVariations.forEach(variation => {
         const dimName = this.questionSequence.find(q => (q.dimension || q.category) === variation.dimension)?.dimensionName || 
                        this.questionSequence.find(q => (q.dimension || q.category) === variation.dimension)?.categoryName || 
                        variation.dimension;
-        html += `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(dimName || '')}</li>`;
+        html += `<li>${SecurityUtils.sanitizeHTML(dimName || '')}</li>`;
       });
       html += '</ul></div>';
     }

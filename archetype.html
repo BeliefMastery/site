@@ -90,43 +90,69 @@
         <img src="./images/redpill-cover.jpg" alt="Modern Archetype Identification" class="hero-img">
       </div>
       
-      <!-- Intro Section (uses universal section styling) -->
+      <!-- Intro Section -->
       <section class="intro-section">
         <h2>Modern Archetype Identification</h2>
         <p class="lead-text">
           Identify your primary, secondary, and tertiary modern archetypes. Discover your behavioral patterns and social role alignment!
         </p>
         
-        <!-- Acknowledgment Box (matches diagnosis.html pattern) -->
-        <div class="ack-box">
-          <p>
-            <strong style="color: var(--accent);">Descriptive Framework:</strong> This assessment maps behavioral patterns and social roles. 
-            Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
-            Results reflect current patterns, not fixed identity.
-          </p>
+        <p>This multi-tier assessment system identifies your dominant archetype through four phases of behavioral analysis.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
         </div>
-        
-        <div class="content-section">
-          <p><strong>This multi-tier assessment system identifies your dominant archetype through four phases:</strong></p>
-          <ul class="feature-list">
-            <li><strong>Phase 1 - Core Orientation:</strong> Identifies your primary archetype group (Alpha, Beta, Gamma, Delta, Sigma, Omega, or Phi) through concrete behavioral scenarios.</li>
-            <li><strong>Phase 2 - Dimensional Refinement:</strong> Distinguishes between main types and their variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha) through detailed behavioral statements.</li>
-            <li><strong>Phase 3 - Shadow & Integration:</strong> Reveals situational variability, stress responses, and potential shadow expressions.</li>
-            <li><strong>Phase 4 - Validation:</strong> Confirms archetype resonance through narrative scenarios.</li>
-          </ul>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--accent);">Descriptive Framework:</strong> This assessment maps behavioral patterns and social roles. 
+                Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
+                Results reflect current patterns, not fixed identity.
+              </p>
+            </div>
+            
+            <p><strong>This multi-tier assessment system identifies your dominant archetype through four phases:</strong></p>
+            <ul class="feature-list">
+              <li><strong>Phase 1 - Core Orientation:</strong> Identifies your primary archetype group (Alpha, Beta, Gamma, Delta, Sigma, Omega, or Phi) through concrete behavioral scenarios.</li>
+              <li><strong>Phase 2 - Dimensional Refinement:</strong> Distinguishes between main types and their variants (e.g., Alpha vs Alpha-Xi vs Dark Alpha) through detailed behavioral statements.</li>
+              <li><strong>Phase 3 - Shadow & Integration:</strong> Reveals situational variability, stress responses, and potential shadow expressions.</li>
+              <li><strong>Phase 4 - Validation:</strong> Confirms archetype resonance through narrative scenarios.</li>
+            </ul>
+            
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--accent);">Note:</strong> This assessment uses gender-neutral behavioral patterns. 
+                Archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex.
+              </p>
+            </div>
+          </div>
         </div>
-        
-        <div class="ack-box">
-          <p>
-            <strong style="color: var(--accent);">Note:</strong> This assessment uses gender-neutral behavioral patterns. 
-            Archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex.
-          </p>
+
+        <!-- Disclaimer Toggle -->
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimer</span>
+          </div>
         </div>
-        
-        <!-- Action Buttons (matches diagnosis.html button layout) -->
+
+        <section class="disclaimer-section" id="disclaimerSection">
+          <div class="ack-box">
+            <p><strong>This is a descriptive tool, not a diagnostic or predictive instrument.</strong> Results reflect behavioral patterns and social role alignment, not fixed identity or mandates.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section">
         <div class="action-buttons">
           <a href="example-reports/archetype-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
           <button class="btn btn-primary" id="startAssessment">Begin Modern Archetype Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
       </section>
 

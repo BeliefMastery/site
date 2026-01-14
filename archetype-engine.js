@@ -190,9 +190,9 @@ startAssessment() {
   const landingUI = document.getElementById('landing-section'); // Update with your actual ID
   const containerUI = document.getElementById('questionContainer');
   
-  if (landingUI) landingUI.style.display = 'none';
+  if (landingUI) landingUI.classList.add('hidden');
   if (containerUI) {
-    containerUI.style.display = 'block';
+    containerUI.classList.remove('hidden');
     containerUI.innerHTML = ''; // Clear any "ghost" Phase 2 boxes
   }
 
@@ -239,14 +239,7 @@ showGenderSelection() {
 
       // Add hover effects
       document.querySelectorAll('.gender-btn').forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-          btn.style.background = 'rgba(255, 184, 0, 0.2)';
-          btn.style.transform = 'translateY(-2px)';
-        });
-        btn.addEventListener('mouseleave', () => {
-          btn.style.background = 'rgba(255, 184, 0, 0.1)';
-          btn.style.transform = 'translateY(0)';
-        });
+        // Hover effects handled by CSS
       });
     }, 100);
     
@@ -266,22 +259,22 @@ showGenderSelection() {
           If you don't know your IQ, estimate based on standardized tests (SAT, ACT, WAIS, etc.) or educational/career patterns.
         </p>
         <div>
-          <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ80_100" class="iq-btn">
             <strong>80-100 IQ</strong> - Routine Guided Thinkers (~34% of population)
           </button>
-          <button id="selectIQ100_115" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ100_115" class="iq-btn">
             <strong>100-115 IQ</strong> - Practical Adaptive Thinkers (~34% of population)
           </button>
-          <button id="selectIQ115_130" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ115_130" class="iq-btn">
             <strong>115-130 IQ</strong> - Strategic Analytical Thinkers (~14% of population)
           </button>
-          <button id="selectIQ130_145" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ130_145" class="iq-btn">
             <strong>130-145 IQ</strong> - Creative Synthesizing Thinkers (~2% of population)
           </button>
-          <button id="selectIQ145_plus" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ145_plus" class="iq-btn">
             <strong>145+ IQ</strong> - Meta-Recursive Thinkers (&lt;1% of population)
           </button>
-          <button id="selectIQUnknown" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(200, 200, 200, 0.1); border: 2px solid #888; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: #666; font-weight: 600; text-align: left; margin-top: 1rem;">
+          <button id="selectIQUnknown" class="iq-btn iq-btn-unknown">
             <strong>I don't know / Prefer not to specify</strong> - Full assessment will be provided
           </button>
         </div>
@@ -318,22 +311,7 @@ showGenderSelection() {
           });
 
           // Add hover effects
-          button.addEventListener('mouseenter', () => {
-            if (buttonId !== 'selectIQUnknown') {
-              button.style.background = 'rgba(255, 184, 0, 0.2)';
-              button.style.transform = 'translateY(-2px)';
-            } else {
-              button.style.background = 'rgba(200, 200, 200, 0.2)';
-            }
-          });
-          button.addEventListener('mouseleave', () => {
-            if (buttonId !== 'selectIQUnknown') {
-              button.style.background = 'rgba(255, 184, 0, 0.1)';
-              button.style.transform = 'translateY(0)';
-            } else {
-              button.style.background = 'rgba(200, 200, 200, 0.1)';
-            }
-          });
+          // Hover effects handled by CSS
         }
       });
     }, 100);
@@ -638,10 +616,10 @@ showGenderSelection() {
     const exp = explanations[phase];
     if (!exp) return '';
     return `
-      <div class="phase-explanation" style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(exp.title || '')}</h3>
-        <p style="margin: 0.5rem 0; color: var(--muted); line-height: 1.6;">${SecurityUtils.sanitizeHTML(exp.description || '')}</p>
-        <p style="margin: 0.5rem 0 0 0; color: var(--muted); font-size: 0.9rem; font-style: italic;">${SecurityUtils.sanitizeHTML(exp.purpose || '')}</p>
+      <div class="phase-explanation">
+        <h3>${SecurityUtils.sanitizeHTML(exp.title || '')}</h3>
+        <p>${SecurityUtils.sanitizeHTML(exp.description || '')}</p>
+        <p>${SecurityUtils.sanitizeHTML(exp.purpose || '')}</p>
       </div>
     `;
   }
@@ -654,9 +632,9 @@ showGenderSelection() {
       const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       return `
         <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
-          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
-          <span style="flex: 1;">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
-          ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
+          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+          <span>${SecurityUtils.sanitizeHTML(option.text || '')}</span>
+          ${isSelected ? '<span class="selected-check">✓</span>' : ''}
         </label>
       `;
     }).join('');
@@ -671,14 +649,10 @@ showGenderSelection() {
             // Update visual selection immediately
             document.querySelectorAll(`label.option-label`).forEach(label => {
               label.classList.remove('selected');
-              label.style.background = 'rgba(255, 255, 255, 0.1)';
-              label.style.border = '2px solid transparent';
             });
             const selectedLabel = e.target.closest('label');
             if (selectedLabel) {
               selectedLabel.classList.add('selected');
-              selectedLabel.style.background = 'rgba(255, 184, 0, 0.25)';
-              selectedLabel.style.border = '2px solid var(--brand)';
             }
           });
         });
@@ -727,14 +701,10 @@ showGenderSelection() {
             // Update visual selection immediately
             document.querySelectorAll(`label.likert-option`).forEach(label => {
               label.classList.remove('selected');
-              label.style.background = 'rgba(255, 255, 255, 0.1)';
-              label.style.border = '2px solid transparent';
             });
             const selectedLabel = e.target.closest('label');
             if (selectedLabel) {
               selectedLabel.classList.add('selected');
-              selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
-              selectedLabel.style.border = '2px solid var(--brand)';
             }
           });
         });
@@ -779,14 +749,10 @@ showGenderSelection() {
             // Update visual selection immediately
             document.querySelectorAll(`label.narrative-option`).forEach(label => {
               label.classList.remove('selected');
-              label.style.background = 'rgba(255, 255, 255, 0.1)';
-              label.style.border = '2px solid transparent';
             });
             const selectedLabel = e.target.closest('label');
             if (selectedLabel) {
               selectedLabel.classList.add('selected');
-              selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
-              selectedLabel.style.border = '2px solid var(--brand)';
             }
           });
         });
@@ -1599,7 +1565,11 @@ showGenderSelection() {
 
     const prevBtn = document.getElementById('prevQuestion');
     if (prevBtn) {
-      prevBtn.style.display = this.currentQuestionIndex > 0 ? 'inline-block' : 'none';
+      if (this.currentQuestionIndex > 0) {
+        prevBtn.classList.remove('hidden');
+      } else {
+        prevBtn.classList.add('hidden');
+      }
     }
   }
 
@@ -1609,13 +1579,13 @@ showGenderSelection() {
     const resultsContainer = document.getElementById('resultsContainer');
     const introSection = document.querySelector('.intro-section');
     
-    if (questionContainer) questionContainer.style.display = 'block';
+    if (questionContainer) questionContainer.classList.remove('hidden');
     if (questionnaireSection) questionnaireSection.classList.add('active');
     if (resultsContainer) {
-      resultsContainer.style.display = 'none';
+      resultsContainer.classList.add('hidden');
       resultsContainer.classList.remove('active');
     }
-    if (introSection) introSection.style.display = 'none';
+    if (introSection) introSection.classList.add('hidden');
   }
 
   showResultsContainer() {
@@ -1624,13 +1594,13 @@ showGenderSelection() {
     const resultsContainer = document.getElementById('resultsContainer');
     const introSection = document.querySelector('.intro-section');
     
-    if (questionContainer) questionContainer.style.display = 'none';
+    if (questionContainer) questionContainer.classList.add('hidden');
     if (questionnaireSection) questionnaireSection.classList.remove('active');
     if (resultsContainer) {
-      resultsContainer.style.display = 'block';
+      resultsContainer.classList.remove('hidden');
       resultsContainer.classList.add('active');
     }
-    if (introSection) introSection.style.display = 'none';
+    if (introSection) introSection.classList.add('hidden');
   }
 
   saveProgress() {
@@ -1731,8 +1701,8 @@ showGenderSelection() {
       questionContainer.style.display = 'none';
       questionContainer.innerHTML = '';
     }
-    if (resultsContainer) resultsContainer.style.display = 'none';
-    if (introSection) introSection.style.display = 'block';
+    if (resultsContainer) resultsContainer.classList.add('hidden');
+    if (introSection) introSection.classList.remove('hidden');
   }
 
   exportAnalysis(format) {

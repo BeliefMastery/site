@@ -818,7 +818,7 @@ export class SovereigntySpectrumEngine {
     
     const totalQuestions = this.questionSequence.length;
     const currentProgress = totalQuestions > 0 ? ((this.currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
-    progressBar.style.width = `${currentProgress}%`;
+    progressBar.style.width = `${currentProgress}%`; // Progress bar width is dynamic, keep inline
     
     const progressText = document.getElementById('progressText');
     if (progressText) {
@@ -1005,7 +1005,7 @@ export class SovereigntySpectrumEngine {
     // Selected paradigms (show first - identification is primary)
     html += '<div class="selected-paradigms">';
     html += '<h4>Your Identified Sovereignty Paradigm(s)</h4>';
-    html += '<p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem;">These are the paradigms that best describe your approach to sovereignty. This is about identification and clarification, not ranking paradigms as superior or inferior.</p>';
+    html += '<p class="content-section">These are the paradigms that best describe your approach to sovereignty. This is about identification and clarification, not ranking paradigms as superior or inferior.</p>';
     this.selectedParadigms.forEach(paradigmId => {
       const paradigm = SOVEREIGNTY_PARADIGMS.find(p => p.id === paradigmId);
       if (paradigm) {
@@ -1018,18 +1018,18 @@ export class SovereigntySpectrumEngine {
     html += '</div>';
     
     // Integration level (secondary - how well they live according to their identified paradigm)
-    html += '<div class="spectrum-bar-container" style="margin-top: 2rem;">';
+    html += '<div class="spectrum-bar-container">';
     html += '<h4>Integration Level with Your Identified Paradigm</h4>';
-    html += '<p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem;">This measures how consistently you live according to your identified paradigm, accounting for value-action alignment and derailing forces. It does not rank paradigms themselves.</p>';
+    html += '<p class="content-section">This measures how consistently you live according to your identified paradigm, accounting for value-action alignment and derailing forces. It does not rank paradigms themselves.</p>';
     html += `<div class="spectrum-label">${SecurityUtils.sanitizeHTML(this.analysisData.spectrumLabel)}</div>`;
     html += `<div class="spectrum-bar">`;
-    html += `<div class="spectrum-fill" style="width: ${this.spectrumPosition}%"></div>`;
+    html += `<div class="spectrum-fill" style="width: ${this.spectrumPosition}%"></div>`; // Spectrum fill width is dynamic, keep inline
     html += `<div class="spectrum-value">${this.spectrumPosition.toFixed(1)}/100</div>`;
     html += `</div>`;
     html += '</div>';
     
     // Derailer scores
-    html += '<div class="derailer-scores" style="margin-top: 2rem;">';
+    html += '<div class="derailer-scores">';
     html += '<h4>Derailer Analysis</h4>';
     Object.entries(this.derailerScores).forEach(([key, score]) => {
       const derailer = DERAILERS[key];
@@ -1127,7 +1127,7 @@ export class SovereigntySpectrumEngine {
           // Show questionnaire and render current question
           const paradigmSelection = document.getElementById('paradigmSelection');
           const questionnaireSection = document.getElementById('questionnaireSection');
-          if (paradigmSelection) paradigmSelection.style.display = 'none';
+          if (paradigmSelection) paradigmSelection.classList.add('hidden');
           if (questionnaireSection) questionnaireSection.classList.add('active');
           this.renderCurrentQuestion();
         }

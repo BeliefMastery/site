@@ -515,7 +515,7 @@ export class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
+        ${question.description ? `<div class="question-description">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
         <div class="three-point-options">
           ${question.options.map((option, index) => `
             <label class="three-point-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -544,7 +544,7 @@ export class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
+        ${question.description ? `<div class="question-description">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
         <div class="binary-unsure-options">
           ${question.options.map((option, index) => `
             <label class="binary-unsure-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -573,7 +573,7 @@ export class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
+        ${question.description ? `<div class="question-description">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
         <div class="frequency-options">
           ${question.options.map((option, index) => `
             <label class="frequency-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -608,7 +608,7 @@ export class ManipulationEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        ${question.description ? `<div class="question-description" style="background: rgba(33, 150, 243, 0.1); border-left: 3px solid #2196F3; border-radius: var(--radius); padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text); line-height: 1.6;">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
+        ${question.description ? `<div class="question-description">${SecurityUtils.sanitizeHTML(question.description || '')}</div>` : ''}
         <p class="selection-limit">Select all that apply${maxSelections < question.options.length ? ` (up to ${maxSelections})` : ''}</p>
         <div class="multiselect-options">
           ${question.options.map((option, index) => {
@@ -647,11 +647,11 @@ export class ManipulationEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <div style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-          <h4 style="color: #d32f2f; margin-bottom: 1rem;">Your Vector Screening Summary</h4>
-          ${highVectors.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>High concern:</strong> ${highVectors.map(v => SecurityUtils.sanitizeHTML(v || '')).join(', ')}</p>` : ''}
-          ${mediumVectors.length > 0 ? `<p style="margin-bottom: 0.5rem;"><strong>Moderate concern:</strong> ${mediumVectors.map(v => SecurityUtils.sanitizeHTML(v || '')).join(', ')}</p>` : ''}
-          <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);">Based on this screening, select 2-3 manipulation vectors you'd like to explore in depth.</p>
+        <div class="warning-box">
+          <h4>Your Vector Screening Summary</h4>
+          ${highVectors.length > 0 ? `<p><strong>High concern:</strong> ${highVectors.map(v => SecurityUtils.sanitizeHTML(v || '')).join(', ')}</p>` : ''}
+          ${mediumVectors.length > 0 ? `<p><strong>Moderate concern:</strong> ${mediumVectors.map(v => SecurityUtils.sanitizeHTML(v || '')).join(', ')}</p>` : ''}
+          <p>Based on this screening, select 2-3 manipulation vectors you'd like to explore in depth.</p>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
@@ -663,7 +663,7 @@ export class ManipulationEngine {
       const vector = MANIPULATION_VECTORS[option.mapsTo.vector];
       
       html += `
-        <label class="multiselect-option ${isSelected ? 'selected' : ''}" style="padding: 1.25rem; border-left: 3px solid ${isSelected ? '#d32f2f' : 'rgba(0,0,0,0.1)'};">
+        <label class="multiselect-option ${isSelected ? 'selected' : ''}">
           <input 
             type="checkbox" 
             name="question_${question.id}" 
@@ -671,9 +671,9 @@ export class ManipulationEngine {
             data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
             ${isSelected ? 'checked' : ''}
           />
-          <div style="flex: 1;">
-            <div style="font-weight: 600; margin-bottom: 0.5rem; color: #d32f2f;">${SecurityUtils.sanitizeHTML(vector.name || '')}</div>
-            <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.5;">${SecurityUtils.sanitizeHTML(vector.description || '')}</div>
+          <div class="multiselect-content">
+            <div class="multiselect-title vector-title">${SecurityUtils.sanitizeHTML(vector.name || '')}</div>
+            <div class="multiselect-description">${SecurityUtils.sanitizeHTML(vector.description || '')}</div>
           </div>
         </label>
       `;
@@ -811,7 +811,7 @@ export class ManipulationEngine {
     
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
-      progressFill.style.width = `${progress}%`;
+      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
     }
   }
 
@@ -1120,9 +1120,9 @@ export class ManipulationEngine {
         const primaryName = SecurityUtils.sanitizeHTML(primary.name || 'Unknown');
         const primaryDesc = SecurityUtils.sanitizeHTML(primary.description || '');
         html += `
-          <div class="vector-result" style="background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
-            <h3 style="color: #d32f2f; margin-bottom: 1rem;">Primary Vector: ${primaryName}</h3>
-            <p style="margin-bottom: 1rem;">${primaryDesc}</p>
+          <div class="vector-result warning-box">
+            <h3>Primary Vector: ${primaryName}</h3>
+            <p>${primaryDesc}</p>
             <p><strong>Activation Level:</strong> ${this.getActivationLevelLabel(primary.activationLevel)}</p>
             <p><strong>Score:</strong> ${primary.rawScore.toFixed(1)}/10 (Weighted: ${primary.weightedScore.toFixed(1)})</p>
             ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.getStructuralModifierLabel(this.analysisData.structuralModifier)}</p>` : ''}
@@ -1132,8 +1132,8 @@ export class ManipulationEngine {
       
       // Supporting vectors
       if (this.analysisData.supportingVectors && this.analysisData.supportingVectors.length > 0) {
-        html += '<div class="supporting-vectors" style="margin-bottom: 2rem;">';
-        html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Supporting Vectors</h4>';
+        html += '<div class="supporting-vectors">';
+        html += '<h4>Supporting Vectors</h4>';
         this.analysisData.supportingVectors.forEach(vector => {
           const vecName = SecurityUtils.sanitizeHTML(vector.name || 'Unknown');
           const vecDesc = SecurityUtils.sanitizeHTML(vector.description || '');
@@ -1150,38 +1150,38 @@ export class ManipulationEngine {
     
     // Tactics
     if (this.analysisData.tactics && this.analysisData.tactics.length > 0) {
-      html += '<div class="tactics-section" style="margin-top: 2rem;">';
-      html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Identified Tactics</h4>';
-      html += '<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">These are specific manipulation tactics that may be present in your relationship. Each tactic includes examples and explanations in plain language.</p>';
+      html += '<div class="tactics-section">';
+      html += '<h4>Identified Tactics</h4>';
+      html += '<p class="content-section">These are specific manipulation tactics that may be present in your relationship. Each tactic includes examples and explanations in plain language.</p>';
       this.analysisData.tactics.forEach(tactic => {
         const phaseLabel = this.getPhaseLabelPlain(tactic.phase);
         const modeLabel = this.getModeLabelPlain(tactic.mode);
         html += `
-          <div class="tactic-item" style="background: var(--glass); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--brand);">
-            <h5 style="color: var(--brand); margin-bottom: 0.75rem;">${SecurityUtils.sanitizeHTML(tactic.name || '')}</h5>
+          <div class="tactic-item">
+            <h5>${SecurityUtils.sanitizeHTML(tactic.name || '')}</h5>
             ${tactic.phase || tactic.mode ? `
-              <div style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--muted);">
+              <div class="tactic-context">
                 ${tactic.mode ? `<strong>How it works:</strong> ${SecurityUtils.sanitizeHTML(modeLabel || '')}` : ''}
                 ${tactic.phase && tactic.mode ? ' • ' : ''}
                 ${tactic.phase ? `<strong>When it happens:</strong> ${SecurityUtils.sanitizeHTML(phaseLabel || '')}` : ''}
               </div>
             ` : ''}
             ${tactic.example ? `
-              <div style="margin-bottom: 0.75rem; padding: 0.75rem; background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); border-left: 3px solid #d32f2f;">
-                <strong style="color: #d32f2f; font-size: 0.9rem;">Example:</strong>
-                <p style="margin: 0.5rem 0 0 0; font-style: italic; color: var(--text);">"${SecurityUtils.sanitizeHTML(tactic.example || '')}"</p>
+              <div class="tactic-example">
+                <strong>Example:</strong>
+                <p>"${SecurityUtils.sanitizeHTML(tactic.example || '')}"</p>
               </div>
             ` : ''}
             ${tactic.mechanism ? `
-              <div style="margin-bottom: 0.75rem;">
-                <strong style="font-size: 0.9rem; color: var(--text);">What it does:</strong>
-                <p style="margin: 0.5rem 0 0 0; color: var(--text); line-height: 1.6;">${SecurityUtils.sanitizeHTML(tactic.mechanism || '')}</p>
+              <div class="tactic-detail">
+                <strong>What it does:</strong>
+                <p>${SecurityUtils.sanitizeHTML(tactic.mechanism || '')}</p>
               </div>
             ` : ''}
             ${tactic.leverage ? `
-              <div style="margin-bottom: 0.75rem;">
-                <strong style="font-size: 0.9rem; color: var(--text);">How it controls you:</strong>
-                <p style="margin: 0.5rem 0 0 0; color: var(--text); line-height: 1.6;">${SecurityUtils.sanitizeHTML(tactic.leverage || '')}</p>
+              <div class="tactic-detail">
+                <strong>How it controls you:</strong>
+                <p>${SecurityUtils.sanitizeHTML(tactic.leverage || '')}</p>
               </div>
             ` : ''}
           </div>

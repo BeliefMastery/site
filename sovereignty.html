@@ -89,46 +89,68 @@
         <img src="./images/vulnerability-vector-cover.jpg" alt="Cognitive Resistance Capacity Assessment" class="hero-img">
       </div>
       
-      <!-- Intro Section (uses universal section styling) -->
+      <!-- Intro Section -->
       <section class="intro-section" id="introSection">
         <h2>Cognitive Resistance Capacity Assessment</h2>
         
-        <!-- Hook Quote (uses universal .hook-quote class from style.css) -->
-        <div class="hook-quote">
-          "The sovereign split is underway. Let's use the 80/20 rule: 80% will queue up to be Borgified - liberated from the hardship of independent thought. Of the remaining 20%, the sovereign inclined - 80% of them will choose comfort over the hardship just to get the economic relief that comes from being optimized. That leaves only 4%, almost all of which will have to be religious about their sovereignty in order to resist the ever more seductive nature of the machine. If you are reading this then you are part of the 20% sovereign inclined... but that doesn't mean you can resist the compromise for comfort."
-        </div>
-
         <p class="lead-text">
           <strong>What is your capacity to resist cognitive hijack and AI dependency? Are you part of the 4% maintaining independent thought?</strong>
         </p>
         
-        <div class="content-section">
-          <p>
-            This assessment measures your cognitive resistance capacity - your ability to resist AI dependency, cognitive offloading, decision delegation, and identity drift. The engine analyzes your usage patterns, attachment styles, and cognitive risks to determine where you fall in the "sovereign split" and identify your resistance capacity across key vulnerability vectors.
-          </p>
-          
-          <p><strong>What you'll discover:</strong></p>
-          <ul class="feature-list">
-            <li><strong>Your Cognitive Band:</strong> Where you fall in the IQ/cognitive complexity spectrum (based on thinking patterns, not formal testing)</li>
-            <li><strong>Your Subclass:</strong> Specific patterns within your band (e.g., "Fluency Addict," "Mirror Loop Risk," "Sovereignty Core")</li>
-            <li><strong>Your Attachment Mode:</strong> How you relate to AI (Tool, Companion, Authority, or Independent)</li>
-            <li><strong>Your Vulnerability Risks:</strong> Top 5 areas where you're most at risk for dependency or identity drift</li>
-            <li><strong>Your Sovereign Split Position:</strong> Are you in the 80% Queue, 16% Compromising, or 4% Core?</li>
-            <li><strong>Your Resistance Capacity Score:</strong> 0-100 rating of your ability to resist cognitive hijack and maintain independent thought</li>
-            <li><strong>Personalized Action Plan:</strong> Specific counter-structures to maintain or build sovereignty</li>
-          </ul>
+        <p>This assessment measures your cognitive resistance capacity - your ability to resist AI dependency, cognitive offloading, decision delegation, and identity drift. The engine analyzes your usage patterns, attachment styles, and cognitive risks to determine where you fall in the "sovereign split" and identify your resistance capacity across key vulnerability vectors.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
         </div>
 
-        <!-- Acknowledgment Box (matches diagnosis.html pattern) -->
-        <div class="ack-box">
-          <p>
-            <strong style="color: var(--accent);">Assessment Structure:</strong> This multi-dimensional evaluation consists of 4 sections covering Usage Patterns, Cognitive Style, Attachment & Relationship, and Sovereignty Indicators. Estimated time: 20-30 minutes. All computation happens client-side for privacy - no data is sent to servers.
-          </p>
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <!-- Hook Quote -->
+            <div class="hook-quote">
+              "The sovereign split is underway. Let's use the 80/20 rule: 80% will queue up to be Borgified - liberated from the hardship of independent thought. Of the remaining 20%, the sovereign inclined - 80% of them will choose comfort over the hardship just to get the economic relief that comes from being optimized. That leaves only 4%, almost all of which will have to be religious about their sovereignty in order to resist the ever more seductive nature of the machine. If you are reading this then you are part of the 20% sovereign inclined... but that doesn't mean you can resist the compromise for comfort."
+            </div>
+            
+            <p><strong>What you'll discover:</strong></p>
+            <ul class="feature-list">
+              <li><strong>Your Cognitive Band:</strong> Where you fall in the IQ/cognitive complexity spectrum (based on thinking patterns, not formal testing)</li>
+              <li><strong>Your Subclass:</strong> Specific patterns within your band (e.g., "Fluency Addict," "Mirror Loop Risk," "Sovereignty Core")</li>
+              <li><strong>Your Attachment Mode:</strong> How you relate to AI (Tool, Companion, Authority, or Independent)</li>
+              <li><strong>Your Vulnerability Risks:</strong> Top 5 areas where you're most at risk for dependency or identity drift</li>
+              <li><strong>Your Sovereign Split Position:</strong> Are you in the 80% Queue, 16% Compromising, or 4% Core?</li>
+              <li><strong>Your Resistance Capacity Score:</strong> 0-100 rating of your ability to resist cognitive hijack and maintain independent thought</li>
+              <li><strong>Personalized Action Plan:</strong> Specific counter-structures to maintain or build sovereignty</li>
+            </ul>
+            
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--accent);">Assessment Structure:</strong> This multi-dimensional evaluation consists of 4 sections covering Usage Patterns, Cognitive Style, Attachment & Relationship, and Sovereignty Indicators. Estimated time: 20-30 minutes. All computation happens client-side for privacy - no data is sent to servers.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <!-- Action Buttons (matches diagnosis.html button layout) -->
+        <!-- Disclaimer Toggle -->
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimer</span>
+          </div>
+        </div>
+
+        <section class="disclaimer-section" id="disclaimerSection">
+          <div class="ack-box">
+            <p><strong>This assessment is for self-awareness and cognitive resistance capacity evaluation.</strong> Results reflect patterns in your current usage and attachment styles, not fixed identity or mandates.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section">
         <div class="action-buttons">
           <button class="btn btn-primary" id="startAssessment">Begin Resistance Capacity Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
       </section>
 
@@ -182,6 +204,21 @@
     
     // Initialize engine when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      // Setup toggles
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
       try {
         perfMonitor.markInit();
         window.sovereigntyEngine = new SovereigntyEngine();

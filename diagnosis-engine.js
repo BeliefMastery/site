@@ -103,8 +103,8 @@ export class DiagnosisEngine {
         ` | Stage: ${entry.state.currentStage} | Q: ${entry.state.currentQuestionIndex}/${entry.state.questionSequenceLength}` : '';
       html += `
         <div class="debug-entry">
-          <div style="color: #0f0; font-weight: bold;">[${new Date(entry.timestamp).toLocaleTimeString()}] ${entry.message}${stateInfo}</div>
-          ${entry.data ? `<div style="color: #aaa; margin-left: 1rem; font-size: 0.7rem;">${JSON.stringify(entry.data, null, 2)}</div>` : ''}
+          <div class="debug-timestamp">[${new Date(entry.timestamp).toLocaleTimeString()}] ${entry.message}${stateInfo}</div>
+          ${entry.data ? `<div class="debug-data">${JSON.stringify(entry.data, null, 2)}</div>` : ''}
         </div>
       `;
     });
@@ -209,7 +209,7 @@ export class DiagnosisEngine {
         SecurityUtils.safeInnerHTML(card, `
           <h3>${categoryName}</h3>
           <p>${disorderCount} disorder${disorderCount !== 1 ? 's' : ''} available</p>
-          ${isSuggested ? '<p style="margin-top: 0.5rem; color: var(--accent); font-weight: 600; font-size: 0.85rem;">✓ Suggested for you</p>' : ''}
+          ${isSuggested ? '<p class="suggested-badge">✓ Suggested for you</p>' : ''}
         `);
         card.addEventListener('click', () => this.toggleCategory(categoryKey, card));
         grid.appendChild(card);
@@ -235,7 +235,7 @@ export class DiagnosisEngine {
       
       // Hide category selection, show guide
       const categorySelection = document.getElementById('categorySelection');
-      if (categorySelection) categorySelection.style.display = 'none';
+      if (categorySelection) categorySelection.classList.add('hidden');
       
       this.renderGuideQuestion();
     } catch (error) {
@@ -268,7 +268,7 @@ export class DiagnosisEngine {
       
       const isLast = this.currentGuideQuestion === CATEGORY_GUIDE_QUESTIONS.length - 1;
       
-      container.style.display = 'block';
+      container.classList.remove('hidden');
       
       // Sanitize question text and warning for display
       const questionText = SecurityUtils.sanitizeHTML(question.question || '');
@@ -276,30 +276,30 @@ export class DiagnosisEngine {
       
       // questionText and warningText are already sanitized above
       SecurityUtils.safeInnerHTML(container, `
-      <div class="guide-container" style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); backdrop-filter: blur(8px);">
-        <h2 style="margin-bottom: 1rem;">🧭 Category Selection Guide</h2>
-        <p style="margin-bottom: 2rem; color: var(--muted);">Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
+      <div class="guide-container">
+        <h2>🧭 Category Selection Guide</h2>
+        <p>Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
         
-        <div class="guide-question" style="margin-bottom: 2rem;">
-          <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem; line-height: 1.5;">${questionText}</h3>
-          ${warningText ? `<div style="padding: 1rem; background: rgba(211, 47, 47, 0.1); border-left: 4px solid #d32f2f; border-radius: var(--radius); margin-bottom: 1.5rem;"><strong>⚠️ Important:</strong> ${warningText}</div>` : ''}
+        <div class="guide-question">
+          <h3>${questionText}</h3>
+          ${warningText ? `<div class="warning-box"><strong>⚠️ Important:</strong> ${warningText}</div>` : ''}
           
-          <div class="guide-options" style="display: flex; flex-direction: column; gap: 1rem;">
-            <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideYes">
+          <div class="guide-options">
+            <button class="btn btn-primary" id="guideYes">
               ✓ Yes
             </button>
-            <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideNo">
+            <button class="btn btn-secondary" id="guideNo">
               ✗ No
             </button>
-            <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 1rem; justify-content: flex-start;" id="guideUnsure">
+            <button class="btn btn-secondary" id="guideUnsure">
               ? Not Sure / Sometimes
             </button>
           </div>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
+        <div class="guide-navigation">
           <button class="btn btn-secondary" id="guideBack" ${this.currentGuideQuestion === 0 ? 'disabled' : ''}>← Previous</button>
-          <div style="font-size: 0.9rem; color: var(--muted); align-self: center;">
+          <div class="guide-counter">
             Question ${this.currentGuideQuestion + 1} of ${CATEGORY_GUIDE_QUESTIONS.length}
           </div>
           ${isLast ? '<button class="btn btn-primary" id="guideComplete">See Recommended Categories →</button>' : '<button class="btn btn-secondary" id="guideSkip">Skip to Categories →</button>'}
@@ -419,7 +419,7 @@ export class DiagnosisEngine {
         return;
       }
       
-      container.style.display = 'block';
+      container.classList.remove('hidden');
       
       // Generate recommendation summary
       const recommendationText = this.suggestedCategories.length > 0 
@@ -435,33 +435,33 @@ export class DiagnosisEngine {
       
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
-          <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+      <div class="section-header-flex">
+        <div class="category-header">
+          <h2>Select Diagnostic Category</h2>
+          <p>Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
         </div>
-        <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
+        <button class="btn btn-secondary" id="startHereGuide">
           🧭 Start Here - Not Sure?
         </button>
       </div>
       ${this.suggestedCategories.length > 0 ? `
-        <div style="padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; color: var(--brand);">💡 Recommended Categories Based on Your Answers:</h3>
-          <p style="margin-bottom: 1rem; line-height: 1.6;">
+        <div class="info-box">
+          <h3>💡 Recommended Categories Based on Your Answers:</h3>
+          <p>
             ${sanitizedRecommendation}
           </p>
-          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 184, 0, 0.3);">
-            <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">
+          <div class="recommendation-details">
+            <p>
               <strong>Recommended categories:</strong> ${categoryNames}
             </p>
-            <p style="font-size: 0.85rem; color: var(--muted); font-style: italic;">
+            <p class="recommendation-note">
               These categories are pre-selected for you, but you can change your selection or add others.
             </p>
           </div>
         </div>
       ` : `
-        <div style="padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius); margin-bottom: 1.5rem;">
-          <p style="color: var(--muted); line-height: 1.6;">
+        <div class="info-box">
+          <p>
             ${sanitizedRecommendation} Review the categories below and select those that seem most relevant to your concerns.
           </p>
         </div>
@@ -629,8 +629,8 @@ export class DiagnosisEngine {
       const disclaimerSection = document.getElementById('disclaimerSection');
       const questionnaireSection = document.getElementById('questionnaireSection');
       
-      if (categorySelection) categorySelection.style.display = 'none';
-      if (disclaimerSection) disclaimerSection.style.display = 'none';
+      if (categorySelection) categorySelection.classList.add('hidden');
+      if (disclaimerSection) disclaimerSection.classList.add('hidden');
       if (questionnaireSection) questionnaireSection.classList.add('active');
       
       this.renderCurrentQuestion();
@@ -1594,11 +1594,11 @@ export class DiagnosisEngine {
     html += '<h3 style="margin-bottom: 1rem;">Pathology Assessment Results by Category</h3>';
     
     Object.keys(categoryGroups).forEach(categoryName => {
-      html += `<div style="margin-bottom: 1.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius); overflow: hidden;">`;
-      html += `<div style="background: rgba(0, 123, 255, 0.1); padding: 1rem; font-weight: 600; color: var(--brand); cursor: pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">`;
-      html += `${categoryName} <span style="float: right; font-size: 0.9rem; font-weight: normal;">▼</span>`;
+      html += `<div class="category-group">`;
+      html += `<div class="category-group-header" onclick="this.nextElementSibling.classList.toggle('hidden')">`;
+      html += `${categoryName} <span>▼</span>`;
       html += `</div>`;
-      html += `<div style="padding: 1rem; background: rgba(255,255,255,0.9);">`;
+      html += `<div class="category-group-content hidden">`;
       
       categoryGroups[categoryName].forEach(pattern => {
         const isPrimary = pattern.isPrimary;
@@ -1728,7 +1728,7 @@ export class DiagnosisEngine {
     const detailsSection = document.getElementById('fullDetailsSection');
     
     if (detailsSection && treatmentData) {
-      detailsSection.style.display = 'block';
+      detailsSection.classList.remove('hidden');
       // renderTreatmentInformation should return sanitized HTML
       const treatmentHTML = this.renderTreatmentInformation(disorderName, treatmentData);
       SecurityUtils.safeInnerHTML(detailsSection, treatmentHTML);
@@ -2019,7 +2019,7 @@ export class DiagnosisEngine {
     
     // Reset UI
     const categorySelection = document.getElementById('categorySelection');
-    categorySelection.style.display = 'block';
+    categorySelection.classList.remove('hidden');
     SecurityUtils.safeInnerHTML(categorySelection, `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>

@@ -444,7 +444,7 @@ export class NeedsDependencyEngine {
       
       const introSection = document.getElementById('introSection');
       const questionnaireSection = document.getElementById('questionnaireSection');
-      if (introSection) introSection.style.display = 'none';
+      if (introSection) introSection.classList.add('hidden');
       if (questionnaireSection) questionnaireSection.classList.add('active');
       
       this.renderCurrentQuestion();
@@ -724,7 +724,7 @@ export class NeedsDependencyEngine {
     
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
-      progressFill.style.width = `${progress}%`;
+      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
     }
   }
 
@@ -1330,7 +1330,7 @@ export class NeedsDependencyEngine {
       localStorage.removeItem('needsDependencyResults');
       
       document.getElementById('resultsSection').classList.remove('active');
-      document.getElementById('introSection').style.display = 'block';
+      document.getElementById('introSection').classList.remove('hidden');
       document.getElementById('questionnaireSection').classList.remove('active');
       
       this.buildPhase1Sequence();

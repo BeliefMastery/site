@@ -281,7 +281,7 @@ export class CoachingEngine {
     });
     
       // Hide selection, show questionnaire
-      document.getElementById('sectionSelection').style.display = 'none';
+      document.getElementById('sectionSelection').classList.add('hidden');
       document.getElementById('questionnaireSection').classList.add('active');
       
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
@@ -898,10 +898,10 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         <div>
           <p>This coaching profile is complete. You have received a map of your current constraints and satisfaction domains, along with a primary coaching axis.</p>
           <div>
-            <p><strong style="color: #d32f2f;">Exit Cue:</strong> Do not re-run this assessment immediately. Apply the primary axis for 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
+            <p><strong class="error-text">Exit Cue:</strong> Do not re-run this assessment immediately. Apply the primary axis for 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
           </div>
           <div>
-            <p><strong style="color: var(--brand);">What this engine is not:</strong> Therapy replacement, diagnosis, or truth oracle. This is a self-inquiry tool for sovereignty support.</p>
+            <p><strong>What this engine is not:</strong> Therapy replacement, diagnosis, or truth oracle. This is a self-inquiry tool for sovereignty support.</p>
           </div>
         </div>
       </div>
@@ -913,9 +913,9 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     const resultsSection = document.getElementById('resultsSection');
     const deeperSection = document.getElementById('deeperInquirySection');
     
-    if (resultsSection) resultsSection.style.display = 'none';
+    if (resultsSection) resultsSection.classList.add('hidden');
     if (deeperSection) {
-      deeperSection.style.display = 'block';
+      deeperSection.classList.remove('hidden');
       this.renderDeeperInquiry();
     }
   }
@@ -924,8 +924,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     const resultsSection = document.getElementById('resultsSection');
     const deeperSection = document.getElementById('deeperInquirySection');
     
-    if (deeperSection) deeperSection.style.display = 'none';
-    if (resultsSection) resultsSection.style.display = 'block';
+    if (deeperSection) deeperSection.classList.add('hidden');
+    if (resultsSection) resultsSection.classList.remove('hidden');
   }
 
   renderDeeperInquiry() {
@@ -945,19 +945,19 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       this.profileData.priorities.topObstacles.forEach((obstacle, index) => {
         const inquiry = DEEPER_INQUIRY.obstacles[obstacle.key];
         if (inquiry) {
-          html += `<div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">`;
-          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(obstacle.name || '')}</h4>`;
-          html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>`;
+          html += `<div class="info-box">`;
+          html += `<h4>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</h4>`;
+          html += `<p>${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>`;
           
-          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Reflection Questions:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          html += '<div class="reflection-section"><strong>Reflection Questions:</strong><ul>';
           inquiry.questions.forEach(q => {
-            html += `<li style="margin-bottom: 0.75rem; line-height: 1.6;">${q}</li>`;
+            html += `<li>${q}</li>`;
           });
           html += '</ul></div>';
 
-          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Key Action Areas:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          html += '<div class="reflection-section"><strong>Key Action Areas:</strong><ul>';
           inquiry.actionAreas.forEach(area => {
-            html += `<li style="margin-bottom: 0.5rem; line-height: 1.5;">${area}</li>`;
+            html += `<li>${area}</li>`;
           });
           html += '</ul></div>';
 
@@ -968,24 +968,24 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
 
     // Top Improvement Areas - Deeper Inquiry
     if (this.profileData.priorities.topImprovementAreas.length > 0) {
-      html += '<h3 style="color: var(--brand); margin-top: 2rem; margin-bottom: 1rem;">Deeper Inquiry: Areas for Improvement</h3>';
+      html += '<h3 class="section-title">Deeper Inquiry: Areas for Improvement</h3>';
       
       this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
         const inquiry = DEEPER_INQUIRY.domains[domain.key];
         if (inquiry) {
-          html += `<div style="background: rgba(255, 184, 0, 0.1); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--accent);">`;
-          html += `<h4 style="color: var(--brand); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(domain.name || '')}</h4>`;
-          html += `<p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem;">Current Satisfaction: ${domain.combinedScore.toFixed(1)}/10</p>`;
+          html += `<div class="info-box info-box-accent">`;
+          html += `<h4>${SecurityUtils.sanitizeHTML(domain.name || '')}</h4>`;
+          html += `<p>Current Satisfaction: ${domain.combinedScore.toFixed(1)}/10</p>`;
           
-          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Reflection Questions:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          html += '<div class="reflection-section"><strong>Reflection Questions:</strong><ul>';
           inquiry.questions.forEach(q => {
-            html += `<li style="margin-bottom: 0.75rem; line-height: 1.6;">${q}</li>`;
+            html += `<li>${q}</li>`;
           });
           html += '</ul></div>';
 
-          html += '<div style="margin-top: 1.5rem;"><strong style="color: var(--brand);">Key Action Areas:</strong><ul style="margin-top: 0.75rem; margin-left: 1.5rem;">';
+          html += '<div class="reflection-section"><strong>Key Action Areas:</strong><ul>';
           inquiry.actionAreas.forEach(area => {
-            html += `<li style="margin-bottom: 0.5rem; line-height: 1.5;">${area}</li>`;
+            html += `<li>${area}</li>`;
           });
           html += '</ul></div>';
 
@@ -995,8 +995,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     }
 
     // Strategic Action Planning
-    html += '<h3 style="color: var(--brand); margin-top: 3rem; margin-bottom: 1.5rem;">Strategic Action Planning</h3>';
-    html += '<p style="color: var(--muted); margin-bottom: 2rem; line-height: 1.7;">';
+    html += '<h3 class="section-title">Strategic Action Planning</h3>';
+    html += '<p class="content-section">';
     html += 'Based on your priorities, consider these timeframes for action. Start with immediate actions to build momentum, ';
     html += 'then progressively work toward longer-term transformation.';
     html += '</p>';
@@ -1307,7 +1307,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         
         const sectionSelection = document.getElementById('sectionSelection');
         const questionnaireSection = document.getElementById('questionnaireSection');
-        if (sectionSelection) sectionSelection.style.display = 'none';
+        if (sectionSelection) sectionSelection.classList.add('hidden');
         if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
@@ -1342,7 +1342,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     sessionStorage.removeItem('coachingProgress');
     
     // Reset UI
-    document.getElementById('sectionSelection').style.display = 'block';
+    document.getElementById('sectionSelection').classList.remove('hidden');
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
     

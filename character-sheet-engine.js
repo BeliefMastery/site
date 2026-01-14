@@ -845,17 +845,17 @@ export class CharacterSheetEngine {
         <h2>${SecurityUtils.sanitizeHTML(character.name || '')}</h2>
         <p class="character-subtitle">${SecurityUtils.sanitizeHTML(character.race || '')} ${SecurityUtils.sanitizeHTML(character.characterClass || '')}</p>
         
-        <section class="astrology-summary" style="background: var(--bg); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">
+        <section class="astrology-summary">
           <h3 style="margin-top: 0; color: var(--brand);">Astrological Profile</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
             <div>
-              <p style="margin: 0.25rem 0;"><strong>Western:</strong> ${SecurityUtils.sanitizeHTML(character.astrologyData.western.sun?.name || 'Unknown')} Sun${character.astrologyData.western.moon ? `, ${SecurityUtils.sanitizeHTML(character.astrologyData.western.moon.name || '')} Moon` : ''}${character.astrologyData.western.ascendant ? `, ${SecurityUtils.sanitizeHTML(character.astrologyData.western.ascendant.name || '')} Ascendant` : ''}</p>
+              <p><strong>Western:</strong> ${SecurityUtils.sanitizeHTML(character.astrologyData.western.sun?.name || 'Unknown')} Sun${character.astrologyData.western.moon ? `, ${SecurityUtils.sanitizeHTML(character.astrologyData.western.moon.name || '')} Moon` : ''}${character.astrologyData.western.ascendant ? `, ${SecurityUtils.sanitizeHTML(character.astrologyData.western.ascendant.name || '')} Ascendant` : ''}</p>
             </div>
             <div>
-              <p style="margin: 0.25rem 0;"><strong>Chinese:</strong> ${SecurityUtils.sanitizeHTML(chineseDisplay || '')}</p>
+              <p><strong>Chinese:</strong> ${SecurityUtils.sanitizeHTML(chineseDisplay || '')}</p>
             </div>
             <div>
-              <p style="margin: 0.25rem 0;"><strong>Mayan:</strong> ${SecurityUtils.sanitizeHTML(mayanDisplay || 'Unknown')}</p>
+              <p><strong>Mayan:</strong> ${SecurityUtils.sanitizeHTML(mayanDisplay || 'Unknown')}</p>
             </div>
           </div>
         </section>
@@ -1031,9 +1031,9 @@ export class CharacterSheetEngine {
     const formSection = document.getElementById('characterFormSection');
     const resultsSection = document.getElementById('characterSheetResults');
     
-    if (formSection) formSection.style.display = 'none';
+    if (formSection) formSection.classList.add('hidden');
     if (resultsSection) {
-      resultsSection.style.display = 'block';
+      resultsSection.classList.remove('hidden');
       resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
   }
@@ -1043,8 +1043,8 @@ export class CharacterSheetEngine {
     const formSection = document.getElementById('characterFormSection');
     const resultsSection = document.getElementById('characterSheetResults');
     
-    if (formSection) formSection.style.display = 'block';
-    if (resultsSection) resultsSection.style.display = 'none';
+    if (formSection) formSection.classList.remove('hidden');
+    if (resultsSection) resultsSection.classList.add('hidden');
     
     this.characterData = null;
   }

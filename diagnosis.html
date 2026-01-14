@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pathology Assessment</title>
   <meta name="description" content="Pathology assessment and clinical education mapping system based on DSM-5 criteria.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/diagnosis.html">
+  <meta property="og:title" content="Pathology Assessment">
+  <meta property="og:description" content="Map psychological patterns to DSM-5 categories. Educational self-reporting tool for pattern awareness, not clinical diagnosis.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/diagnosis.html">
+  <meta name="twitter:title" content="Pathology Assessment">
+  <meta name="twitter:description" content="Map psychological patterns to DSM-5 categories. Educational self-reporting tool for pattern awareness, not clinical diagnosis.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
 
   <!-- CRITICAL: Universal styles MUST load first -->
   <link rel="stylesheet" href="style.css">
@@ -75,19 +89,50 @@
           What patterns align with your experience? Map your symptoms to understand what's happening. Discover your pathology indicators.
         </p>
         
-        <!-- Educational Mode Box -->
-        <div class="ack-box">
-          <p>
-            <strong style="color: var(--accent);">Educational Mode:</strong> This analysis is for educational pattern recognition and preparation for professional dialogue. It does not provide diagnosis or replace clinicians.
-          </p>
+        <p>Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
         </div>
 
-        <p>Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <div class="ack-box">
+              <p>
+                <strong style="color: var(--accent);">Educational Mode:</strong> This analysis is for educational pattern recognition and preparation for professional dialogue. It does not provide diagnosis or replace clinicians.
+              </p>
+            </div>
+          </div>
+          <div class="instructions-content">
+            <h3>📋 How to Use This Assessment</h3>
+            <div class="scale-guide">
+              <p><strong>Understanding the Scale (0-10):</strong></p>
+              <ul class="scale-list">
+                <li><strong>0-2 (Not at all / Never):</strong> The statement does not apply to you at all, or occurs extremely rarely.</li>
+                <li><strong>3-4 (Minimal / Rarely):</strong> The statement occurs occasionally but has minimal impact.</li>
+                <li><strong>5-6 (Moderate / Sometimes):</strong> The statement is present with moderate frequency or intensity.</li>
+                <li><strong>7-8 (Significant / Often):</strong> The statement occurs frequently or with significant intensity.</li>
+                <li><strong>9-10 (Extreme / Always):</strong> The statement is nearly constant or extremely intense.</li>
+              </ul>
+              <p><strong>Guidelines:</strong></p>
+              <ul class="guidelines-list">
+                <li>Rate symptoms from <strong>0 (Never)</strong> to <strong>10 (Extreme/Constant)</strong> based on the last 2-4 weeks.</li>
+                <li>Answer based on your current experience and recent patterns</li>
+                <li>Be honest with yourself - there are no "wrong" answers</li>
+                <li>Consider how each area affects your daily life and functioning</li>
+                <li>You can go back and change answers using the "Previous" button</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
           <div class="disclaimer-acknowledgement-text">
-            <span>Disclaimers</span>
+            <span>Disclaimer</span>
           </div>
         </div>
 
@@ -110,15 +155,7 @@
 
       <!-- Category Selection Section -->
       <section class="category-selection" id="categorySelection">
-        <div class="section-header">
-          <h2>Select one or more categories to continue.</h2>
-          <button class="btn btn-secondary" id="instructionsToggle">📋 How to Use</button>
-        </div>
-        
-        <div class="instructions-panel" id="instructionsPanel">
-          <h3>Assessment Guidelines</h3>
-          <p>Rate symptoms from <strong>0 (Never)</strong> to <strong>10 (Extreme/Constant)</strong> based on the last 2-4 weeks.</p>
-        </div>
+        <h2>Select one or more categories to continue.</h2>
         
         <div class="category-grid" id="categoryGrid">
           <!-- Categories populated by JavaScript -->
@@ -192,7 +229,7 @@
 
       // Setup toggles
       setupToggle('disclaimerToggle', 'disclaimerSection');
-      setupToggle('instructionsToggle', 'instructionsPanel');
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
 
       // Hamburger menu
       const hamburger = document.querySelector('.hamburger');

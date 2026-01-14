@@ -705,11 +705,11 @@ export class ParadigmEngine {
     container.querySelectorAll('.ranked-item').forEach(item => {
       item.addEventListener('dragstart', (e) => {
         draggedElement = item;
-        item.style.opacity = '0.5';
+        item.classList.add('disabled');
       });
       
       item.addEventListener('dragend', (e) => {
-        item.style.opacity = '1';
+        item.classList.remove('disabled');
         draggedElement = null;
       });
       
@@ -740,7 +740,7 @@ export class ParadigmEngine {
       const upBtn = document.createElement('button');
       upBtn.textContent = '↑';
       upBtn.className = 'rank-btn';
-      upBtn.style.cssText = 'background: var(--brand); color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; margin-left: 0.5rem;';
+      upBtn.className = 'btn btn-small';
       upBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const allItems = Array.from(container.querySelectorAll('.ranked-item'));
@@ -754,7 +754,7 @@ export class ParadigmEngine {
       const downBtn = document.createElement('button');
       downBtn.textContent = '↓';
       downBtn.className = 'rank-btn';
-      downBtn.style.cssText = 'background: var(--brand); color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; margin-left: 0.25rem;';
+      downBtn.className = 'btn btn-small';
       downBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const allItems = Array.from(container.querySelectorAll('.ranked-item'));
@@ -828,10 +828,10 @@ export class ParadigmEngine {
     if (!exp) return '';
     
     return `
-      <div class="phase-explanation" style="background: rgba(33, 150, 243, 0.1); border-left: 4px solid #2196F3; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
-        <h3 style="color: #2196F3; margin-bottom: 0.75rem; font-size: 1.25rem;">${exp.title}</h3>
-        <p style="color: var(--text); margin-bottom: 0.75rem; line-height: 1.6;">${exp.description}</p>
-        <p style="color: var(--muted); font-size: 0.9rem; font-style: italic;">${exp.purpose}</p>
+      <div class="phase-explanation">
+        <h3>${exp.title}</h3>
+        <p>${exp.description}</p>
+        <p>${exp.purpose}</p>
       </div>
     `;
   }
@@ -843,7 +843,7 @@ export class ParadigmEngine {
     
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
-      progressFill.style.width = `${progress}%`;
+      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
     }
   }
 
@@ -1501,8 +1501,8 @@ export class ParadigmEngine {
       .sort((a, b) => b.score - a.score);
     
     if (primaryParadigms.length > 0) {
-      html += '<div class="insight-section" style="border-left-color: var(--brand);">';
-      html += '<h4 style="color: var(--brand);">Primary Paradigm</h4>';
+      html += '<div class="insight-section insight-section-primary">';
+      html += '<h4>Primary Paradigm</h4>';
       primaryParadigms.forEach(paradigm => {
         const confidence = paradigm.score >= 6 ? 'High' : paradigm.score >= 4 ? 'Medium' : 'Low';
         html += `<p><strong>${paradigm.name}</strong> (${paradigm.category === 'good_life' ? 'The Good Life' : 'God Perspective'}) - Confidence: ${confidence} (${paradigm.score.toFixed(1)}/7)</p>`;
@@ -1516,9 +1516,9 @@ export class ParadigmEngine {
                            Object.keys(this.analysisData.shadowBlindSpots.god || {}).length > 0;
       
       if (hasBlindSpots) {
-        html += '<div class="insight-section" style="border-left-color: #d32f2f;">';
-        html += '<h4 style="color: #d32f2f;">Shadow/Blind Spots</h4>';
-        html += '<p style="color: var(--muted); margin-bottom: 0.75rem;">Underrepresented dimensions in your current paradigm (areas you may be overlooking):</p>';
+        html += '<div class="insight-section insight-section-shadow">';
+        html += '<h4>Shadow/Blind Spots</h4>';
+        html += '<p>Underrepresented dimensions in your current paradigm (areas you may be overlooking):</p>';
         
         Object.entries(this.analysisData.shadowBlindSpots.good_life || {}).forEach(([paradigmKey, dimensions]) => {
           const paradigm = this.analysisData.goodLife[paradigmKey];
@@ -1533,7 +1533,7 @@ export class ParadigmEngine {
           const perspective = this.analysisData.god[perspectiveKey];
           if (perspective && Array.isArray(dimensions) && dimensions.length > 0) {
             const perspectiveName = GOD_PERSPECTIVES[perspectiveKey]?.name || perspective.name || perspectiveKey;
-            html += `<p style="margin-bottom: 0.5rem;"><strong>${perspectiveName}:</strong> `;
+            html += `<p><strong>${perspectiveName}:</strong> `;
             html += dimensions.map(dim => this.getDimensionLabel(dim)).join(', ');
             html += '</p>';
           }
@@ -1549,9 +1549,9 @@ export class ParadigmEngine {
                       (this.analysisData.developmentEdges.god || []).length > 0;
       
       if (hasEdges) {
-        html += '<div class="insight-section" style="border-left-color: var(--accent);">';
-        html += '<h4 style="color: var(--accent);">Development Edges</h4>';
-        html += '<p style="color: var(--muted); margin-bottom: 0.75rem;">Areas of low integration or incomplete understanding (opportunities for growth):</p>';
+        html += '<div class="insight-section insight-section-development">';
+        html += '<h4>Development Edges</h4>';
+        html += '<p>Areas of low integration or incomplete understanding (opportunities for growth):</p>';
         
         if ((this.analysisData.developmentEdges.good_life || []).length > 0) {
           html += '<p style="margin-bottom: 0.5rem;"><strong>The Good Life:</strong> ';
@@ -1566,7 +1566,7 @@ export class ParadigmEngine {
           const validGaps = this.analysisData.developmentEdges.god
             .filter(gap => gap && gap !== 'none' && gap !== '');
           if (validGaps.length > 0) {
-            html += '<p style="margin-bottom: 0.5rem;"><strong>God Perspectives:</strong> ';
+            html += '<p><strong>God Perspectives:</strong> ';
             html += validGaps.map(gap => this.getDimensionLabel(gap)).join(', ');
             html += '</p>';
           }
@@ -1578,11 +1578,11 @@ export class ParadigmEngine {
     
     // Compatible Frameworks
     if (this.analysisData.compatibleFrameworks && this.analysisData.compatibleFrameworks.length > 0) {
-      html += '<div class="insight-section" style="border-left-color: #28a745;">';
-      html += '<h4 style="color: #28a745;">Compatible Frameworks</h4>';
-      html += '<p style="color: var(--muted); margin-bottom: 0.75rem;">Other paradigms that might understand your language:</p>';
+      html += '<div class="insight-section insight-section-compatible">';
+      html += '<h4>Compatible Frameworks</h4>';
+      html += '<p>Other paradigms that might understand your language:</p>';
       this.analysisData.compatibleFrameworks.forEach(framework => {
-        html += `<p style="margin-bottom: 0.5rem;">${framework}</p>`;
+        html += `<p>${framework}</p>`;
       });
       html += '</div>';
     }
@@ -1777,7 +1777,7 @@ export class ParadigmEngine {
         
         const categorySelection = document.getElementById('categorySelection');
         const questionnaireSection = document.getElementById('questionnaireSection');
-        if (categorySelection) categorySelection.style.display = 'none';
+        if (categorySelection) categorySelection.classList.add('hidden');
         if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
@@ -1814,7 +1814,7 @@ export class ParadigmEngine {
     sessionStorage.removeItem('paradigmProgress');
     
     // Reset UI
-    document.getElementById('categorySelection').style.display = 'block';
+    document.getElementById('categorySelection').classList.remove('hidden');
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
     

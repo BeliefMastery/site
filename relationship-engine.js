@@ -162,12 +162,12 @@ export class RelationshipEngine {
     this.stage2TransitionShown = true;
     
     SecurityUtils.safeInnerHTML(container, `
-      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
-        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Transitioning to Domain Deep Dive</h3>
-        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <div class="transition-card">
+        <h3>Transitioning to Domain Deep Dive</h3>
+        <p>
           This stage explores expression patterns, not final causes. We're mapping how strain points manifest across relationship domains, not assigning root causes. Questions will focus on your experience: "I experience..." and "I find myself..."—not "They always..."
         </p>
-        <button class="btn btn-primary" id="continueFromStage2Transition" style="min-width: 150px;">Continue</button>
+        <button class="btn btn-primary" id="continueFromStage2Transition">Continue</button>
       </div>
     `);
     
@@ -188,12 +188,12 @@ export class RelationshipEngine {
     this.stage3TransitionShown = true;
     
     SecurityUtils.safeInnerHTML(container, `
-      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
-        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Scenario-Based Reflection</h3>
-        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <div class="transition-card">
+        <h3>Scenario-Based Reflection</h3>
+        <p>
           <strong>As-Is Constraint:</strong> Respond as you typically do now, not how you wish you would. These scenarios focus on likely stressors rather than catastrophic situations. Be honest about your current patterns.
         </p>
-        <button class="btn btn-primary" id="continueFromStage3Transition" style="min-width: 150px;">Continue</button>
+        <button class="btn btn-primary" id="continueFromStage3Transition">Continue</button>
       </div>
     `);
     
@@ -224,9 +224,9 @@ export class RelationshipEngine {
     
     let exampleText = '';
     if (question.example) {
-      exampleText = `<div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius);">
-        <strong style="color: var(--brand);">Example Scenario:</strong>
-        <p style="margin-top: 0.5rem; color: var(--muted); font-style: italic;">${SecurityUtils.sanitizeHTML(question.example || '')}</p>
+      exampleText = `<div class="example-box">
+        <strong>Example Scenario:</strong>
+        <p>${SecurityUtils.sanitizeHTML(question.example || '')}</p>
       </div>`;
     }
     
@@ -241,7 +241,7 @@ export class RelationshipEngine {
         ${sanitizedStageLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${sanitizedStageLabel}</p>` : ''}
         ${sanitizedName ? `<h3>${sanitizedName}</h3>` : ''}
         ${sanitizedDescription ? `<p class="description">${sanitizedDescription}</p>` : ''}
-        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${sanitizedQuestion}</h4>
+        <h4>${sanitizedQuestion}</h4>
         ${exampleText}
         <div class="scale-container">
           <div class="scale-input">
@@ -519,10 +519,10 @@ export class RelationshipEngine {
     
     SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
-        ${sanitizedStageLabel2 ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${sanitizedStageLabel2}</p>` : ''}
+        ${sanitizedStageLabel2 ? `<p class="stage-label">${sanitizedStageLabel2}</p>` : ''}
         ${sanitizedName2 ? `<h3>${sanitizedName2}</h3>` : ''}
         ${sanitizedDescription2 ? `<p class="description">${sanitizedDescription2}</p>` : ''}
-        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${sanitizedQuestion2}</h4>
+        <h4>${sanitizedQuestion2}</h4>
         ${exampleText}
         <div class="scale-container">
           <div class="scale-input">
@@ -945,7 +945,7 @@ export class RelationshipEngine {
     const progressBarFill = document.getElementById('progressBarFill');
     if (progressBarFill) {
       const progress = ((this.currentQuestionIndex + 1) / this.questionSequence.length) * 100;
-      progressBarFill.style.width = `${progress}%`;
+      progressBarFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
     }
   }
 
@@ -1379,7 +1379,7 @@ export class RelationshipEngine {
     
     if (questionnaireSection) questionnaireSection.classList.add('active');
     if (resultsSection) resultsSection.classList.remove('active');
-    if (progressBarFill) progressBarFill.style.width = '0%';
+    if (progressBarFill) progressBarFill.style.width = '0%'; // Progress bar width is dynamic, keep inline
     
     await this.startAssessment();
   }

@@ -97,41 +97,48 @@
           Are you Masculine or Feminine? Does it change in different contexts? Find out!
         </p>
         
-        <div class="content-section">
-          <p>
-            This comprehensive assessment maps your position on the <strong>masculine-feminine temperament spectrum</strong> through questions covering behavioral patterns, intimate dynamics, attraction responsiveness, and relationship preferences.
-          </p>
-          <p>
-            <strong>Important:</strong> Temperament is distinct from biological sex or gender identity. It refers to archetypal energy patterns and behavioral tendencies that exist on a spectrum. Variation across different dimensions is expected and common.
-          </p>
-          <p>
-            Understanding your temperament helps clarify relationship polarity, compatibility dynamics, and personal development needs. This directly impacts relationship consequences and optimization strategies.
-          </p>
+        <p>This comprehensive assessment maps your position on the <strong>masculine-feminine temperament spectrum</strong> through questions covering behavioral patterns, intimate dynamics, attraction responsiveness, and relationship preferences.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
+        </div>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <p>
+              <strong>Important:</strong> Temperament is distinct from biological sex or gender identity. It refers to archetypal energy patterns and behavioral tendencies that exist on a spectrum. Variation across different dimensions is expected and common.
+            </p>
+            <p>
+              Understanding your temperament helps clarify relationship polarity, compatibility dynamics, and personal development needs. This directly impacts relationship consequences and optimization strategies.
+            </p>
+          </div>
         </div>
         
         <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
           <div class="disclaimer-acknowledgement-text">
-            <span>Disclaimers</span>
+            <span>Disclaimer</span>
           </div>
         </div>
 
-        <div class="acknowledgement-box">
-          <p>
-            By participating in this analysis, I acknowledge that this tool is designed for self-awareness and recognition. Understanding manipulation patterns is the first step toward reclaiming sovereignty.
-          </p>
-        </div>
-        
         <section class="disclaimer-section" id="disclaimerSection">
-          <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
-          <p><strong>This assessment includes questions about intimate dynamics, sexual preferences, and attraction patterns.</strong></p>
-          <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">Answer honestly based on your authentic experience.</p>
+          <div class="acknowledgement-box">
+            <h3 style="color: #d32f2f; font-size: 1.2rem; margin-bottom: 1rem;">Important Note</h3>
+            <p><strong>This assessment includes questions about intimate dynamics, sexual preferences, and attraction patterns.</strong></p>
+            <p style="margin-top: 1rem; line-height: 1.6; color: var(--muted);">Answer honestly based on your authentic experience.</p>
+          </div>
         </section>
-        
-        <!-- Action Buttons -->
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section">
         <div class="action-buttons">
           <a href="example-reports/temperament-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
           <button class="btn btn-primary" id="startAssessment">Begin Temperament Assessment</button>
+          <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
       </section>
 
@@ -192,6 +199,21 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      // Setup toggles
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
       // Disclaimer toggle
       const disclaimerToggle = document.getElementById('disclaimerToggle');
       const disclaimerSection = document.getElementById('disclaimerSection');

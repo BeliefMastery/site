@@ -153,76 +153,75 @@ export class SovereigntyEngine {
 
     // Static HTML - use safeInnerHTML for consistency
     SecurityUtils.safeInnerHTML(container, `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
-        <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Select Your IQ Bracket (Optional)</h2>
-        <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6;">
+      <div class="question-card iq-selection-card">
+        <h2>Select Your IQ Bracket (Optional)</h2>
+        <p>
           Providing your IQ helps us prioritize relevant questions and accelerate the assessment. 
           If you don't know your IQ, you can skip this step. Estimate based on standardized tests (SAT, ACT, WAIS, etc.) or educational/career patterns.
         </p>
         
         <!-- IQ Input Option -->
-        <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(255, 184, 0, 0.05); border: 2px solid var(--brand); border-radius: var(--radius); max-width: 400px; margin-left: auto; margin-right: auto;">
-          <label for="iqInput" style="display: block; color: var(--brand); font-weight: 600; margin-bottom: 0.75rem; font-size: 1.1rem;">
+        <div class="iq-input-container">
+          <label for="iqInput">
             Enter Your IQ (Auto-detects bracket):
           </label>
-          <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <div class="iq-input-group">
             <input type="number" id="iqInput" min="70" max="200" step="1" 
-                   placeholder="e.g., 98, 117, 125" 
-                   style="flex: 1; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid var(--brand); border-radius: var(--radius); background: white; color: var(--text);">
-            <button id="submitIQ" style="padding: 0.75rem 1.5rem; font-size: 1rem; background: var(--brand); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                   placeholder="e.g., 98, 117, 125">
+            <button id="submitIQ" class="btn btn-primary">
               Submit
             </button>
           </div>
-          <div id="iqBracketDisplay" style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); display: none;">
-            <p style="margin: 0; color: var(--brand); font-weight: 600; font-size: 0.9rem;" id="iqBracketText"></p>
+          <div id="iqBracketDisplay" class="iq-bracket-display hidden">
+            <p id="iqBracketText"></p>
           </div>
         </div>
         
-        <p style="color: var(--brand); margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.6; font-size: 0.9rem; font-style: italic;">
+        <p class="iq-or-text">
           <strong>Note:</strong> IQ brackets have crossover at boundaries (±5 points). The system automatically detects border positions and includes patterns from adjacent brackets.
         </p>
         
-        <div style="display: none;">
-          <button id="selectIQ80_100" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+        <div class="hidden">
+          <button id="selectIQ80_100" class="iq-btn">
             <strong>80-100 IQ</strong> - Routine Guided Thinkers (~34% of population)
           </button>
-          <button id="selectIQ80_100_border" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ80_100_border" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 100-115</strong> (e.g., IQ 95-105)
           </button>
-          <button id="selectIQ100_115" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ100_115" class="iq-btn">
             <strong>100-115 IQ</strong> - Practical Adaptive Thinkers (~34% of population)
           </button>
-          <button id="selectIQ100_115_border_low" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ100_115_border_low" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 80-100</strong> (e.g., IQ 98-102)
           </button>
-          <button id="selectIQ100_115_border_high" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ100_115_border_high" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 115-130</strong> (e.g., IQ 113-117)
           </button>
-          <button id="selectIQ115_130" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ115_130" class="iq-btn">
             <strong>115-130 IQ</strong> - Strategic Analytical Thinkers (~14% of population)
           </button>
-          <button id="selectIQ115_130_border_low" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ115_130_border_low" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 100-115</strong> (e.g., IQ 113-117)
           </button>
-          <button id="selectIQ115_130_border_high" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ115_130_border_high" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 130-145</strong> (e.g., IQ 128-132)
           </button>
-          <button id="selectIQ130_145" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ130_145" class="iq-btn">
             <strong>130-145 IQ</strong> - Creative Synthesizing Thinkers (~2% of population)
           </button>
-          <button id="selectIQ130_145_border_low" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ130_145_border_low" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 115-130</strong> (e.g., IQ 128-132)
           </button>
-          <button id="selectIQ130_145_border_high" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ130_145_border_high" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 145+</strong> (e.g., IQ 143-147)
           </button>
-          <button id="selectIQ145_plus" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); font-weight: 600; text-align: left;">
+          <button id="selectIQ145_plus" class="iq-btn">
             <strong>145+ IQ</strong> - Meta-Recursive Thinkers (&lt;1% of population)
           </button>
-          <button id="selectIQ145_plus_border" class="iq-btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: rgba(255, 184, 0, 0.05); border: 1px dashed var(--brand); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: var(--brand); text-align: left; margin-left: 2rem;">
+          <button id="selectIQ145_plus_border" class="iq-btn iq-btn-border">
             ↳ <strong>On border with 130-145</strong> (e.g., IQ 143-147)
           </button>
-          <button id="selectIQUnknown" class="iq-btn" style="padding: 1rem 2rem; font-size: 1rem; background: rgba(200, 200, 200, 0.1); border: 2px solid #888; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; color: #666; font-weight: 600; text-align: left; margin-top: 1rem;">
+          <button id="selectIQUnknown" class="iq-btn iq-btn-unknown">
             <strong>I don't know / Prefer not to specify</strong> - Full assessment will be provided
           </button>
         </div>
@@ -256,7 +255,7 @@ export class SovereigntyEngine {
           displayText += ` (with crossover from ${this.getBracketName(bracketInfo.secondary)})`;
         }
         iqBracketText.textContent = displayText;
-        iqBracketDisplay.style.display = 'block';
+        iqBracketDisplay.classList.remove('hidden');
         
         // Auto-proceed after brief display
         setTimeout(async () => {
@@ -1607,18 +1606,18 @@ export class SovereigntyEngine {
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsContainer = document.getElementById('resultsContainer');
     
-    if (introSection) introSection.style.display = 'none';
-    if (questionnaireSection) questionnaireSection.style.display = 'block';
-    if (resultsContainer) resultsContainer.style.display = 'none';
+    if (introSection) introSection.classList.add('hidden');
+    if (questionnaireSection) questionnaireSection.classList.remove('hidden');
+    if (resultsContainer) resultsContainer.classList.add('hidden');
   }
 
   showResults() {
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsContainer = document.getElementById('resultsContainer');
     
-    if (questionnaireSection) questionnaireSection.style.display = 'none';
+    if (questionnaireSection) questionnaireSection.classList.add('hidden');
     if (resultsContainer) {
-      resultsContainer.style.display = 'block';
+      resultsContainer.classList.remove('hidden');
       resultsContainer.scrollIntoView({ behavior: 'smooth' });
     }
   }
@@ -1630,7 +1629,11 @@ export class SovereigntyEngine {
     const progressBar = document.getElementById('progressBar');
 
     if (prevBtn) {
-      prevBtn.style.display = this.currentQuestionIndex > 0 ? 'block' : 'none';
+      if (this.currentQuestionIndex > 0) {
+        prevBtn.classList.remove('hidden');
+      } else {
+        prevBtn.classList.add('hidden');
+      }
     }
 
     if (nextBtn) {
@@ -1734,9 +1737,9 @@ export class SovereigntyEngine {
       const questionnaireSection = document.getElementById('questionnaireSection');
       const resultsContainer = document.getElementById('resultsContainer');
       
-      if (introSection) introSection.style.display = 'block';
-      if (questionnaireSection) questionnaireSection.style.display = 'none';
-      if (resultsContainer) resultsContainer.style.display = 'none';
+      if (introSection) introSection.classList.remove('hidden');
+      if (questionnaireSection) questionnaireSection.classList.add('hidden');
+      if (resultsContainer) resultsContainer.classList.add('hidden');
       
       // Show IQ bracket selection
       this.showIQBracketSelection();
