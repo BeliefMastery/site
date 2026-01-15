@@ -1611,7 +1611,6 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    text-align: center;
     display: flex;
     flex-direction: column;  /* Ensures even height/alignment */
     height: 100%;  /* Stretches to match grid row */
