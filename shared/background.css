@@ -70,6 +70,44 @@
     will-change: transform, opacity;
 }
 
+@media (max-width: 1024px) {
+    .bg-gradient {
+        background-size:
+            120% 120%,
+            80% 90%, 78% 96%, 72% 80%,
+            76% 82%, 70% 88%, 68% 78%,
+            85% 75%, 72% 72%, 68% 80%,
+            58% 62%, 60% 56%, 60% 68%, 56% 60%, 56% 60%,
+            120% 120%,
+            45% 45%, 48% 48%,
+            120% 120%;
+        filter: blur(0.4px) saturate(1.05);
+    }
+
+    .bg-gradient::before {
+        opacity: 0.2;
+    }
+}
+
+@media (max-width: 640px) {
+    .bg-gradient {
+        background-size:
+            140% 140%,
+            95% 110%, 92% 118%, 85% 100%,
+            90% 100%, 85% 108%, 80% 95%,
+            100% 92%, 88% 88%, 82% 98%,
+            70% 78%, 72% 70%, 72% 82%, 68% 74%, 68% 74%,
+            140% 140%,
+            55% 55%, 58% 58%,
+            140% 140%;
+        filter: blur(0.6px) saturate(1.08);
+    }
+
+    .bg-gradient::before {
+        opacity: 0.18;
+    }
+}
+
 /* Parallax effect on scroll (retained, but lighter impact) */
 @supports (animation-timeline: scroll()) {
     .bg-gradient {
