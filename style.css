@@ -2256,6 +2256,87 @@ figure.headline-book a {
     margin-bottom: 1rem;
 }
 
+/* Needs Dependency Results */
+.results-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.primary-loop-section,
+.secondary-loops-section,
+.need-chain-section,
+.recommendations-section,
+.closure-section {
+    background: var(--glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.loop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.loop-card {
+    background: var(--glass-light);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.loop-card.primary {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--glow-accent);
+}
+
+.loop-strength {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.loops-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.need-chain-visualization {
+    background: var(--glass-light);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+}
+
+.priority-group {
+    background: rgba(255, 184, 0, 0.08);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+}
+
+.priority-group.medium {
+    background: rgba(0, 123, 255, 0.08);
+    border-left-color: var(--brand);
+}
+
+.priority-group ul {
+    margin-left: 1.5rem;
+}
+
+.closure-content ul {
+    margin-left: 1.5rem;
+}
+
 /* Instruction, Extended Explanation & Disclaimer Toggles */
 .instructions-toggle,
 .extended-explanation-toggle,
@@ -2341,7 +2422,8 @@ figure.headline-book a {
 .binary-unsure-options,
 .frequency-options,
 .scenario-options,
-.multiselect-options {
+.multiselect-options,
+.need-chain-options {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -2353,7 +2435,8 @@ figure.headline-book a {
 .binary-unsure-option,
 .frequency-option,
 .scenario-option,
-.multiselect-option {
+.multiselect-option,
+.need-chain-option {
     display: flex;
     align-items: flex-start;
     padding: 1rem;
@@ -2369,7 +2452,8 @@ figure.headline-book a {
 .binary-unsure-option:hover,
 .frequency-option:hover,
 .scenario-option:hover,
-.multiselect-option:hover {
+.multiselect-option:hover,
+.need-chain-option:hover {
     background: var(--glass-light);
     border-color: var(--border-bright);
     box-shadow: var(--shadow);
@@ -2381,7 +2465,8 @@ figure.headline-book a {
 .binary-unsure-option.selected,
 .frequency-option.selected,
 .scenario-option.selected,
-.multiselect-option.selected {
+.multiselect-option.selected,
+.need-chain-option.selected {
     background: rgba(255, 184, 0, 0.15);
     border-color: var(--brand);
     box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1);
@@ -2408,7 +2493,8 @@ figure.headline-book a {
 .three-point-option input[type="radio"],
 .binary-unsure-option input[type="radio"],
 .frequency-option input[type="radio"],
-.scenario-option input[type="radio"] {
+.scenario-option input[type="radio"],
+.need-chain-option input[type="radio"] {
     margin-right: 0.75rem;
     margin-top: 0.25rem;
     cursor: pointer;
@@ -3980,7 +4066,7 @@ img {
     justify-content: space-between;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--border-subtle);
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
@@ -4016,6 +4102,90 @@ img {
     border-left-color: var(--accent);
 }
 
+.action-plan-card {
+    background: var(--glass);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--accent);
+    box-shadow: var(--shadow);
+}
+
+.action-plan-heading {
+    color: var(--brand);
+    margin-bottom: 0.5rem;
+}
+
+.action-plan-focus {
+    color: var(--muted);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.action-plan-list {
+    margin-left: 1.5rem;
+}
+
+.action-plan-list li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+    color: var(--brand);
+}
+
+.next-steps-card {
+    background: rgba(255, 184, 0, 0.12);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    margin-top: 2rem;
+    border-left: 4px solid var(--brand);
+}
+
+.next-steps-card h4 {
+    color: var(--brand);
+    margin-bottom: 0.75rem;
+}
+
+.next-steps-intro {
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+    color: var(--brand);
+}
+
+.next-steps-card ul {
+    margin-left: 1.5rem;
+}
+
+.deployment-threshold {
+    background: rgba(0, 123, 255, 0.12);
+    border: 2px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.deployment-threshold h3 {
+    color: var(--brand);
+    margin-bottom: 1rem;
+}
+
+.deployment-intro {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.deployment-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.deployment-option {
+    padding: 1rem;
+}
+
 .section-header-flex {
     display: flex;
     justify-content: space-between;
@@ -4036,7 +4206,7 @@ img {
 
 .category-group {
     margin-bottom: 1.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
     overflow: hidden;
 }

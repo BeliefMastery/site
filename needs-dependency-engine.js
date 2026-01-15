@@ -27,6 +27,8 @@ export class NeedsDependencyEngine {
     this.questionSequence = [];
     this.identifiedLoops = []; // Top 3 loops from Phase 1
     this.needChain = []; // For Phase 3
+    this.surfaceNeed = null;
+    this.surfaceNeedCategoryKey = null;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       phase1Results: {},
@@ -322,6 +324,8 @@ export class NeedsDependencyEngine {
       // Build dynamic need chain questions
       this.questionSequence = [];
       const surfaceNeed = this.getSurfaceNeedForLoop(primaryLoop);
+      this.surfaceNeed = surfaceNeed;
+      this.surfaceNeedCategoryKey = this.getNeedCategoryKey(surfaceNeed);
       
       PHASE_3_QUESTIONS.forEach((question, index) => {
         if (question.dynamic) {
@@ -617,11 +621,21 @@ export class NeedsDependencyEngine {
 
     const depth = question.mapsTo?.depth;
     let optionNeeds = [];
+    let previousAnswer = null;
 
     if (depth && depth > 1) {
-      const previousAnswer = this.answers[`p3_need_chain_${depth - 1}`];
+      previousAnswer = this.answers[`p3_need_chain_${depth - 1}`];
       if (previousAnswer?.mapsTo?.deeper?.length) {
         optionNeeds = previousAnswer.mapsTo.deeper;
+      }
+    }
+
+    if (!optionNeeds.length) {
+      const categoryNeeds = this.getCategoryNeeds(
+        (depth && depth > 1 ? previousAnswer?.mapsTo?.need : this.surfaceNeed) || null
+      );
+      if (categoryNeeds.length) {
+        optionNeeds = categoryNeeds;
       }
     }
 
@@ -634,6 +648,28 @@ export class NeedsDependencyEngine {
       text: need,
       mapsTo: { need, deeper: [] }
     }));
+  }
+
+  getNeedCategoryKey(needText) {
+    if (!NEEDS_VOCABULARY || !needText) {
+      return null;
+    }
+
+    const normalizedNeed = String(needText).toLowerCase();
+    const entry = Object.entries(NEEDS_VOCABULARY).find(([, data]) =>
+      (data.needs || []).some(need => String(need).toLowerCase() === normalizedNeed)
+    );
+
+    return entry ? entry[0] : null;
+  }
+
+  getCategoryNeeds(needText) {
+    const key = this.getNeedCategoryKey(needText);
+    if (!key) {
+      return [];
+    }
+
+    return NEEDS_VOCABULARY[key]?.needs || [];
   }
 
   renderNeedChainQuestion(question) {

@@ -1002,19 +1002,19 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     html += '</p>';
 
     Object.entries(ACTION_PLANNING).forEach(([key, plan]) => {
-      html += `<div style="background: rgba(255, 255, 255, 0.7); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 2px solid var(--accent);">`;
-      html += `<h4 style="color: var(--brand); margin-bottom: 0.5rem;">${plan.timeframe}</h4>`;
-      html += `<p style="color: var(--muted); margin-bottom: 1rem; font-weight: 600;">${plan.focus}</p>`;
-      html += '<ul style="margin-left: 1.5rem;">';
+      html += '<div class="action-plan-card">';
+      html += `<h4 class="action-plan-heading">${plan.timeframe}</h4>`;
+      html += `<p class="action-plan-focus">${plan.focus}</p>`;
+      html += '<ul class="action-plan-list">';
       plan.examples.forEach(example => {
-        html += `<li style="margin-bottom: 0.5rem; line-height: 1.6;">${example}</li>`;
+        html += `<li>${example}</li>`;
       });
       html += '</ul></div>';
     });
 
-    html += '<div style="background: rgba(255, 184, 0, 0.15); padding: 1.5rem; border-radius: var(--radius); margin-top: 2rem; border-left: 4px solid var(--brand);">';
-    html += '<h4 style="color: var(--brand); margin-bottom: 0.75rem;">Next Steps</h4>';
-    html += '<p style="line-height: 1.7; margin-bottom: 0.75rem;">';
+    html += '<div class="next-steps-card">';
+    html += '<h4>Next Steps</h4>';
+    html += '<p class="next-steps-intro">';
     html += 'Use the reflection questions above to clarify your specific actions. Consider:';
     html += '</p>';
     html += '<ul>';
@@ -1059,14 +1059,14 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     
     const existingContent = container.innerHTML;
     const deploymentHTML = `
-      <div style="background: rgba(0, 123, 255, 0.1); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-top: 2rem;">
-        <h3 style="color: var(--brand); margin-bottom: 1rem;">Deployment Threshold</h3>
-        <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">Before exporting, select one immediate application context to ground your use:</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('journaling')" style="padding: 1rem;">📔 Journaling</button>
-          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('weekly-reflection')" style="padding: 1rem;">📅 Weekly Reflection</button>
-          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('decision-audit')" style="padding: 1rem;">⚖️ Decision Audit</button>
-          <button class="btn btn-secondary" onclick="window.coachingEngine.selectDeploymentContext('coaching-dialogue')" style="padding: 1rem;">💬 Coaching Dialogue</button>
+      <div class="deployment-threshold">
+        <h3>Deployment Threshold</h3>
+        <p class="deployment-intro">Before exporting, select one immediate application context to ground your use:</p>
+        <div class="deployment-options">
+          <button class="btn btn-secondary deployment-option" onclick="window.coachingEngine.selectDeploymentContext('journaling')">📔 Journaling</button>
+          <button class="btn btn-secondary deployment-option" onclick="window.coachingEngine.selectDeploymentContext('weekly-reflection')">📅 Weekly Reflection</button>
+          <button class="btn btn-secondary deployment-option" onclick="window.coachingEngine.selectDeploymentContext('decision-audit')">⚖️ Decision Audit</button>
+          <button class="btn btn-secondary deployment-option" onclick="window.coachingEngine.selectDeploymentContext('coaching-dialogue')">💬 Coaching Dialogue</button>
         </div>
         <p>This selection helps focus the agent's initial application and prevents abstract deployment.</p>
       </div>
