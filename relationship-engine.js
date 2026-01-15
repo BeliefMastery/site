@@ -162,9 +162,9 @@ export class RelationshipEngine {
     this.stage2TransitionShown = true;
     
     SecurityUtils.safeInnerHTML(container, `
-      <div class="transition-card">
-        <h3>Transitioning to Domain Deep Dive</h3>
-        <p>
+      <div class="transition-card panel text-center">
+        <h3 class="panel-title">Transitioning to Domain Deep Dive</h3>
+        <p class="panel-text">
           This stage explores expression patterns, not final causes. We're mapping how strain points manifest across relationship domains, not assigning root causes. Questions will focus on your experience: "I experience..." and "I find myself..."—not "They always..."
         </p>
         <button class="btn btn-primary" id="continueFromStage2Transition">Continue</button>
@@ -188,9 +188,9 @@ export class RelationshipEngine {
     this.stage3TransitionShown = true;
     
     SecurityUtils.safeInnerHTML(container, `
-      <div class="transition-card">
-        <h3>Scenario-Based Reflection</h3>
-        <p>
+      <div class="transition-card panel text-center">
+        <h3 class="panel-title">Scenario-Based Reflection</h3>
+        <p class="panel-text">
           <strong>As-Is Constraint:</strong> Respond as you typically do now, not how you wish you would. These scenarios focus on likely stressors rather than catastrophic situations. Be honest about your current patterns.
         </p>
         <button class="btn btn-primary" id="continueFromStage3Transition">Continue</button>

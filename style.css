@@ -159,6 +159,22 @@ main {
     box-shadow: var(--shadow);
 }
 
+.panel-title {
+    color: var(--brand);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.panel-text {
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .spacing-bottom-sm {
     margin-bottom: 1rem;
 }
@@ -4944,26 +4960,6 @@ img {
 .transition-card {
     padding: 2.5rem;
     text-align: center;
-    background: var(--glass);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-subtle);
-}
-
-.transition-card h3 {
-    color: var(--brand);
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-}
-
-.transition-card p {
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    font-size: 1.05rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .example-box {
@@ -5161,20 +5157,6 @@ img {
     line-height: 1.5;
 }
 
-.temperament-panel-title {
-    color: var(--brand);
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-}
-
-.temperament-panel-text {
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
 
 .temperament-consent-actions {
     display: flex;

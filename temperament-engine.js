@@ -547,8 +547,8 @@ export class TemperamentEngine {
     }
     
     SecurityUtils.safeInnerHTML(questionContainer, `
-      <div class="transition-card temperament-orientation-card">
-        <h3 class="temperament-panel-title">Orientation Complete</h3>
+      <div class="transition-card panel text-center temperament-orientation-card">
+        <h3 class="panel-title">Orientation Complete</h3>
         <div class="temperament-info-box panel-brand-left">
           <h4>${SecurityUtils.sanitizeHTML(rangeLabel)}</h4>
           <p>${SecurityUtils.sanitizeHTML(rangeDescription)}</p>
@@ -559,7 +559,7 @@ export class TemperamentEngine {
             Preliminary Position: ${(score * 100).toFixed(0)}% on the spectrum
           </p>
         </div>
-        <p class="temperament-panel-text">
+        <p class="panel-text">
           Now we'll explore the detailed dimensions to map your temperament expression across different contexts and relationships.
         </p>
         <button class="btn btn-primary" id="continueToPhase2">Continue to Detailed Assessment</button>
@@ -845,9 +845,9 @@ export class TemperamentEngine {
     if (!questionContainer) return;
     
     SecurityUtils.safeInnerHTML(questionContainer, `
-      <div class="transition-card temperament-consent-card">
-        <h3 class="temperament-panel-title">Intimate Dynamics Section</h3>
-        <p class="temperament-panel-text">
+      <div class="transition-card panel text-center temperament-consent-card">
+        <h3 class="panel-title">Intimate Dynamics Section</h3>
+        <p class="panel-text">
           The next section explores intimate and attraction patterns. These questions help map how energy organizes in relational and intimate contexts. <strong>Skip any question that feels misaligned.</strong> Your responses are for pattern recognition, not judgment.
         </p>
         <div class="temperament-consent-actions">
