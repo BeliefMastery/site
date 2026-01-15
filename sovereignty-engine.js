@@ -642,10 +642,10 @@ export class SovereigntyEngine {
       html += this.renderScenario(question, isLocked);
     } else {
       // Fallback for unhandled question types
-      html += `<div class="question-card" style="background: rgba(255, 0, 0, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: #ff4444; margin-top: 0;">Error: Unknown question type "${question.type}"</h3>
-        <p style="color: var(--muted);">Question ID: ${question.id}</p>
-        <p style="color: var(--muted);">${SecurityUtils.sanitizeHTML(question.question || 'No question text available')}</p>
+      html += `<div class="question-card sov-error-card">
+        <h3 class="sov-error-title">Error: Unknown question type "${question.type}"</h3>
+        <p class="sov-error-text">Question ID: ${question.id}</p>
+        <p class="sov-error-text">${SecurityUtils.sanitizeHTML(question.question || 'No question text available')}</p>
       </div>`;
     }
 
@@ -680,10 +680,10 @@ export class SovereigntyEngine {
 
     const exp = explanations[section];
     return `
-      <div class="section-explanation" style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 0.5rem;">${exp.title}</h3>
-        <p style="margin: 0.5rem 0; color: var(--muted); line-height: 1.6;">${exp.description}</p>
-        <p style="margin: 0.5rem 0 0 0; color: var(--muted); font-size: 0.9rem; font-style: italic;">${exp.purpose}</p>
+      <div class="phase-explanation">
+        <h3>${exp.title}</h3>
+        <p>${exp.description}</p>
+        <p class="phase-explanation-note">${exp.purpose}</p>
       </div>
     `;
   }
@@ -692,13 +692,11 @@ export class SovereigntyEngine {
     const currentAnswer = this.answers[question.id];
     let optionsHTML = question.options.map((option, index) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
-      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
-      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       return `
-        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
-          <input type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
-          <span style="flex: 1;">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
-          ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
+        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
+          <input class="option-input" type="radio" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+          <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
+          ${isSelected ? '<span class="selected-check">✓</span>' : ''}
         </label>
       `;
     }).join('');
@@ -714,14 +712,10 @@ export class SovereigntyEngine {
             // Update visual selection immediately
             document.querySelectorAll(`label.option-label`).forEach(label => {
               label.classList.remove('selected');
-              label.style.background = 'rgba(255, 255, 255, 0.1)';
-              label.style.border = '2px solid transparent';
             });
             const selectedLabel = e.target.closest('label');
             if (selectedLabel) {
               selectedLabel.classList.add('selected');
-              selectedLabel.style.background = 'rgba(255, 184, 0, 0.25)';
-              selectedLabel.style.border = '2px solid var(--brand)';
             }
           });
         });
@@ -740,11 +734,11 @@ export class SovereigntyEngine {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="options-container">
           ${optionsHTML}
         </div>
@@ -761,13 +755,11 @@ export class SovereigntyEngine {
     let scaleHTML = '';
     for (let i = 1; i <= scale; i++) {
       const isSelected = currentAnswer && currentAnswer.value === i;
-      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
-      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       scaleHTML += `
-        <label class="likert-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: inline-block; padding: 0.75rem 1rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedLockedStyle}">
-          <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="display: none;">
+        <label class="likert-option ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
+          <input type="radio" name="question_${question.id}" value="${i}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
           <span>${i}</span>
-          <div style="font-size: 0.75rem; margin-top: 0.25rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(labels[i - 1] || '')}</div>
+          <div class="likert-label">${SecurityUtils.sanitizeHTML(labels[i - 1] || '')}</div>
         </label>
       `;
     }
@@ -783,14 +775,10 @@ export class SovereigntyEngine {
             // Update visual selection immediately
             document.querySelectorAll(`label.likert-option`).forEach(label => {
               label.classList.remove('selected');
-              label.style.background = 'rgba(255, 255, 255, 0.1)';
-              label.style.border = '2px solid transparent';
             });
             const selectedLabel = e.target.closest('label');
             if (selectedLabel) {
               selectedLabel.classList.add('selected');
-              selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
-              selectedLabel.style.border = '2px solid var(--brand)';
             }
           });
         });
@@ -809,12 +797,12 @@ export class SovereigntyEngine {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        <div class="likert-scale" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1rem;">
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <div class="likert-scale">
           ${scaleHTML}
         </div>
         ${lockedNotice}
@@ -828,13 +816,11 @@ export class SovereigntyEngine {
     
     let optionsHTML = question.options.map((option, index) => {
       const isSelected = selectedIndices.includes(index);
-      const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
-      const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
       return `
-        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${isSelected ? 'rgba(255, 184, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; position: relative; ${lockedStyle} ${selectedLockedStyle}">
-          <input type="checkbox" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: ${isLocked ? 'not-allowed' : 'pointer'};">
-          <span style="flex: 1;">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
-          ${isSelected ? '<span style="color: var(--brand); font-weight: 700; margin-left: 0.5rem; font-size: 1.1rem;">✓</span>' : ''}
+        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
+          <input class="option-input" type="checkbox" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+          <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
+          ${isSelected ? '<span class="selected-check">✓</span>' : ''}
         </label>
       `;
     }).join('');
@@ -854,12 +840,8 @@ export class SovereigntyEngine {
               const checkbox = label.querySelector('input');
               if (checkbox && checkbox.checked) {
                 label.classList.add('selected');
-                label.style.background = 'rgba(255, 184, 0, 0.25)';
-                label.style.border = '2px solid var(--brand)';
               } else {
                 label.classList.remove('selected');
-                label.style.background = 'rgba(255, 255, 255, 0.1)';
-                label.style.border = '2px solid transparent';
               }
             });
           });
@@ -867,12 +849,12 @@ export class SovereigntyEngine {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Select all that apply:</p>
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <p class="question-helper">Select all that apply:</p>
         <div class="options-container">
           ${optionsHTML}
         </div>
@@ -891,10 +873,10 @@ export class SovereigntyEngine {
     const scale = question.scale || ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'];
     const answers = currentAnswer ? (currentAnswer.values || {}) : {};
 
-    let gridHTML = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">';
-    gridHTML += '<thead><tr><th style="text-align: left; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand);">Context</th>';
+    let gridHTML = '<div class="frequency-grid"><table class="frequency-grid-table">';
+    gridHTML += '<thead><tr><th class="frequency-grid-header frequency-grid-context">Context</th>';
     scale.forEach((scaleLabel, idx) => {
-      gridHTML += `<th style="text-align: center; padding: 0.75rem; border-bottom: 2px solid var(--brand); color: var(--brand); min-width: 100px;">${SecurityUtils.sanitizeHTML(scaleLabel || '')}</th>`;
+      gridHTML += `<th class="frequency-grid-header">${SecurityUtils.sanitizeHTML(scaleLabel || '')}</th>`;
     });
     gridHTML += '</tr></thead><tbody>';
 
@@ -902,18 +884,14 @@ export class SovereigntyEngine {
       const contextAnswer = answers[contextIdx] !== undefined ? answers[contextIdx] : null;
       const isContextLocked = isLocked && contextAnswer !== null;
       
-      gridHTML += `<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">`;
-      gridHTML += `<td style="padding: 0.75rem; font-weight: 600;">${SecurityUtils.sanitizeHTML(context || '')}</td>`;
+      gridHTML += `<tr class="frequency-grid-row">`;
+      gridHTML += `<td class="frequency-grid-cell frequency-grid-context-cell">${SecurityUtils.sanitizeHTML(context || '')}</td>`;
       
       scale.forEach((scaleLabel, scaleIdx) => {
         const isSelected = contextAnswer === scaleIdx;
-        const lockedStyle = isContextLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
-        const selectedStyle = isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 2px solid var(--brand) !important;' : '';
-        
-        gridHTML += `<td style="text-align: center; padding: 0.5rem;">
-          <label class="frequency-grid-option ${isSelected ? 'selected' : ''} ${isContextLocked ? 'locked' : ''}" 
-                 style="display: inline-block; padding: 0.5rem 0.75rem; margin: 0.25rem; background: ${isSelected ? 'rgba(255, 184, 0, 0.2)' : 'rgba(255, 255, 255, 0.1)'}; border: 2px solid ${isSelected ? 'var(--brand)' : 'transparent'}; border-radius: var(--radius); cursor: ${isContextLocked && !isSelected ? 'not-allowed' : 'pointer'}; transition: all 0.2s; ${lockedStyle} ${selectedStyle}">
-            <input type="radio" name="question_${question.id}_context_${contextIdx}" value="${scaleIdx}" ${isSelected ? 'checked' : ''} ${isContextLocked ? 'disabled' : ''} style="display: none;">
+        gridHTML += `<td class="frequency-grid-cell frequency-grid-option-cell">
+          <label class="frequency-grid-option ${isSelected ? 'selected' : ''} ${isContextLocked ? 'locked' : ''}">
+            <input type="radio" name="question_${question.id}_context_${contextIdx}" value="${scaleIdx}" ${isSelected ? 'checked' : ''} ${isContextLocked ? 'disabled' : ''}>
             <span>${scaleIdx + 1}</span>
           </label>
         </td>`;
@@ -939,14 +917,10 @@ export class SovereigntyEngine {
               if (row) {
                 row.querySelectorAll('label.frequency-grid-option').forEach(label => {
                   label.classList.remove('selected');
-                  label.style.background = 'rgba(255, 255, 255, 0.1)';
-                  label.style.border = '2px solid transparent';
                 });
                 const selectedLabel = e.target.closest('label');
                 if (selectedLabel) {
                   selectedLabel.classList.add('selected');
-                  selectedLabel.style.background = 'rgba(255, 184, 0, 0.2)';
-                  selectedLabel.style.border = '2px solid var(--brand)';
                 }
               }
             });
@@ -969,12 +943,12 @@ export class SovereigntyEngine {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
 
     return `
-      <div class="question-card" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-        <h3 style="color: var(--brand); margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; line-height: 1.5;">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Select a frequency for each context:</p>
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <p class="question-helper">Select a frequency for each context:</p>
         ${gridHTML}
         ${lockedNotice}
       </div>
@@ -1451,46 +1425,46 @@ export class SovereigntyEngine {
     const attachmentMode = this.analysisData.attachmentMode;
 
     let html = `
-      <div class="results-dashboard" style="max-width: 900px; margin: 0 auto;">
-        <h2 style="color: var(--brand); margin-top: 0; margin-bottom: 2rem; font-size: 2rem;">Your Sovereignty Profile</h2>
+      <div class="results-dashboard">
+        <h2 class="results-title">Your Sovereignty Profile</h2>
         
-        <div class="profile-summary" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: var(--brand); margin-top: 0;">Cognitive Band: ${SecurityUtils.sanitizeHTML(band.iqRange || '')} IQ</h3>
-          <p style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(band.name || '')}</p>
-          <p style="color: var(--muted); line-height: 1.6;">${SecurityUtils.sanitizeHTML(band.description || '')}</p>
+        <div class="profile-summary">
+          <h3 class="profile-title">Cognitive Band: ${SecurityUtils.sanitizeHTML(band.iqRange || '')} IQ</h3>
+          <p class="profile-name">${SecurityUtils.sanitizeHTML(band.name || '')}</p>
+          <p class="profile-description">${SecurityUtils.sanitizeHTML(band.description || '')}</p>
         </div>
 
         ${subclasses.length > 0 ? `
-          <div class="subclasses" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-            <h3 style="color: var(--brand); margin-top: 0;">Top Subclass Matches</h3>
+          <div class="subclasses">
+            <h3 class="section-title">Top Subclass Matches</h3>
             ${subclasses.map((subclass, idx) => `
-              <div style="margin: 1rem 0; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius);">
-                <h4 style="margin: 0 0 0.5rem 0;">${idx + 1}. ${SecurityUtils.sanitizeHTML(subclass.name || '')}</h4>
-                <p style="color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(subclass.aiEffect || '')}</p>
-                <p style="color: var(--muted); font-size: 0.85rem; margin: 0.5rem 0; font-style: italic;">Support: ${SecurityUtils.sanitizeHTML(subclass.support || '')}</p>
+              <div class="subclass-card">
+                <h4 class="subclass-title">${idx + 1}. ${SecurityUtils.sanitizeHTML(subclass.name || '')}</h4>
+                <p class="subclass-text">${SecurityUtils.sanitizeHTML(subclass.aiEffect || '')}</p>
+                <p class="subclass-note">Support: ${SecurityUtils.sanitizeHTML(subclass.support || '')}</p>
               </div>
             `).join('')}
           </div>
         ` : ''}
 
-        <div class="split-position" style="background: rgba(255, 184, 0, 0.1); padding: 2rem; border-left: 4px solid var(--brand); border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: var(--brand); margin-top: 0;">Sovereign Split Position</h3>
-          <p style="font-size: 1.3rem; font-weight: 600; margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(split.name || '')}</p>
-          <p style="color: var(--muted); line-height: 1.6;">${SecurityUtils.sanitizeHTML(split.description || '')}</p>
+        <div class="split-position">
+          <h3 class="section-title">Sovereign Split Position</h3>
+          <p class="split-name">${SecurityUtils.sanitizeHTML(split.name || '')}</p>
+          <p class="split-description">${SecurityUtils.sanitizeHTML(split.description || '')}</p>
         </div>
 
-        <div class="sovereignty-score" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: center;">
-          <h3 style="color: var(--brand); margin-top: 0;">Resistance Capacity Score</h3>
-          <div style="font-size: 3rem; font-weight: 700; color: var(--brand); margin: 1rem 0;">${sovereigntyScore}/100</div>
-          <div style="width: 100%; height: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; margin: 1rem 0;">
-            <div style="width: ${sovereigntyScore}%; height: 100%; background: var(--brand); transition: width 0.5s;"></div>
+        <div class="sovereignty-score">
+          <h3 class="section-title">Resistance Capacity Score</h3>
+          <div class="score-value">${sovereigntyScore}/100</div>
+          <div class="score-bar">
+            <div class="sovereignty-score-fill" style="width: ${sovereigntyScore}%"></div>
           </div>
         </div>
 
-        <div class="attachment-mode" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: var(--brand); margin-top: 0;">Attachment Mode</h3>
-          <p style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0; text-transform: capitalize;">${SecurityUtils.sanitizeHTML(attachmentMode || '')}</p>
-          <p style="color: var(--muted); line-height: 1.6;">
+        <div class="attachment-mode">
+          <h3 class="section-title">Attachment Mode</h3>
+          <p class="attachment-name">${SecurityUtils.sanitizeHTML(attachmentMode || '')}</p>
+          <p class="attachment-description">
             ${attachmentMode === 'independent' ? 'You maintain clear boundaries with AI tools.' :
               attachmentMode === 'tool' ? 'You use AI as a practical tool without emotional attachment.' :
               attachmentMode === 'companion' ? 'You may be forming emotional attachments to AI. Be mindful of boundaries.' :
@@ -1499,23 +1473,26 @@ export class SovereigntyEngine {
         </div>
 
         ${risks.length > 0 ? `
-          <div class="vulnerability-risks" style="background: rgba(255, 0, 0, 0.1); padding: 2rem; border-left: 4px solid #ff4444; border-radius: var(--radius); margin-bottom: 2rem;">
-            <h3 style="color: #ff4444; margin-top: 0;">Top Vulnerability Risks</h3>
-            ${risks.map((risk, idx) => `
-              <div style="margin: 1rem 0; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius);">
-                <h4 style="margin: 0 0 0.5rem 0; color: ${risk.severity === 'critical' ? '#ff0000' : '#ff8800'};">
-                  ${idx + 1}. ${SecurityUtils.sanitizeHTML(risk.name || '')} 
-                  <span style="font-size: 0.8rem; text-transform: uppercase; background: ${risk.severity === 'critical' ? '#ff0000' : '#ff8800'}; padding: 0.2rem 0.5rem; border-radius: 3px; margin-left: 0.5rem;">${SecurityUtils.sanitizeHTML(risk.severity || '')}</span>
-                </h4>
-                <p style="color: var(--muted); margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(risk.description || '')}</p>
-              </div>
-            `).join('')}
+          <div class="vulnerability-risks">
+            <h3 class="section-title">Top Vulnerability Risks</h3>
+            ${risks.map((risk, idx) => {
+              const severityClass = risk.severity === 'critical' ? 'critical' : 'high';
+              return `
+                <div class="risk-item ${severityClass}">
+                  <h4 class="risk-title">
+                    ${idx + 1}. ${SecurityUtils.sanitizeHTML(risk.name || '')}
+                    <span class="risk-badge ${severityClass}">${SecurityUtils.sanitizeHTML(risk.severity || '')}</span>
+                  </h4>
+                  <p class="risk-description">${SecurityUtils.sanitizeHTML(risk.description || '')}</p>
+                </div>
+              `;
+            }).join('')}
           </div>
         ` : ''}
 
-        <div class="action-plan" style="background: rgba(0, 255, 0, 0.1); padding: 2rem; border-left: 4px solid #00aa00; border-radius: var(--radius); margin-bottom: 2rem;">
-          <h3 style="color: #00aa00; margin-top: 0;">Recommended Action Plan</h3>
-          <p style="color: var(--muted); line-height: 1.6; margin-bottom: 1rem;">Based on your profile, here are priority interventions:</p>
+        <div class="action-plan">
+          <h3 class="section-title">Recommended Action Plan</h3>
+          <p class="action-plan-intro">Based on your profile, here are priority interventions:</p>
           ${this.generateActionPlan()}
         </div>
       </div>
@@ -1584,21 +1561,24 @@ export class SovereigntyEngine {
     }
 
     if (recommendations.length === 0) {
-      return '<p style="color: var(--muted);">Continue maintaining your sovereignty practices. Stay vigilant.</p>';
+      return '<p class="action-plan-empty">Continue maintaining your sovereignty practices. Stay vigilant.</p>';
     }
 
-    return recommendations.map((rec, idx) => `
-      <div style="margin: 1.5rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius); border-left: 4px solid ${rec.priority === 'Critical' ? '#ff0000' : rec.priority === 'High' ? '#ff8800' : '#00aa00'};">
-        <h4 style="margin: 0 0 0.5rem 0;">
-          ${idx + 1}. ${SecurityUtils.sanitizeHTML(rec.title || '')}
-          <span style="font-size: 0.8rem; text-transform: uppercase; background: ${rec.priority === 'Critical' ? '#ff0000' : rec.priority === 'High' ? '#ff8800' : '#00aa00'}; padding: 0.2rem 0.5rem; border-radius: 3px; margin-left: 0.5rem;">${SecurityUtils.sanitizeHTML(rec.priority || '')}</span>
-        </h4>
-        <p style="color: var(--muted); margin: 0.5rem 0;">${SecurityUtils.sanitizeHTML(rec.description || '')}</p>
-        <ul style="color: var(--muted); margin: 0.5rem 0; padding-left: 1.5rem;">
-          ${rec.practices.map(practice => `<li>${SecurityUtils.sanitizeHTML(practice || '')}</li>`).join('')}
-        </ul>
-      </div>
-    `).join('');
+    return recommendations.map((rec, idx) => {
+      const priorityClass = (rec.priority || '').toLowerCase();
+      return `
+        <div class="action-plan-item ${priorityClass}">
+          <h4 class="action-plan-title">
+            ${idx + 1}. ${SecurityUtils.sanitizeHTML(rec.title || '')}
+            <span class="action-plan-badge ${priorityClass}">${SecurityUtils.sanitizeHTML(rec.priority || '')}</span>
+          </h4>
+          <p class="action-plan-description">${SecurityUtils.sanitizeHTML(rec.description || '')}</p>
+          <ul class="action-plan-list">
+            ${rec.practices.map(practice => `<li>${SecurityUtils.sanitizeHTML(practice || '')}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }).join('');
   }
 
   showQuestionContainer() {
