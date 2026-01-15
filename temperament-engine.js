@@ -549,7 +549,7 @@ export class TemperamentEngine {
     SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="transition-card temperament-orientation-card">
         <h3 class="temperament-panel-title">Orientation Complete</h3>
-        <div class="temperament-info-box">
+        <div class="temperament-info-box panel-brand-left">
           <h4>${SecurityUtils.sanitizeHTML(rangeLabel)}</h4>
           <p>${SecurityUtils.sanitizeHTML(rangeDescription)}</p>
           <div class="temperament-spectrum">
@@ -969,7 +969,7 @@ export class TemperamentEngine {
 
     // Contextual framing block at results entry
     let html = `
-      <div class="temperament-info-box temperament-framing">
+      <div class="temperament-info-box temperament-framing panel-brand-left">
         <p>
           <strong>Contextual Framing:</strong> Temperament reflects how energy tends to organize in relational and intimate contexts. It varies by partner, season, safety, and life phase. These results describe tendencies and preferences, not fixed identity or mandates.
         </p>
@@ -979,7 +979,7 @@ export class TemperamentEngine {
     // Context sensitivity flag
     if (this.analysisData.contextSensitivity && this.analysisData.contextSensitivity.detected) {
       html += `
-        <div class="info-box info-box-accent">
+        <div class="info-box info-box-accent panel-brand-left">
           <p>
             <strong>Context-Responsive Temperament:</strong> ${this.analysisData.contextSensitivity.message}
           </p>

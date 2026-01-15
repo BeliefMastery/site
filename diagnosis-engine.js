@@ -445,7 +445,7 @@ export class DiagnosisEngine {
         </button>
       </div>
       ${this.suggestedCategories.length > 0 ? `
-        <div class="info-box">
+        <div class="info-box panel-brand-left">
           <h3>💡 Recommended Categories Based on Your Answers:</h3>
           <p>
             ${sanitizedRecommendation}
@@ -460,7 +460,7 @@ export class DiagnosisEngine {
           </div>
         </div>
       ` : `
-        <div class="info-box">
+        <div class="info-box panel-brand-left">
           <p>
             ${sanitizedRecommendation} Review the categories below and select those that seem most relevant to your concerns.
           </p>

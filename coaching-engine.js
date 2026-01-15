@@ -945,7 +945,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       this.profileData.priorities.topObstacles.forEach((obstacle, index) => {
         const inquiry = DEEPER_INQUIRY.obstacles[obstacle.key];
         if (inquiry) {
-          html += `<div class="info-box">`;
+          html += `<div class="info-box panel-brand-left">`;
           html += `<h4>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</h4>`;
           html += `<p>${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>`;
           
@@ -973,7 +973,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
         const inquiry = DEEPER_INQUIRY.domains[domain.key];
         if (inquiry) {
-          html += `<div class="info-box info-box-accent">`;
+          html += `<div class="info-box info-box-accent panel-brand-left">`;
           html += `<h4>${SecurityUtils.sanitizeHTML(domain.name || '')}</h4>`;
           html += `<p>Current Satisfaction: ${domain.combinedScore.toFixed(1)}/10</p>`;
           
@@ -1002,7 +1002,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     html += '</p>';
 
     Object.entries(ACTION_PLANNING).forEach(([key, plan]) => {
-      html += '<div class="action-plan-card">';
+      html += '<div class="action-plan-card panel-outline-accent">';
       html += `<h4 class="action-plan-heading">${plan.timeframe}</h4>`;
       html += `<p class="action-plan-focus">${plan.focus}</p>`;
       html += '<ul class="action-plan-list">';
@@ -1012,7 +1012,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       html += '</ul></div>';
     });
 
-    html += '<div class="next-steps-card">';
+    html += '<div class="next-steps-card panel-brand-left">';
     html += '<h4>Next Steps</h4>';
     html += '<p class="next-steps-intro">';
     html += 'Use the reflection questions above to clarify your specific actions. Consider:';
@@ -1059,7 +1059,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     
     const existingContent = container.innerHTML;
     const deploymentHTML = `
-      <div class="deployment-threshold">
+      <div class="deployment-threshold panel-outline-brand">
         <h3>Deployment Threshold</h3>
         <p class="deployment-intro">Before exporting, select one immediate application context to ground your use:</p>
         <div class="deployment-options">

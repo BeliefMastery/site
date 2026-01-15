@@ -16,6 +16,9 @@
     --glass-light: rgba(20, 35, 55, 0.75); /* Lighter glass */
     --card-bg: rgba(18, 28, 48, 0.95); /* Cards in sections */
     --card-hover: rgba(22, 35, 58, 0.98); /* Card hover state */
+    --accent-panel: rgba(255, 184, 0, 0.12);
+    --accent-panel-strong: rgba(255, 184, 0, 0.2);
+    --brand-panel: rgba(0, 123, 255, 0.12);
 
     /* Borders */
     --border-subtle: rgba(80, 140, 255, 0.2);
@@ -116,6 +119,44 @@ main {
 
 .text-alert {
     color: #d32f2f;
+}
+
+.panel {
+    background: var(--glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.panel-accent-left {
+    background: var(--accent-panel);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.panel-brand-left {
+    background: var(--brand-panel);
+    border-left: 4px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.panel-outline-accent {
+    background: var(--glass);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.panel-outline-brand {
+    background: var(--brand-panel);
+    border: 2px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
 }
 
 .spacing-bottom-sm {
@@ -2317,16 +2358,8 @@ figure.headline-book a {
 }
 
 .priority-group {
-    background: rgba(255, 184, 0, 0.08);
-    border-left: 4px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
     margin-top: 1rem;
-}
-
-.priority-group.medium {
-    background: rgba(0, 123, 255, 0.08);
-    border-left-color: var(--brand);
+    padding: 1rem 1.25rem;
 }
 
 .priority-group ul {
@@ -4079,11 +4112,7 @@ img {
 }
 
 .info-box {
-    background: rgba(255, 184, 0, 0.1);
-    padding: 1.5rem;
-    border-radius: var(--radius);
     margin-bottom: 1.5rem;
-    border-left: 4px solid var(--brand);
 }
 
 .info-box h3,
@@ -4103,12 +4132,7 @@ img {
 }
 
 .action-plan-card {
-    background: var(--glass);
-    padding: 1.5rem;
-    border-radius: var(--radius);
     margin-bottom: 1.5rem;
-    border: 2px solid var(--accent);
-    box-shadow: var(--shadow);
 }
 
 .action-plan-heading {
@@ -4133,11 +4157,7 @@ img {
 }
 
 .next-steps-card {
-    background: rgba(255, 184, 0, 0.12);
-    padding: 1.5rem;
-    border-radius: var(--radius);
     margin-top: 2rem;
-    border-left: 4px solid var(--brand);
 }
 
 .next-steps-card h4 {
@@ -4156,12 +4176,8 @@ img {
 }
 
 .deployment-threshold {
-    background: rgba(0, 123, 255, 0.12);
-    border: 2px solid var(--brand);
-    border-radius: var(--radius);
-    padding: 2rem;
     margin-top: 2rem;
-    box-shadow: var(--shadow);
+    padding: 2rem;
 }
 
 .deployment-threshold h3 {
@@ -4610,11 +4626,8 @@ img {
 }
 
 .split-position {
-    background: rgba(255, 184, 0, 0.1);
-    padding: 2rem;
-    border-left: 4px solid var(--brand);
-    border-radius: var(--radius);
     margin-bottom: 2rem;
+    padding: 2rem;
 }
 
 .split-name {
@@ -5115,10 +5128,6 @@ img {
 /* temperament-orientation-card consolidated with transition-card above */
 
 .temperament-info-box {
-    background: var(--glass-light);
-    border-left: 4px solid var(--brand);
-    border-radius: var(--radius);
-    padding: 1.5rem;
     margin-bottom: 2rem;
     text-align: left;
     max-width: 600px;

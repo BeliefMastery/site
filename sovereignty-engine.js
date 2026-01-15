@@ -1447,7 +1447,7 @@ export class SovereigntyEngine {
           </div>
         ` : ''}
 
-        <div class="split-position">
+        <div class="split-position panel-brand-left">
           <h3 class="section-title">Sovereign Split Position</h3>
           <p class="split-name">${SecurityUtils.sanitizeHTML(split.name || '')}</p>
           <p class="split-description">${SecurityUtils.sanitizeHTML(split.description || '')}</p>

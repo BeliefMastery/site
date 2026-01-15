@@ -1261,7 +1261,7 @@ export class NeedsDependencyEngine {
       <div class="recommendations-section">
         <h2>Action Strategies</h2>
         ${highPriority.length > 0 ? `
-          <div class="priority-group high">
+          <div class="priority-group panel-accent-left high">
             <h3>High Priority</h3>
             <ul>
               ${highPriority.map(rec => `<li><strong>${rec.title}:</strong> ${rec.description}</li>`).join('')}
@@ -1269,7 +1269,7 @@ export class NeedsDependencyEngine {
           </div>
         ` : ''}
         ${mediumPriority.length > 0 ? `
-          <div class="priority-group medium">
+          <div class="priority-group panel-brand-left medium">
             <h3>Medium Priority</h3>
             <ul>
               ${mediumPriority.map(rec => `<li><strong>${rec.title}:</strong> ${rec.description}</li>`).join('')}

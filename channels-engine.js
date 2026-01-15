@@ -663,7 +663,7 @@ export class ChannelsEngine {
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <div class="info-box info-box-accent">
+        <div class="info-box info-box-accent panel-brand-left">
           <h4>Your Node Assessment Summary</h4>
           ${weakNodes.length > 0 ? `<p><strong>Areas needing support:</strong> ${weakNodes.join(', ')}</p>` : ''}
           ${strongNodes.length > 0 ? `<p><strong>Areas of strength:</strong> ${strongNodes.join(', ')}</p>` : ''}
