@@ -1740,6 +1740,34 @@ figure.image-card {
     margin: 0;
 }
 
+.image-card-frame {
+    background: rgba(20, 35, 55, 0.85);
+    border: 2px solid var(--border-medium);
+    box-shadow: var(--shadow-md);
+    padding: 1rem;
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.image-card-frame::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    z-index: 1;
+}
+
+.image-card-frame:hover {
+    box-shadow: var(--shadow-md), 0 0 30px var(--glow-accent);
+    border-color: var(--border-medium);
+    transform: translateY(-4px) scale(1.01);
+}
+
 /* Override max-width for grid layouts */
 .image-row.books-grid .image-card,
 .image-row.tools-grid .image-card {
