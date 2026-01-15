@@ -610,8 +610,35 @@ export class NeedsDependencyEngine {
     `;
   }
 
+  getNeedChainOptions(question) {
+    if (Array.isArray(question.options) && question.options.length) {
+      return question.options;
+    }
+
+    const depth = question.mapsTo?.depth;
+    let optionNeeds = [];
+
+    if (depth && depth > 1) {
+      const previousAnswer = this.answers[`p3_need_chain_${depth - 1}`];
+      if (previousAnswer?.mapsTo?.deeper?.length) {
+        optionNeeds = previousAnswer.mapsTo.deeper;
+      }
+    }
+
+    if (!optionNeeds.length && NEEDS_VOCABULARY) {
+      optionNeeds = Object.values(NEEDS_VOCABULARY).flatMap(category => category.needs || []);
+    }
+
+    const uniqueNeeds = Array.from(new Set(optionNeeds));
+    return uniqueNeeds.map(need => ({
+      text: need,
+      mapsTo: { need, deeper: [] }
+    }));
+  }
+
   renderNeedChainQuestion(question) {
     const currentAnswer = this.answers[question.id];
+    const options = this.getNeedChainOptions(question);
     
     return `
       <div class="question-block">
@@ -621,7 +648,7 @@ export class NeedsDependencyEngine {
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="need-chain-options">
-          ${question.options.map((option, index) => `
+          ${options.map((option, index) => `
             <label class="need-chain-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
               <input 
                 type="radio" 

@@ -132,6 +132,11 @@ export class ManipulationEngine {
   }
 
   attachEventListeners() {
+    const startBtn = document.getElementById('startAssessment');
+    if (startBtn) {
+      startBtn.addEventListener('click', () => this.startAssessment());
+    }
+
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -185,6 +190,18 @@ export class ManipulationEngine {
         this.prevQuestion();
       }
     });
+  }
+
+  startAssessment() {
+    const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const questionnaireSection = document.getElementById('questionnaireSection');
+
+    if (introSection) introSection.classList.add('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+    if (questionnaireSection) questionnaireSection.classList.add('active');
+
+    this.buildPhase1Sequence();
   }
 
   /**

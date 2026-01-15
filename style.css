@@ -2453,7 +2453,7 @@ figure.headline-book a {
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .question-number {
@@ -2576,8 +2576,8 @@ figure.headline-book a {
 }
 
 .likert-option:hover {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: var(--brand);
+    background: var(--glass-light);
+    border-color: var(--border-medium);
 }
 
 .likert-option input[type="radio"] {
@@ -2594,11 +2594,13 @@ figure.headline-book a {
 .text-input-container textarea {
     width: 100%;
     padding: 1rem;
-    border: 2px solid rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--border-subtle);
     border-radius: var(--radius);
     font-family: inherit;
     font-size: 1rem;
     resize: vertical;
+    background: var(--glass-light);
+    color: var(--brand);
 }
 
 /* Results Displays */
@@ -2636,10 +2638,11 @@ figure.headline-book a {
     position: relative;
     width: 100%;
     height: 40px;
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--glass-light);
     border-radius: 20px;
     overflow: hidden;
     margin-bottom: 0.5rem;
+    border: 1px solid var(--border-subtle);
 }
 
 .spectrum-fill {
@@ -3527,18 +3530,20 @@ img {
 
 /* Character Sheet-Specific */
 .character-form {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass);
     padding: 2.5rem;
     border-radius: var(--radius);
     margin-bottom: 2rem;
     box-shadow: var(--shadow);
+    border: 1px solid var(--border-subtle);
 }
 
 .character-sheet {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass);
     padding: 3rem;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    border: 1px solid var(--border-subtle);
 }
 
 .character-sheet h2 {
@@ -3557,7 +3562,7 @@ img {
 .character-sheet section {
     margin-bottom: 2.5rem;
     padding-bottom: 2rem;
-    border-bottom: 2px solid var(--border);
+    border-bottom: 2px solid var(--border-subtle);
 }
 
 .character-sheet section:last-child {
@@ -3565,14 +3570,14 @@ img {
 }
 
 .character-sheet h3 {
-    color: var(--text);
+    color: var(--brand);
     margin-top: 0;
     margin-bottom: 1rem;
     font-size: 1.5rem;
 }
 
 .character-sheet h4 {
-    color: var(--text);
+    color: var(--brand);
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
@@ -3586,18 +3591,18 @@ img {
 }
 
 .stat-item {
-    background: var(--bg);
+    background: var(--glass-light);
     padding: 1rem;
     border-radius: var(--radius);
     text-align: center;
-    border: 2px solid var(--border);
+    border: 2px solid var(--border-subtle);
 }
 
 .stat-name {
     display: block;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: var(--text);
+    color: var(--brand);
 }
 
 .stat-value {
@@ -3623,17 +3628,17 @@ img {
 .character-sheet table td {
     padding: 0.75rem;
     text-align: left;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .character-sheet table th {
-    background: var(--bg);
+    background: var(--glass-light);
     font-weight: 600;
-    color: var(--text);
+    color: var(--brand);
 }
 
 .character-sheet table tr:hover {
-    background: var(--bg);
+    background: var(--glass-light);
 }
 
 .character-sheet ul {
@@ -3643,7 +3648,7 @@ img {
 
 .character-sheet ul li {
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .character-sheet ul li:last-child {
@@ -3651,7 +3656,7 @@ img {
 }
 
 .feature-item {
-    background: var(--bg);
+    background: var(--glass-light);
     padding: 1.5rem;
     border-radius: var(--radius);
     margin-bottom: 1rem;
@@ -3660,7 +3665,7 @@ img {
 
 .astrology-reference,
 .astrology-details {
-    background: var(--bg);
+    background: var(--glass-light);
     padding: 1.5rem;
     border-radius: var(--radius);
 }
@@ -4621,7 +4626,7 @@ img {
 /* temperament-orientation-card consolidated with transition-card above */
 
 .temperament-info-box {
-    background: rgba(0, 123, 255, 0.1);
+    background: var(--glass-light);
     border-left: 4px solid var(--brand);
     border-radius: var(--radius);
     padding: 1.5rem;
@@ -4646,10 +4651,10 @@ img {
 .temperament-spectrum {
     position: relative;
     height: 30px;
-    background: linear-gradient(to right, rgba(0, 123, 255, 0.3), rgba(255, 192, 203, 0.3));
+    background: linear-gradient(to right, rgba(80, 140, 255, 0.35), rgba(20, 35, 55, 0.25));
     border-radius: var(--radius);
     margin-top: 1rem;
-    border: 2px solid var(--brand);
+    border: 2px solid var(--border-medium);
 }
 
 .temperament-marker {
@@ -4660,20 +4665,20 @@ img {
     height: 16px;
     background: var(--brand);
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid var(--glass);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .temperament-marker-large {
     width: 20px;
     height: 20px;
-    border: 3px solid white;
+    border: 3px solid var(--glass);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .temperament-profile-card {
-    background: rgba(255, 184, 0, 0.15);
-    border: 3px solid var(--brand);
+    background: var(--glass);
+    border: 2px solid var(--border-medium);
     border-radius: var(--radius);
     padding: 2rem;
     margin-bottom: 2rem;
@@ -4686,7 +4691,7 @@ img {
 }
 
 .temperament-profile-inner {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--glass-light);
     padding: 1.5rem;
     border-radius: var(--radius);
     margin-bottom: 1.5rem;
@@ -4724,7 +4729,7 @@ img {
 .temperament-variation-note {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--glass-light);
     border-radius: var(--radius);
 }
 
@@ -4735,7 +4740,7 @@ img {
 }
 
 .temperament-spectrum-container {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--glass-light);
     padding: 1.5rem;
     border-radius: var(--radius);
 }
@@ -4748,10 +4753,10 @@ img {
 .temperament-spectrum-large {
     position: relative;
     height: 40px;
-    background: linear-gradient(to right, rgba(0, 123, 255, 0.3), rgba(255, 192, 203, 0.3));
+    background: linear-gradient(to right, rgba(80, 140, 255, 0.35), rgba(20, 35, 55, 0.25));
     border-radius: var(--radius);
     margin-bottom: 1rem;
-    border: 2px solid var(--brand);
+    border: 2px solid var(--border-medium);
 }
 
 .temperament-spectrum-labels {
@@ -4769,7 +4774,7 @@ img {
 }
 
 .dimension-breakdown {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass);
     border-radius: var(--radius);
     padding: 2rem;
     margin-bottom: 2rem;
@@ -4783,7 +4788,7 @@ img {
 .dimension-item {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--glass-light);
     border-radius: var(--radius);
     border-left: 3px solid var(--brand);
 }
@@ -4796,7 +4801,7 @@ img {
 .dimension-spectrum {
     position: relative;
     height: 30px;
-    background: linear-gradient(to right, rgba(0, 123, 255, 0.2), rgba(255, 192, 203, 0.2));
+    background: linear-gradient(to right, rgba(80, 140, 255, 0.25), rgba(20, 35, 55, 0.2));
     border-radius: 4px;
     margin-bottom: 0.5rem;
 }
@@ -4809,7 +4814,7 @@ img {
     height: 16px;
     background: var(--brand);
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid var(--glass);
 }
 
 .dimension-score-text {

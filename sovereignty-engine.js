@@ -1603,11 +1603,16 @@ export class SovereigntyEngine {
 
   showQuestionContainer() {
     const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsContainer = document.getElementById('resultsContainer');
     
     if (introSection) introSection.classList.add('hidden');
-    if (questionnaireSection) questionnaireSection.classList.remove('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+    if (questionnaireSection) {
+      questionnaireSection.classList.remove('hidden');
+      questionnaireSection.classList.add('active');
+    }
     if (resultsContainer) resultsContainer.classList.add('hidden');
   }
 
@@ -1615,7 +1620,10 @@ export class SovereigntyEngine {
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsContainer = document.getElementById('resultsContainer');
     
-    if (questionnaireSection) questionnaireSection.classList.add('hidden');
+    if (questionnaireSection) {
+      questionnaireSection.classList.add('hidden');
+      questionnaireSection.classList.remove('active');
+    }
     if (resultsContainer) {
       resultsContainer.classList.remove('hidden');
       resultsContainer.scrollIntoView({ behavior: 'smooth' });
@@ -1734,11 +1742,16 @@ export class SovereigntyEngine {
       sessionStorage.removeItem('sovereigntyAssessment');
       
       const introSection = document.getElementById('introSection');
+      const actionButtonsSection = document.getElementById('actionButtonsSection');
       const questionnaireSection = document.getElementById('questionnaireSection');
       const resultsContainer = document.getElementById('resultsContainer');
       
       if (introSection) introSection.classList.remove('hidden');
-      if (questionnaireSection) questionnaireSection.classList.add('hidden');
+      if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+      if (questionnaireSection) {
+        questionnaireSection.classList.add('hidden');
+        questionnaireSection.classList.remove('active');
+      }
       if (resultsContainer) resultsContainer.classList.add('hidden');
       
       // Show IQ bracket selection

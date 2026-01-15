@@ -154,6 +154,18 @@ export class ChannelsEngine {
     }
   }
 
+  async startAssessment() {
+    const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const questionnaireSection = document.getElementById('questionnaireSection');
+
+    if (introSection) introSection.classList.add('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+    if (questionnaireSection) questionnaireSection.classList.add('active');
+
+    await this.buildPhase1Sequence();
+  }
+
   /**
    * Build Phase 1 question sequence
    * @returns {Promise<void>}

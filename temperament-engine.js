@@ -271,6 +271,11 @@ export class TemperamentEngine {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
     }
 
+    const clearCacheBtn = document.getElementById('clearCacheBtn');
+    if (clearCacheBtn) {
+      clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
+    }
+
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => {
@@ -281,8 +286,16 @@ export class TemperamentEngine {
     }
   }
 
-  startAssessment() {
-    document.getElementById('questionnaireSection').classList.add('active');
+  async startAssessment() {
+    const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const questionnaireSection = document.getElementById('questionnaireSection');
+
+    if (introSection) introSection.classList.add('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+    if (questionnaireSection) questionnaireSection.classList.add('active');
+
+    await this.buildPhase1Sequence();
     this.currentQuestionIndex = 0;
     this.renderCurrentQuestion();
     this.updateProgress();
@@ -1092,7 +1105,11 @@ AI AGENT CONFIGURATION:
       
       if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
         // Resume assessment
+        const introSection = document.getElementById('introSection');
+        const actionButtonsSection = document.getElementById('actionButtonsSection');
         const questionnaireSection = document.getElementById('questionnaireSection');
+        if (introSection) introSection.classList.add('hidden');
+        if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
         if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
@@ -1127,8 +1144,15 @@ AI AGENT CONFIGURATION:
     
     sessionStorage.removeItem('temperamentProgress');
     
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.remove('active');
+    const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const questionnaireSection = document.getElementById('questionnaireSection');
+    const resultsSection = document.getElementById('resultsSection');
+
+    if (introSection) introSection.classList.remove('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+    if (questionnaireSection) questionnaireSection.classList.remove('active');
+    if (resultsSection) resultsSection.classList.remove('active');
     
     this.buildPhase1Sequence();
   }

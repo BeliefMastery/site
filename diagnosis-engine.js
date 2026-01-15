@@ -610,6 +610,19 @@ export class DiagnosisEngine {
     }
   }
 
+  clearAllCachedData() {
+    if (!confirm('Are you sure you want to clear all cached data? This will reset your progress and history.')) {
+      return;
+    }
+
+    this.dataStore.clear('progress');
+    this.dataStore.clear('history');
+    sessionStorage.removeItem('diagnosisProgress');
+    localStorage.removeItem('diagnosisProgress');
+    this.resetAssessment();
+    alert('All cached data for Pathology Assessment has been cleared.');
+  }
+
   /**
    * Start the assessment with selected categories
    * @returns {Promise<void>}
