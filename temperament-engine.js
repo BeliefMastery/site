@@ -12,6 +12,18 @@ let TEMPERAMENT_DIMENSIONS, INTIMATE_DYNAMICS;
 let ATTRACTION_RESPONSIVENESS, TEMPERAMENT_SCORING;
 let PHASE_1_ORIENTATION_QUESTIONS;
 
+const GENDER_QUESTION = {
+  id: 'p1_gender',
+  type: 'gender',
+  question: 'What is your gender?',
+  options: [
+    { value: 'woman', label: 'Woman' },
+    { value: 'man', label: 'Man' },
+    { value: 'non_binary', label: 'Non-binary' },
+    { value: 'prefer_not_to_say', label: 'Prefer not to say' }
+  ]
+};
+
 /**
  * Temperament Engine - Analyzes masculine-feminine temperament spectrum
  */
@@ -101,7 +113,8 @@ export class TemperamentEngine {
       );
       TEMPERAMENT_SCORING = scoringModule.TEMPERAMENT_SCORING;
 
-      this.debugReporter.recordSection('Phase 1', PHASE_1_ORIENTATION_QUESTIONS?.length || 0);
+      const phase1Count = (PHASE_1_ORIENTATION_QUESTIONS?.length || 0) + 1;
+      this.debugReporter.recordSection('Phase 1', phase1Count);
     } catch (error) {
       this.debugReporter.logError(error, 'loadTemperamentData');
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
@@ -119,7 +132,7 @@ export class TemperamentEngine {
     // Phase 1: Orientation Screening (7 quick questions)
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
-    this.questionSequence = [...PHASE_1_ORIENTATION_QUESTIONS];
+    this.questionSequence = [GENDER_QUESTION, ...PHASE_1_ORIENTATION_QUESTIONS];
     this.debugReporter.recordQuestionCount(this.questionSequence.length);
   }
 
@@ -329,6 +342,12 @@ export class TemperamentEngine {
 
     const currentQ = this.questionSequence[this.currentQuestionIndex];
     
+    // Phase 1: Render gender prompt first
+    if (this.currentPhase === 1 && currentQ.type === 'gender') {
+      this.renderGenderQuestion(currentQ);
+      return;
+    }
+
     // Phase 1: Render 3-point orientation questions
     if (this.currentPhase === 1 && currentQ.type === 'three_point') {
       this.renderThreePointQuestion(currentQ);
@@ -347,6 +366,56 @@ export class TemperamentEngine {
       this.debugReporter.logError(error, 'renderCurrentQuestion');
       ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
+  }
+
+  renderGenderQuestion(question) {
+    const questionContainer = document.getElementById('questionContainer');
+    const currentAnswer = this.answers[question.id];
+
+    SecurityUtils.safeInnerHTML(questionContainer, `
+      <div class="question-block">
+        <div class="question-header">
+          <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
+          <span class="question-stage">Orientation</span>
+        </div>
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <div class="three-point-options">
+          ${question.options.map((option, index) => `
+            <label class="three-point-option ${currentAnswer && currentAnswer.value === option.value ? 'selected' : ''}">
+              <input
+                type="radio"
+                name="question_${question.id}"
+                value="${index}"
+                data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
+                ${currentAnswer && currentAnswer.value === option.value ? 'checked' : ''}
+              />
+              <span class="option-text">${SecurityUtils.sanitizeHTML(option.label || '')}</span>
+            </label>
+          `).join('')}
+        </div>
+        <p class="question-help">This helps us contextualize your results. You can skip by choosing “Prefer not to say.”</p>
+      </div>
+    `);
+
+    const inputs = document.querySelectorAll(`input[name="question_${question.id}"]`);
+    inputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        const optionData = JSON.parse(e.target.dataset.optionData);
+        this.answers[question.id] = optionData;
+        this.analysisData.gender = optionData.value;
+        this.analysisData.genderLabel = optionData.label;
+
+        document.querySelectorAll('.three-point-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        e.target.closest('label').classList.add('selected');
+
+        this.saveProgress();
+      });
+    });
+
+    this.updateProgress();
+    this.updateNavigationButtons();
   }
 
   renderThreePointQuestion(question) {
@@ -374,7 +443,7 @@ export class TemperamentEngine {
             </label>
           `).join('')}
         </div>
-        <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
+        <div class="temperament-tip">
           <strong>Tip:</strong> Answer based on what feels most natural to you, not what you think you "should" be.
         </div>
       </div>
@@ -432,7 +501,7 @@ export class TemperamentEngine {
           </div>
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>
         </div>
-        <div style="margin-top: 0.5rem; padding: 0.75rem; background: rgba(255, 184, 0, 0.1); border-radius: var(--radius); font-size: 0.9rem; color: var(--muted); line-height: 1.5;">
+        <div class="temperament-tip">
           <strong>Tip:</strong> Answer based on your authentic experience and preferences, not what you think you "should" be.
         </div>
       </div>
@@ -478,19 +547,19 @@ export class TemperamentEngine {
     }
     
     SecurityUtils.safeInnerHTML(questionContainer, `
-      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
-        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Orientation Complete</h3>
-        <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">${SecurityUtils.sanitizeHTML(rangeLabel)}</h4>
-          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(rangeDescription)}</p>
-          <div style="position: relative; height: 30px; background: linear-gradient(to right, rgba(0,123,255,0.3), rgba(255,192,203,0.3)); border-radius: var(--radius); margin-top: 1rem; border: 2px solid var(--brand);">
-            <div style="position: absolute; top: 50%; left: ${score * 100}%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--brand); border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>
+      <div class="transition-card temperament-orientation-card">
+        <h3 class="temperament-panel-title">Orientation Complete</h3>
+        <div class="temperament-info-box">
+          <h4>${SecurityUtils.sanitizeHTML(rangeLabel)}</h4>
+          <p>${SecurityUtils.sanitizeHTML(rangeDescription)}</p>
+          <div class="temperament-spectrum">
+            <div class="temperament-marker" style="left: ${score * 100}%;"></div>
           </div>
-          <p style="text-align: center; margin-top: 0.75rem; font-size: 0.9rem; color: var(--muted);">
+          <p class="temperament-spectrum-position">
             Preliminary Position: ${(score * 100).toFixed(0)}% on the spectrum
           </p>
         </div>
-        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <p class="temperament-panel-text">
           Now we'll explore the detailed dimensions to map your temperament expression across different contexts and relationships.
         </p>
         <button class="btn btn-primary" id="continueToPhase2">Continue to Detailed Assessment</button>
@@ -511,7 +580,7 @@ export class TemperamentEngine {
     const progressFill = document.getElementById('progressFill');
     if (progressFill) {
       // Calculate total progress across both phases
-      const phase1Total = PHASE_1_ORIENTATION_QUESTIONS.length;
+      const phase1Total = PHASE_1_ORIENTATION_QUESTIONS.length + 1;
       const phase2Total = this.currentPhase === 2 ? this.questionSequence.length : 
                          (Object.keys(TEMPERAMENT_DIMENSIONS).reduce((sum, k) => sum + TEMPERAMENT_DIMENSIONS[k].questions.length, 0) +
                           Object.keys(INTIMATE_DYNAMICS).reduce((sum, k) => sum + INTIMATE_DYNAMICS[k].questions.length, 0) +
@@ -558,8 +627,15 @@ export class TemperamentEngine {
     // For Phase 1, ensure answer is saved
     if (this.currentPhase === 1) {
       if (this.answers[currentQ.id] === undefined) {
-        // Default to middle option if none selected
-        if (currentQ.options && currentQ.options.length > 0) {
+        if (currentQ.type === 'gender') {
+          const defaultOption = currentQ.options?.find(option => option.value === 'prefer_not_to_say');
+          if (defaultOption) {
+            this.answers[currentQ.id] = defaultOption;
+            this.analysisData.gender = defaultOption.value;
+            this.analysisData.genderLabel = defaultOption.label;
+          }
+        } else if (currentQ.options && currentQ.options.length > 0) {
+          // Default to middle option if none selected
           this.answers[currentQ.id] = currentQ.options[Math.floor(currentQ.options.length / 2)];
         }
       }
@@ -769,13 +845,15 @@ export class TemperamentEngine {
     if (!questionContainer) return;
     
     SecurityUtils.safeInnerHTML(questionContainer, `
-      <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
-        <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Intimate Dynamics Section</h3>
-        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <div class="transition-card temperament-consent-card">
+        <h3 class="temperament-panel-title">Intimate Dynamics Section</h3>
+        <p class="temperament-panel-text">
           The next section explores intimate and attraction patterns. These questions help map how energy organizes in relational and intimate contexts. <strong>Skip any question that feels misaligned.</strong> Your responses are for pattern recognition, not judgment.
         </p>
-        <button class="btn btn-primary" id="continueToIntimate">Continue</button>
-        <button class="btn btn-secondary" id="skipIntimate">Skip This Section</button>
+        <div class="temperament-consent-actions">
+          <button class="btn btn-primary" id="continueToIntimate">Continue</button>
+          <button class="btn btn-secondary" id="skipIntimate">Skip This Section</button>
+        </div>
       </div>
     `);
     
@@ -822,9 +900,9 @@ export class TemperamentEngine {
     
     SecurityUtils.safeInnerHTML(questionContainer, `
       <div class="question-block">
-        ${categoryLabel ? `<p style="color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">${SecurityUtils.sanitizeHTML(categoryLabel)}</p>` : ''}
-        ${question.description ? `<p class="description" style="margin-bottom: 1rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(question.description)}</p>` : ''}
-        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--brand);">${SecurityUtils.sanitizeHTML(question.question || '')}</h4>
+        ${categoryLabel ? `<p class="stage-label">${SecurityUtils.sanitizeHTML(categoryLabel)}</p>` : ''}
+        ${question.description ? `<p class="description temperament-description">${SecurityUtils.sanitizeHTML(question.description)}</p>` : ''}
+        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider">
@@ -891,9 +969,9 @@ export class TemperamentEngine {
 
     // Contextual framing block at results entry
     let html = `
-      <div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 2rem;">
-        <p style="margin: 0; font-size: 0.95rem; line-height: 1.7; color: var(--muted);">
-          <strong style="color: var(--brand);">Contextual Framing:</strong> Temperament reflects how energy tends to organize in relational and intimate contexts. It varies by partner, season, safety, and life phase. These results describe tendencies and preferences, not fixed identity or mandates.
+      <div class="temperament-info-box temperament-framing">
+        <p>
+          <strong>Contextual Framing:</strong> Temperament reflects how energy tends to organize in relational and intimate contexts. It varies by partner, season, safety, and life phase. These results describe tendencies and preferences, not fixed identity or mandates.
         </p>
       </div>
     `;
@@ -910,35 +988,35 @@ export class TemperamentEngine {
     }
 
     html += `
-      <div style="background: rgba(255, 184, 0, 0.15); border: 3px solid var(--brand); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;">
-        <h2 style="color: var(--brand); margin-bottom: 1rem; font-size: 1.5rem;">Temperament Expression Profile</h2>
-        <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
-          <h3 style="color: var(--brand); margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(interpretation.label || '')}</h3>
-          <p style="color: var(--muted); line-height: 1.6; margin-bottom: 1rem;">${SecurityUtils.sanitizeHTML(interpretation.description || '')}</p>
+      <div class="temperament-profile-card">
+        <h2>Temperament Expression Profile</h2>
+        <div class="temperament-profile-inner">
+          <h3>${SecurityUtils.sanitizeHTML(interpretation.label || '')}</h3>
+          <p>${SecurityUtils.sanitizeHTML(interpretation.description || '')}</p>
           
-          <div style="margin-top: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Expression Patterns:</h4>
-            <ul style="margin-left: 1.5rem; line-height: 1.8;">
-              ${interpretation.characteristics.map(char => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(char || '')}</li>`).join('')}
+          <div class="temperament-patterns">
+            <h4>Expression Patterns:</h4>
+            <ul>
+              ${interpretation.characteristics.map(char => `<li>${SecurityUtils.sanitizeHTML(char || '')}</li>`).join('')}
             </ul>
           </div>
           
-          <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: var(--radius);">
-            <p style="font-style: italic; color: var(--muted); line-height: 1.6;"><strong>Note on Variation:</strong> ${SecurityUtils.sanitizeHTML(interpretation.variations || '')}</p>
+          <div class="temperament-variation-note">
+            <p><strong>Note on Variation:</strong> ${SecurityUtils.sanitizeHTML(interpretation.variations || '')}</p>
           </div>
         </div>
 
-        <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: var(--radius);">
-          <h4 style="color: var(--brand); margin-bottom: 1rem;">Temperament Spectrum Position</h4>
-          <div style="position: relative; height: 40px; background: linear-gradient(to right, rgba(0,123,255,0.3), rgba(255,192,203,0.3)); border-radius: var(--radius); margin-bottom: 1rem; border: 2px solid var(--brand);">
-            <div style="position: absolute; top: 50%; left: ${temperament.normalizedScore * 100}%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: var(--brand); border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
+        <div class="temperament-spectrum-container">
+          <h4>Temperament Spectrum Position</h4>
+          <div class="temperament-spectrum-large">
+            <div class="temperament-marker temperament-marker-large" style="left: ${temperament.normalizedScore * 100}%;"></div>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted);">
+          <div class="temperament-spectrum-labels">
             <span>Feminine-Leaning (0%)</span>
             <span>Balanced (50%)</span>
             <span>Masculine-Leaning (100%)</span>
           </div>
-          <p style="text-align: center; margin-top: 0.5rem; font-weight: 600; color: var(--brand);">
+          <p class="temperament-spectrum-position">
             Expression Position: ${(temperament.normalizedScore * 100).toFixed(1)}% on the spectrum
           </p>
         </div>
@@ -946,8 +1024,8 @@ export class TemperamentEngine {
     `;
 
     // Dimension breakdown
-    html += '<div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;">';
-    html += '<h3 style="color: var(--brand); margin-bottom: 1.5rem;">Dimension Breakdown</h3>';
+    html += '<div class="dimension-breakdown">';
+    html += '<h3>Dimension Breakdown</h3>';
     
     Object.keys(this.analysisData.dimensionScores).forEach(dimKey => {
       const score = this.analysisData.dimensionScores[dimKey];
