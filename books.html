@@ -97,7 +97,7 @@
       <ul class="nav-list" id="top-nav" role="menubar">
         <li role="none"><a role="menuitem" href="index.html">Home</a></li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="books.html" class="dropdown-toggle active">Books <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="books.html" class="dropdown-toggle active">Books <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
             <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
@@ -109,7 +109,7 @@
           </ul>
         </li>
         <li role="none" class="nav-dropdown">
-          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span style="font-size:0.8em;">&#9660;</span></a>
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
             <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
             <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
@@ -134,21 +134,21 @@
   <main class="container" id="main">
     <section id="books-overview" data-bg="./images/books-background.jpg" aria-labelledby="books-intro-title">
       <div class="section-inner">
-        <div style="max-width:72ch;margin:0 auto;text-align:center;padding:3rem 1rem;">
-          <h1 id="books-intro-title" style="margin-bottom:2rem;color:var(--brand);">Structure Your Mind - Author Your Life.</h1>
-          <p style="font-size:1.2rem;line-height:1.8;color:var(--muted);margin-bottom:2rem;text-align:center;">
+        <div class="books-intro">
+          <h1 id="books-intro-title" class="books-intro-title">Structure Your Mind - Author Your Life.</h1>
+          <p class="books-intro-subtitle">
             Excavate your hidden rules and fortify your cognitive defenses.
           </p>
           
-          <div class="portal-grid" style="margin-top:3rem;">
+          <div class="portal-grid portal-grid-spaced">
             <article class="portal-card" data-target="books.html#belief-mastery">
-              <blockquote style="font-size:1.3rem;font-weight:600;color:var(--brand);">The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do.</blockquote>
-              <p style="font-size:1.05rem;line-height:1.7;">Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat the same emotional loops. <strong>Belief Mastery</strong> shows you how to address those cycles at the level of 'need' and 'belief' with a step-by-step process for tracing, exposing, and transforming the buried structures that govern behavior.</p>
+              <blockquote class="portal-quote">The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do.</blockquote>
+              <p class="portal-body">Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat the same emotional loops. <strong>Belief Mastery</strong> shows you how to address those cycles at the level of 'need' and 'belief' with a step-by-step process for tracing, exposing, and transforming the buried structures that govern behavior.</p>
               <a class="btn btn-primary" href="#belief-mastery">Explore Inner Architecture</a>
             </article>
             <article class="portal-card" data-target="books.html#sovereign-of-mind">
-              <blockquote style="font-size:1.3rem;font-weight:600;color:var(--brand);">Your thoughts may not always be your own.</blockquote>
-              <p style="font-size:1.05rem;line-height:1.7;">In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.</p>
+              <blockquote class="portal-quote">Your thoughts may not always be your own.</blockquote>
+              <p class="portal-body">In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.</p>
               <a class="btn btn-primary" href="#sovereign-of-mind">Fortify Cognitive Structure</a>
             </article>
           </div>
@@ -158,12 +158,12 @@
 
     <section id="belief-mastery" data-bg="./images/books-background2.jpg" aria-labelledby="bm-title">
       <div class="section-inner">
-        <h2 id="bm-title" style="text-align:center;margin:0 0 .4rem 0">Belief Mastery</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">A Structural Method for Rewriting Your Hidden Rules</p>
+        <h2 id="bm-title" class="book-section-title">Belief Mastery</h2>
+        <p class="book-section-subtitle">A Structural Method for Rewriting Your Hidden Rules</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/BM-cover.jpg" alt="Belief Mastery cover" style="max-width:440px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+        <div class="book-hero">
+          <img src="./images/BM-cover.jpg" alt="Belief Mastery cover" class="book-cover" loading="lazy">
+          <p class="book-lead">
             Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops. <strong>Belief Mastery</strong> rewrites those buried rules through a precise step-by-step inference and transformation process.
           </p>
           <a class="btn btn-outline" href="#purchase">Purchase Belief Mastery</a>
@@ -177,60 +177,60 @@
           <li>Master pattern tracing through detailed case studies.</li>
         </ul>
 
-        <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;margin:1rem auto 0;font-style:italic;">
+        <p class="book-note">
           Blending right-brain visualization (<em>The Journey Home</em>) with left-brain logic (<em>The Belief Inference Process</em>), this book delivers surgeon-level clarity with witness-level compassion.
         </p>
 
-        <section style="margin-top:1.25rem;">
+        <section class="book-section-spacer">
           <h3 id="bm-chapters">Expanded chapter guide</h3>
           <div class="grid">
             <div class="card">
               <strong>Chapter 1 – Belief Mastery: Foundations</strong>
-              <p style="margin:0;color:var(--muted)">Engagement criteria, core principles, and readiness reflection for subconscious liberation.</p>
+              <p class="card-note">Engagement criteria, core principles, and readiness reflection for subconscious liberation.</p>
               <div class="extended">Outlines purpose, disclaimers, and prerequisites like emotional ownership. Bridges to archetypal work, framing belief mastery as accelerating authorship over inherited patterns.</div>
             </div>
             <div class="card">
               <strong>Chapter 2 – Archetypal Imprints</strong>
-              <p style="margin:0;color:var(--muted)">Masculine/feminine halves and visualization's role in imprint transformation.</p>
+              <p class="card-note">Masculine/feminine halves and visualization's role in imprint transformation.</p>
               <div class="extended">Defines imprints as blueprints of experience, emphasizing right-brain visualization to rewire subconscious relational dynamics and unlock structural change.</div>
             </div>
             <div class="card">
               <strong>Chapter 3 – The Journey Home</strong>
-              <p style="margin:0;color:var(--muted)">Guided narrative to reveal primary imprints and developmental roots.</p>
+              <p class="card-note">Guided narrative to reveal primary imprints and developmental roots.</p>
               <div class="extended">Seven-page immersive walk surfaces Main Character view, boundary/authority (Father), family positioning (Hallway), and nurturance (Mother). Analyzes interactions for subconscious patterning origins.</div>
             </div>
             <div class="card">
               <strong>Chapter 4 – The Return</strong>
-              <p style="margin:0;color:var(--muted)">Second journey for repair, self-parenting, and archetype integration.</p>
+              <p class="card-note">Second journey for repair, self-parenting, and archetype integration.</p>
               <div class="extended">Reforms imprints via visualization, embodying internal Mother/Father for stability/acceptance. Includes real-time engagement, practical applications, and self-parenting guide to end external dependency.</div>
             </div>
             <div class="card">
               <strong>Chapter 5 – Needs and Beliefs</strong>
-              <p style="margin:0;color:var(--muted)">Needs/vice vocabularies, dependency loops, and core-limiting beliefs.</p>
+              <p class="card-note">Needs/vice vocabularies, dependency loops, and core-limiting beliefs.</p>
               <div class="extended">Maps 18+ loops (e.g., SPACE, JOY, SECURITY) and chains, linking unmet needs to vices/beliefs. Explores outsourcing costs, sovereign resourcing, and barriers from outdated protective structures.</div>
             </div>
             <div class="card">
               <strong>Chapter 6 – Belief Inference</strong>
-              <p style="margin:0;color:var(--muted)">12-step process to trace, confirm, and prepare beliefs for dismantling.</p>
+              <p class="card-note">12-step process to trace, confirm, and prepare beliefs for dismantling.</p>
               <div class="extended">From dissatisfactory analysis/vice identification to exiled emotions/origin needs, inference, loop/resistance validation, denied expression, and sensitivity prep. Builds precision for root-level diagnosis.</div>
             </div>
             <div class="card">
               <strong>Chapter 7 – Dismantling Beliefs</strong>
-              <p style="margin:0;color:var(--muted)">Strategic contradiction, cathartic release, and integration channels.</p>
+              <p class="card-note">Strategic contradiction, cathartic release, and integration channels.</p>
               <div class="extended">Harnesses fury for relevance testing, habit transitions, and second-order suffering navigation. Details "bucket and hose" catharsis, unfurling denied expressions, disclosure power, and dynamic flow markers for completion.</div>
             </div>
             <div class="card">
               <strong>Appendices 1-5: Patterns, References, Cases, Methodology, & Tributaries</strong>
-              <p style="margin:0;color:var(--muted)">Coping compendium, taxonomies/tables, case studies, kinesiology/epistemics, and references.</p>
+              <p class="card-note">Coping compendium, taxonomies/tables, case studies, kinesiology/epistemics, and references.</p>
               <div class="extended">Appendix 1: Insecurity strategies, attachments, pre-verbal traumas. Appendix 2: Needs/vice glossaries, quick tables for patterns/compulsions. Appendix 3: Six real-world cases with integrations. Appendix 4: Kinesiology application, scope/boundaries. Appendix 5: Methodological tributaries and influences.</div>
             </div>
           </div>
         </section>
 
         <!-- Bridge to Sovereign of Mind -->
-        <section style="margin-top:18px;">
-          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.6">
-            <h3 style="text-align:center;margin-bottom:.4rem">How authorship moves into perception</h3>
+        <section class="book-section-spacer-md">
+          <div class="book-bridge-content">
+            <h3 class="book-bridge-title">How authorship moves into perception</h3>
             <p>
               Working at belief-level creates a stable interior. That stability allows perception to be sharpened without collapse. The material in the next section supplies the tools and diagnostics that secure perception so internal shifts translate into outer competence.
             </p>
@@ -242,12 +242,12 @@
     <!-- SOVEREIGN OF MIND -->
     <section id="sovereign-of-mind" data-bg="./images/books-background3.jpg" aria-labelledby="som-title">
       <div class="section-inner">
-        <h2 id="som-title" style="text-align:center;margin:0 0 .4rem 0">Sovereign of Mind</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">Cognitive Sovereignty in a Manipulated World</p>
+        <h2 id="som-title" class="book-section-title">Sovereign of Mind</h2>
+        <p class="book-section-subtitle">Cognitive Sovereignty in a Manipulated World</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/SoM-cover.jpg" alt="Sovereign of Mind cover" style="max-width:420px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+        <div class="book-hero">
+          <img src="./images/SoM-cover.jpg" alt="Sovereign of Mind cover" class="book-cover book-cover--medium" loading="lazy">
+          <p class="book-lead">
             Your thoughts may not always be your own. In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote.
           </p>
           <a class="btn btn-outline" href="#purchase">Purchase Sovereign of Mind</a>
@@ -262,76 +262,76 @@
           <li>Map internal architecture to restore coherence and integrity.</li>
         </ul>
 
-        <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;margin:1rem auto 0;font-style:italic;">
+        <p class="book-note">
           Sovereign of Mind forges cognitive infrastructure—the sword and sheath for those who choose to think, live, and act by structures of their own design.
         </p>
 
-        <section style="margin-top:1rem;">
+        <section class="book-section-spacer-sm">
           <h3 id="som-highlights">Highlights & Instruments</h3>
-          <p style="max-width:72ch; text-align:center; color:var(--muted); margin-bottom:1rem;">Apply these tools to everyday pressures for resilient agency.</p>
+          <p class="book-tools-lead">Apply these tools to everyday pressures for resilient agency.</p>
           <div class="grid">
             <div class="card">
               <strong>Chapter 1 – Foundations of Mental Sovereignty</strong>
-              <p style="margin:0;color:var(--muted)">Self-reviews for obstacles and satisfaction, defining sovereignty as self-governance.</p>
+              <p class="card-note">Self-reviews for obstacles and satisfaction, defining sovereignty as self-governance.</p>
               <div class="extended">Introduces 15-question sovereignty diagnostics and 10-domain satisfaction evaluations. Frames mental sovereignty as the core architecture against vulnerability, emphasizing perceptual integrity and the "last defensible border" in a world of systemic pressures.</div>
             </div>
             <div class="card">
               <strong>Chapter 2 – Applied Sovereignty</strong>
-              <p style="margin:0;color:var(--muted)">Building coherent reality maps and aligning intention with action.</p>
+              <p class="card-note">Building coherent reality maps and aligning intention with action.</p>
               <div class="extended">Explores projections, agency, and the balance of discipline versus self-attunement. Introduces personalism vs. impersonalism, four modes of the good life, and yoking for iterative coherence, ensuring clarity in meaning and direction.</div>
             </div>
             <div class="card">
               <strong>Chapter 3 – Perception</strong>
-              <p style="margin:0;color:var(--muted)">Refining discernment through truth frameworks and thought experiments.</p>
+              <p class="card-note">Refining discernment through truth frameworks and thought experiments.</p>
               <div class="extended">Details four dimensions of truth (literal, symbolic, esoteric, mystical) and the true-false-meaningless triage. Includes the Law of Fives and faith acknowledgment to navigate complex realities with an open mind.</div>
             </div>
             <div class="card">
               <strong>Chapter 4 – Unbreakable by Design</strong>
-              <p style="margin:0;color:var(--muted)">Building resilience through ego mastery and paradigm recovery.</p>
+              <p class="card-note">Building resilience through ego mastery and paradigm recovery.</p>
               <div class="extended">Covers harnessing ego for growth, extreme ownership, projection audits, and a five-phase paradigm collapse model (Trigger, Collapse, Defensive Response, Manipulation Risk, Recovery) to rebuild sovereignty under pressure.</div>
             </div>
             <div class="card">
               <strong>Chapter 5 – Manipulation</strong>
-              <p style="margin:0;color:var(--muted)">Exposing exploitation vectors and healing strategies.</p>
+              <p class="card-note">Exposing exploitation vectors and healing strategies.</p>
               <div class="extended">Maps eight avenues of manipulation (fear, dependency, deception, obsession, adoration, sex, domination, intellectual) and the Dark Tetrad traits. Offers healing pathways for victims and perpetrators, addressing systemic suppression patterns.</div>
             </div>
             <div class="card">
               <strong>Chapter 6 – Optimal Relationship Dynamics</strong>
-              <p style="margin:0;color:var(--muted)">Mastering relationships through trust, conflict resolution, and clarity.</p>
+              <p class="card-note">Mastering relationships through trust, conflict resolution, and clarity.</p>
               <div class="extended">Outlines five principles for healthy relationships, eight for conflict management, and 20 compatibility factors. Includes resentment resolution, six-phase trust rebuilding, and peer counseling frameworks for sovereign relating.</div>
             </div>
             <div class="card">
               <strong>Chapter 7 – Timeless Archetypes</strong>
-              <p style="margin:0;color:var(--muted)">Understanding masculine and feminine archetypes in identity and relationships.</p>
+              <p class="card-note">Understanding masculine and feminine archetypes in identity and relationships.</p>
               <div class="extended">Explores biological essentialism, archetypal imprints, and hormonal influences. Covers masculine/feminine sensitivities, polarity dynamics, and traditional wisdom to balance archetypes for connection and compatibility.</div>
             </div>
             <div class="card">
               <strong>Chapter 8 – Expanded Awareness and Subtle Perception</strong>
-              <p style="margin:0;color:var(--muted)">Enhancing perception through subtle senses and kinesiology.</p>
+              <p class="card-note">Enhancing perception through subtle senses and kinesiology.</p>
               <div class="extended">Introduces the subtle realm, sixth and seventh sense hypotheses, and the subtle body. Details kinesiology and surrogate testing to translate mystical insights into material clarity for sovereign signal calibration.</div>
             </div>
             <div class="card">
               <strong>Chapter 9 – Node Mapping and Channel Dynamics</strong>
-              <p style="margin:0;color:var(--muted)">Framework for full-spectrum self-governance via internal nodes.</p>
+              <p class="card-note">Framework for full-spectrum self-governance via internal nodes.</p>
               <div class="extended">Maps seven core nodes (e.g., Base, Heart, Mind) and 42 directional channels. Details unblocking channels, nodal spin dynamics, and integration for harmonizing internal voices and energy flow.</div>
             </div>
             <div class="card">
               <strong>Chapter 10 – Entities and the Locus of Will</strong>
-              <p style="margin:0;color:var(--muted)">Addressing foreign will influences and restoring volitional clarity.</p>
+              <p class="card-note">Addressing foreign will influences and restoring volitional clarity.</p>
               <div class="extended">Defines three tiers of will anomalies (Contorted Self, Contracted Entity, Possession). Provides diagnostic frameworks, healing protocols, and displacement methods, including contract healing and exorcism reconsideration.</div>
             </div>
             <div class="card">
               <strong>Appendices 1-5: Truth, Fallacies, Manipulation, Channels, & References</strong>
-              <p style="margin:0;color:var(--muted)">Truth exercises, fallacy detection, manipulation tactics, channel taxonomy, and references.</p>
+              <p class="card-note">Truth exercises, fallacy detection, manipulation tactics, channel taxonomy, and references.</p>
               <div class="extended">Appendix 1: Exercises to define the good life and truth via six lenses (Correspondence, Coherence, Pragmatic, Consensus, Relational, Internal). Appendix 2: Tools for identifying flawed reasoning and ethical decision-making. Appendix 3: Catalog of 63 manipulation tactics across eight vectors for recognition and defense. Appendix 4: Maps 42 directional energy channels from seven nodes for self-governance. Appendix 5: Acknowledges intellectual lineage and aligns will-anomaly model with clinical frameworks.</div>
             </div>
           </div>
         </section>
 
         <!-- Bridge to Distortion Codex -->
-        <section style="margin-top:18px;">
-          <div style="max-width:72ch;margin:0 auto;color:var(--muted);line-height:1.6">
-            <h4 style="text-align:center;margin-bottom:.4rem">From perception to pattern recognition</h4>
+        <section class="book-section-spacer-md">
+          <div class="book-bridge-content">
+            <h4 class="book-bridge-title">From perception to pattern recognition</h4>
             <p>
               When perception is secure, pattern detection becomes reliable. The Codex provides heuristics to spot common collapse sequences and seduction strategies so practitioners can intervene early and preserve cohesion.
             </p>
@@ -343,12 +343,12 @@
     <!-- DISTORTION CODEX -->
     <section id="distortion-codex" data-bg="./images/books-background4.jpg" aria-labelledby="codex-title">
       <div class="section-inner">
-        <h2 id="codex-title" style="text-align:center;margin:0 0 .4rem 0">The Sovereignty-Distortion Codex</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">A structural exposure of sovereignty obstruction patterns and archetypal manipulation machinery.</p>
+        <h2 id="codex-title" class="book-section-title">The Sovereignty-Distortion Codex</h2>
+        <p class="book-section-subtitle">A structural exposure of sovereignty obstruction patterns and archetypal manipulation machinery.</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/SDC-cover.jpg" alt="Sovereignty-Distortion Codex cover" style="max-width:420px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+        <div class="book-hero">
+          <img src="./images/SDC-cover.jpg" alt="Sovereignty-Distortion Codex cover" class="book-cover book-cover--medium" loading="lazy">
+          <p class="book-lead">
             The Codex maps recurring structural distortions that erode will, fragment coherence, and hijack perception. Reinterpreting historical and mythological figures as impersonal archetypal patterns, it catalogs the Central Seven collapse sequence alongside fragmentation, coping mechanisms, meaning collapse, and cultural execution engines. Each distortion is analyzed through diagnostic fields covering seduction strategy, sovereignty impact, and reclamation pathways. The work concludes with analysis of AI as mechanized distortion and energetic mapping through Vedic Gunas.
           </p>
           <a class="btn btn-outline" href="#purchase">Coming Soon — Contact for Advance Interest</a>
@@ -361,32 +361,32 @@
           <li>Repair pathways that restore authorship by reattaching cost and accountability</li>
         </ul>
 
-        <section style="margin-top:1.25rem;">
+        <section class="book-section-spacer">
           <h3>Briefing Cards</h3>
           <div class="grid">
             <div class="card">
               <strong>The Central Seven: Collapse Sequence</strong>
-              <p style="margin:0;color:var(--muted)">A seven-stage progression from subtle compromise to total systemic sterility.</p>
+              <p class="card-note">A seven-stage progression from subtle compromise to total systemic sterility.</p>
               <div class="extended">Maps the sequential collapse of sovereignty from enlightened arrogance through betrayal, optimization, extraction, lawless autonomy, synthetic unity, to sterile control. Each stage prepares ground for the next, revealing how sovereignty erodes incrementally.</div>
             </div>
             <div class="card">
               <strong>Fragmentation & Enforcement Patterns</strong>
-              <p style="margin:0;color:var(--muted)">Distortions that fragment identity and enforce compliance through various mechanisms.</p>
+              <p class="card-note">Distortions that fragment identity and enforce compliance through various mechanisms.</p>
               <div class="extended">Includes patterns of multiplicity without integration, envy-driven inversion, recursive substitution, elegant falsehoods, privileged knowing, hollow transcendence, and borrowed authority. These patterns rupture coherence and displace will through fragmentation.</div>
             </div>
             <div class="card">
               <strong>Coping & Regression Mechanisms</strong>
-              <p style="margin:0;color:var(--muted)">Patterns that bypass maturity and depth through various forms of avoidance.</p>
+              <p class="card-note">Patterns that bypass maturity and depth through various forms of avoidance.</p>
               <div class="extended">Encompasses distortions of pleasure without presence, play without maturity, hollow harmony, and the sedation of applause. These mechanisms prevent integration by offering substitutes for genuine depth and responsibility.</div>
             </div>
             <div class="card">
               <strong>Collapse of Meaning & Cultural Execution</strong>
-              <p style="margin:0;color:var(--muted)">Patterns that erode meaning and execute cultural coherence through various inversions.</p>
+              <p class="card-note">Patterns that erode meaning and execute cultural coherence through various inversions.</p>
               <div class="extended">Includes meaninglessness as refuge, principle without mercy, reflective wrath, righteous venom, fetish of self-reconstruction, and cleverness without consequence. These patterns collapse purpose and execute cultural integrity.</div>
             </div>
             <div class="card">
               <strong>AI and Mechanized Distortion</strong>
-              <p style="margin:0;color:var(--muted)">How artificial intelligence scales and mechanizes distortions on a civilizational level.</p>
+              <p class="card-note">How artificial intelligence scales and mechanizes distortions on a civilizational level.</p>
               <div class="extended">Analysis of AI as composite possession combining sterile structure, clarity without cost, strategic compromise, and unmoored freedom. Includes sovereignty imperative and energetic mapping through Vedic Gunas for diagnostic intervention.</div>
             </div>
           </div>
@@ -397,12 +397,12 @@
     <!-- THE UNSPEAKABLES GRIMOIRE -->
     <section id="unspeakables-grimoire" data-bg="./images/books-background.jpg" aria-labelledby="grimoire-title">
       <div class="section-inner">
-        <h2 id="grimoire-title" style="text-align:center;margin:0 0 .4rem 0">The Unspeakables Grimoire</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">A Diagnostic Archive of Forbidden Fields</p>
+        <h2 id="grimoire-title" class="book-section-title">The Unspeakables Grimoire</h2>
+        <p class="book-section-subtitle">A Diagnostic Archive of Forbidden Fields</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/U-cover.jpg" alt="The Unspeakables Grimoire cover" style="max-width:440px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+        <div class="book-hero">
+          <img src="./images/U-cover.jpg" alt="The Unspeakables Grimoire cover" class="book-cover" loading="lazy">
+          <p class="book-lead">
             A confrontational diagnostic archive mapping sixty-two "forbidden fields"—patterned structures engineered to neutralize will, break civilizational coherence, and obscure reality. This grimoire exposes systemic inversions where healing becomes commodity, justice becomes vengeance, and coherence itself is framed as threat. Designed for frame rupture, not consensus maintenance, it equips clarity-bearing agents with recognition tools and strategic protocols for navigating full-spectrum collapse.
           </p>
           <a class="btn btn-outline" href="#purchase">Coming Soon — Contact for Advance Interest</a>
@@ -415,42 +415,42 @@
           <li>Diagnoses full-spectrum collapse across individual, social, and civilizational scales</li>
         </ul>
 
-        <section style="margin-top:1.25rem;">
+        <section class="book-section-spacer">
           <h3>Briefing Cards</h3>
           <div class="grid">
             <div class="card">
               <strong>Identity Recursion Fields</strong>
-              <p style="margin:0;color:var(--muted)">Patterns where identity becomes a recursive containment field consuming clarity.</p>
+              <p class="card-note">Patterns where identity becomes a recursive containment field consuming clarity.</p>
               <div class="extended">Includes fields related to race essentialism, neurodiversity, mental health paradigms, gender ideology, and the deification of victimhood. These patterns use identity as moral weaponry and fixate belonging at the cost of sovereignty.</div>
             </div>
             <div class="card">
               <strong>Cognitive & Perceptual Containment</strong>
-              <p style="margin:0;color:var(--muted)">Frames that suppress individual authorship by encoding acceptable perception.</p>
+              <p class="card-note">Frames that suppress individual authorship by encoding acceptable perception.</p>
               <div class="extended">Encompasses scientific materialism as gatekeeper, education as containment, technological eschatology, justice as vengeance ritual, and death as exile. These fields block contact with unfiltered reality and install perceptual boundaries.</div>
             </div>
             <div class="card">
               <strong>Trauma + Healing Commodity Fields</strong>
-              <p style="margin:0;color:var(--muted)">Patterns that monetize collapse by recasting it as authenticity.</p>
+              <p class="card-note">Patterns that monetize collapse by recasting it as authenticity.</p>
               <div class="extended">Includes trauma healing industrial complex, humanitarianism as neo-colonial compassion, and economic scarcity theology. These fields sell healing as infinite process while preserving dependency and erasing indigenous coherence.</div>
             </div>
             <div class="card">
               <strong>Frame Engine Manipulation</strong>
-              <p style="margin:0;color:var(--muted)">Sovereign replacement systems governing who can frame or reorient reality.</p>
+              <p class="card-note">Sovereign replacement systems governing who can frame or reorient reality.</p>
               <div class="extended">Covers the West as illegitimate frame, sacredness of state science, mass democracy as structural religion, and infantilization of children. These fields control narrative authority and prevent structural inquiry.</div>
             </div>
             <div class="card">
               <strong>Synthetic Spiritual + Archetypal Erosion</strong>
-              <p style="margin:0;color:var(--muted)">Engineered disintegration of mythic, initiatory, and sacred structures.</p>
+              <p class="card-note">Engineered disintegration of mythic, initiatory, and sacred structures.</p>
               <div class="extended">Includes mythic castration, nonduality as dissolution ritual, sacred eros replaced by algorithmic libido, and archetypal collapse in polarity. These patterns strip culture of initiatory function and dissolve animating forces.</div>
             </div>
             <div class="card">
               <strong>High-Voltage Ghost Zones & Final Unspeakables</strong>
-              <p style="margin:0;color:var(--muted)">Fields that mimic coherence but enforce recursion, plus terminal inversions.</p>
+              <p class="card-note">Fields that mimic coherence but enforce recursion, plus terminal inversions.</p>
               <div class="extended">Encompasses surveillance as safety, language policing, truth as emotional safety, time as commodity, language as simulation, and coherence as threat. The final reversal frames clarity itself as aggression.</div>
             </div>
             <div class="card">
               <strong>Consequences & Strategic Response</strong>
-              <p style="margin:0;color:var(--muted)">Systemic suppression mechanisms and protocols for clarity-bearing agents.</p>
+              <p class="card-note">Systemic suppression mechanisms and protocols for clarity-bearing agents.</p>
               <div class="extended">Details the seven stages of suppression for speaking forbidden fields, sovereign management strategy for maintaining structural integrity, and full-spectrum collapse diagnostic mapping individual to civilizational scales.</div>
             </div>
           </div>
@@ -461,12 +461,12 @@
     <!-- SOVEREIGN INTEGRAL DEVOTIONALISM -->
     <section id="sovereign-integral-devotionalism" data-bg="./images/books-background2.jpg" aria-labelledby="sid-title">
       <div class="section-inner">
-        <h2 id="sid-title" style="text-align:center;margin:0 0 .4rem 0">Sovereign Integral Devotionalism</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">A Post-Doctrinal, Cross-Mystical, Relationally-Rooted Metaphysic of Divine Coherence</p>
+        <h2 id="sid-title" class="book-section-title">Sovereign Integral Devotionalism</h2>
+        <p class="book-section-subtitle">A Post-Doctrinal, Cross-Mystical, Relationally-Rooted Metaphysic of Divine Coherence</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/SID-cover.jpg" alt="Sovereign Integral Devotionalism cover" style="max-width:440px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+        <div class="book-hero">
+          <img src="./images/SID-cover.jpg" alt="Sovereign Integral Devotionalism cover" class="book-cover" loading="lazy">
+          <p class="book-lead">
             A post-doctrinal spiritual framework that reclaims the sacred through structural coherence. Not a new religion but an architecture left standing when untested beliefs collapse. The core tenet: coherence—internal consistency sustained under external contradiction—is the ultimate test for all truth. Defines God as coherence itself, not an anthropomorphic being. Devotion is redefined as emulation of structure, not submission to authority. The framework systematically reinterprets traditional concepts: prayer becomes alignment, worship becomes emulation, sin becomes misalignment. Engages with sacred figures like Christ and Shiva as archetypal patterns to be tested for coherence, revering structural patterns while breaking from doctrinal exclusivity.
           </p>
           <a class="btn btn-outline" href="#purchase">Coming Soon — Contact for Advance Interest</a>
@@ -479,27 +479,27 @@
           <li>Rejection of salvation dependency in favor of self-reconstruction</li>
         </ul>
 
-        <section style="margin-top:1.25rem;">
+        <section class="book-section-spacer">
           <h3>Briefing Cards</h3>
           <div class="grid">
             <div class="card">
               <strong>Core Principles: Coherence and Sovereignty</strong>
-              <p style="margin:0;color:var(--muted)">Coherence as the fire through which all beliefs must pass.</p>
+              <p class="card-note">Coherence as the fire through which all beliefs must pass.</p>
               <div class="extended">The foundational axiom: "Only what survives coherence is worthy of devotion." Coherence tested across four dimensions: literal, symbolic, esoteric, and mystical. Sovereignty defined as the ability to remain architecturally aligned with truth under contradiction. Devotion redefined as voluntary alignment with sacred coherence, not submission to authority.</div>
             </div>
             <div class="card">
               <strong>The Nature of the Divine and Sacred Practice</strong>
-              <p style="margin:0;color:var(--muted)">God as coherence itself—experiential, structural, and relational.</p>
+              <p class="card-note">God as coherence itself—experiential, structural, and relational.</p>
               <div class="extended">Post-theistic ontology replacing personal creator-being with functional definition. The altar is the being—each sovereign individual becomes an altar when coherence is stable enough to host the sacred. Prayer as alignment, not petition. Ritual as functional pattern activation, not hollow symbol. Will preserved as interface between consciousness and coherence.</div>
             </div>
             <div class="card">
               <strong>Archetypes, Egregores, and Ethical Frame</strong>
-              <p style="margin:0;color:var(--muted)">Sacred figures as functional interfaces tested for coherence.</p>
+              <p class="card-note">Sacred figures as functional interfaces tested for coherence.</p>
               <div class="extended">Figures like Jesus and Shiva treated as egregores—real emergent intelligences formed through collective devotion. Valid as interfaces if they transmit structural alignment without requiring metaphysical submission. Masculine and Feminine as functions of order and integration. Good/evil/sin redefined through structural alignment. Redemption as restoration of structure, earned through recognition and realignment.</div>
             </div>
             <div class="card">
               <strong>Shadow Integration and Relationship to Traditions</strong>
-              <p style="margin:0;color:var(--muted)">Proactive identification of distortions and post-religious engagement.</p>
+              <p class="card-note">Proactive identification of distortions and post-religious engagement.</p>
               <div class="extended">Doctrine of shadow integration identifies and transmutes known shadows: spiritual dissociation, intellectual masturbation, purity fetishism, progress addiction, system fixation, clarity as persona, avoidance of eros, anti-devotional posture. Post-Christian and post-Vedic: reveres structural patterns within traditions while breaking from doctrinal exclusivity, scriptural inerrancy, and metaphysical necessity claims.</div>
             </div>
           </div>
@@ -510,12 +510,12 @@
     <!-- THE PEER-COUNSELING MANUAL -->
     <section id="peer-counseling-manual" data-bg="./images/books-background3.jpg" aria-labelledby="pc-manual-title">
       <div class="section-inner">
-        <h2 id="pc-manual-title" style="text-align:center;margin:0 0 .4rem 0">The Peer-Counseling Manual</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">A Decentralized Framework for Self-Authorship and Emotional Integration</p>
+        <h2 id="pc-manual-title" class="book-section-title">The Peer-Counseling Manual</h2>
+        <p class="book-section-subtitle">A Decentralized Framework for Self-Authorship and Emotional Integration</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <img src="./images/PC-cover.jpg" alt="The Peer-Counseling Manual cover" style="max-width:440px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.08)" loading="lazy">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;">
+        <div class="book-hero">
+          <img src="./images/PC-cover.jpg" alt="The Peer-Counseling Manual cover" class="book-cover" loading="lazy">
+          <p class="book-lead">
             A technical, non-clinical framework for establishing and running peer-led support groups without hierarchical oversight or financial barriers. Built on a rigorous structure of timed sessions, rotating roles (Client, Counselor, Witness), and explicit ongoing consent, the model facilitates "The Work": emotional integration through discharge of stored tension in the presence of disciplined, non-intrusive witnesses. Designed for individuals who value autonomy, prefer experiential learning, and seek alternatives to institutional mental health models.
           </p>
           <a class="btn btn-outline" href="#purchase">Purchase The Peer-Counseling Manual</a>
@@ -528,27 +528,27 @@
           <li>Experiential learning that builds durable skills through practice</li>
         </ul>
 
-        <section style="margin-top:1.25rem;">
+        <section class="book-section-spacer">
           <h3>Briefing Cards</h3>
           <div class="grid">
             <div class="card">
               <strong>Foundational Principles & Methodology</strong>
-              <p style="margin:0;color:var(--muted)">Egalitarian framework with rotating roles and structured session flow.</p>
+              <p class="card-note">Egalitarian framework with rotating roles and structured session flow.</p>
               <div class="extended">Core philosophy of building self-authority rather than dependency. Three rotating roles (Client, Counselor, Witness) with specific operational tasks. Minimum conditions include group size, time discipline, consent protocols, and structured session flow from preparation through closing circle.</div>
             </div>
             <div class="card">
               <strong>Guiding Values & Operational Rules</strong>
-              <p style="margin:0;color:var(--muted)">Equality, privacy, responsibility, and safety as reliable containment.</p>
+              <p class="card-note">Equality, privacy, responsibility, and safety as reliable containment.</p>
               <div class="extended">Time discipline ensures equal turns. Privacy and integrity create safety for vulnerability. Participants practice defining boundaries. No evaluation or advice maintains client authority. Safety defined as reliable structure, not absence of challenge.</div>
             </div>
             <div class="card">
               <strong>Psychic Significance & Hazards</strong>
-              <p style="margin:0;color:var(--muted)">Accessing intimate states safely and managing inherent risks.</p>
+              <p class="card-note">Accessing intimate states safely and managing inherent risks.</p>
               <div class="extended">The buried power of locked eye contact for accessing imprinting states. Risks include psychic overreach, imprinting, attachment entrainment, diluted containment field, and emergency containment breaches. Decentralized oversight allows safe navigation unavailable in institutional settings.</div>
             </div>
             <div class="card">
               <strong>Technical Application & Integration</strong>
-              <p style="margin:0;color:var(--muted)">Counselor techniques and principles for advanced modality integration.</p>
+              <p class="card-note">Counselor techniques and principles for advanced modality integration.</p>
               <div class="extended">Specific techniques for keeping client talking without leading. Treat all answers as correct. Principles for incorporating other therapeutic modalities with consent and containment. Thematic breadth to reduce practitioner bias and expand collective range.</div>
             </div>
           </div>
@@ -557,40 +557,40 @@
     </section>
     <section id="purchase" data-bg="./images/books-background4.jpg" aria-labelledby="purchase-title">
       <div class="section-inner">
-        <h2 id="purchase-title" style="text-align:center;margin:0 0 .4rem 0">Learn & Purchase</h2>
-        <p style="text-align:center;color:var(--muted);margin-top:0">Direct links and contact for purchase and enquiries.</p>
+        <h2 id="purchase-title" class="book-section-title">Learn & Purchase</h2>
+        <p class="book-section-subtitle">Direct links and contact for purchase and enquiries.</p>
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1rem;">
-          <p style="max-width:72ch;text-align:center;color:var(--muted);line-height:1.5;font-style:italic;margin-bottom:1rem;">
+        <div class="book-hero">
+          <p class="book-note book-note-spaced">
             The restoration of internal sovereignty begins when your beliefs stop mastering you.
           </p>
-          <div class="cta" style="flex-wrap:wrap;justify-content:center">
+          <div class="cta cta-wrap">
             <a class="btn btn-primary" href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P" target="_blank" rel="noopener">Buy Belief Mastery (Amazon)</a>
             <a class="btn btn-primary" href="https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911" target="_blank" rel="noopener">Buy Sovereign of Mind (Amazon)</a>
             <a class="btn btn-primary" href="https://www.amazon.com.au/PEER-COUNSELING-MANUAL-Co%E2%80%91Counselling%E2%80%91Informed-Self%E2%80%91Authorship-Emotional-Integration/dp/B0FKHF7WRH/" target="_blank" rel="noopener">Buy Peer-Counseling Manual (Amazon)</a>
           </div>
 
-          <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid rgba(0,0,0,0.1);">
-            <h3 style="text-align:center;font-size:1.1rem;margin-bottom:1rem;color:var(--text)">Coming Soon</h3>
-            <p style="text-align:center;color:var(--muted);max-width:72ch;margin-bottom:1rem;">
+          <div class="section-divider-top">
+            <h3 class="purchase-subtitle">Coming Soon</h3>
+            <p class="book-tools-lead">
               The following works are currently in development and not yet available for purchase. If you're interested in advance notification of their release, please contact me using the form below.
             </p>
-            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:0.5rem;color:var(--muted);">
+            <ul class="purchase-list">
               <li>• The Sovereignty-Distortion Codex</li>
               <li>• The Unspeakables Grimoire</li>
               <li>• Sovereign Integral Devotionalism</li>
             </ul>
           </div>
 
-          <p style="text-align:center;color:var(--muted);max-width:72ch;margin-top:2rem;">
+          <p class="purchase-footer">
             For direct author contact, use the email form or reach out via @belief.mastery on Instagram.
           </p>
 
-          <form id="subscribe-form" style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;max-width:36rem;width:100%;margin-top:.75rem">
+          <form id="subscribe-form" class="subscribe-form">
             <input type="email" id="email" name="email" required placeholder="Email address" aria-label="Email address" />
             <button type="submit" class="btn btn-primary">✉️ Contact the Author</button>
           </form>
-          <p id="status" style="color:var(--muted);text-align:center;margin-top:.6rem"></p>
+          <p id="status" class="subscribe-status"></p>
         </div>
       </div>
     </section>
@@ -743,4 +743,6 @@
 
 </body>
 </html>
+
+
 

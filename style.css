@@ -1584,6 +1584,21 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     align-items: start;
 }
 
+.portal-grid-spaced {
+    margin-top: 3rem;
+}
+
+.portal-quote {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--brand);
+}
+
+.portal-body {
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
 .portal-card {
     background: rgba(20, 35, 55, 0.85); /* More opaque for better contrast */
     border: 2px solid var(--border-medium);  /* More visible border */
@@ -1684,6 +1699,163 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 
 .portal-card:hover img {
     transform: scale(1.05);  /* Gentle zoom on hover */
+}
+
+/* Books page helpers */
+.books-intro {
+    max-width: 72ch;
+    margin: 0 auto;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.books-intro-title {
+    margin-bottom: 2rem;
+    color: var(--brand);
+}
+
+.books-intro-subtitle {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.book-section-title {
+    text-align: center;
+    margin: 0 0 0.4rem 0;
+}
+
+.book-section-subtitle {
+    text-align: center;
+    color: var(--muted);
+    margin-top: 0;
+}
+
+.book-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.book-cover {
+    max-width: 440px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.book-cover--medium {
+    max-width: 420px;
+}
+
+.book-lead {
+    max-width: 72ch;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.book-note {
+    max-width: 72ch;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 1rem auto 0;
+    font-style: italic;
+}
+
+.book-section-spacer {
+    margin-top: 1.25rem;
+}
+
+.book-section-spacer-sm {
+    margin-top: 1rem;
+}
+
+.book-section-spacer-md {
+    margin-top: 18px;
+}
+
+.card-note {
+    margin: 0;
+    color: var(--muted);
+}
+
+.book-bridge-content {
+    max-width: 72ch;
+    margin: 0 auto;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.book-bridge-title {
+    text-align: center;
+    margin-bottom: 0.4rem;
+}
+
+.book-tools-lead {
+    max-width: 72ch;
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+
+.book-note-spaced {
+    margin-bottom: 1rem;
+}
+
+.cta-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.section-divider-top {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.purchase-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--brand);
+}
+
+.purchase-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted);
+}
+
+.purchase-footer {
+    text-align: center;
+    color: var(--muted);
+    max-width: 72ch;
+    margin-top: 2rem;
+}
+
+.subscribe-form {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 36rem;
+    width: 100%;
+    margin-top: 0.75rem;
+}
+
+.subscribe-status {
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.6rem;
 }
 
 /* Image Rows & Grids */
@@ -1998,6 +2170,59 @@ figure.headline-book a {
     pointer-events: none;
     margin: 0;
     padding: 0;
+}
+
+.orientation-block {
+    background: var(--glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    margin: 4rem auto 2rem;
+    box-shadow: var(--shadow);
+    max-width: 900px;
+}
+
+.orientation-block h2 {
+    margin-top: 0;
+    color: var(--brand);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.75rem;
+}
+
+.orientation-block-content {
+    max-width: 72ch;
+    margin: 0 auto;
+    color: var(--muted);
+}
+
+.orientation-block-content p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.orientation-block-content strong {
+    color: var(--brand);
+    font-style: italic;
+}
+
+.orientation-block-divider {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-medium);
+}
+
+.orientation-block-divider h3 {
+    color: var(--brand);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.orientation-block a {
+    color: #a0c0ff;
+    font-weight: 600;
+    text-decoration: underline;
 }
 
 /* ========== INTERACTIVE TOOLS & QUESTIONNAIRE ========== */
