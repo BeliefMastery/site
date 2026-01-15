@@ -1,0 +1,13 @@
+{
+  "name": "belief-mastery-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Belief Mastery static site and assessment engines",
+  "scripts": {
+    "lint": "eslint . --ext .js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
+
