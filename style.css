@@ -2261,8 +2261,7 @@ figure.headline-book a {
     height: 4px;
 }
 
-.index-tools-grid .image-card::after,
-.index-tools-grid .image-card a::before {
+.index-tools-grid .image-card::after {
     content: none;
     display: none;
 }
@@ -2281,7 +2280,9 @@ figure.headline-book a {
 }
 
 .index-tools-grid .image-card a {
-    padding: 0;
+    padding: 6px;
+    width: 100%;
+    align-self: stretch;
 }
 
 .section-divider {
