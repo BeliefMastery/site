@@ -2223,6 +2223,7 @@ figure.headline-book a {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 1rem;
     position: relative;
     overflow: hidden;
@@ -2266,10 +2267,20 @@ figure.headline-book a {
     display: none;
 }
 
+.index-tools-grid .image-card.tool-card::after,
+.index-tools-grid .tool-summary {
+    content: none;
+    display: none;
+}
+
 .index-tools-grid .image-card-frame {
     background: none;
     border: none;
     box-shadow: none;
+    padding: 0;
+}
+
+.index-tools-grid .image-card a {
     padding: 0;
 }
 
