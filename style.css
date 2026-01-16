@@ -1940,16 +1940,13 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     grid-column: span 2;
 }
 
-/* Tools grid: 5 per row */
+/* Tools grid (index): match tools page card grid */
 .image-row.tools-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 2.5rem;
-    max-width: 1600px;
-    margin-left: auto;
-    margin-right: auto;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
     overflow: visible;
-    padding: 1rem 0;
 }
 
 .image-card,
@@ -2216,6 +2213,64 @@ figure.headline-book a {
 
 .index-tools-grid {
     margin-top: 1rem;
+}
+
+.index-tools-grid .image-card {
+    background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%);
+    border: 2px solid var(--border-medium);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px) saturate(1.2);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.index-tools-grid .image-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), rgba(255, 215, 0, 0.3), transparent);
+    opacity: 0.6;
+    transition: opacity 0.3s ease, height 0.3s ease;
+}
+
+.index-tools-grid .image-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    border-color: var(--border-bright);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.4),
+        0 0 60px var(--glow-blue),
+        0 0 30px var(--glow-accent),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(22, 38, 60, 0.95) 0%, rgba(18, 30, 50, 0.9) 100%);
+}
+
+.index-tools-grid .image-card:hover::before {
+    opacity: 1;
+    height: 4px;
+}
+
+.index-tools-grid .image-card::after,
+.index-tools-grid .image-card a::before {
+    content: none;
+    display: none;
+}
+
+.index-tools-grid .image-card-frame {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
 }
 
 .section-divider {
