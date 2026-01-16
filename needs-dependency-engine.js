@@ -615,32 +615,39 @@ export class NeedsDependencyEngine {
   }
 
   getNeedChainOptions(question) {
+    const depth = question.mapsTo?.depth;
+    const previousAnswer = depth && depth > 1
+      ? this.answers[`p3_need_chain_${depth - 1}`]
+      : null;
+    const currentNeed = (depth && depth > 1 ? previousAnswer?.mapsTo?.need : this.surfaceNeed) || null;
+    const normalizedCurrent = currentNeed ? String(currentNeed).toLowerCase().trim() : null;
+
+    const filterNeeds = (needs) => needs.filter(need => {
+      if (!normalizedCurrent) return true;
+      return String(need).toLowerCase().trim() !== normalizedCurrent;
+    });
+
     if (Array.isArray(question.options) && question.options.length) {
-      return question.options;
+      return question.options.filter(option => {
+        if (!normalizedCurrent) return true;
+        return String(option.text || '').toLowerCase().trim() !== normalizedCurrent;
+      });
     }
 
-    const depth = question.mapsTo?.depth;
     let optionNeeds = [];
-    let previousAnswer = null;
 
-    if (depth && depth > 1) {
-      previousAnswer = this.answers[`p3_need_chain_${depth - 1}`];
-      if (previousAnswer?.mapsTo?.deeper?.length) {
-        optionNeeds = previousAnswer.mapsTo.deeper;
-      }
+    if (depth && depth > 1 && previousAnswer?.mapsTo?.deeper?.length) {
+      optionNeeds = previousAnswer.mapsTo.deeper;
     }
 
     if (!optionNeeds.length) {
-      const categoryNeeds = this.getCategoryNeeds(
-        (depth && depth > 1 ? previousAnswer?.mapsTo?.need : this.surfaceNeed) || null
-      );
-      if (categoryNeeds.length) {
-        optionNeeds = categoryNeeds;
-      }
+      optionNeeds = this.getCategoryNeeds(currentNeed);
     }
 
+    optionNeeds = filterNeeds(optionNeeds);
+
     if (!optionNeeds.length && NEEDS_VOCABULARY) {
-      optionNeeds = Object.values(NEEDS_VOCABULARY).flatMap(category => category.needs || []);
+      optionNeeds = filterNeeds(Object.values(NEEDS_VOCABULARY).flatMap(category => category.needs || []));
     }
 
     const uniqueNeeds = Array.from(new Set(optionNeeds));
