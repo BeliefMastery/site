@@ -3,6 +3,7 @@ Allow: /
 
 # Sitemap
 Sitemap: https://beliefmastery.github.io/site/sitemap.xml
+Allow: /sitemap.xml
 
 # Disallow example reports (internal use)
 Disallow: /example-reports/

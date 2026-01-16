@@ -5,12 +5,12 @@
 
 ## What This Project Is
 
-This repository contains the official website for **Belief Mastery** and **Sovereign of Mind**, a collection of books and diagnostic tools by Warwick Marshall focused on mental sovereignty and cognitive defense.
+This repository contains the official website for **Belief Mastery** and **Sovereign of Mind**, a collection of books and diagnostic tools by Warwick Marshall focused on mental sovereignty, cognitive defense, and inner authorship.
 
 ### Primary Purpose
 A static website that serves as:
 - Book information and sales portal
-- Collection of 13 self-assessment tools for mental sovereignty
+- Collection of 13 self-assessment tools for mental sovereignty and diagnostic clarity
 - Author biography and contact information
 
 ### Target Audience
@@ -41,7 +41,7 @@ cd site
 ```
 
 ### For Researchers
-- All tools export results as JSON for analysis
+- All tools export results as JSON/CSV for analysis
 - Structured data available in individual tool files
 - See `CITATION.cff` for proper citation format
 
@@ -70,8 +70,10 @@ cd site
 
 ### Key Files
 - `style.css` - Shared stylesheet for all pages
+- `shared/` - Shared background, utilities, and diagnostics
 - `*-engine.js` - Individual tool engines (one per tool)
-- `*-data/` - Data directories for each tool
+- `*-data/` - Data modules for each tool
+- `example-reports/` - Example reports linked from tools
 - `images/` - All site images
 
 ## Technical Details
@@ -85,8 +87,10 @@ cd site
 ### Architecture
 - Static site with client-side JavaScript
 - No server required
-- All data stored in JSON files
-- Results exportable as JSON
+- All data stored in JS modules
+- Results exportable as JSON/CSV
+- All data stored in JS data modules
+- Results exportable as JSON/CSV (per-tool)
 
 ### Browser Support
 - Modern browsers (Chrome, Firefox, Safari, Edge)
@@ -121,6 +125,7 @@ Site is automatically deployed via GitHub Pages. Push to `main` branch to deploy
 - Open Graph and Twitter Card meta tags
 - Semantic HTML structure
 - Descriptive page titles and meta descriptions
+- `robots.txt` and `sitemap.xml` for indexing control
 
 ## Post-Grading Improvements (Since Initial 75/100 Score)
 
