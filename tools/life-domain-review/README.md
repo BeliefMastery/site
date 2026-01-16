@@ -19,7 +19,7 @@ Review your life domains and satisfaction areas based on Sovereign of Mind frame
 - Evaluates 10 Satisfaction Domains
 - Identifies highest-impact areas for focused work
 - Generates personalized coaching profile
-- Export results for AI integration
+- Export results as JSON/CSV for AI integration
 
 ## How to Use
 
@@ -27,7 +27,7 @@ Review your life domains and satisfaction areas based on Sovereign of Mind frame
 2. Complete the obstacle assessment
 3. Complete the satisfaction domain evaluation
 4. Review your personalized results
-5. Export results as JSON (optional)
+5. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

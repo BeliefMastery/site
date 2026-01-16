@@ -20,7 +20,7 @@ Assess your capacity to resist AI dependency and cognitive hijack. Discover wher
 - Positions you in the sovereign split
 - Cognitive band placement (IQ/cognitive complexity)
 - Subclass identification
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -30,7 +30,7 @@ Assess your capacity to resist AI dependency and cognitive hijack. Discover wher
 4. Complete the cognitive style assessment
 5. Complete the attachment & relationship assessment
 6. Review your cognitive resistance capacity results
-7. Export results as JSON (optional)
+7. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

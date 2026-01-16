@@ -20,7 +20,7 @@ Identify your primary, secondary, and tertiary modern archetypes through a compr
 - 4-phase architecture
 - Cross-paradigm translations (Jungian, Vedic, Greek Pantheon, Tarot)
 - Bias-mitigation protocols
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -29,7 +29,7 @@ Identify your primary, secondary, and tertiary modern archetypes through a compr
 3. Complete the dimensional refinement phase
 4. Complete the shadow/integration assessment
 5. Review your archetype identification results
-6. Export results as JSON (optional)
+6. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

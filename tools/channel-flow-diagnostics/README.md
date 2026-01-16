@@ -19,7 +19,7 @@ Identify channel blockages and receive strategic remediation suggestions. Maps t
 - Analyzes 42 directional channels
 - Identifies channel blockages
 - Provides strategic remediation suggestions
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -28,7 +28,7 @@ Identify channel blockages and receive strategic remediation suggestions. Maps t
 3. Complete the channel flow assessment
 4. Review your blockage identification
 5. Review remediation strategies
-6. Export results as JSON (optional)
+6. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

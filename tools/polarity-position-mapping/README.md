@@ -19,7 +19,7 @@ Discover your position on the masculine-feminine temperament spectrum through co
 - Comprehensive behavioral pattern assessment
 - Intimate dynamics evaluation
 - Attraction responsiveness analysis
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -28,7 +28,7 @@ Discover your position on the masculine-feminine temperament spectrum through co
 3. Complete the intimate dynamics questions
 4. Complete the attraction responsiveness questions
 5. Review your temperament spectrum position
-6. Export results as JSON (optional)
+6. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

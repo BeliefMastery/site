@@ -1,13 +1,13 @@
-# Technical Title for your Sovereignty Paradigm
+# Your Sovereignty Paradigm
 
 ## Live Tool
 **https://beliefmastery.github.io/site/sovereignty-spectrum.html**
 
 ## What This Tool Is
 
-**Technical Title for your Sovereignty Paradigm: Philosophical Paradigm Alignment**
+**Your Sovereignty Paradigm: Philosophical Paradigm Alignment**
 
-A tool that discovers the technical title that identifies your sovereignty paradigm. Clarifies which philosophical, spiritual, or psychological framework best describes your approach to sovereignty.
+A tool that identifies your sovereignty paradigm and its technical title. Clarifies which philosophical, spiritual, or psychological framework best describes your approach to sovereignty.
 
 ## Description
 
@@ -19,7 +19,7 @@ Discover the technical title that identifies your sovereignty paradigm. Map your
 - Identifies your primary sovereignty paradigm(s)
 - Measures integration level with your identified paradigm
 - Reveals each paradigm one-by-one with slider ratings
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -27,7 +27,7 @@ Discover the technical title that identifies your sovereignty paradigm. Map your
 2. Rate each paradigm using the slider (one at a time)
 3. Review your identified paradigm(s)
 4. Review your integration level
-5. Export results as JSON (optional)
+5. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

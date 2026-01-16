@@ -19,7 +19,7 @@ Map your Logos structure across four dimensions of truth. Clarify your paradigm 
 - Clarifies paradigm of 'The Good Life'
 - Clarifies paradigm of 'God'
 - Identifies primary alignment
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -27,7 +27,7 @@ Map your Logos structure across four dimensions of truth. Clarify your paradigm 
 2. Complete the 'Good Life' assessment
 3. Complete the 'God' assessment
 4. Review your worldview foundation mapping
-5. Export results as JSON (optional)
+5. Export results as JSON/CSV (optional)
 
 ## Related Resources
 

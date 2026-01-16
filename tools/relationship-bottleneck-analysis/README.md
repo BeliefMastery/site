@@ -19,7 +19,7 @@ Identify the weakest links in your relationship across 20 compatibility points. 
 - Organized by impact tier
 - Identifies weakest links
 - Provides targeted action strategies
-- Export results as JSON (optional)
+- Export results as JSON/CSV (optional)
 
 ## How to Use
 
@@ -27,7 +27,7 @@ Identify the weakest links in your relationship across 20 compatibility points. 
 2. Rate your relationship across 20 compatibility points
 3. Review your weakest link analysis
 4. Review targeted action strategies
-5. Export results as JSON (optional)
+5. Export results as JSON/CSV (optional)
 
 ## Related Resources
 
