@@ -3683,6 +3683,41 @@ img {
 }
 
 @media (max-width: 1199px) and (min-width: 821px) {
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+
+    .main-content {
+        max-width: 100%;
+        padding: 2rem 1rem;
+    }
+
+    .section-inner,
+    .section-inner-padded,
+    .content-section {
+        max-width: 100%;
+    }
+
+    .tool-container,
+    .manipulation-container,
+    .archetype-container,
+    .dependency-container,
+    .channels-container,
+    .coaching-container,
+    .needs-dependency-container,
+    .spectrum-container,
+    .paradigm-container,
+    .relationship-container,
+    .temperament-container,
+    .character-sheet-container,
+    .diagnosis-container,
+    .sovereignty-container {
+        max-width: 100%;
+        margin: 1.5rem 0;
+    }
+
     .image-row.tools-grid {
         grid-template-columns: repeat(4, 1fr);
     }

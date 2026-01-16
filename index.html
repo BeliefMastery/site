@@ -303,14 +303,18 @@
       sections.forEach(s => observer.observe(s));
     })();
 
-    // Portal card click handler (for whole-card navigation, avoiding nested anchors)
+    // Portal card click handler (whole-card navigation)
     (function(){
       document.querySelectorAll('.portal-card').forEach(card => {
         card.addEventListener('click', (e) => {
-          const link = card.querySelector('a.btn');
-          if (link && !e.target.closest('a')) {
-            link.click();
+          if (e.target.closest('a')) return;
+          const target = card.dataset.target;
+          if (!target) return;
+          if (target.startsWith('http')) {
+            window.open(target, '_blank', 'noopener');
+            return;
           }
+          window.location.href = target;
         });
       });
     })();
