@@ -4017,13 +4017,13 @@ img {
 /* Sovereignty-Specific - Consolidated with main container definition above */
 
 /* Temperament-Specific */
-.question-block {
+.temperament-container .question-block {
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--glass-light);
     border-left: 3px solid var(--accent);
 }
 
-.question-block h3 {
+.temperament-container .question-block h3 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
     line-height: 1.5;

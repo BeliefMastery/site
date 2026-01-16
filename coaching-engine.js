@@ -282,6 +282,7 @@ export class CoachingEngine {
     
       // Hide selection, show questionnaire
       document.getElementById('sectionSelection').classList.add('hidden');
+      document.getElementById('selectionSection')?.classList.add('hidden');
       document.getElementById('questionnaireSection').classList.add('active');
       
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
@@ -1306,8 +1307,10 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         });
         
         const sectionSelection = document.getElementById('sectionSelection');
+        const selectionSection = document.getElementById('selectionSection');
         const questionnaireSection = document.getElementById('questionnaireSection');
         if (sectionSelection) sectionSelection.classList.add('hidden');
+        if (selectionSection) selectionSection.classList.add('hidden');
         if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
@@ -1343,6 +1346,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     
     // Reset UI
     document.getElementById('sectionSelection').classList.remove('hidden');
+    document.getElementById('selectionSection')?.classList.remove('hidden');
     document.getElementById('questionnaireSection').classList.remove('active');
     document.getElementById('resultsSection').classList.remove('active');
     

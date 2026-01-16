@@ -64,7 +64,7 @@
 
     pointer-events: none;
     animation:
-        nebulaDrift 25s ease-in-out infinite,
+        nebulaDrift 25s linear infinite,
         nebulaBreath 8s ease-in-out infinite alternate,
         nebulaRotate 40s linear infinite;
     will-change: transform, opacity;
@@ -112,7 +112,7 @@
 @supports (animation-timeline: scroll()) {
     .bg-gradient {
         animation:
-            nebulaDrift 25s ease-in-out infinite,
+            nebulaDrift 25s linear infinite,
             nebulaBreath 8s ease-in-out infinite alternate,
             nebulaRotate 40s linear infinite,
             nebulaScroll linear;
