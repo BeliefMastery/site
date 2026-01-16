@@ -1757,6 +1757,23 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     transform: scale(1.05);  /* Gentle zoom on hover */
 }
 
+.portal-card.portal-card-image {
+    align-items: center;
+    text-align: center;
+}
+
+.portal-card.portal-card-image img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.portal-card.portal-card-image:hover img {
+    transform: scale(1.04);
+}
+
 /* Books page helpers */
 .books-intro {
     max-width: 72ch;
