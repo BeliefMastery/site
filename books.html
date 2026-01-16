@@ -595,7 +595,6 @@
       </div>
     </section>
   </main>
-  </main>
 
   <footer>
     <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
@@ -613,6 +612,7 @@
       if(!sections.length) return;
       const bgA = document.getElementById('bgA');
       const bgB = document.getElementById('bgB');
+      if (!bgA || !bgB) return;
       let front = bgA, back = bgB;
 
       // Initialize front background to the first section

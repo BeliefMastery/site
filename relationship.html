@@ -278,21 +278,6 @@
       // Setup toggles
       setupToggle('disclaimerToggle', 'disclaimerSection');
       setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
-      // Toggle helper function
-      const setupToggle = (btnId, panelId) => {
-        const btn = document.getElementById(btnId);
-        const panel = document.getElementById(panelId);
-        if (btn && panel) {
-          btn.addEventListener('click', () => {
-            btn.classList.toggle('expanded');
-            panel.classList.toggle('expanded');
-          });
-        }
-      };
-
-      // Setup toggles
-      setupToggle('disclaimerToggle', 'disclaimerSection');
-      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
       setupToggle('instructionsToggle', 'instructionsPanel');
 
       // Hamburger menu
