@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archetype Spread Table - Belief Mastery</title>
+  <meta name="description" content="Comprehensive archetype table with cross-paradigm equivalents and population proportions.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./shared/background.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="page-fullbleed">
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle">Tools <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+            <li role="none"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+            <li role="none"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a></li>
+            <li role="none"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none"><a role="menuitem" href="relationship.html">Relationship Bottleneck Analysis</a></li>
+            <li role="none"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
+            <li role="none"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
+            <li role="none"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+            <li role="none"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+            <li role="none"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container" id="main-content">
+    <section>
+      <div class="section-inner section-inner-padded">
+        <h1 class="panel-title">Archetype Spread Table</h1>
+        <p class="panel-text">
+          This table lists all archetypes with their cross-paradigm equivalents and estimated population proportions.
+        </p>
+        <div class="table-wrap">
+          <table class="archetype-table" aria-describedby="archetype-table-caption">
+            <caption id="archetype-table-caption" class="visually-hidden">
+              Archetype spread table with roles, equivalents, and population proportions
+            </caption>
+            <thead>
+              <tr>
+                <th>Archetype</th>
+                <th>Social Role</th>
+                <th>Jungian/Q-KWML</th>
+                <th>Vedic</th>
+                <th>Greek Pantheon</th>
+                <th>Tarot</th>
+                <th>Population</th>
+              </tr>
+            </thead>
+            <tbody id="archetypeTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram |
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
+  </footer>
+
+  <script src="./shared/background.js"></script>
+  <script type="module">
+    import { ARCHETYPE_SPREAD } from './archetype-data/archetype-spread.js';
+
+    const tbody = document.getElementById('archetypeTableBody');
+    if (tbody && Array.isArray(ARCHETYPE_SPREAD)) {
+      ARCHETYPE_SPREAD.forEach(entry => {
+        const row = document.createElement('tr');
+        const cells = [
+          entry.name,
+          entry.socialRole,
+          entry.jungianEquivalent,
+          entry.vedicEquivalent,
+          entry.greekPantheon,
+          entry.tarotCard,
+          entry.socialProportion ? `${entry.socialProportion.toFixed(1)}%` : '—'
+        ];
+        cells.forEach(text => {
+          const cell = document.createElement('td');
+          cell.textContent = text || '—';
+          row.appendChild(cell);
+        });
+        tbody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
+

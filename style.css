@@ -175,6 +175,40 @@ main {
     margin-right: auto;
 }
 
+.table-wrap {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+}
+
+.archetype-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+    background: var(--glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.archetype-table th,
+.archetype-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--brand);
+}
+
+.archetype-table th {
+    color: var(--accent);
+    font-weight: 600;
+    background: rgba(20, 35, 55, 0.75);
+}
+
+.archetype-table tr:hover td {
+    background: rgba(20, 35, 55, 0.35);
+}
+
 .spacing-bottom-sm {
     margin-bottom: 1rem;
 }

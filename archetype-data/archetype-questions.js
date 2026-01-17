@@ -461,6 +461,143 @@ export const PHASE_2_QUESTIONS = [
   }
 ];
 
+// SUBTYPE REFINEMENT: Targeted forced-choice questions to sharpen subtype selection
+export const SUBTYPE_REFINEMENT_QUESTIONS = {
+  alpha: [
+    {
+      id: 'p2_alpha_refine_1',
+      question: 'Which leadership posture feels most natural to you?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Dominant, charismatic leadership', archetypes: ['alpha'], weight: 2 },
+        { text: 'Resilient protector who defends others', archetypes: ['alpha_xi'], weight: 3 },
+        { text: 'Just, fair, rule-setting authority', archetypes: ['alpha_rho'], weight: 3 },
+        { text: 'Hard-edged dominance that can become tyrannical', archetypes: ['dark_alpha'], weight: 3 }
+      ]
+    },
+    {
+      id: 'p2_alpha_refine_2',
+      question: 'In conflict, you are most likely to:',
+      type: 'forced_choice',
+      options: [
+        { text: 'Take command and push for decisive action', archetypes: ['alpha'], weight: 2 },
+        { text: 'Stand guard and absorb pressure for the group', archetypes: ['alpha_xi'], weight: 2 },
+        { text: 'Enforce fairness and hold people to standards', archetypes: ['alpha_rho'], weight: 2 },
+        { text: 'Crush resistance and assert dominance', archetypes: ['dark_alpha'], weight: 2 }
+      ]
+    }
+  ],
+  beta: [
+    {
+      id: 'p2_beta_refine_1',
+      question: 'Which supportive role sounds most like you?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Reliable, supportive, but tends to defer', archetypes: ['beta'], weight: 2 },
+        { text: 'Gentle, nurturing, innocent-leaning', archetypes: ['beta_iota'], weight: 3 },
+        { text: 'Traditional, dutiful, and stability-focused', archetypes: ['beta_nu'], weight: 3 },
+        { text: 'Resource-seeking or strategically self-interested', archetypes: ['beta_manipulator'], weight: 3 },
+        { text: 'Motherly/creator energy with controlling tendencies', archetypes: ['beta_kappa'], weight: 3 }
+      ]
+    },
+    {
+      id: 'p2_beta_refine_2',
+      question: 'When you provide for others, what drives you most?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Harmony and dependable support', archetypes: ['beta'], weight: 2 },
+        { text: 'Innocence, caretaking, and reassurance', archetypes: ['beta_iota'], weight: 2 },
+        { text: 'Duty, tradition, and long-term stability', archetypes: ['beta_nu'], weight: 2 },
+        { text: 'Securing resources or leverage', archetypes: ['beta_manipulator'], weight: 2 },
+        { text: 'Creative care with strong boundaries and direction', archetypes: ['beta_kappa'], weight: 2 }
+      ]
+    }
+  ],
+  gamma: [
+    {
+      id: 'p2_gamma_refine_1',
+      question: 'Which intellectual style fits you most?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Independent, rebellious outsider', archetypes: ['gamma'], weight: 2 },
+        { text: 'Romantic idealist devoted to depth', archetypes: ['gamma_nu'], weight: 3 },
+        { text: 'Mystic/prophetic and spiritually oriented', archetypes: ['gamma_theta'], weight: 3 },
+        { text: 'Opportunistic, risk-taking, and fortune-seeking', archetypes: ['gamma_pi'], weight: 3 },
+        { text: 'Isolated, detached, or nihilistic in outlook', archetypes: ['dark_gamma'], weight: 3 }
+      ]
+    },
+    {
+      id: 'p2_gamma_refine_2',
+      question: 'When you face uncertainty, you tend to:',
+      type: 'forced_choice',
+      options: [
+        { text: 'Question everything and seek truth', archetypes: ['gamma'], weight: 2 },
+        { text: 'Idealize and seek a perfect connection', archetypes: ['gamma_nu'], weight: 2 },
+        { text: 'Turn inward toward spiritual insight', archetypes: ['gamma_theta'], weight: 2 },
+        { text: 'Gamble on opportunity and momentum', archetypes: ['gamma_pi'], weight: 2 },
+        { text: 'Withdraw and become more detached', archetypes: ['dark_gamma'], weight: 2 }
+      ]
+    }
+  ],
+  delta: [
+    {
+      id: 'p2_delta_refine_1',
+      question: 'Which service-oriented stance fits you most?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Practical, hardworking, and reliable', archetypes: ['delta'], weight: 2 },
+        { text: 'Protective, fatherly/motherly, caretaking', archetypes: ['delta_mu'], weight: 3 },
+        { text: 'Self-sacrificing or martyr-like', archetypes: ['dark_delta'], weight: 3 }
+      ]
+    }
+  ],
+  sigma: [
+    {
+      id: 'p2_sigma_refine_1',
+      question: 'Which independent stance fits you most?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Self-sufficient lone wolf', archetypes: ['sigma'], weight: 2 },
+        { text: 'Strategic, eccentric, or politically calculating', archetypes: ['sigma_kappa'], weight: 3 },
+        { text: 'Creative, artistic, or bohemian', archetypes: ['sigma_lambda'], weight: 3 },
+        { text: 'Anti-social, destructive, or destabilizing', archetypes: ['dark_sigma_zeta'], weight: 3 }
+      ]
+    },
+    {
+      id: 'p2_sigma_refine_2',
+      question: 'Your independence most often expresses as:',
+      type: 'forced_choice',
+      options: [
+        { text: 'Quiet autonomy and distance from hierarchies', archetypes: ['sigma'], weight: 2 },
+        { text: 'Strategic influence behind the scenes', archetypes: ['sigma_kappa'], weight: 2 },
+        { text: 'Creative self-expression outside convention', archetypes: ['sigma_lambda'], weight: 2 },
+        { text: 'Rejection of norms with sharp defiance', archetypes: ['dark_sigma_zeta'], weight: 2 }
+      ]
+    }
+  ],
+  omega: [
+    {
+      id: 'p2_omega_refine_1',
+      question: 'Which description feels closest?',
+      type: 'forced_choice',
+      options: [
+        { text: 'Withdrawn, passive, and overlooked', archetypes: ['omega'], weight: 2 },
+        { text: 'Destructive or entropic when overwhelmed', archetypes: ['dark_omega'], weight: 3 }
+      ]
+    }
+  ],
+  phi: [
+    {
+      id: 'p2_phi_refine_1',
+      question: 'Which statement fits your orientation?',
+      type: 'forced_choice',
+      options: [
+        { text: 'I operate beyond typical social categories and seek integration', archetypes: ['phi'], weight: 2 }
+      ]
+    }
+  ]
+};
+
 // PHASE 3: Shadow/Integration Assessment (10-15 contextual questions)
 // Purpose: Identify secondary influences and developmental areas
 export const PHASE_3_QUESTIONS = [
