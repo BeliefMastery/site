@@ -89,23 +89,6 @@ export const RELATIONSHIP_ANALYSIS_MODULES = [
       watch: 'Repair is possible but inconsistent. Formalize steps and boundaries.',
       urgent: 'Reconciliation will require major repair and ongoing accountability.'
     }
-  },
-  {
-    id: 'counsel-framework',
-    title: 'Effective Counsel: Sovereign Support Framework',
-    summary: 'Non-rescuer guidance that builds self-sufficiency and avoids dependency loops.',
-    materialKey: 'counselFramework',
-    pointKeys: [
-      'communication-styles',
-      'emotional-intelligence',
-      'relationship-efficiency',
-      'mutual-support'
-    ],
-    conclusions: {
-      strong: 'Support dynamics are stable. Maintain sovereignty and avoid rescuing.',
-      watch: 'Support dynamics are inconsistent. Recalibrate consent, boundaries, and responsibility.',
-      urgent: 'Support is likely slipping into dependency or coercion. Reset the structure.'
-    }
   }
 ];
 

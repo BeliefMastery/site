@@ -1248,10 +1248,17 @@ export class RelationshipEngine {
 
     if (this.assessmentMode === 'module') {
       this.renderModuleResults(resultsContainer);
+      this.attachResultsActions();
       return;
     }
 
-    let html = '<h3>Current Strain Points:</h3>';
+    let html = `
+      <div class="panel panel-outline-brand" style="margin-bottom: 1.5rem;">
+        <p class="panel-text" style="margin-bottom: 1rem;">Ready to run another relationship engine?</p>
+        <button class="btn btn-secondary" id="returnToAssessments">Choose Another Assessment</button>
+      </div>
+      <h3>Current Strain Points:</h3>
+    `;
     html += '<p style="color: var(--muted); margin-bottom: 1rem;">These are the areas showing current strain, ranked by weighted impact score.</p>';
     
     // Normalize universal weak points
@@ -1375,6 +1382,7 @@ export class RelationshipEngine {
 
     // Sanitize HTML before rendering - all dynamic content is already sanitized above
     SecurityUtils.safeInnerHTML(resultsContainer, html);
+    this.attachResultsActions();
   }
 
   renderModuleResults(resultsContainer) {
@@ -1392,6 +1400,10 @@ export class RelationshipEngine {
     const referenceHtml = referenceText ? this.formatReferenceText(referenceText) : '';
 
     let html = `
+      <div class="panel panel-outline-brand" style="margin-bottom: 1.5rem;">
+        <p class="panel-text" style="margin-bottom: 1rem;">Ready to run another relationship engine?</p>
+        <button class="btn btn-secondary" id="returnToAssessments">Choose Another Assessment</button>
+      </div>
       <h3>${SecurityUtils.sanitizeHTML(module.title || '')}</h3>
       <p style="color: var(--muted); margin-bottom: 1.25rem;">${SecurityUtils.sanitizeHTML(module.summary || '')}</p>
       <div class="card" style="margin-bottom: 1.5rem;">
@@ -1435,6 +1447,16 @@ export class RelationshipEngine {
     html += this.getClosureSection();
 
     SecurityUtils.safeInnerHTML(resultsContainer, html);
+  }
+
+  attachResultsActions() {
+    const returnBtn = document.getElementById('returnToAssessments');
+    if (returnBtn) {
+      returnBtn.addEventListener('click', () => {
+        this.resetAssessment();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
   }
 
   renderAnalysisModules() {
