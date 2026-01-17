@@ -512,6 +512,11 @@ export class RelationshipEngine {
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => this.abandonAssessment());
     }
+
+    const abandonResultsBtn = document.getElementById('abandonAssessmentResults');
+    if (abandonResultsBtn) {
+      abandonResultsBtn.addEventListener('click', () => this.abandonAssessment());
+    }
   }
 
   abandonAssessment() {
@@ -1396,7 +1401,7 @@ export class RelationshipEngine {
     const status = this.analysisData.moduleResults?.status ?? this.getModuleStatus(moduleScore);
     const statusKey = status.toLowerCase();
     const conclusion = module.conclusions?.[statusKey] || '';
-    const referenceText = RELATIONSHIP_MATERIAL?.[module.materialKey] || '';
+    const referenceText = this.getModuleReferenceText(module);
     const referenceHtml = referenceText ? this.formatReferenceText(referenceText) : '';
 
     let html = `
@@ -1457,6 +1462,11 @@ export class RelationshipEngine {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     }
+
+    const abandonResultsBtn = document.getElementById('abandonAssessmentResults');
+    if (abandonResultsBtn) {
+      abandonResultsBtn.addEventListener('click', () => this.abandonAssessment());
+    }
   }
 
   renderAnalysisModules() {
@@ -1477,7 +1487,7 @@ export class RelationshipEngine {
       const score = this.getModuleScore(module.pointKeys);
       const status = this.getModuleStatus(score);
       const conclusion = module.conclusions?.[status.toLowerCase()] || '';
-      const referenceText = RELATIONSHIP_MATERIAL?.[module.materialKey] || '';
+      const referenceText = this.getModuleReferenceText(module);
       const referenceHtml = referenceText ? this.formatReferenceText(referenceText) : '';
 
       html += `
@@ -1502,6 +1512,22 @@ export class RelationshipEngine {
     `;
 
     return html;
+  }
+
+  getModuleReferenceText(module) {
+    if (!module || !RELATIONSHIP_MATERIAL) return '';
+    if (module.materialKey === 'relationshipViability') {
+      const sections = [
+        'Healthy Relationships: 5 Core Principles',
+        RELATIONSHIP_MATERIAL.healthyPrinciples || '',
+        'Conflict Management: 8 Core Principles',
+        RELATIONSHIP_MATERIAL.conflictPrinciples || '',
+        'Evaluating Termination: 6 Key Considerations',
+        RELATIONSHIP_MATERIAL.terminationConsiderations || ''
+      ];
+      return sections.filter(Boolean).join('\n-\n');
+    }
+    return RELATIONSHIP_MATERIAL[module.materialKey] || '';
   }
 
   getModuleScore(pointKeys = []) {
