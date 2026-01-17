@@ -1,11 +1,11 @@
-# Relationship Bottleneck Analysis
+# Relationships
 
 ## Live Tool
 **https://beliefmastery.github.io/site/relationship.html**
 
 ## What This Tool Is
 
-**Relationship Bottleneck Analysis: Compatibility Assessment**
+**Relationships: Compatibility Assessment**
 
 A tool that identifies the weakest links in your relationship across 20 compatibility points. Receives targeted action strategies based on archetypal insights and biological essentialism.
 
@@ -43,3 +43,4 @@ Warwick Marshall - Developer of comprehensive diagnostic assessment systems.
 ---
 
 **Note:** This tool is part of the Belief Mastery & Sovereign of Mind diagnostic suite. For more information, visit the main site: https://beliefmastery.github.io/site/
+

@@ -25,6 +25,8 @@ export class RelationshipEngine {
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
+    this.assessmentMode = 'full'; // 'full' | 'module'
+    this.activeModuleId = null;
     this.weakestLinks = []; // Identified from Stage 1 (renamed to strain points in display)
     this.domainWeakAreas = {}; // Domain-specific weak areas from Stage 2
     this.crossDomainSpillover = {}; // Track cross-domain amplification
@@ -33,6 +35,10 @@ export class RelationshipEngine {
     this.groundingPauseShown = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      assessmentMode: 'full',
+      moduleId: null,
+      moduleTitle: null,
+      moduleResults: null,
       stage1Results: {},
       stage2Results: {},
       stage3Results: {},
@@ -168,6 +174,57 @@ export class RelationshipEngine {
     }
   }
 
+  getModuleById(moduleId) {
+    if (!moduleId || !Array.isArray(RELATIONSHIP_ANALYSIS_MODULES)) return null;
+    return RELATIONSHIP_ANALYSIS_MODULES.find(module => module.id === moduleId) || null;
+  }
+
+  getActiveModule() {
+    return this.getModuleById(this.activeModuleId);
+  }
+
+  /**
+   * Build a focused module assessment sequence
+   * @param {string|null} moduleId
+   * @returns {Promise<void>}
+   */
+  async buildModuleSequence(moduleId) {
+    await this.loadRelationshipData();
+    const module = this.getModuleById(moduleId);
+    if (!module) {
+      throw new Error('Unknown relationship module');
+    }
+
+    try {
+      this.questionSequence = [];
+      this.currentStage = 1;
+
+      module.pointKeys.forEach(pointKey => {
+        const point = COMPATIBILITY_POINTS[pointKey];
+        if (!point || !point.questions || point.questions.length === 0) return;
+        this.questionSequence.push({
+          id: `module_${module.id}_${pointKey}`,
+          stage: 1,
+          type: 'compatibility',
+          point: pointKey,
+          question: point.questions[0],
+          description: point.description,
+          name: point.name,
+          impactTier: point.impactTier,
+          weight: point.weight,
+          tierWeight: IMPACT_TIER_WEIGHTS[point.impactTier] || 0.7,
+          moduleId: module.id
+        });
+      });
+
+      this.questionSequence.sort(() => Math.random() - 0.5);
+      this.debugReporter.recordSection(`Module: ${module.title}`, this.questionSequence.length);
+    } catch (error) {
+      this.debugReporter.logError(error, 'buildModuleSequence');
+      ErrorHandler.showUserError('Failed to build module assessment. Please refresh the page.');
+    }
+  }
+
   showStage2Transition() {
     const container = document.getElementById('questionContainer');
     if (!container) return;
@@ -227,7 +284,10 @@ export class RelationshipEngine {
     const savedAnswer = this.answers[question.id] !== undefined ? this.answers[question.id] : 5;
     
     let stageLabel = '';
-    if (question.stage === 1) {
+    if (this.assessmentMode === 'module') {
+      const module = this.getActiveModule();
+      stageLabel = module ? `${SecurityUtils.sanitizeHTML(module.title || '')} Assessment` : 'Focused Relationship Assessment';
+    } else if (question.stage === 1) {
       stageLabel = 'Broad Compatibility Assessment';
     } else if (question.stage === 2) {
       stageLabel = question.domainName ? `${SecurityUtils.sanitizeHTML(question.domainName)} - Deep Dive` : 'Domain-Specific Analysis';
@@ -405,6 +465,18 @@ export class RelationshipEngine {
         this.startAssessment();
       });
     }
+
+    const moduleButtons = document.querySelectorAll('[data-module-id]');
+    if (moduleButtons.length) {
+      moduleButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const moduleId = button.getAttribute('data-module-id');
+          this.startAssessment(moduleId || null);
+        });
+      });
+    }
     
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
@@ -448,20 +520,81 @@ export class RelationshipEngine {
     }
   }
 
+  resetAssessmentState() {
+    const activeModule = this.getActiveModule();
+    this.currentStage = 1;
+    this.currentQuestionIndex = 0;
+    this.answers = {};
+    this.questionSequence = [];
+    this.weakestLinks = [];
+    this.domainWeakAreas = {};
+    this.crossDomainSpillover = {};
+    this.stage2TransitionShown = false;
+    this.stage3TransitionShown = false;
+    this.groundingPauseShown = false;
+    this.analysisData = {
+      timestamp: new Date().toISOString(),
+      assessmentMode: this.assessmentMode,
+      moduleId: this.activeModuleId,
+      moduleTitle: activeModule ? activeModule.title : null,
+      moduleResults: null,
+      stage1Results: {},
+      stage2Results: {},
+      stage3Results: {},
+      compatibilityScores: {},
+      weakestLinks: [],
+      actionStrategies: {},
+      archetypalInsights: {},
+      crossDomainSpillover: {}
+    };
+  }
+
+  setLandingVisibility(showLanding) {
+    const introSection = document.getElementById('introSection');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
+    const moduleSelectionSection = document.getElementById('moduleSelectionSection');
+
+    [introSection, actionButtonsSection, moduleSelectionSection].forEach(section => {
+      if (!section) return;
+      if (showLanding) {
+        section.classList.remove('hidden');
+      } else {
+        section.classList.add('hidden');
+      }
+    });
+  }
+
   /**
    * Start the assessment
+   * @param {string|null} moduleId
    * @returns {Promise<void>}
    */
-  async startAssessment() {
+  async startAssessment(moduleId = null) {
     try {
-      await this.buildStage1Sequence();
-      
+      await this.loadRelationshipData();
+      this.assessmentMode = moduleId ? 'module' : 'full';
+      this.activeModuleId = moduleId || null;
+
+      this.dataStore.clear('progress');
+      this.resetAssessmentState();
+
+      if (this.assessmentMode === 'module') {
+        await this.buildModuleSequence(this.activeModuleId);
+      } else {
+        await this.buildStage1Sequence();
+      }
+
+      this.setLandingVisibility(false);
+
       const questionnaireSection = document.getElementById('questionnaireSection');
+      const resultsSection = document.getElementById('resultsSection');
       if (questionnaireSection) questionnaireSection.classList.add('active');
-      
+      if (resultsSection) resultsSection.classList.remove('active');
+
       this.currentQuestionIndex = 0;
       this.renderCurrentQuestion();
       this.updateProgressBar();
+      this.updateStageIndicator();
       this.saveProgress();
     } catch (error) {
       this.debugReporter.logError(error, 'startAssessment');
@@ -585,6 +718,10 @@ export class RelationshipEngine {
   }
 
   completeStage() {
+    if (this.assessmentMode === 'module') {
+      this.finalizeModuleResults();
+      return;
+    }
     if (this.currentStage === 1) {
       // Analyze Stage 1 results and identify weakest links
       this.analyzeStage1Results();
@@ -926,9 +1063,83 @@ export class RelationshipEngine {
     this.saveProgress();
   }
 
+  finalizeModuleResults() {
+    this.calculateModuleResults();
+    this.analysisData.allAnswers = { ...this.answers };
+    this.analysisData.questionSequence = this.questionSequence.map(q => ({
+      id: q.id,
+      question: q.question,
+      stage: q.stage,
+      point: q.point,
+      domain: q.domain,
+      name: q.name
+    }));
+    this.renderResults();
+    this.saveProgress();
+  }
+
+  calculateModuleResults() {
+    const module = this.getActiveModule();
+    if (!module) {
+      this.calculateResults();
+      return;
+    }
+
+    const moduleScores = {};
+    module.pointKeys.forEach(pointKey => {
+      const point = COMPATIBILITY_POINTS[pointKey];
+      if (!point) return;
+      const questionIds = this.questionSequence
+        .filter(q => q.point === pointKey)
+        .map(q => q.id);
+      const scores = questionIds
+        .map(id => (this.answers[id] !== undefined ? this.answers[id] : 5))
+        .filter(value => typeof value === 'number');
+      if (!scores.length) return;
+
+      const rawScore = scores.reduce((sum, value) => sum + value, 0) / scores.length;
+      const tierWeight = IMPACT_TIER_WEIGHTS[point.impactTier] || 0.7;
+      const weightedScore = rawScore * tierWeight * point.weight;
+
+      moduleScores[pointKey] = {
+        name: point.name,
+        rawScore,
+        weightedScore,
+        impactTier: point.impactTier,
+        tierWeight,
+        priority: this.getPriorityLevel(rawScore, weightedScore),
+        severity: this.getSeverityLevel(rawScore)
+      };
+    });
+
+    this.analysisData.compatibilityScores = moduleScores;
+    this.analysisData.assessmentMode = 'module';
+    this.analysisData.moduleId = module.id;
+    this.analysisData.moduleTitle = module.title;
+
+    const moduleScore = this.getModuleScore(module.pointKeys);
+    const status = this.getModuleStatus(moduleScore);
+    const statusKey = status.toLowerCase();
+    const conclusion = module.conclusions?.[statusKey] || '';
+
+    this.analysisData.moduleResults = {
+      moduleId: module.id,
+      moduleTitle: module.title,
+      moduleScore,
+      status,
+      conclusion,
+      pointScores: moduleScores
+    };
+  }
+
   updateStageIndicator() {
     const stageIndicator = document.getElementById('stageIndicator');
     if (stageIndicator) {
+      if (this.assessmentMode === 'module') {
+        const module = this.getActiveModule();
+        stageIndicator.textContent = module ? `${module.title} Assessment` : 'Focused Relationship Assessment';
+        return;
+      }
       const stageNames = {
         1: 'Stage 1: Broad Compatibility Assessment',
         2: 'Stage 2: Domain-Specific Deep Dive',
@@ -1034,6 +1245,11 @@ export class RelationshipEngine {
 
     const resultsContainer = document.getElementById('resultsContainer');
     if (!resultsContainer) return;
+
+    if (this.assessmentMode === 'module') {
+      this.renderModuleResults(resultsContainer);
+      return;
+    }
 
     let html = '<h3>Current Strain Points:</h3>';
     html += '<p style="color: var(--muted); margin-bottom: 1rem;">These are the areas showing current strain, ranked by weighted impact score.</p>';
@@ -1161,6 +1377,66 @@ export class RelationshipEngine {
     SecurityUtils.safeInnerHTML(resultsContainer, html);
   }
 
+  renderModuleResults(resultsContainer) {
+    const module = this.getActiveModule();
+    if (!module) {
+      SecurityUtils.safeInnerHTML(resultsContainer, '<p>Module results are unavailable. Please restart the assessment.</p>');
+      return;
+    }
+
+    const moduleScore = this.analysisData.moduleResults?.moduleScore ?? this.getModuleScore(module.pointKeys);
+    const status = this.analysisData.moduleResults?.status ?? this.getModuleStatus(moduleScore);
+    const statusKey = status.toLowerCase();
+    const conclusion = module.conclusions?.[statusKey] || '';
+    const referenceText = RELATIONSHIP_MATERIAL?.[module.materialKey] || '';
+    const referenceHtml = referenceText ? this.formatReferenceText(referenceText) : '';
+
+    let html = `
+      <h3>${SecurityUtils.sanitizeHTML(module.title || '')}</h3>
+      <p style="color: var(--muted); margin-bottom: 1.25rem;">${SecurityUtils.sanitizeHTML(module.summary || '')}</p>
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Module Score</h4>
+        ${moduleScore !== null && moduleScore !== undefined ? `
+          <p><strong>${moduleScore.toFixed(1)}/10</strong> <span class="module-status">${SecurityUtils.sanitizeHTML(status)}</span></p>
+        ` : '<p>Module score unavailable.</p>'}
+        ${conclusion ? `<p class="module-conclusion">${SecurityUtils.sanitizeHTML(conclusion)}</p>` : ''}
+      </div>
+    `;
+
+    const moduleScores = Object.entries(this.analysisData.compatibilityScores || {})
+      .map(([key, data]) => ({ key, ...data }))
+      .sort((a, b) => b.weightedScore - a.weightedScore);
+
+    if (moduleScores.length) {
+      html += `
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Domain Signals</h4>
+          <ul class="feature-list">
+            ${moduleScores.map(item => `
+              <li>
+                <strong>${SecurityUtils.sanitizeHTML(item.name || '')}</strong>: ${item.rawScore.toFixed(1)}/10
+                <span style="color: var(--muted); font-size: 0.9em;">(Weighted: ${item.weightedScore.toFixed(2)}, ${SecurityUtils.sanitizeHTML(item.impactTier || '')})</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    if (referenceHtml) {
+      html += `
+        <details class="module-reference">
+          <summary>View Framework Reference</summary>
+          <div class="module-reference-text">${referenceHtml}</div>
+        </details>
+      `;
+    }
+
+    html += this.getClosureSection();
+
+    SecurityUtils.safeInnerHTML(resultsContainer, html);
+  }
+
   renderAnalysisModules() {
     if (!Array.isArray(RELATIONSHIP_ANALYSIS_MODULES) || RELATIONSHIP_ANALYSIS_MODULES.length === 0) {
       return '';
@@ -1178,7 +1454,7 @@ export class RelationshipEngine {
     RELATIONSHIP_ANALYSIS_MODULES.forEach(module => {
       const score = this.getModuleScore(module.pointKeys);
       const status = this.getModuleStatus(score);
-      const conclusion = module.conclusions?.[status] || '';
+      const conclusion = module.conclusions?.[status.toLowerCase()] || '';
       const referenceText = RELATIONSHIP_MATERIAL?.[module.materialKey] || '';
       const referenceHtml = referenceText ? this.formatReferenceText(referenceText) : '';
 
@@ -1351,12 +1627,16 @@ export class RelationshipEngine {
   }
 
   exportAnalysis(format = 'json') {
-    const filename = `relationship-analysis-${Date.now()}`;
+    const baseName = this.assessmentMode === 'module' && this.activeModuleId
+      ? `relationship-${this.activeModuleId}`
+      : 'relationship-analysis';
+    const filename = `${baseName}-${Date.now()}`;
+    const reportTitle = this.assessmentMode === 'module' ? 'Relationships Module Analysis' : 'Relationships Analysis';
     if (format === 'csv') {
-      const csvContent = exportForAIAgent(this.analysisData, 'relationship', 'Relationship Optimization');
+      const csvContent = exportForAIAgent(this.analysisData, 'relationship', reportTitle);
       downloadFile(csvContent, filename + '.csv', 'text/csv');
     } else {
-      const jsonContent = exportJSON(this.analysisData, 'relationship', 'Relationship Optimization');
+      const jsonContent = exportJSON(this.analysisData, 'relationship', reportTitle);
       downloadFile(jsonContent, filename + '.json', 'application/json');
     }
   }
@@ -1373,6 +1653,8 @@ export class RelationshipEngine {
         weakestLinks: this.weakestLinks,
         domainWeakAreas: this.domainWeakAreas,
         crossDomainSpillover: this.crossDomainSpillover,
+        assessmentMode: this.assessmentMode,
+        activeModuleId: this.activeModuleId,
         analysisData: this.analysisData,
         timestamp: new Date().toISOString()
       };
@@ -1391,6 +1673,8 @@ export class RelationshipEngine {
       const data = this.dataStore.load('progress');
       if (!data) return;
 
+      this.assessmentMode = data.assessmentMode || data.analysisData?.assessmentMode || 'full';
+      this.activeModuleId = data.activeModuleId || data.analysisData?.moduleId || null;
       this.currentStage = data.currentStage || 1;
       this.currentQuestionIndex = data.currentQuestionIndex || 0;
       this.answers = data.answers || {};
@@ -1401,7 +1685,9 @@ export class RelationshipEngine {
 
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0) {
-        if (this.currentStage === 1) {
+        if (this.assessmentMode === 'module') {
+          await this.buildModuleSequence(this.activeModuleId);
+        } else if (this.currentStage === 1) {
           await this.buildStage1Sequence();
         } else if (this.currentStage === 2) {
           await this.analyzeStage1Results();
@@ -1411,11 +1697,19 @@ export class RelationshipEngine {
           await this.buildStage2Sequence();
           await this.buildStage3Sequence();
         }
+
+        this.setLandingVisibility(false);
         
         if (this.currentQuestionIndex < this.questionSequence.length) {
           this.renderCurrentQuestion();
           this.updateProgressBar();
+          this.updateStageIndicator();
         }
+      } else if (Array.isArray(this.analysisData.questionSequence) && this.analysisData.questionSequence.length > 0) {
+        this.setLandingVisibility(false);
+        this.renderResults();
+      } else {
+        this.setLandingVisibility(true);
       }
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
@@ -1437,21 +1731,9 @@ export class RelationshipEngine {
    * @returns {Promise<void>}
    */
   async resetAssessment() {
-    this.currentStage = 1;
-    this.currentQuestionIndex = 0;
-    this.answers = {};
-    this.stage2TransitionShown = false;
-    this.stage3TransitionShown = false;
-    this.groundingPauseShown = false;
-    this.crossDomainSpillover = {};
-    this.analysisData = {
-      timestamp: new Date().toISOString(),
-      compatibilityScores: {},
-      weakestLinks: [],
-      actionStrategies: {},
-      archetypalInsights: {},
-      crossDomainSpillover: {}
-    };
+    this.assessmentMode = 'full';
+    this.activeModuleId = null;
+    this.resetAssessmentState();
 
     this.dataStore.clear('progress');
 
@@ -1460,11 +1742,10 @@ export class RelationshipEngine {
     const resultsSection = document.getElementById('resultsSection');
     const progressBarFill = document.getElementById('progressBarFill');
     
-    if (questionnaireSection) questionnaireSection.classList.add('active');
+    if (questionnaireSection) questionnaireSection.classList.remove('active');
     if (resultsSection) resultsSection.classList.remove('active');
     if (progressBarFill) progressBarFill.style.width = '0%'; // Progress bar width is dynamic, keep inline
-    
-    await this.startAssessment();
+    this.setLandingVisibility(true);
   }
 }
 

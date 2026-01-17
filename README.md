@@ -60,7 +60,7 @@ cd site
 4. **Manipulation Defense Decoder** (`manipulation.html`) - Manipulation tactic identification
 5. **Technical Title for your Sovereignty Paradigm** (`sovereignty-spectrum.html`) - Philosophical paradigm alignment
 6. **Logos Structure** (`paradigm.html`) - Worldview foundation mapping
-7. **Relationship Bottleneck Analysis** (`relationship.html`) - Relationship compatibility assessment
+7. **Relationships** (`relationship.html`) - Relationship compatibility assessment
 8. **Polarity Position Mapping** (`temperament.html`) - Masculine-feminine temperament spectrum
 9. **Modern Archetype Identification** (`archetype.html`) - Archetype identification system
 10. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification

@@ -33,7 +33,7 @@ Discover your position on the masculine-feminine temperament spectrum through co
 ## Related Resources
 
 - **Sovereign of Mind** (Book) - Source framework for temperament dynamics
-- **Relationship Bottleneck Analysis** - Evaluates relationship compatibility
+- **Relationships** - Evaluates relationship compatibility
 - **Modern Archetype Identification** - Identifies archetypal patterns
 - Main Site: https://beliefmastery.github.io/site/
 
@@ -44,3 +44,4 @@ Warwick Marshall - Developer of comprehensive diagnostic assessment systems.
 ---
 
 **Note:** This tool is part of the Belief Mastery & Sovereign of Mind diagnostic suite. For more information, visit the main site: https://beliefmastery.github.io/site/
+

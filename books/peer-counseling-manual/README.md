@@ -28,7 +28,7 @@ Available on Amazon: [The Peer-Counseling Manual](https://www.amazon.com/dp/B0XX
 
 - **Life Domain Review** - Identifies obstacles to sovereignty
 - **Pathology Assessment** - Maps psychological patterns
-- **Relationship Bottleneck Analysis** - Evaluates relationship compatibility
+- **Relationships** - Evaluates relationship compatibility
 
 ## Author
 
@@ -37,3 +37,4 @@ Warwick Marshall - Father, entrepreneur, I.T. professional, alternative health p
 ---
 
 **Note:** This book is part of the Belief Mastery & Sovereign of Mind collection. For more information, visit the main site: https://beliefmastery.github.io/site/
+

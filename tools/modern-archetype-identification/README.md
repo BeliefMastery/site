@@ -34,7 +34,7 @@ Identify your primary, secondary, and tertiary modern archetypes through a compr
 ## Related Resources
 
 - **Sovereign of Mind** (Book) - Source framework for archetypal patterns
-- **Relationship Bottleneck Analysis** - Evaluates relationship compatibility
+- **Relationships** - Evaluates relationship compatibility
 - **Polarity Position Mapping** - Maps masculine-feminine temperament
 - Main Site: https://beliefmastery.github.io/site/
 
@@ -45,3 +45,4 @@ Warwick Marshall - Developer of comprehensive diagnostic assessment systems.
 ---
 
 **Note:** This tool is part of the Belief Mastery & Sovereign of Mind diagnostic suite. For more information, visit the main site: https://beliefmastery.github.io/site/
+
