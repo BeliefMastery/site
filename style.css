@@ -3715,6 +3715,14 @@ img {
         border-radius: 0;
     }
 
+    .page-fullbleed .container {
+        padding: 0;
+    }
+
+    .page-fullbleed section {
+        margin: 0;
+    }
+
     .tool-container,
     .manipulation-container,
     .archetype-container,
