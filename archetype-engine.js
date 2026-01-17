@@ -1667,6 +1667,7 @@ showGenderSelection() {
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsContainer = document.getElementById('resultsContainer');
     const introSection = document.querySelector('.intro-section');
+    const actionButtonsSection = document.getElementById('actionButtonsSection');
     
     if (questionContainer) questionContainer.classList.remove('hidden');
     if (questionnaireSection) questionnaireSection.classList.add('active');
@@ -1675,6 +1676,7 @@ showGenderSelection() {
       resultsContainer.classList.remove('active');
     }
     if (introSection) introSection.classList.add('hidden');
+    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
   }
 
   showResultsContainer() {
@@ -1714,6 +1716,12 @@ showGenderSelection() {
     try {
       const progress = this.dataStore.load('progress');
       if (!progress) return;
+
+      const hasProgress = (progress.currentPhase && progress.currentPhase > 0)
+        || progress.gender
+        || progress.iqBracket
+        || (progress.answers && Object.keys(progress.answers).length > 0);
+      if (!hasProgress) return;
 
       this.currentPhase = progress.currentPhase || 0;
       this.currentQuestionIndex = progress.currentQuestionIndex || 0;
