@@ -5,89 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Example Report: Coaching Analysis - Belief Mastery</title>
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: var(--bg);
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('../images/index-background.JPG');
-      background-size: contain;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 0;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
-      z-index: 1;
-      pointer-events: none;
-    }
-    .example-container {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-    .example-header {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border-left: 4px solid var(--brand);
-      text-align: center;
-    }
-    .results-content {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-    .obstacle-item, .domain-item {
-      background: rgba(255, 255, 255, 0.9);
-      border-left: 3px solid var(--brand);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .primary-axis {
-      background: rgba(255, 184, 0, 0.15);
-      border: 3px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="example-container">
-    <div class="example-header">
+  </head>
+<body class="page-fullbleed">
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+  <div class="example-container container">
+    <div class="example-header section-inner section-inner-padded">
       <h1>Example Report: Coaching Analysis</h1>
       <p>This is an example of what your results would look like after completing the assessment.</p>
-      <a href="../coaching.html">Take the Assessment</a>
+      <a href="../coaching.html" class="btn btn-primary">Take the Assessment</a>
     </div>
 
-    <div class="results-content">
-      <div class="profile-summary">
+    <div class="results-content section-inner section-inner-padded">
+      <div class="profile-summary card">
         <h3>Profile Summary</h3>
       </div>
 
@@ -109,42 +42,43 @@
       </div>
 
       <h4>Obstacles to Sovereignty</h4>
-      <div class="obstacle-item">
+      <div class="obstacle-item card">
         <strong>External Validation Dependency</strong> - Score: 8/10 (High)
         <p>You rely heavily on external approval and validation to feel worthy. This creates dependency on others' opinions and makes your self-worth conditional.</p>
       </div>
-      <div class="obstacle-item">
+      <div class="obstacle-item card">
         <strong>Perfectionism</strong> - Score: 7/10 (High)
         <p>You hold yourself to impossibly high standards and struggle with self-acceptance when you fall short.</p>
       </div>
-      <div class="obstacle-item">
+      <div class="obstacle-item card">
         <strong>Fear of Rejection</strong> - Score: 6/10 (Moderate)
         <p>You avoid situations where you might be rejected or judged, limiting your authentic expression.</p>
       </div>
 
       <h4>Satisfaction Domains</h4>
-      <div class="domain-item">
+      <div class="domain-item card">
         <strong>Emotional Health</strong> - Satisfaction: 3.2/10 (Low)
         <p>Overall: 3/10 | Average Aspects: 3.4/10</p>
       </div>
-      <div class="domain-item">
+      <div class="domain-item card">
         <strong>Mental Health</strong> - Satisfaction: 4.1/10 (Low)
         <p>Overall: 4/10 | Average Aspects: 4.2/10</p>
       </div>
-      <div class="domain-item">
+      <div class="domain-item card">
         <strong>Intimate Relationship</strong> - Satisfaction: 5.8/10 (Moderate)
         <p>Overall: 6/10 | Average Aspects: 5.6/10</p>
       </div>
-      <div class="domain-item">
+      <div class="domain-item card">
         <strong>Family</strong> - Satisfaction: 6.5/10 (Moderate)
         <p>Overall: 7/10 | Average Aspects: 6.0/10</p>
       </div>
-      <div class="domain-item">
+      <div class="domain-item card">
         <strong>Work-Life Balance</strong> - Satisfaction: 7.2/10 (High)
         <p>Overall: 7/10 | Average Aspects: 7.4/10</p>
       </div>
     </div>
   </div>
+  <script src="../shared/background.js"></script>
 </body>
 </html>
 

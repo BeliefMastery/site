@@ -5,103 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Example Report: Paradigm Analysis - Belief Mastery</title>
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: var(--bg);
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('../images/index-background.JPG');
-      background-size: contain;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 0;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
-      z-index: 1;
-      pointer-events: none;
-    }
-    .example-container {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-    .example-header {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border-left: 4px solid var(--brand);
-      text-align: center;
-    }
-    .results-content {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-    .paradigm-card {
-      margin-bottom: 2rem;
-    }
-    .score-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 0.5rem;
-    }
-    .score-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--brand), var(--accent));
-      transition: width 0.3s ease;
-    }
-    .insight-section {
-      background: rgba(255, 255, 255, 0.7);
-      border-left: 4px solid var(--brand);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="example-container">
-    <div class="example-header">
+  </head>
+<body class="page-fullbleed">
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+  <div class="example-container container">
+    <div class="example-header section-inner section-inner-padded">
       <h1>Example Report: Paradigm Analysis</h1>
       <p>This is an example of what your results would look like after completing the assessment.</p>
-      <a href="../paradigm.html">Take the Assessment</a>
+      <a href="../paradigm.html" class="btn btn-primary">Take the Assessment</a>
     </div>
 
-    <div class="results-content">
-      <div class="paradigm-summary">
+    <div class="results-content section-inner section-inner-padded">
+      <div class="paradigm-summary card">
         <h3>Your Current Dominant Framing</h3>
         <p>Based on your responses, here are your primary paradigm alignments. Remember: paradigms commonly shift with life stage, pressure, and responsibility. This map reflects your current organization of meaning, not a fixed identity.</p>
       </div>
 
-      <div class="paradigm-card">
+      <div class="paradigm-card card">
         <h4>The Good Life</h4>
         <div>
           <div>
@@ -125,7 +49,7 @@
         </div>
       </div>
 
-      <div class="paradigm-card">
+      <div class="paradigm-card card">
         <h4>God Perspectives</h4>
         <div>
           <div>
@@ -139,37 +63,37 @@
         </div>
       </div>
 
-      <div class="enhanced-insights">
+      <div class="enhanced-insights card">
         <h3>Enhanced Insights</h3>
         
-        <div class="insight-section">
+        <div class="insight-section card">
           <h4>Primary Paradigm</h4>
           <p><strong>Active</strong> (The Good Life) - Confidence: High (5.8/7)</p>
           <p><strong>God as a Relational Presence</strong> (God Perspectives) - Confidence: High (6.1/7)</p>
         </div>
 
-        <div class="insight-section">
+        <div class="insight-section card">
           <h4>Shadow/Blind Spots</h4>
           <p>Underrepresented dimensions in your current paradigm (areas you may be overlooking):</p>
           <p><strong>Active:</strong> Esoteric, Mystical</p>
           <p><strong>God as a Relational Presence:</strong> Literal, Esoteric</p>
         </div>
 
-        <div class="insight-section">
+        <div class="insight-section card">
           <h4>Development Edges</h4>
           <p>Areas of low integration or incomplete understanding (opportunities for growth):</p>
           <p><strong>The Good Life:</strong> Integration of mystical dimensions</p>
           <p><strong>God Perspectives:</strong> Balancing literal and symbolic understanding</p>
         </div>
 
-        <div class="insight-section">
+        <div class="insight-section card">
           <h4>Tension Points</h4>
           <p>Areas of internal contradiction or tension (not necessarily problematic):</p>
           <p>High literal dimension (6.5) but low certainty about literal truth (3.2) - suggests tension between intellectual understanding and experiential certainty</p>
           <p>Strong symbolic engagement (7.0) with moderate mystical experience (4.1) - indicates potential for deeper integration</p>
         </div>
 
-        <div class="insight-section">
+        <div class="insight-section card">
           <h4>Integration Scores</h4>
           <p>How well integrated are your different ways of understanding:</p>
           <p><strong>The Good Life:</strong> 5.2/7 - Moderately Integrated</p>
@@ -179,6 +103,7 @@
       </div>
     </div>
   </div>
+  <script src="../shared/background.js"></script>
 </body>
 </html>
 

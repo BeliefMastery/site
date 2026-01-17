@@ -5,139 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Example Report: Needs Dependency Loop Determinator - Belief Mastery</title>
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: var(--bg);
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('../images/index-background.JPG');
-      background-size: contain;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 0;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
-      z-index: 1;
-      pointer-events: none;
-    }
-    .example-container {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-    .example-header {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border-left: 4px solid var(--brand);
-      text-align: center;
-    }
-    .results-content {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-    .primary-loop-section {
-      margin-bottom: 2rem;
-    }
-    .loop-card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      border-left: 4px solid var(--brand);
-    }
-    .loop-card.primary {
-      border-left: 4px solid var(--accent);
-      background: rgba(255, 184, 0, 0.1);
-    }
-    .loop-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .loop-strength {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .loops-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-    .need-chain-section {
-      margin-bottom: 2rem;
-    }
-    .need-chain-visualization {
-      background: rgba(0, 123, 255, 0.1);
-      border-left: 4px solid var(--brand);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-    }
-    .recommendations-section {
-      margin-bottom: 2rem;
-    }
-    .priority-group {
-      margin-bottom: 1.5rem;
-    }
-    .priority-group.high {
-      background: rgba(211, 47, 47, 0.1);
-      border-left: 4px solid #d32f2f;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-    }
-    .priority-group.medium {
-      background: rgba(255, 184, 0, 0.1);
-      border-left: 4px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-    }
-    .closure-section {
-      background: rgba(0, 123, 255, 0.1);
-      border-left: 4px solid var(--brand);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="example-container">
-    <div class="example-header">
+  </head>
+<body class="page-fullbleed">
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+  <div class="example-container container">
+    <div class="example-header section-inner section-inner-padded">
       <h1>Example Report: Needs Dependency Loop Determinator</h1>
       <p>This is an example of what your results would look like after completing the assessment.</p>
-      <a href="../needs-dependency.html">Take the Assessment</a>
+      <a href="../needs-dependency.html" class="btn btn-primary">Take the Assessment</a>
     </div>
 
-    <div class="results-content">
-      <div class="primary-loop-section">
+    <div class="results-content section-inner section-inner-padded">
+      <div class="primary-loop-section card">
         <h2>Primary Dependency Loop Identified</h2>
-        <div class="loop-card primary">
+        <div class="loop-card primary card">
           <div class="loop-header">
             <h3>SPACE Loop</h3>
             <span class="loop-strength">Confidence: 8.5/10</span>
@@ -146,21 +31,21 @@
         </div>
       </div>
 
-      <div class="secondary-loops-section">
+      <div class="secondary-loops-section card">
         <h2>Secondary Patterns</h2>
         <div class="loops-grid">
-          <div class="loop-card">
+          <div class="loop-card card">
             <h3>JOY Loop</h3>
             <p>Additional pattern showing weaker signals. This involves dependency on others for happiness and lightness.</p>
           </div>
-          <div class="loop-card">
+          <div class="loop-card card">
             <h3>SECURITY Loop</h3>
             <p>Additional pattern showing weaker signals. This involves the need for safety and predictability.</p>
           </div>
         </div>
       </div>
 
-      <div class="need-chain-section">
+      <div class="need-chain-section card">
         <h2>Need Chain Analysis</h2>
         <div class="need-chain-visualization">
           <p><strong>Surface Need:</strong> Space and Independence</p>
@@ -169,16 +54,16 @@
         </div>
       </div>
 
-      <div class="recommendations-section">
+      <div class="recommendations-section card">
         <h2>Action Strategies</h2>
-        <div class="priority-group high">
+        <div class="priority-group high card">
           <h3>High Priority</h3>
           <ul>
             <li><strong>Establish Clear Boundaries:</strong> Communicate your need for space proactively rather than reactively. Set clear expectations about when you need alone time and how others can support this need.</li>
             <li><strong>Develop Internal Sources of Joy:</strong> Practice activities that generate joy independently, reducing dependency on others for emotional regulation.</li>
           </ul>
         </div>
-        <div class="priority-group medium">
+        <div class="priority-group medium card">
           <h3>Medium Priority</h3>
           <ul>
             <li><strong>Practice Conscious Communication:</strong> When you need space, explain it as a need rather than a rejection, helping others understand it's not about them.</li>
@@ -187,7 +72,7 @@
         </div>
       </div>
 
-      <div class="closure-section">
+      <div class="closure-section card">
         <h2>What This Does NOT Imply</h2>
         <div class="closure-content">
           <p><strong>This analysis does not mean:</strong></p>
@@ -208,6 +93,7 @@
       </div>
     </div>
   </div>
+  <script src="../shared/background.js"></script>
 </body>
 </html>
 

@@ -5,94 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Example Report: Manipulation Analysis - Belief Mastery</title>
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: var(--bg);
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('../images/index-background.JPG');
-      background-size: contain;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 0;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));
-      z-index: 1;
-      pointer-events: none;
-    }
-    .example-container {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-    .example-header {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      border-left: 4px solid var(--brand);
-      text-align: center;
-    }
-    .results-content {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-    .vector-result {
-      background: rgba(211, 47, 47, 0.1);
-      border-left: 4px solid #d32f2f;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .tactic-item {
-      background: var(--glass);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      border-left: 4px solid var(--brand);
-    }
-  </style>
-</head>
-<body>
-  <div class="example-container">
-    <div class="example-header">
+  </head>
+<body class="page-fullbleed">
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+  <div class="example-container container">
+    <div class="example-header section-inner section-inner-padded">
       <h1>Example Report: Manipulation Analysis</h1>
       <p>This is an example of what your results would look like after completing the assessment.</p>
-      <a href="../manipulation.html">Take the Assessment</a>
+      <a href="../manipulation.html" class="btn btn-primary">Take the Assessment</a>
     </div>
 
-    <div class="results-content">
-      <div class="manipulation-summary">
+    <div class="results-content section-inner section-inner-padded">
+      <div class="manipulation-summary card">
         <h3>Manipulation Vector Analysis Results</h3>
         <p>Based on your responses, here are the manipulation vectors identified and recommended strategies.</p>
       </div>
 
-      <div class="vector-result">
+      <div class="vector-result card">
         <h3>Primary Vector: Dependency</h3>
         <p>This manipulation creates dependency by making you feel you need the manipulator for validation, support, or identity. They position themselves as essential to your well-being, making it difficult to leave or set boundaries.</p>
         <p><strong>Activation Level:</strong> High - This manipulation is very active and strong</p>
@@ -100,20 +33,20 @@
         <p><strong>Pattern Type:</strong> Structural - This is a deep, ongoing pattern that affects your whole life</p>
       </div>
 
-      <div class="supporting-vectors">
+      <div class="supporting-vectors card">
         <h4>Supporting Vectors</h4>
-        <div class="vector-result">
+        <div class="vector-result card">
           <h4>Deception</h4>
           <p>This manipulation involves lying, withholding information, or creating false narratives to control your perception of reality.</p>
           <p><strong>Score:</strong> 5.2/10</p>
         </div>
       </div>
 
-      <div class="tactics-section">
+      <div class="tactics-section card">
         <h4>Identified Tactics</h4>
         <p>These are specific manipulation tactics that may be present in your relationship. Each tactic includes examples and explanations in plain language.</p>
         
-        <div class="tactic-item">
+        <div class="tactic-item card">
           <h5>Covert Entrench</h5>
           <div>
             <strong>How it works:</strong> Hidden/Subtle - Hard to notice, sneaky manipulation • <strong>When it happens:</strong> Control Phase - Happens once they have you, to keep you trapped
@@ -132,7 +65,7 @@
           </div>
         </div>
 
-        <div class="tactic-item">
+        <div class="tactic-item card">
           <h5>Emotional Blackmail</h5>
           <div>
             <strong>How it works:</strong> Hidden/Subtle - Hard to notice, sneaky manipulation • <strong>When it happens:</strong> Control Phase - Happens once they have you, to keep you trapped
@@ -153,6 +86,7 @@
       </div>
     </div>
   </div>
+  <script src="../shared/background.js"></script>
 </body>
 </html>
 
