@@ -3757,6 +3757,24 @@ img {
     }
 }
 
+@media (max-width: 820px) {
+    .page-fullbleed .container,
+    .page-fullbleed .example-container {
+        padding: 0;
+    }
+
+    .page-fullbleed section,
+    .page-fullbleed .section-inner,
+    .page-fullbleed .section-inner-padded,
+    .page-fullbleed .example-header,
+    .page-fullbleed .results-content {
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+}
+
 /* Print optimization */
 @media print {
     /* Hide navigation and non-essential elements */
