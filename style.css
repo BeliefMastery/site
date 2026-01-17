@@ -183,16 +183,17 @@ main {
 .archetype-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px;
+    min-width: 720px;
     background: var(--glass);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    font-size: 0.85rem;
 }
 
 .archetype-table th,
 .archetype-table td {
-    padding: 0.85rem 1rem;
+    padding: 0.6rem 0.75rem;
     text-align: left;
     vertical-align: top;
     border-bottom: 1px solid var(--border-subtle);

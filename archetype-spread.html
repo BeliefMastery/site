@@ -62,10 +62,16 @@
         <p class="panel-text">
           This table lists all archetypes with their cross-paradigm equivalents and estimated population proportions.
         </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner section-inner-padded">
+        <h2 class="panel-title">Male Archetypes</h2>
         <div class="table-wrap">
-          <table class="archetype-table" aria-describedby="archetype-table-caption">
-            <caption id="archetype-table-caption" class="visually-hidden">
-              Archetype spread table with roles, equivalents, and population proportions
+          <table class="archetype-table" aria-describedby="archetype-table-caption-male">
+            <caption id="archetype-table-caption-male" class="visually-hidden">
+              Male archetype spread table with roles, equivalents, and population proportions
             </caption>
             <thead>
               <tr>
@@ -78,7 +84,32 @@
                 <th>Population</th>
               </tr>
             </thead>
-            <tbody id="archetypeTableBody"></tbody>
+            <tbody id="archetypeTableBodyMale"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner section-inner-padded">
+        <h2 class="panel-title">Female Archetypes</h2>
+        <div class="table-wrap">
+          <table class="archetype-table" aria-describedby="archetype-table-caption-female">
+            <caption id="archetype-table-caption-female" class="visually-hidden">
+              Female archetype spread table with roles, equivalents, and population proportions
+            </caption>
+            <thead>
+              <tr>
+                <th>Archetype</th>
+                <th>Social Role</th>
+                <th>Jungian/Q-KWML</th>
+                <th>Vedic</th>
+                <th>Greek Pantheon</th>
+                <th>Tarot</th>
+                <th>Population</th>
+              </tr>
+            </thead>
+            <tbody id="archetypeTableBodyFemale"></tbody>
           </table>
         </div>
       </div>
@@ -97,9 +128,12 @@
   <script type="module">
     import { ARCHETYPE_SPREAD } from './archetype-data/archetype-spread.js';
 
-    const tbody = document.getElementById('archetypeTableBody');
-    if (tbody && Array.isArray(ARCHETYPE_SPREAD)) {
-      ARCHETYPE_SPREAD.forEach(entry => {
+    const tbodyMale = document.getElementById('archetypeTableBodyMale');
+    const tbodyFemale = document.getElementById('archetypeTableBodyFemale');
+
+    const renderRows = (targetBody, entries) => {
+      if (!targetBody) return;
+      entries.forEach(entry => {
         const row = document.createElement('tr');
         const cells = [
           entry.name,
@@ -115,8 +149,15 @@
           cell.textContent = text || '—';
           row.appendChild(cell);
         });
-        tbody.appendChild(row);
+        targetBody.appendChild(row);
       });
+    };
+
+    if (Array.isArray(ARCHETYPE_SPREAD)) {
+      const femaleEntries = ARCHETYPE_SPREAD.filter(entry => entry.name.includes('Female'));
+      const maleEntries = ARCHETYPE_SPREAD.filter(entry => !entry.name.includes('Female'));
+      renderRows(tbodyMale, maleEntries);
+      renderRows(tbodyFemale, femaleEntries);
     }
   </script>
 </body>
