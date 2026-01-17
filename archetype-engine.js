@@ -1816,16 +1816,19 @@ showGenderSelection() {
       questionContainer.classList.add('hidden');
       questionContainer.innerHTML = '';
     }
-    if (questionnaireSection) questionnaireSection.classList.add('hidden');
+    if (questionnaireSection) {
+      questionnaireSection.classList.add('hidden');
+      questionnaireSection.classList.remove('active');
+    }
     if (resultsContainer || resultsSection) {
       const container = resultsContainer || resultsSection;
-      if (container) container.classList.add('hidden');
+      if (container) {
+        container.classList.add('hidden');
+        container.classList.remove('active');
+      }
     }
     if (introSection) introSection.classList.remove('hidden');
     if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
-    
-    // Restart the assessment from the beginning
-    this.startAssessment();
   }
 
   exportAnalysis(format) {
