@@ -11,6 +11,7 @@ import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-util
 let COMPATIBILITY_POINTS, IMPACT_TIER_WEIGHTS, SCORING_THRESHOLDS;
 let ACTION_STRATEGIES, ARCHETYPAL_INSIGHTS;
 let STAGE_2_DOMAIN_QUESTIONS, STAGE_3_SCENARIO_QUESTIONS, RELATIONSHIP_DOMAINS;
+let RELATIONSHIP_MATERIAL, RELATIONSHIP_ANALYSIS_MODULES;
 
 /**
  * Relationship Engine - Optimizes relationship compatibility through multi-stage assessment
@@ -104,6 +105,18 @@ export class RelationshipEngine {
       STAGE_2_DOMAIN_QUESTIONS = questionsModule.STAGE_2_DOMAIN_QUESTIONS;
       STAGE_3_SCENARIO_QUESTIONS = questionsModule.STAGE_3_SCENARIO_QUESTIONS;
       RELATIONSHIP_DOMAINS = questionsModule.RELATIONSHIP_DOMAINS;
+
+      const materialModule = await loadDataModule(
+        './relationship-data/relationship-material.js',
+        'Relationship Material'
+      );
+      RELATIONSHIP_MATERIAL = materialModule.RELATIONSHIP_MATERIAL || {};
+
+      const modulesModule = await loadDataModule(
+        './relationship-data/relationship-modules.js',
+        'Relationship Analysis Modules'
+      );
+      RELATIONSHIP_ANALYSIS_MODULES = modulesModule.RELATIONSHIP_ANALYSIS_MODULES || [];
 
       this.debugReporter.recordSection('Stage 1', Object.keys(COMPATIBILITY_POINTS || {}).length);
     } catch (error) {
@@ -1138,11 +1151,81 @@ export class RelationshipEngine {
     });
     html += '</ul></div>';
 
+    // Additional analysis modules
+    html += this.renderAnalysisModules();
+
     // Mandatory Closure Section
     html += this.getClosureSection();
 
     // Sanitize HTML before rendering - all dynamic content is already sanitized above
     SecurityUtils.safeInnerHTML(resultsContainer, html);
+  }
+
+  renderAnalysisModules() {
+    if (!Array.isArray(RELATIONSHIP_ANALYSIS_MODULES) || RELATIONSHIP_ANALYSIS_MODULES.length === 0) {
+      return '';
+    }
+
+    let html = `
+      <div class="analysis-modules-section" style="margin-top: 3rem;">
+        <h3>Additional Relationship Analysis Modules</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          These modules interpret your results through the broader relationship frameworks.
+        </p>
+        <div class="analysis-modules-grid">
+    `;
+
+    RELATIONSHIP_ANALYSIS_MODULES.forEach(module => {
+      const score = this.getModuleScore(module.pointKeys);
+      const status = this.getModuleStatus(score);
+      const conclusion = module.conclusions?.[status] || '';
+      const referenceText = RELATIONSHIP_MATERIAL?.[module.materialKey] || '';
+      const referenceHtml = referenceText ? this.formatReferenceText(referenceText) : '';
+
+      html += `
+        <div class="analysis-module-card card">
+          <h4>${SecurityUtils.sanitizeHTML(module.title || '')}</h4>
+          <p>${SecurityUtils.sanitizeHTML(module.summary || '')}</p>
+          ${score !== null ? `<p><strong>Module Score:</strong> ${score.toFixed(1)}/10 <span class="module-status">${SecurityUtils.sanitizeHTML(status)}</span></p>` : ''}
+          ${conclusion ? `<p class="module-conclusion">${SecurityUtils.sanitizeHTML(conclusion)}</p>` : ''}
+          ${referenceHtml ? `
+            <details class="module-reference">
+              <summary>View Framework Reference</summary>
+              <div class="module-reference-text">${referenceHtml}</div>
+            </details>
+          ` : ''}
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    return html;
+  }
+
+  getModuleScore(pointKeys = []) {
+    if (!pointKeys.length || !this.analysisData.compatibilityScores) return null;
+    const scores = pointKeys
+      .map(key => this.analysisData.compatibilityScores[key]?.rawScore)
+      .filter(score => typeof score === 'number');
+    if (!scores.length) return null;
+    const total = scores.reduce((sum, score) => sum + score, 0);
+    return total / scores.length;
+  }
+
+  getModuleStatus(score) {
+    if (score === null || score === undefined) return 'Unscored';
+    if (score <= 4) return 'Urgent';
+    if (score <= 6) return 'Watch';
+    return 'Strong';
+  }
+
+  formatReferenceText(text) {
+    const safe = SecurityUtils.sanitizeHTML(text || '');
+    return safe.replace(/\n/g, '<br>');
   }
   
   getSelfRegulationStrategies(link) {
