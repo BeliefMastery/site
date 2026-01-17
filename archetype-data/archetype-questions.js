@@ -519,62 +519,62 @@ export const PHASE_3_QUESTIONS = [
   // ASPIRATION TEST: Bias mitigation through reverse psychology
   {
     id: 'p3_aspiration_1',
-    question: 'If you could embody the qualities of one archetype, which would you most desire?',
+    question: 'Which of these qualities do you most desire to embody?',
     type: 'forced_choice',
     isAspiration: true,
     options: [
-      { text: 'Alpha - Leadership, authority, natural command', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
-      { text: 'Beta - Being supportive, reliable, and well-liked', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
-      { text: 'Gamma - Intellectual depth, creative vision, understanding', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
-      { text: 'Delta - Practical competence, steady service, reliability', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
-      { text: 'Sigma - Independence, freedom from social expectations', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
-      { text: 'Omega - Peace, withdrawal, freedom from pressure', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
-      { text: 'Phi - Transcendence, operating beyond normal categories', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
+      { text: 'Leadership, authority, natural command', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
+      { text: 'Being supportive, reliable, and well-liked', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
+      { text: 'Intellectual depth, creative vision, understanding', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
+      { text: 'Practical competence, steady service, reliability', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
+      { text: 'Independence, freedom from social expectations', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
+      { text: 'Peace, withdrawal, freedom from pressure', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
+      { text: 'Transcendence, operating beyond normal categories', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
     ]
   },
   {
     id: 'p3_aspiration_2',
-    question: 'Which archetype would you be most comfortable being identified as?',
+    question: 'Which of these descriptions best fits how others would describe you?',
     type: 'forced_choice',
     isAspiration: true,
     options: [
-      { text: 'Alpha - I\'m comfortable with leadership and authority', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
-      { text: 'Beta - I\'m fine with being supportive and reliable', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
-      { text: 'Gamma - I accept being seen as intellectual or creative', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
-      { text: 'Delta - I\'m comfortable with practical, service-oriented roles', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
-      { text: 'Sigma - I accept being independent and non-conformist', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
-      { text: 'Omega - I\'m comfortable with being withdrawn or passive', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
-      { text: 'Phi - I\'m comfortable transcending typical categories', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
+      { text: 'They see me as comfortable with leadership and authority', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
+      { text: 'They see me as supportive and reliable', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
+      { text: 'They see me as intellectual or creative', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
+      { text: 'They see me as practical and service-oriented', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
+      { text: 'They see me as independent and non-conformist', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
+      { text: 'They see me as withdrawn or passive', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
+      { text: 'They see me as transcending typical categories', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
     ]
   },
   {
     id: 'p3_aspiration_3',
-    question: 'Which archetype do you find yourself most frequently admiring or envying in others?',
+    question: 'What do you admire most in others?',
     type: 'forced_choice',
     isAspiration: true,
     options: [
-      { text: 'Alpha - I admire natural leaders and their confidence', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
-      { text: 'Beta - I admire people who are naturally well-liked and supportive', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
-      { text: 'Gamma - I admire intellectual depth and creative vision', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
-      { text: 'Delta - I admire practical competence and steady service', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
-      { text: 'Sigma - I admire independence and freedom from expectations', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
-      { text: 'Omega - I admire peace and freedom from social pressure', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
-      { text: 'Phi - I admire those who operate beyond normal categories', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
+      { text: 'Natural leadership and confidence', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
+      { text: 'Being well-liked and supportive', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
+      { text: 'Intellectual depth and creative vision', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
+      { text: 'Practical competence and steady service', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
+      { text: 'Independence and freedom from expectations', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
+      { text: 'Peace and freedom from social pressure', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
+      { text: 'Operating beyond normal categories', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
     ]
   },
   {
     id: 'p3_aspiration_4',
-    question: 'Which archetype\'s challenges or limitations would bother you least to have?',
+    question: 'Which of these would be the least challenging for you to endure?',
     type: 'forced_choice',
     isAspiration: true,
     options: [
-      { text: 'Alpha\'s burden of responsibility and constant pressure to lead', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
-      { text: 'Beta\'s submissive tendencies and lack of assertiveness', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
-      { text: 'Gamma\'s tendency toward analysis paralysis and isolation', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
-      { text: 'Delta\'s undervaluation and lack of recognition', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
-      { text: 'Sigma\'s social isolation and difficulty forming connections', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
-      { text: 'Omega\'s powerlessness and tendency to be overlooked', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
-      { text: 'Phi\'s detachment and difficulty engaging with normal life', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
+      { text: 'A burden of responsibility and constant pressure to lead', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
+      { text: 'Submissive tendencies and lack of assertiveness', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
+      { text: 'A tendency toward analysis paralysis and isolation', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
+      { text: 'Being undervalued and lacking recognition', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
+      { text: 'Social isolation and difficulty forming connections', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
+      { text: 'Powerlessness and a tendency to be overlooked', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
+      { text: 'Detachment and difficulty engaging with normal life', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
     ]
   },
   {
