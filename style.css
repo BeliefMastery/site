@@ -3723,6 +3723,17 @@ img {
         margin: 0;
     }
 
+    .page-fullbleed .example-container {
+        padding: 0;
+    }
+
+    .page-fullbleed .example-header,
+    .page-fullbleed .results-content {
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+    }
+
     .tool-container,
     .manipulation-container,
     .archetype-container,
