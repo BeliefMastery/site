@@ -24,6 +24,8 @@ export class ArchetypeEngine {
     this.aspirationAnswers = {}; // Track aspiration test responses separately
     this.questionSequence = [];
     this.archetypeScores = {};
+    this.shuffledOptions = {};
+    this.shuffledVignettes = {};
     this.analysisData = {
       timestamp: new Date().toISOString(),
       gender: null,
@@ -694,9 +696,25 @@ showGenderSelection() {
     `;
   }
 
+  getShuffledItems(questionId, items, cache) {
+    if (!Array.isArray(items) || items.length <= 1) {
+      return items ? items.map((item, index) => ({ item, index })) : [];
+    }
+    if (!cache[questionId]) {
+      const shuffled = items.map((item, index) => ({ item, index }));
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      cache[questionId] = shuffled;
+    }
+    return cache[questionId];
+  }
+
   renderForcedChoiceQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
-    let optionsHTML = question.options.map((option, index) => {
+    const shuffledOptions = this.getShuffledItems(question.id, question.options, this.shuffledOptions);
+    let optionsHTML = shuffledOptions.map(({ item: option, index }) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
       return `
         <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
@@ -792,7 +810,8 @@ showGenderSelection() {
 
   renderNarrativeQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
-    let vignettesHTML = question.vignettes.map((vignette, index) => {
+    const shuffledVignettes = this.getShuffledItems(question.id, question.vignettes, this.shuffledVignettes);
+    let vignettesHTML = shuffledVignettes.map(({ item: vignette, index }) => {
       const isSelected = currentAnswer && currentAnswer.selectedIndex === index;
       const lockedStyle = isLocked && !isSelected ? 'opacity: 0.5; cursor: not-allowed;' : '';
       const selectedLockedStyle = isLocked && isSelected ? 'background: rgba(255, 184, 0, 0.3) !important; border: 3px solid var(--brand) !important;' : '';
