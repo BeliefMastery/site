@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let TEMPERAMENT_DIMENSIONS, INTIMATE_DYNAMICS;
@@ -54,6 +55,21 @@ export class TemperamentEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('temperament-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
 
     this.init();
   }
@@ -319,7 +335,7 @@ export class TemperamentEngine {
 
     if (introSection) introSection.classList.add('hidden');
     if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
-    if (questionnaireSection) questionnaireSection.classList.add('active');
+    this.ui.transition('assessment');
 
     await this.buildPhase1Sequence();
     this.currentQuestionIndex = 0;
@@ -968,8 +984,7 @@ export class TemperamentEngine {
       
       const questionnaireSection = document.getElementById('questionnaireSection');
       const resultsSection = document.getElementById('resultsSection');
-      if (questionnaireSection) questionnaireSection.classList.remove('active');
-      if (resultsSection) resultsSection.classList.add('active');
+      this.ui.transition('results');
 
       const container = document.getElementById('temperamentResults');
       if (!container) {
@@ -1247,8 +1262,7 @@ AI AGENT CONFIGURATION:
 
     if (introSection) introSection.classList.remove('hidden');
     if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
-    if (questionnaireSection) questionnaireSection.classList.remove('active');
-    if (resultsSection) resultsSection.classList.remove('active');
+    this.ui.transition('idle');
     
     this.buildPhase1Sequence();
   }

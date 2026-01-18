@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
@@ -45,6 +46,21 @@ export class CoachingEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('coaching-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection', '#selectionSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#questionnaireSection']
+      }
+    });
     
     // Make instance accessible globally for deployment context selection
     window.coachingEngine = this;
@@ -294,9 +310,7 @@ export class CoachingEngine {
     });
     
       // Hide selection, show questionnaire
-      document.getElementById('sectionSelection').classList.add('hidden');
-      document.getElementById('selectionSection')?.classList.add('hidden');
-      document.getElementById('questionnaireSection').classList.add('active');
+      this.ui.transition('assessment');
       
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
       this.renderCurrentQuestion();
@@ -592,8 +606,7 @@ export class CoachingEngine {
     this.calculateProfile();
     
     // Hide questionnaire, show results
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
+    this.ui.transition('results');
     
     this.renderResults();
     this.saveProgress();
@@ -1365,8 +1378,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     // Reset UI
     document.getElementById('sectionSelection').classList.remove('hidden');
     document.getElementById('selectionSection')?.classList.remove('hidden');
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.remove('active');
+    this.ui.transition('idle');
     
     this.renderSectionSelection();
     document.getElementById('startAssessment').disabled = true;

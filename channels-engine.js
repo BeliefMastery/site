@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let NODES, CHANNELS, REMEDIATION_STRATEGIES;
@@ -48,6 +49,21 @@ export class ChannelsEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('channels-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
     
     this.init();
   }
@@ -172,9 +188,7 @@ export class ChannelsEngine {
     const actionButtonsSection = document.getElementById('actionButtonsSection');
     const questionnaireSection = document.getElementById('questionnaireSection');
 
-    if (introSection) introSection.classList.add('hidden');
-    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
-    if (questionnaireSection) questionnaireSection.classList.add('active');
+    this.ui.transition('assessment');
 
     await this.buildPhase1Sequence();
   }
@@ -1053,6 +1067,7 @@ export class ChannelsEngine {
    * @returns {Promise<void>}
    */
   async renderResults() {
+    this.ui.transition('results');
     try {
       await this.loadChannelsData(); // Ensure data is loaded
       
@@ -1243,8 +1258,7 @@ export class ChannelsEngine {
     sessionStorage.removeItem('channelProgress');
     
     // Reset UI
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.remove('active');
+    this.ui.transition('idle');
     
     this.buildPhase1Sequence();
   }

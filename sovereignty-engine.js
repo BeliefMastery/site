@@ -2,6 +2,7 @@
 // Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and resistance capacity
 
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { loadDataModule } from './shared/data-loader.js';
 
@@ -48,6 +49,21 @@ export class SovereigntyEngine {
     
     // Initialize DataStore for persistent storage
     this.dataStore = new DataStore('sovereignty-assessment');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsContainer']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsContainer']
+      },
+      results: {
+        show: ['#resultsContainer'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
     
     this.init();
   }
@@ -1595,30 +1611,17 @@ export class SovereigntyEngine {
   }
 
   showQuestionContainer() {
-    const introSection = document.getElementById('introSection');
-    const actionButtonsSection = document.getElementById('actionButtonsSection');
     const questionnaireSection = document.getElementById('questionnaireSection');
-    const resultsContainer = document.getElementById('resultsContainer');
-    
-    if (introSection) introSection.classList.add('hidden');
-    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
     if (questionnaireSection) {
       questionnaireSection.classList.remove('hidden');
-      questionnaireSection.classList.add('active');
     }
-    if (resultsContainer) resultsContainer.classList.add('hidden');
+    this.ui.transition('assessment');
   }
 
   showResults() {
-    const questionnaireSection = document.getElementById('questionnaireSection');
+    this.ui.transition('results');
     const resultsContainer = document.getElementById('resultsContainer');
-    
-    if (questionnaireSection) {
-      questionnaireSection.classList.add('hidden');
-      questionnaireSection.classList.remove('active');
-    }
     if (resultsContainer) {
-      resultsContainer.classList.remove('hidden');
       resultsContainer.scrollIntoView({ behavior: 'smooth' });
     }
   }
@@ -1734,18 +1737,7 @@ export class SovereigntyEngine {
       
       sessionStorage.removeItem('sovereigntyAssessment');
       
-      const introSection = document.getElementById('introSection');
-      const actionButtonsSection = document.getElementById('actionButtonsSection');
-      const questionnaireSection = document.getElementById('questionnaireSection');
-      const resultsContainer = document.getElementById('resultsContainer');
-      
-      if (introSection) introSection.classList.remove('hidden');
-      if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
-      if (questionnaireSection) {
-        questionnaireSection.classList.add('hidden');
-        questionnaireSection.classList.remove('active');
-      }
-      if (resultsContainer) resultsContainer.classList.add('hidden');
+      this.ui.transition('idle');
       
       // Show IQ bracket selection
       this.showIQBracketSelection();

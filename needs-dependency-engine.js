@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
@@ -51,6 +52,21 @@ export class NeedsDependencyEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('needs-dependency-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
     
     this.init();
   }
@@ -464,7 +480,7 @@ export class NeedsDependencyEngine {
       const questionnaireSection = document.getElementById('questionnaireSection');
       if (introSection) introSection.classList.add('hidden');
       if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
-      if (questionnaireSection) questionnaireSection.classList.add('active');
+      this.ui.transition('assessment');
       
       this.renderCurrentQuestion();
     } catch (error) {
@@ -1055,8 +1071,7 @@ export class NeedsDependencyEngine {
       // Hide questionnaire, show results
       const questionnaireSection = document.getElementById('questionnaireSection');
       const resultsSection = document.getElementById('resultsSection');
-      if (questionnaireSection) questionnaireSection.classList.remove('active');
-      if (resultsSection) resultsSection.classList.add('active');
+      this.ui.transition('results');
       
       await this.renderResults();
       this.saveProgress();
@@ -1420,10 +1435,7 @@ export class NeedsDependencyEngine {
       const introSection = document.getElementById('introSection');
       const actionButtonsSection = document.getElementById('actionButtonsSection');
       const questionnaireSection = document.getElementById('questionnaireSection');
-      if (resultsSection) resultsSection.classList.remove('active');
-      if (introSection) introSection.classList.remove('hidden');
-      if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
-      if (questionnaireSection) questionnaireSection.classList.remove('active');
+      this.ui.transition('idle');
       
       this.buildPhase1Sequence();
     }

@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_PARADIGMS, SPECTRUM_THRESHOLDS, DERAILERS, SPECTRUM_QUESTIONS;
@@ -53,6 +54,21 @@ export class SovereigntySpectrumEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('spectrum-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
     
     this.init();
   }
@@ -486,7 +502,7 @@ export class SovereigntySpectrumEngine {
       if (paradigmSelection) paradigmSelection.classList.add('hidden');
       if (selectionAbandon) selectionAbandon.classList.add('hidden');
       if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
-      if (questionnaireSection) questionnaireSection.classList.add('active');
+      this.ui.transition('assessment');
       
       this.renderCurrentQuestion();
       this.saveProgress();
@@ -1064,8 +1080,7 @@ export class SovereigntySpectrumEngine {
     // Hide questionnaire, show results
     const questionnaireSection = document.getElementById('questionnaireSection');
     const resultsSection = document.getElementById('resultsSection');
-    if (questionnaireSection) questionnaireSection.classList.remove('active');
-    if (resultsSection) resultsSection.classList.add('active');
+    this.ui.transition('results');
     
     let html = '<div class="spectrum-results">';
     html += '<h3>Your Sovereignty Paradigm Results</h3>';
@@ -1289,8 +1304,7 @@ export class SovereigntySpectrumEngine {
       paradigmSelection.classList.add('hidden');
     }
     if (selectionAbandon) selectionAbandon.classList.add('hidden');
-    if (questionnaireSection) questionnaireSection.classList.remove('active');
-    if (resultsSection) resultsSection.classList.remove('active');
+    this.ui.transition('idle');
   }
 }
 

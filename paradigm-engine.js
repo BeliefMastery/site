@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let GOOD_LIFE_PARADIGMS, GOD_PERSPECTIVES, PARADIGM_SCORING;
@@ -50,6 +51,21 @@ export class ParadigmEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('paradigm-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#categorySelection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#categorySelection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#categorySelection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
     
     this.init();
   }
@@ -211,7 +227,7 @@ export class ParadigmEngine {
       const categorySelection = document.getElementById('categorySelection');
       const questionnaireSection = document.getElementById('questionnaireSection');
       if (categorySelection) categorySelection.style.display = 'none';
-      if (questionnaireSection) questionnaireSection.classList.add('active');
+      this.ui.transition('assessment');
       
       this.renderCurrentQuestion();
       this.saveProgress();
@@ -1108,8 +1124,7 @@ export class ParadigmEngine {
     this.analysisData.questionSequence = this.getAllQuestionsAnswered();
     
     // Hide questionnaire, show results
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
+    this.ui.transition('results');
     
     this.renderResults();
     this.saveProgress();
@@ -1833,8 +1848,7 @@ export class ParadigmEngine {
     
     // Reset UI
     document.getElementById('categorySelection').classList.remove('hidden');
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.remove('active');
+    this.ui.transition('idle');
     
     document.querySelectorAll('.category-card').forEach(card => {
       card.classList.remove('selected');

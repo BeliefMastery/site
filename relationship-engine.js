@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let COMPATIBILITY_POINTS, IMPACT_TIER_WEIGHTS, SCORING_THRESHOLDS;
@@ -50,6 +51,21 @@ export class RelationshipEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('relationship-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
 
     this.init();
   }
@@ -493,17 +509,11 @@ export class RelationshipEngine {
   }
 
   setLandingVisibility(showLanding) {
-    const introSection = document.getElementById('introSection');
-    const actionButtonsSection = document.getElementById('actionButtonsSection');
-
-    [introSection, actionButtonsSection].forEach(section => {
-      if (!section) return;
-      if (showLanding) {
-        section.classList.remove('hidden');
-      } else {
-        section.classList.add('hidden');
-      }
-    });
+    if (showLanding) {
+      this.ui.transition('idle');
+    } else {
+      this.ui.transition('assessment');
+    }
   }
 
   /**
@@ -1097,8 +1107,7 @@ export class RelationshipEngine {
   }
 
   renderResults() {
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
+    this.ui.transition('results');
 
     const resultsContainer = document.getElementById('resultsContainer');
     if (!resultsContainer) return;

@@ -7,6 +7,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let MANIPULATION_VECTORS, MANIPULATION_TACTICS;
@@ -51,6 +52,21 @@ export class ManipulationEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('manipulation-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
     
     this.init();
   }
@@ -206,13 +222,7 @@ export class ManipulationEngine {
   }
 
   startAssessment() {
-    const introSection = document.getElementById('introSection');
-    const actionButtonsSection = document.getElementById('actionButtonsSection');
-    const questionnaireSection = document.getElementById('questionnaireSection');
-
-    if (introSection) introSection.classList.add('hidden');
-    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
-    if (questionnaireSection) questionnaireSection.classList.add('active');
+    this.ui.transition('assessment');
 
     this.buildPhase1Sequence();
   }
@@ -1130,6 +1140,7 @@ export class ManipulationEngine {
    * Render assessment results
    */
   async renderResults() {
+    this.ui.transition('results');
     const container = document.getElementById('vectorResults');
     if (!container) {
       ErrorHandler.showUserError('Results container not found.');
@@ -1332,8 +1343,7 @@ export class ManipulationEngine {
     sessionStorage.removeItem('manipulationProgress');
     
     // Reset UI
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.remove('active');
+    this.ui.transition('idle');
     
     this.buildPhase1Sequence();
   }

@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let ARCHETYPES, CORE_GROUPS;
@@ -47,6 +48,21 @@ export class ArchetypeEngine {
 
 // Initialize data store
     this.dataStore = new DataStore('archetype-assessment', '1.0.0');
+
+    this.ui = new EngineUIController({
+      idle: {
+        show: ['#introSection', '#actionButtonsSection'],
+        hide: ['#questionnaireSection', '#resultsSection']
+      },
+      assessment: {
+        show: ['#questionnaireSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+      },
+      results: {
+        show: ['#resultsSection'],
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
+      }
+    });
 
     this.init();
   }
@@ -1677,34 +1693,14 @@ showGenderSelection() {
 
   showQuestionContainer() {
     const questionContainer = document.getElementById('questionContainer');
-    const questionnaireSection = document.getElementById('questionnaireSection');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const introSection = document.querySelector('.intro-section');
-    const actionButtonsSection = document.getElementById('actionButtonsSection');
-    
     if (questionContainer) questionContainer.classList.remove('hidden');
-    if (questionnaireSection) questionnaireSection.classList.add('active');
-    if (resultsContainer) {
-      resultsContainer.classList.add('hidden');
-      resultsContainer.classList.remove('active');
-    }
-    if (introSection) introSection.classList.add('hidden');
-    if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
+    this.ui.transition('assessment');
   }
 
   showResultsContainer() {
     const questionContainer = document.getElementById('questionContainer');
-    const questionnaireSection = document.getElementById('questionnaireSection');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const introSection = document.querySelector('.intro-section');
-    
     if (questionContainer) questionContainer.classList.add('hidden');
-    if (questionnaireSection) questionnaireSection.classList.remove('active');
-    if (resultsContainer) {
-      resultsContainer.classList.remove('hidden');
-      resultsContainer.classList.add('active');
-    }
-    if (introSection) introSection.classList.add('hidden');
+    this.ui.transition('results');
   }
 
   saveProgress() {
@@ -1842,6 +1838,7 @@ showGenderSelection() {
     }
     if (introSection) introSection.classList.remove('hidden');
     if (actionButtonsSection) actionButtonsSection.classList.remove('hidden');
+    this.ui.transition('idle');
   }
 
   exportAnalysis(format) {
