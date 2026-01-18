@@ -889,15 +889,55 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     if (!container) return;
     
     let html = '<div class="profile-summary">';
-    html += '<h3>Profile Summary</h3>';
+    html += '<h3>Greatest Impact Focus</h3>';
+    html += '<p>You have lightly combed over the scope of human life. To become more satisfied, start at the weakest link first.</p>';
     
-    // Obstacles summary
+    if (this.profileData.priorities.topImprovementAreas.length > 0) {
+      html += '<h4>Lowest Satisfaction Domains</h4>';
+      html += '<p>These domains show the greatest dissatisfaction and offer the highest leverage when addressed.</p>';
+      html += '<div>';
+      this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
+        const aspectScores = Array.isArray(domain.aspects) ? [...domain.aspects] : [];
+        const lowestAspects = aspectScores
+          .sort((a, b) => (a.score || 0) - (b.score || 0))
+          .slice(0, 2)
+          .map(aspect => SecurityUtils.sanitizeHTML(aspect.name || ''));
+        const aspectText = lowestAspects.length
+          ? `Start with: ${lowestAspects.join(' • ')}`
+          : 'Start with one concrete action that improves day-to-day stability in this domain.';
+        html += `
+          <div class="domain-item">
+            <strong>${index + 1}. ${SecurityUtils.sanitizeHTML(domain.name || '')}</strong>
+            <p>${aspectText}</p>
+            <p>Suggested first step: choose one micro‑change you can repeat weekly and build consistency around it.</p>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+    
+    if (this.profileData.priorities.stabilizingDomain) {
+      html += `
+        <div class="domain-item">
+          <strong>Stabilizing Domain: ${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</strong>
+          <p>When all domains are low, stabilize here first to rebuild a functional baseline.</p>
+        </div>
+      `;
+    }
+    
+    html += '<p>Reminder: this was a broad scan. Aim for the weakest link first, then iterate.</p>';
+    html += '</div>';
+
+    // Full ratings disclosure (collapsed)
+    html += '<details class="profile-summary" style="margin-top: 1.5rem;">';
+    html += '<summary><strong>Full ratings (optional)</strong></summary>';
+    html += '<div style="margin-top: 1rem;">';
+    
     if (Object.keys(this.profileData.obstacles).length > 0) {
       html += '<h4>Obstacles to Sovereignty</h4>';
       const sortedObstacles = Object.entries(this.profileData.obstacles)
         .map(([key, data]) => ({ key, ...data }))
         .sort((a, b) => b.weightedScore - a.weightedScore);
-      
       sortedObstacles.forEach(obstacle => {
         const severity = obstacle.rawScore >= 7 ? 'High' : obstacle.rawScore >= 4 ? 'Moderate' : 'Low';
         html += `
@@ -909,13 +949,11 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       });
     }
     
-    // Domains summary
     if (Object.keys(this.profileData.domains).length > 0) {
       html += '<h4>Satisfaction Domains</h4>';
       const sortedDomains = Object.entries(this.profileData.domains)
         .map(([key, data]) => ({ key, ...data }))
         .sort((a, b) => b.combinedScore - a.combinedScore);
-      
       sortedDomains.forEach(domain => {
         const satisfaction = domain.combinedScore >= 7 ? 'High' : domain.combinedScore >= 4 ? 'Moderate' : 'Low';
         html += `
@@ -927,90 +965,11 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       });
     }
     
-    // Priorities - clearly outlined at top
-    html += '</div>'; // Close profile-summary
-    
-    // Key Priorities Section - Highlighted prominently
-    if (this.profileData.priorities.topObstacles.length > 0 || this.profileData.priorities.topImprovementAreas.length > 0) {
-      html += '<div>';
-      html += '<h3>🎯 Areas of Greatest Impact</h3>';
-      html += '<p>These are the areas that will provide the greatest positive impact when addressed:</p>';
-      
-      // Show primary axis prominently
-      if (this.profileData.primaryAxis && (this.profileData.primaryAxis.obstacle || this.profileData.primaryAxis.domain)) {
-        html += '<div>';
-        html += '<h3>🎯 Primary Coaching Axis</h3>';
-        html += '<p>Focus on this axis for 30 days. Other priorities serve as background context.</p>';
-        if (this.profileData.primaryAxis.obstacle) {
-          html += `<div>`;
-          html += `<p>Active Constraint: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.name || '')}</p>`;
-          html += `<p>Score: ${this.profileData.primaryAxis.obstacle.rawScore}/10 | ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.obstacle.volatility || '')}</p>`;
-          html += `</div>`;
-        }
-        if (this.profileData.primaryAxis.domain) {
-          html += `<div>`;
-          html += `<p>Improvement Area: ${SecurityUtils.sanitizeHTML(this.profileData.primaryAxis.domain.name || '')}</p>`;
-          html += `<p>Satisfaction: ${this.profileData.primaryAxis.domain.combinedScore.toFixed(1)}/10</p>`;
-          html += `</div>`;
-        }
-        html += `<p>Axis valid until: ${new Date(this.profileData.primaryAxis.validUntil).toLocaleDateString()}</p>`;
-        html += '</div>';
-      }
-      
-      if (this.profileData.priorities.topObstacles.length > 0) {
-        html += '<div>';
-        html += '<h4>🔥 Currently Active Constraints</h4>';
-        html += '<p>These are currently active constraints, not fixed identity traits.</p>';
-        html += '<ul>';
-        this.profileData.priorities.topObstacles.forEach((obs, index) => {
-          const volatilityTag = obs.volatility === 'situationally amplified' 
-            ? '<span>Situational</span>'
-            : '<span>Structural</span>';
-          html += `<li><strong>${index + 1}. ${SecurityUtils.sanitizeHTML(obs.name || '')}</strong> - Score: ${obs.rawScore}/10 (Weighted: ${obs.weightedScore.toFixed(1)}) ${volatilityTag}</li>`;
-        });
-        html += '</ul></div>';
-      }
-      
-      // Show stabilizing domain if all domains are low
-      if (this.profileData.priorities.stabilizingDomain) {
-        html += '<div>';
-        html += '<h4>⚖️ Stabilizing Domain</h4>';
-        html += `<p>When all domains show low satisfaction, start with stabilizing: <strong>${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</strong> (${this.profileData.priorities.stabilizingDomain.combinedScore.toFixed(1)}/10)</p>`;
-        html += '<p>Build a supportive baseline before addressing improvement areas.</p>';
-        html += '</div>';
-      }
-      
-      if (this.profileData.priorities.topImprovementAreas.length > 0) {
-        html += '<div>';
-        html += '<h4>✨ Areas for Improvement (Lowest Satisfaction)</h4>';
-        html += '<ul>';
-        this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
-          // Dual-read output: opportunity + stabilization
-          const isLow = domain.combinedScore < 4;
-          const opportunityFraming = isLow 
-            ? `<span>Growth edge:</span> Significant opportunity for improvement`
-            : `<spa>Enhancement:</span> Room for refinement`;
-          const stabilizationFraming = `<span>Supportive baseline action: Maintain current strengths while addressing gaps</span>`;
-          
-          html += `<li>
-            <strong>${index + 1}. ${SecurityUtils.sanitizeHTML(domain.name || '')}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (Weighted: ${domain.weightedScore.toFixed(1)})
-            <div>
-              <p>${opportunityFraming}</p>
-              <p>${stabilizationFraming}</p>
-            </div>
-          </li>`;
-        });
-        html += '</ul></div>';
-      }
-      
-      html += '</div>';
-    }
-    
-    html += '</div>';
+    html += '</div></details>';
     
     // Add weight provenance declaration
     html += '<div>';
-    html += '<p>Weight Provenance:</strong> Weights reflect Sovereign of Mind prioritization logic. They encode framework values, not universal truths.</p>';
+    html += '<p><strong>Weight Provenance:</strong> Weights reflect Sovereign of Mind prioritization logic. They encode framework values, not universal truths.</p>';
     if (this.profileData.userWeightAdjustment !== 1.0) {
       html += `<p>User weight adjustment applied: ${(this.profileData.userWeightAdjustment * 100).toFixed(0)}%</p>`;
     }
