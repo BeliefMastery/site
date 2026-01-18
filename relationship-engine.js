@@ -511,6 +511,18 @@ export class RelationshipEngine {
       });
       this.analyzeStage1Results();
 
+      if (this.weakestLinks.length === 0 && Object.keys(this.analysisData.compatibilityScores || {}).length > 0) {
+        const fallbackLinks = Object.entries(this.analysisData.compatibilityScores)
+          .map(([key, data]) => ({ key, ...data }))
+          .sort((a, b) => a.weightedScore - b.weightedScore)
+          .slice(0, 3);
+        this.weakestLinks = fallbackLinks.map(item => ({
+          point: item.key,
+          ...item,
+          score: item.rawScore
+        }));
+      }
+
       if (this.weakestLinks.length > 0) {
         await this.buildStage2Sequence();
         this.questionSequence.forEach(q => {
@@ -1187,8 +1199,20 @@ export class RelationshipEngine {
       html += '</div>';
     }
 
-    if (this.analysisData.weakestLinks.length > 0) {
-      this.analysisData.weakestLinks.forEach((link, index) => {
+    let weakestLinks = this.analysisData.weakestLinks || [];
+    if (weakestLinks.length === 0 && Object.keys(this.analysisData.compatibilityScores || {}).length > 0) {
+      weakestLinks = Object.entries(this.analysisData.compatibilityScores)
+        .map(([key, data]) => ({
+          point: key,
+          ...data,
+          strategies: this.getActionStrategies(key, data.rawScore)
+        }))
+        .sort((a, b) => a.weightedScore - b.weightedScore)
+        .slice(0, 3);
+    }
+
+    if (weakestLinks.length > 0) {
+      weakestLinks.forEach((link, index) => {
         const criticalClass = link.severity === 'Critical' ? 'critical' : '';
         
         // Tier action strategies
@@ -1266,13 +1290,13 @@ export class RelationshipEngine {
         `;
       });
     } else {
-      html += '<p>No current strain points identified. Please complete the assessment.</p>';
+      html += '<p>No high-priority strain points were flagged. Review the overview below for your lowest-scoring areas.</p>';
     }
 
     // Add summary of all scores
-    html += '<div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(0,0,0,0.1);">';
-    html += '<h3>Complete Compatibility Overview:</h3>';
-    html += '<p style="color: var(--muted); margin-bottom: 1rem;">All compatibility points ranked by weighted score:</p>';
+    html += '<details style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(0,0,0,0.1);">';
+    html += '<summary><strong>Complete Compatibility Overview</strong></summary>';
+    html += '<p style="color: var(--muted); margin: 1rem 0;">All compatibility points ranked by weighted score:</p>';
     
     const allScores = Object.entries(this.analysisData.compatibilityScores)
       .map(([key, data]) => ({ key, ...data }))
@@ -1286,10 +1310,13 @@ export class RelationshipEngine {
         <span style="color: var(--muted); font-size: 0.9em;">(Weighted: ${item.weightedScore.toFixed(2)}, ${SecurityUtils.sanitizeHTML(item.impactTier || '')} impact)</span>
       </li>`;
     });
-    html += '</ul></div>';
+    html += '</ul></details>';
 
     // Additional analysis modules
-    html += this.renderAnalysisModules();
+    html += `<details style="margin-top: 2rem;">
+      <summary><strong>Supplemental Analysis Modules</strong></summary>
+      ${this.renderAnalysisModules()}
+    </details>`;
 
     // Mandatory Closure Section
     html += this.getClosureSection();
