@@ -199,6 +199,7 @@
   let animationId = null;
   let lastFrame = 0;
   const frameInterval = 1000 / 30; // 30fps cap
+  const timeScale = 0.15; // Slow drift to prevent acceleration over long sessions
   let isPaused = false;
 
   function render(now) {
@@ -209,7 +210,8 @@
     }
     lastFrame = now;
     const elapsed = (now - startTime) / 1000;
-    gl.uniform1f(timeLocation, elapsed);
+    const stableTime = (elapsed * timeScale) % 10000;
+    gl.uniform1f(timeLocation, stableTime);
     gl.uniform1f(scrollYLocation, scrollY);
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
