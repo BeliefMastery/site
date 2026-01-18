@@ -635,9 +635,8 @@ showGenderSelection() {
       html += this.getPhaseExplanation(this.currentPhase);
     }
 
-    // Determine if this question has already been answered (locked)
-    const isAnswered = this.answers[question.id] !== undefined;
-    const isLocked = isAnswered; // Answers are locked once made
+    // Allow edits to previous answers
+    const isLocked = false;
 
     // Render the current question only (replace previous content)
     if (question.type === 'forced_choice') {
@@ -749,7 +748,7 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = '';
 
     return `
       <div class="question-card">
@@ -799,7 +798,7 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = '';
 
     return `
       <div class="question-card">
@@ -854,7 +853,7 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = '';
     return `
       <div class="question-card">
         <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
@@ -903,7 +902,7 @@ showGenderSelection() {
       }, 100);
     }
 
-    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    const lockedNotice = '';
 
     return `
       <div class="question-card">

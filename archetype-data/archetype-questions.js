@@ -701,7 +701,22 @@ export const PHASE_3_QUESTIONS = [
   },
   {
     id: 'p3_aspiration_4',
-    question: 'Which of these would be the least challenging for you to endure?',
+    question: 'Which of these experiences would be the easiest for you to cope with?',
+    type: 'forced_choice',
+    isAspiration: true,
+    options: [
+      { text: 'A burden of responsibility and constant pressure to lead', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
+      { text: 'Submissive tendencies and lack of assertiveness', archetypes: ['beta'], aspirationTarget: 'beta', weight: 1 },
+      { text: 'A tendency toward analysis paralysis and isolation', archetypes: ['gamma'], aspirationTarget: 'gamma', weight: 1 },
+      { text: 'Being undervalued and lacking recognition', archetypes: ['delta'], aspirationTarget: 'delta', weight: 1 },
+      { text: 'Social isolation and difficulty forming connections', archetypes: ['sigma'], aspirationTarget: 'sigma', weight: 1 },
+      { text: 'Powerlessness and a tendency to be overlooked', archetypes: ['omega'], aspirationTarget: 'omega', weight: 1 },
+      { text: 'Detachment and difficulty engaging with normal life', archetypes: ['phi'], aspirationTarget: 'phi', weight: 1 }
+    ]
+  },
+  {
+    id: 'p3_aspiration_5',
+    question: 'Which of these would be the most unbearable for you?',
     type: 'forced_choice',
     isAspiration: true,
     options: [
