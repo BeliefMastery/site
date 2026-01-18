@@ -1632,6 +1632,18 @@ showGenderSelection() {
     const secondaryPopulation = this.formatSocialProportion(secondarySpread?.socialProportion);
     const tertiaryPopulation = this.formatSocialProportion(tertiarySpread?.socialProportion);
 
+    const formatList = (items) => {
+      if (!Array.isArray(items)) return '';
+      return items
+        .map((item) => {
+          const text = String(item ?? '').trim();
+          if (!text) return '';
+          return `<li>${text.charAt(0).toUpperCase() + text.slice(1)}</li>`;
+        })
+        .filter(Boolean)
+        .join('');
+    };
+
     let resultsHTML = `
       <div class="results-container" style="max-width: 900px; margin: 0 auto;">
         <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile</h2>
@@ -1655,14 +1667,14 @@ showGenderSelection() {
           <div style="margin-top: 1.5rem;">
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Key Characteristics:</h4>
             <ul style="color: var(--muted); line-height: 1.8;">
-              ${primary.behavioralTraits.map(trait => `<li>${trait.charAt(0).toUpperCase() + trait.slice(1)}</li>`).join('')}
+              ${formatList(primary?.behavioralTraits)}
             </ul>
           </div>
 
           <div style="margin-top: 1.5rem;">
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Core Motivations:</h4>
             <ul style="color: var(--muted); line-height: 1.8;">
-              ${primary.motivations.map(mot => `<li>${mot.charAt(0).toUpperCase() + mot.slice(1)}</li>`).join('')}
+              ${formatList(primary?.motivations)}
             </ul>
           </div>
 
