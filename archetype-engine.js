@@ -1937,28 +1937,6 @@ showGenderSelection() {
       `;
     }
 
-    // Aspiration Analysis & Bias Mitigation
-    const aspirationAnalysis = this.analysisData.aspirationAnalysis;
-    if (aspirationAnalysis && aspirationAnalysis.explanation) {
-      resultsHTML += `
-        <div class="aspiration-analysis-section" style="background: rgba(255, 184, 0, 0.15); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--brand);">
-          <h3 style="color: var(--brand); margin-top: 0;">Aspiration Analysis (Bias Mitigation)</h3>
-          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">
-            <strong>Top Aspiration:</strong> ${aspirationAnalysis.topAspiration || 'None identified'}<br>
-            <strong>Top Behavioral Pattern:</strong> ${aspirationAnalysis.topBehavioral || 'None identified'}
-          </p>
-          <div style="background: rgba(255, 255, 255, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">
-            <p style="color: var(--muted); line-height: 1.7; margin: 0; font-style: italic;">
-              ${aspirationAnalysis.explanation}
-            </p>
-          </div>
-          <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1rem; margin-bottom: 0; line-height: 1.6;">
-            <em>Note: Your archetype classification has been adjusted based on aspiration patterns to mitigate self-reporting bias. This reverse psychology methodology helps reveal actual archetype positioning versus aspirational reporting.</em>
-          </p>
-        </div>
-      `;
-    }
-
     // Aspirational Traits
     const aspirational = this.analysisData.phase3Results?.aspirationalTraits || [];
     if (aspirational.length > 0) {
