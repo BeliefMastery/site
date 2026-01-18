@@ -264,11 +264,13 @@ export class ParadigmEngine {
   async generateSampleReport() {
     try {
       await this.loadParadigmData();
+      this.selectedCategories = ['good_life', 'god'];
       this.currentPhase = 1;
       this.currentQuestionIndex = 0;
       this.answers = {};
       this.questionSequence = [];
       this.analysisData = this.getEmptyAnalysisData();
+      this.analysisData.selectedCategories = [...this.selectedCategories];
 
       await this.buildPhase1Sequence();
       this.questionSequence.forEach(q => this.answerQuestionForSample(q));
@@ -1601,7 +1603,7 @@ export class ParadigmEngine {
       const bandColor = band === 'primary' ? 'var(--brand)' : band === 'co-dominant' ? 'var(--accent)' : 'var(--muted)';
       
       html += `
-        <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.7); border-radius: var(--radius); border-left: 4px solid ${bandColor};">
+        <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--glass); border-radius: var(--radius); border-left: 4px solid ${bandColor};">
           <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
             <strong style="font-size: 1.1rem;">${paradigm.name}</strong>
             <span style="background: ${bandColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">${bandLabel}</span>
