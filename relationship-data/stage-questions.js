@@ -322,28 +322,28 @@ export const STAGE_2_DOMAIN_QUESTIONS = {
     questions: [
       {
         id: 'domain_energy_1',
-        question: 'How well do your energy levels and emotional rhythms align across different situations (calm vs. stressful, social vs. private)?',
+        question: 'When your energy or emotional pace differs, what happens to connection—do you feel friction, distance, or misattunement?',
         weight: 1.0,
         compatibilityPoint: 'energy-dynamics',
         domain: 'intimacy-emotional'
       },
       {
         id: 'domain_energy_2',
-        question: 'When one of you naturally leads or initiates, does the other feel comfortable responding, or does it create tension or resistance?',
+        question: 'When one of you leads or initiates, does the dynamic feel smooth, or does it create tension, resistance, or confusion?',
         weight: 1.1,
         compatibilityPoint: 'energy-dynamics',
         domain: 'intimacy-emotional'
       },
       {
         id: 'domain_energy_3',
-        question: 'How often do you feel your partner’s energy complements or destabilizes your own? (Think: calming, motivating, draining, or overwhelming.)',
+        question: 'How often do energy mismatches leave you feeling drained, pressured, or emotionally flooded?',
         weight: 1.1,
         compatibilityPoint: 'energy-dynamics',
         domain: 'intimacy-emotional'
       },
       {
         id: 'domain_energy_4',
-        question: 'When roles shift (who leads, who follows), does the transition feel smooth or does it create confusion?',
+        question: 'When roles shift (who leads, who follows), does the transition feel smooth or does it create instability?',
         weight: 1.0,
         compatibilityPoint: 'energy-dynamics',
         domain: 'intimacy-emotional'

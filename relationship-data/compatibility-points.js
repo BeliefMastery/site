@@ -150,11 +150,11 @@ export const COMPATIBILITY_POINTS = {
     needs: ['Connection', 'Closeness', 'Support', 'Nurturing', 'Mutuality', 'Safety', 'Compassion', 'Trust'],
     negativeExpressions: ['Frustration', 'Resentment', 'Impatience', 'Anger', 'Anxiety'],
     questions: [
-      'How well do your energy levels and emotional rhythms align?',
-      'Do you feel your partner\'s energy complements or drains yours?',
+      'How often do energy mismatches create friction, shutdown, or conflict?',
+      'Do differences in pace or intensity leave you feeling drained, overlooked, or pressured?',
       'How often do you feel overwhelmed or ignored due to energy mismatches?',
-      'Do you feel your emotional needs are met in terms of energy and presence?',
-      'Does the lead/follow or initiate/receive dynamic feel natural, or does it create tension or confusion?'
+      'Do energy mismatches reduce closeness or make it harder to stay connected?',
+      'Does the lead/follow or initiate/receive dynamic create tension or confusion when it shifts?'
     ],
     weight: 0.9
   },
