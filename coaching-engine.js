@@ -74,7 +74,11 @@ export class CoachingEngine {
   init() {
     this.renderSectionSelection();
     this.attachEventListeners();
-    this.loadStoredData().catch(error => {
+    Promise.resolve(this.loadStoredData()).then(() => {
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+      }
+    }).catch(error => {
       this.debugReporter.logError(error, 'init');
     });
   }
@@ -233,6 +237,11 @@ export class CoachingEngine {
     if (clearCacheBtn) {
       clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
     }
+
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
     
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
@@ -241,6 +250,102 @@ export class CoachingEngine {
           this.resetAssessment();
         }
       });
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getEmptyProfileData() {
+    return {
+      timestamp: new Date().toISOString(),
+      obstacles: {},
+      domains: {},
+      weightedScores: {},
+      priorities: {},
+      coachingProfile: {},
+      primaryAxis: null,
+      axisValidUntil: null,
+      userWeightAdjustment: 1.0,
+      deploymentContext: null
+    };
+  }
+
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadCoachingData();
+
+      this.selectedSections = ['obstacles', 'domains'];
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      this.questionSequence = [];
+      this.profileData = this.getEmptyProfileData();
+
+      this.selectedSections.forEach(sectionId => {
+        if (sectionId === 'obstacles') {
+          Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
+            const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
+            this.questionSequence.push({
+              id: `obstacle_${obstacleKey}`,
+              type: 'obstacle',
+              section: 'obstacles',
+              obstacle: obstacleKey,
+              question: obstacle.question,
+              description: obstacle.description,
+              name: obstacle.name,
+              weight: obstacle.weight
+            });
+          });
+        } else if (sectionId === 'domains') {
+          Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
+            const domain = SATISFACTION_DOMAINS[domainKey];
+            this.questionSequence.push({
+              id: `domain_${domainKey}_overview`,
+              type: 'domain_overview',
+              section: 'domains',
+              domain: domainKey,
+              question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
+              description: domain.description,
+              name: domain.name,
+              weight: domain.weight
+            });
+
+            domain.aspects.forEach((aspect, index) => {
+              this.questionSequence.push({
+                id: `domain_${domainKey}_aspect_${index}`,
+                type: 'domain_aspect',
+                section: 'domains',
+                domain: domainKey,
+                aspect: aspect,
+                question: this.generateAspectQuestion(domainKey, aspect, domain.name),
+                name: domain.name,
+                weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
+              });
+            });
+          });
+        }
+      });
+
+      this.questionSequence.forEach(question => {
+        this.answers[question.id] = this.getRandomInt(0, 10);
+      });
+
+      this.ui.transition('results');
+      this.calculateProfile();
+      this.renderResults();
+      this.saveProgress();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 

@@ -80,6 +80,11 @@ init() {
     try {
       await this.loadStoredData();
       this.initializeScores();
+
+      if (this.shouldAutoGenerateSample()) {
+        await this.generateSampleReport();
+        return;
+      }
       
       // 3. LOGIC CHECK: If we loaded a mid-assessment state, 
       // we DON'T call renderCurrentQuestion() yet. 
@@ -234,6 +239,14 @@ init() {
         }
       });
     }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
   }
 
   getEmptyAnalysisData() {

@@ -79,7 +79,11 @@ export class TemperamentEngine {
    */
   init() {
     this.attachEventListeners();
-    this.loadStoredData().catch(error => {
+    Promise.resolve(this.loadStoredData()).then(() => {
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+      }
+    }).catch(error => {
       this.debugReporter.logError(error, 'init');
     });
   }
@@ -325,6 +329,78 @@ export class TemperamentEngine {
           this.resetAssessment();
         }
       });
+    }
+
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getEmptyAnalysisData() {
+    return {
+      timestamp: new Date().toISOString(),
+      phase1Results: null,
+      dimensionScores: {},
+      overallTemperament: null,
+      variationAnalysis: {},
+      allAnswers: {},
+      questionSequence: []
+    };
+  }
+
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  answerQuestionForSample(question) {
+    if (!question) return;
+    if (question.type === 'gender') {
+      const option = question.options[Math.floor(Math.random() * question.options.length)];
+      this.answers[question.id] = option;
+      this.analysisData.gender = option.value;
+      this.analysisData.genderLabel = option.label;
+      return;
+    }
+    if (question.type === 'three_point') {
+      const option = question.options[Math.floor(Math.random() * question.options.length)];
+      this.answers[question.id] = option;
+      return;
+    }
+    const value = this.getRandomInt(0, 10);
+    this.answers[question.id] = value;
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadTemperamentData();
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      this.questionSequence = [];
+      this.phase1Results = null;
+      this.analysisData = this.getEmptyAnalysisData();
+      this.analysisData.intimateConsentGiven = true;
+
+      await this.buildPhase1Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      await this.analyzePhase1Results();
+
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.calculateResults();
+      this.ui.transition('results');
+      this.renderResults();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 

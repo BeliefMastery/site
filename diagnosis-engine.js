@@ -136,7 +136,11 @@ export class DiagnosisEngine {
       this.debugReporter.logError(error, 'init');
     });
     this.attachEventListeners();
-    this.loadStoredData().catch(error => {
+    Promise.resolve(this.loadStoredData()).then(() => {
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+      }
+    }).catch(error => {
       this.debugReporter.logError(error, 'init');
     });
   }
@@ -630,6 +634,77 @@ export class DiagnosisEngine {
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => this.abandonAssessment());
+    }
+
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getEmptyAnalysisData() {
+    return {
+      timestamp: new Date().toISOString(),
+      categories: [],
+      refinementPasses: 0,
+      maxRefinementPasses: 1,
+      validationConsistency: null,
+      scaleTranslation: {
+        absent: [0, 3],
+        subthreshold: [4, 6],
+        clinicallySalient: [7, 10]
+      },
+      answers: {},
+      refinedAnswers: {},
+      scores: {},
+      probabilities: {},
+      conclusionVector: {}
+    };
+  }
+
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadDiagnosisData();
+      const categoryKeys = Object.keys(DSM5_CATEGORIES || {});
+      if (!categoryKeys.length) {
+        ErrorHandler.showUserError('Assessment data unavailable. Please refresh the page.');
+        return;
+      }
+
+      const sampleCount = Math.min(categoryKeys.length, Math.max(2, this.getRandomInt(2, 4)));
+      const shuffled = [...categoryKeys].sort(() => Math.random() - 0.5);
+      this.selectedCategories = shuffled.slice(0, sampleCount);
+
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      this.questionSequence = [];
+      this.refinedQuestionSequence = [];
+      this.refinementRequested = false;
+      this.currentStage = 'questionnaire';
+      this.analysisData = this.getEmptyAnalysisData();
+
+      await this.buildQuestionSequence();
+      this.questionSequence.forEach(question => {
+        this.answers[question.id] = this.getRandomInt(0, 10);
+      });
+
+      this.calculateResults();
+      await this.showResults();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 

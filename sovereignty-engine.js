@@ -76,11 +76,19 @@ export class SovereigntyEngine {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
           this.attachEventListeners();
-          this.loadStoredData();
+          Promise.resolve(this.loadStoredData()).then(() => {
+            if (this.shouldAutoGenerateSample()) {
+              this.generateSampleReport();
+            }
+          });
         });
       } else {
         this.attachEventListeners();
-        this.loadStoredData();
+        Promise.resolve(this.loadStoredData()).then(() => {
+          if (this.shouldAutoGenerateSample()) {
+            this.generateSampleReport();
+          }
+        });
       }
     } catch (error) {
       ErrorHandler.logError(error, 'SovereigntyEngine.init');
@@ -136,6 +144,11 @@ export class SovereigntyEngine {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => {
@@ -143,6 +156,126 @@ export class SovereigntyEngine {
           this.resetAssessment();
         }
       });
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getEmptyAnalysisData() {
+    return {
+      timestamp: new Date().toISOString(),
+      iqBracket: null,
+      section1Results: {},
+      section2Results: {},
+      section3Results: {},
+      section4Results: {},
+      cognitiveBand: null,
+      subclasses: [],
+      attachmentMode: null,
+      vulnerabilityRisks: [],
+      sovereigntyScore: 0,
+      sovereignSplitPosition: null,
+      allAnswers: {},
+      questionSequence: []
+    };
+  }
+
+  pickRandomIndices(length, count) {
+    const indices = Array.from({ length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices.slice(0, count);
+  }
+
+  answerQuestionForSample(question) {
+    if (!question) return;
+    if (question.type === 'frequency_grid') {
+      const contexts = question.contexts || [];
+      const scaleLength = (question.scale || []).length || 5;
+      contexts.forEach((context, idx) => {
+        const scaleIdx = Math.floor(Math.random() * scaleLength);
+        this.processFrequencyGridAnswer(question, idx, scaleIdx);
+      });
+      return;
+    }
+    if (question.type === 'multiple_response') {
+      const total = Array.isArray(question.options) ? question.options.length : 0;
+      if (total === 0) return;
+      const count = Math.min(total, Math.max(1, Math.ceil(Math.random() * 3)));
+      const selected = this.pickRandomIndices(total, count);
+      this.processAnswer(question, selected);
+      return;
+    }
+    if (question.type === 'likert') {
+      const scale = question.scale || 5;
+      const value = Math.floor(Math.random() * scale) + 1;
+      this.processAnswer(question, value);
+      return;
+    }
+    if (question.options && Array.isArray(question.options) && question.options.length > 0) {
+      const selectedIndex = Math.floor(Math.random() * question.options.length);
+      this.processAnswer(question, selectedIndex);
+    }
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.ensureDataLoaded();
+      this.dataStore.clear('progress');
+
+      this.currentSection = 1;
+      this.currentQuestionIndex = 0;
+      this.iqBracket = this.iqBracket || 'unknown';
+      this.iqBracketSecondary = null;
+      this.answers = {};
+      this.questionSequence = [];
+      this.scores = {
+        dependency: 0,
+        attachment: 0,
+        sovereignty: 0,
+        cognitiveComplexity: 0,
+        driftRisk: 0
+      };
+      this.preliminaryFilters = {
+        aiUsageFrequency: null,
+        dependencyLevel: null,
+        cognitiveLevel: null
+      };
+      this.analysisData = this.getEmptyAnalysisData();
+      this.analysisData.iqBracket = this.iqBracket;
+
+      await this.buildSectionSequence(1);
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzeSection1Results();
+      this.updatePreliminaryFilters(null, null);
+
+      this.currentSection = 2;
+      await this.buildSectionSequence(2);
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzeSection2Results();
+      this.updatePreliminaryFilters(null, null);
+
+      this.currentSection = 3;
+      await this.buildSectionSequence(3);
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzeSection3Results();
+
+      this.currentSection = 4;
+      await this.buildSectionSequence(4);
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzeSection4Results();
+      this.finalizeResults();
+    } catch (error) {
+      ErrorHandler.logError(error, 'SovereigntyEngine.generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 

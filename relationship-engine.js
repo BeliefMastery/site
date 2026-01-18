@@ -75,7 +75,11 @@ export class RelationshipEngine {
    */
   init() {
     this.attachEventListeners();
-    this.loadStoredData().catch(error => {
+    Promise.resolve(this.loadStoredData()).then(() => {
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+      }
+    }).catch(error => {
       this.debugReporter.logError(error, 'init');
     });
   }
@@ -467,6 +471,11 @@ export class RelationshipEngine {
       clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
     }
 
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => this.abandonAssessment());
@@ -475,6 +484,51 @@ export class RelationshipEngine {
     const abandonResultsBtn = document.getElementById('abandonAssessmentResults');
     if (abandonResultsBtn) {
       abandonResultsBtn.addEventListener('click', () => this.abandonAssessment());
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadRelationshipData();
+      this.dataStore.clear('progress');
+      this.resetAssessmentState();
+
+      await this.buildStage1Sequence();
+      this.questionSequence.forEach(q => {
+        this.answers[q.id] = this.getRandomInt(0, 10);
+      });
+      this.analyzeStage1Results();
+
+      if (this.weakestLinks.length > 0) {
+        await this.buildStage2Sequence();
+        this.questionSequence.forEach(q => {
+          this.answers[q.id] = this.getRandomInt(0, 10);
+        });
+        this.analyzeStage2Results();
+
+        this.buildStage3Sequence();
+        this.questionSequence.forEach(q => {
+          this.answers[q.id] = this.getRandomInt(0, 10);
+        });
+        this.analyzeStage3Results();
+      }
+
+      this.finalizeResults();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 

@@ -78,7 +78,11 @@ export class SovereigntySpectrumEngine {
    */
   init() {
     this.attachEventListeners();
-    this.loadStoredData().catch(error => {
+    Promise.resolve(this.loadStoredData()).then(() => {
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+      }
+    }).catch(error => {
       this.debugReporter.logError(error, 'init');
     });
   }
@@ -157,6 +161,11 @@ export class SovereigntySpectrumEngine {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+
     // Clear cache buttons (both in action section and during assessment)
     const clearCacheBtn = document.getElementById('clearCacheBtn');
     const clearCacheBtnInAssessment = document.getElementById('clearCacheBtnInAssessment');
@@ -193,6 +202,104 @@ export class SovereigntySpectrumEngine {
           this.resetAssessment();
         }
       });
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getEmptyAnalysisData() {
+    return {
+      timestamp: new Date().toISOString(),
+      selectedParadigms: [],
+      paradigmRatings: {},
+      paradigmAlignments: {},
+      derailerScores: {},
+      spectrumPosition: 0,
+      spectrumLabel: '',
+      remediationPaths: [],
+      allAnswers: {},
+      questionSequence: []
+    };
+  }
+
+  getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  pickRandomIndices(length, count) {
+    const indices = Array.from({ length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices.slice(0, count);
+  }
+
+  answerSpectrumQuestionForSample(question) {
+    if (!question) return;
+    if (question.type === 'likert') {
+      this.answers[question.id] = this.getRandomInt(1, 5);
+      return;
+    }
+    if (question.type === 'text') {
+      this.answers[question.id] = 'Sample response.';
+      return;
+    }
+    if (question.type === 'select') {
+      if (!Array.isArray(question.options) || question.options.length === 0) return;
+      const option = question.options[Math.floor(Math.random() * question.options.length)];
+      this.answers[question.id] = option.value || option;
+    }
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadSpectrumData();
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      this.questionSequence = [];
+      this.paradigmRatings = {};
+      this.paradigmAlignments = {};
+      this.derailerScores = {
+        hypocrisy: 0,
+        reluctance: 0,
+        nihilism: 0
+      };
+      this.analysisData = this.getEmptyAnalysisData();
+
+      const paradigmCount = SOVEREIGNTY_PARADIGMS.length;
+      const boosted = this.pickRandomIndices(paradigmCount, Math.min(4, paradigmCount));
+      SOVEREIGNTY_PARADIGMS.forEach((paradigm, idx) => {
+        const high = boosted.includes(idx);
+        this.paradigmRatings[paradigm.id] = high ? this.getRandomInt(75, 100) : this.getRandomInt(35, 80);
+      });
+
+      this.selectTopParadigms();
+      await this.buildPhase2Sequence();
+      this.currentPhase = 2;
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+
+      this.questionSequence.forEach(q => this.answerSpectrumQuestionForSample(q));
+
+      await this.buildPhase3Sequence();
+      this.currentPhase = 3;
+      this.currentQuestionIndex = 0;
+      this.questionSequence.forEach(q => this.answerSpectrumQuestionForSample(q));
+
+      await this.calculateSpectrumPosition();
+      this.renderResults();
+      this.ui.transition('results');
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 

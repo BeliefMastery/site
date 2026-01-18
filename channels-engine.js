@@ -73,7 +73,11 @@ export class ChannelsEngine {
    */
   init() {
     this.attachEventListeners();
-    this.loadStoredData().catch(error => {
+    Promise.resolve(this.loadStoredData()).then(() => {
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+      }
+    }).catch(error => {
       this.debugReporter.logError(error, 'init');
     });
   }
@@ -172,6 +176,11 @@ export class ChannelsEngine {
     if (exportBriefBtn) {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
+
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
     
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
@@ -180,6 +189,92 @@ export class ChannelsEngine {
           this.resetAssessment();
         }
       });
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getEmptyAnalysisData() {
+    return {
+      timestamp: new Date().toISOString(),
+      phase1Results: {},
+      phase2Results: {},
+      phase3Results: {},
+      phase4Results: {},
+      prioritizedChannels: [],
+      assessedChannels: [],
+      channelScores: {},
+      primaryChannel: null,
+      secondaryChannels: [],
+      allAnswers: {},
+      questionSequence: []
+    };
+  }
+
+  pickRandomIndices(length, count) {
+    const indices = Array.from({ length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices.slice(0, count);
+  }
+
+  answerQuestionForSample(question) {
+    if (!question || !Array.isArray(question.options) || question.options.length === 0) return;
+    if (question.type === 'multiselect') {
+      const maxSelections = question.maxSelections || 3;
+      const count = Math.min(question.options.length, Math.max(1, Math.ceil(Math.random() * maxSelections)));
+      const selected = this.pickRandomIndices(question.options.length, count).map(idx => question.options[idx]);
+      this.answers[question.id] = selected;
+      if (this.currentPhase === 3) {
+        this.processPhase3Answer(question);
+      }
+      return;
+    }
+    const option = question.options[Math.floor(Math.random() * question.options.length)];
+    this.answers[question.id] = option;
+    if (this.currentPhase === 3) {
+      this.processPhase3Answer(question);
+    }
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadChannelsData();
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      this.answers = {};
+      this.questionSequence = [];
+      this.prioritizedChannels = [];
+      this.assessedChannels = [];
+      this.analysisData = this.getEmptyAnalysisData();
+
+      await this.buildPhase1Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      await this.analyzePhase1Results();
+
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      await this.processPhase2Results();
+
+      if (this.currentPhase === 3 && this.questionSequence.length > 0) {
+        for (let i = 0; i < this.questionSequence.length; i += 1) {
+          const question = this.questionSequence[i];
+          this.answerQuestionForSample(question);
+        }
+        this.processPhase3Results();
+      }
+
+      this.completeAssessment();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 
