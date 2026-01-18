@@ -221,6 +221,11 @@ init() {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => {
@@ -228,6 +233,92 @@ init() {
           this.resetAssessment();
         }
       });
+    }
+  }
+
+  getEmptyAnalysisData() {
+    return {
+      timestamp: new Date().toISOString(),
+      gender: null,
+      iqBracket: null,
+      phase1Results: {},
+      phase2Results: {},
+      phase3Results: {},
+      phase4Results: {},
+      aspirationAnalysis: {},
+      primaryArchetype: null,
+      secondaryArchetype: null,
+      tertiaryArchetype: null,
+      confidenceLevels: {},
+      allAnswers: {},
+      questionSequence: []
+    };
+  }
+
+  pickRandomIndices(length, count) {
+    const indices = Array.from({ length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices.slice(0, count);
+  }
+
+  answerQuestionForSample(question) {
+    if (!question) return;
+    if (question.type === 'likert') {
+      const scale = question.scale || 5;
+      const value = Math.floor(Math.random() * scale) + 1;
+      this.processAnswer(question, value);
+      return;
+    }
+    if (question.type === 'multi_select') {
+      const total = Array.isArray(question.options) ? question.options.length : 0;
+      if (total === 0) return;
+      const count = Math.min(total, Math.max(1, Math.ceil(Math.random() * 3)));
+      const selected = this.pickRandomIndices(total, count);
+      this.processAnswer(question, selected);
+      return;
+    }
+    if (question.options && Array.isArray(question.options)) {
+      const selectedIndex = Math.floor(Math.random() * question.options.length);
+      this.processAnswer(question, selectedIndex);
+    }
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadArchetypeData();
+      this.currentPhase = 1;
+      this.currentQuestionIndex = 0;
+      this.gender = this.gender || 'male';
+      this.iqBracket = 'unknown';
+      this.answers = {};
+      this.aspirationAnswers = {};
+      this.initializeScores();
+      this.analysisData = this.getEmptyAnalysisData();
+      this.analysisData.gender = this.gender;
+      this.analysisData.iqBracket = this.iqBracket;
+
+      await this.buildPhase1Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzePhase1Results();
+
+      await this.buildPhase2Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzePhase2Results();
+
+      await this.buildPhase3Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzePhase3Results();
+
+      await this.buildPhase4Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+
+      this.finalizeResults();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample report. Please try again.');
     }
   }
 
