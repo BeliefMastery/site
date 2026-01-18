@@ -56,14 +56,14 @@ export class ArchetypeEngine {
     this.ui = new EngineUIController({
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsContainer']
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsContainer']
       },
       results: {
-        show: ['#resultsSection'],
+        show: ['#resultsContainer'],
         hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
       }
     });
