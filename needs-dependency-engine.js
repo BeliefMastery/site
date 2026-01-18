@@ -761,10 +761,17 @@ export class NeedsDependencyEngine {
       : null;
     const currentNeed = (depth && depth > 1 ? previousAnswer?.mapsTo?.need : this.surfaceNeed) || null;
     const normalizedCurrent = currentNeed ? String(currentNeed).toLowerCase().trim() : null;
+    const selectedNeeds = Object.keys(this.answers)
+      .filter(key => key.startsWith('p3_need_chain_'))
+      .map(key => this.answers[key]?.mapsTo?.need || this.answers[key]?.text || this.answers[key]?.need)
+      .filter(Boolean)
+      .map(need => String(need).toLowerCase().trim());
 
     const filterNeeds = (needs) => needs.filter(need => {
-      if (!normalizedCurrent) return true;
-      return String(need).toLowerCase().trim() !== normalizedCurrent;
+      const normalized = String(need).toLowerCase().trim();
+      if (normalizedCurrent && normalized === normalizedCurrent) return false;
+      if (selectedNeeds.includes(normalized)) return false;
+      return true;
     });
 
     if (Array.isArray(question.options) && question.options.length) {
@@ -1309,11 +1316,6 @@ export class NeedsDependencyEngine {
         html += this.renderPrimaryLoop();
       }
       
-      // Secondary Loops
-      if (this.analysisData.secondaryLoops.length > 0) {
-        html += this.renderSecondaryLoops();
-      }
-      
       // Need Chain
       if (this.needChain.length > 0) {
         html += this.renderNeedChain();
@@ -1343,6 +1345,13 @@ export class NeedsDependencyEngine {
   renderPrimaryLoop() {
     const loop = this.analysisData.primaryLoop;
     const scores = this.analysisData.loopScores[loop];
+    const compulsionScore = scores?.compulsionScore || 0;
+    const aversionScore = scores?.aversionScore || 0;
+    const tilt = compulsionScore >= aversionScore ? 'compulsive sourcing' : 'avoidant sourcing';
+    const tiltWhy = compulsionScore >= aversionScore
+      ? 'seeking immediate relief or reassurance to quiet the pattern'
+      : 'withdrawing or delaying to reduce felt pressure in the moment';
+    const chainDepth = scores?.needChainDepth || 0;
     
     return `
       <div class="primary-loop-section">
@@ -1353,6 +1362,12 @@ export class NeedsDependencyEngine {
             <span class="loop-strength">Confidence: ${scores?.totalScore?.toFixed(1) || 'N/A'}/10</span>
           </div>
           <p class="loop-description">Based on your responses, the ${loop} dependency loop shows the strongest alignment with your patterns.</p>
+          <div class="loop-mechanics">
+            <p><strong>How the loop functions:</strong> When this need is not met, the system defaults to ${tilt}, ${tiltWhy}.</p>
+            <p><strong>Why it persists:</strong> The immediate relief reinforces the loop while the root need remains under-met.</p>
+            ${chainDepth > 0 ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>` : ''}
+            ${this.analysisData.secondaryLoops.length > 0 ? '<p style="color: var(--muted);">Secondary signals were detected but are intentionally omitted here to keep the focus on the dominant loop.</p>' : ''}
+          </div>
         </div>
       </div>
     `;
@@ -1378,20 +1393,44 @@ export class NeedsDependencyEngine {
     `;
   }
 
+  getUniqueNeedChain() {
+    const unique = [];
+    const seen = new Set();
+    this.needChain.forEach(entry => {
+      const raw = entry?.need;
+      if (!raw) return;
+      const normalized = String(raw).toLowerCase().trim();
+      if (seen.has(normalized)) return;
+      seen.add(normalized);
+      unique.push({ ...entry, need: raw });
+    });
+    return unique;
+  }
+
   renderNeedChain() {
     if (this.needChain.length === 0) return '';
+    const uniqueChain = this.getUniqueNeedChain();
+    const surfaceNeed = uniqueChain[0]?.need || 'Unknown';
+    const deeperNeeds = uniqueChain.slice(1).map(n => SecurityUtils.sanitizeHTML(n.need || '')).filter(Boolean);
+    const rootNeed = uniqueChain.length > 0 ? uniqueChain[uniqueChain.length - 1].need : surfaceNeed;
+    const rawRootCandidates = this.needChain[this.needChain.length - 1]?.deeper || [];
+    const rootCandidates = rawRootCandidates
+      .map(need => String(need))
+      .filter(need => !uniqueChain.map(n => String(n.need).toLowerCase().trim()).includes(String(need).toLowerCase().trim()));
     
     return `
       <div class="need-chain-section">
         <h2>Need Chain Analysis</h2>
         <div class="need-chain-visualization">
-          <p><strong>Surface Need:</strong> ${SecurityUtils.sanitizeHTML(this.needChain[0]?.need || 'Unknown')}</p>
-          ${this.needChain.length > 1 ? `
-            <p><strong>Deeper Needs:</strong> ${this.needChain.slice(1).map(n => n.need).join(' → ')}</p>
+          <p><strong>Surface Need:</strong> ${SecurityUtils.sanitizeHTML(surfaceNeed)}</p>
+          ${deeperNeeds.length > 0 ? `
+            <p><strong>Deeper Needs:</strong> ${deeperNeeds.join(' → ')}</p>
           ` : ''}
-          ${this.needChain[this.needChain.length - 1]?.deeper?.length > 0 ? `
-            <p><strong>Root Needs:</strong> ${this.needChain[this.needChain.length - 1].deeper.join(', ')}</p>
+          <p><strong>Root Need Focus:</strong> ${SecurityUtils.sanitizeHTML(rootNeed)}</p>
+          ${rootCandidates.length > 0 ? `
+            <p><strong>Root Need Candidates:</strong> ${rootCandidates.map(n => SecurityUtils.sanitizeHTML(n)).join(', ')}</p>
           ` : ''}
+          <p style="color: var(--muted);">The chain is de-duplicated to prevent repeated needs. Address the root need to collapse the loop; the surface symptom still needs attention but won\'t resolve the pattern alone.</p>
         </div>
       </div>
     `;
@@ -1428,8 +1467,8 @@ export class NeedsDependencyEngine {
 
   renderClosure() {
     return `
-      <div class="closure-section">
-        <h2>What This Does NOT Imply</h2>
+      <details class="closure-section">
+        <summary><strong>What This Does NOT Imply</strong></summary>
         <div class="closure-content">
           <p><strong>This analysis does not mean:</strong></p>
           <ul>
@@ -1446,7 +1485,7 @@ export class NeedsDependencyEngine {
             <li>You can transform dependency loops into conscious choice</li>
           </ul>
         </div>
-      </div>
+      </details>
     `;
   }
 
