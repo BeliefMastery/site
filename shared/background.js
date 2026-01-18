@@ -3,8 +3,12 @@
   const canvas = document.getElementById('nebula-canvas');
   if (!canvas) return;
 
-  // Check for WebGL support and reduced motion preference
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Check for WebGL support, reduced motion, or mobile/touch devices
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lowPowerDevice = window.matchMedia('(max-width: 1024px)').matches ||
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  if (prefersReducedMotion || lowPowerDevice) {
     canvas.style.display = 'none';
     return;
   }
@@ -15,13 +19,21 @@
     return;
   }
 
-  // Resize canvas
+  // Resize canvas with capped DPR for performance
+  let resizeRaf = null;
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
-  window.addEventListener('resize', resize);
+  const onResize = () => {
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(resize);
+  };
+  window.addEventListener('resize', onResize);
   resize();
 
   // Vertex Shader (simple full-screen quad - unchanged)
@@ -168,32 +180,64 @@
   const scrollYLocation = gl.getUniformLocation(program, 'scrollY');
   const resolutionLocation = gl.getUniformLocation(program, 'resolution');
 
-  // Scroll tracking for parallax effect
+  // Scroll tracking for parallax effect (throttled)
   let scrollY = 0;
+  let scrollRaf = null;
   function updateScroll() {
     scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    scrollRaf = null;
   }
-  window.addEventListener('scroll', updateScroll, { passive: true });
+  const onScroll = () => {
+    if (scrollRaf) return;
+    scrollRaf = requestAnimationFrame(updateScroll);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
   updateScroll();
 
   // Animation loop
-  let startTime = Date.now();
+  let startTime = performance.now();
   let animationId = null;
-  function render() {
-    const elapsed = (Date.now() - startTime) / 1000;
+  let lastFrame = 0;
+  const frameInterval = 1000 / 30; // 30fps cap
+  let isPaused = false;
+
+  function render(now) {
+    if (isPaused) return;
+    if (now - lastFrame < frameInterval) {
+      animationId = requestAnimationFrame(render);
+      return;
+    }
+    lastFrame = now;
+    const elapsed = (now - startTime) / 1000;
     gl.uniform1f(timeLocation, elapsed);
     gl.uniform1f(scrollYLocation, scrollY);
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     animationId = requestAnimationFrame(render);
   }
-  render();
+  animationId = requestAnimationFrame(render);
+
+  // Pause animation when tab is hidden
+  function handleVisibility() {
+    if (document.hidden) {
+      isPaused = true;
+      if (animationId) cancelAnimationFrame(animationId);
+      animationId = null;
+    } else {
+      isPaused = false;
+      lastFrame = 0;
+      startTime = performance.now();
+      animationId = requestAnimationFrame(render);
+    }
+  }
+  document.addEventListener('visibilitychange', handleVisibility);
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     if (animationId) cancelAnimationFrame(animationId);
-    window.removeEventListener('resize', resize);
-    window.removeEventListener('scroll', updateScroll);
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('scroll', onScroll);
+    document.removeEventListener('visibilitychange', handleVisibility);
   });
 })();
 

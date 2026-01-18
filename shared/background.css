@@ -64,10 +64,9 @@
 
     pointer-events: none;
     animation:
-        nebulaDrift 25s linear infinite,
-        nebulaBreath 8s ease-in-out infinite alternate,
-        nebulaRotate 40s linear infinite;
-    will-change: transform, opacity;
+        nebulaDrift 30s linear infinite,
+        nebulaBreath 10s ease-in-out infinite alternate;
+    will-change: opacity;
 }
 
 @media (max-width: 1024px) {
@@ -213,19 +212,6 @@
     100% {
         opacity: 0.96;
         filter: brightness(1.08) contrast(1.05) saturate(1.1);
-    }
-}
-
-/* Subtle rotation for organic feel (unchanged) */
-@keyframes nebulaRotate {
-    0% {
-        transform: rotate(0deg) scale(1);
-    }
-    50% {
-        transform: rotate(0.5deg) scale(1.02);
-    }
-    100% {
-        transform: rotate(0deg) scale(1);
     }
 }
 
