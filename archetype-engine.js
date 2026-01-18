@@ -1580,7 +1580,7 @@ showGenderSelection() {
   }
   
   generateAspirationExplanation(aspiredTo, topBehavioral, adjustments) {
-    if (!aspiredTo || Object.keys(adjustments).length === 0) {
+    if (!aspiredTo || !adjustments || Object.keys(adjustments).length === 0) {
       return null;
     }
     
