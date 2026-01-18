@@ -657,7 +657,7 @@ export const PHASE_3_QUESTIONS = [
   {
     id: 'p3_aspiration_1',
     question: 'Which of these qualities do you most desire to embody?',
-    type: 'forced_choice',
+    type: 'multi_select',
     isAspiration: true,
     options: [
       { text: 'Leadership, authority, natural command', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
@@ -687,7 +687,7 @@ export const PHASE_3_QUESTIONS = [
   {
     id: 'p3_aspiration_3',
     question: 'What do you admire most in others?',
-    type: 'forced_choice',
+    type: 'multi_select',
     isAspiration: true,
     options: [
       { text: 'Natural leadership and confidence', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },
