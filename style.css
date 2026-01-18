@@ -2909,7 +2909,7 @@ figure.headline-book a {
 
 .remediation-item {
     border-left-color: var(--accent);
-    background: rgba(255, 215, 0, 0.05);
+    background: var(--accent-panel);
 }
 
 /* Spectrum Bar (Coaching Results) */
@@ -2941,7 +2941,7 @@ figure.headline-book a {
 
 .spectrum-fill {
     height: 100%;
-    background: linear-gradient(90deg, #d32f2f, #ff9800, #4caf50, #2196f3);
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.85), rgba(120, 170, 255, 0.9));
     transition: width 0.5s ease;
     border-radius: 20px;
 }
@@ -2964,7 +2964,7 @@ figure.headline-book a {
 }
 
 .paradigm-result-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--brand-panel);
     border-left: 4px solid var(--brand);
     border-radius: var(--radius);
     padding: 1.5rem;
@@ -2974,7 +2974,7 @@ figure.headline-book a {
 .derailer-item {
     margin-bottom: 1rem;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--glass);
     border-radius: var(--radius);
 }
 
@@ -2985,11 +2985,11 @@ figure.headline-book a {
 }
 
 .remediation-item.critical {
-    border-left-color: #d32f2f;
+    border-left-color: var(--accent);
 }
 
 .remediation-item.high {
-    border-left-color: #ff9800;
+    border-left-color: var(--brand);
 }
 
 /* Feature List */
