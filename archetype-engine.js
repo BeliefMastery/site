@@ -1323,7 +1323,26 @@ showGenderSelection() {
       .sort((a, b) => b.score - a.score);
 
     // Primary archetype (highest score)
-    const primary = sortedArchetypes[0];
+    let primary = sortedArchetypes[0];
+
+    const pickSubtype = (baseArchetype) => {
+      if (!baseArchetype?.subtypes?.length) return null;
+      const subtypeScores = baseArchetype.subtypes
+        .map(id => ({
+          id,
+          score: this.archetypeScores[id]?.phase2 || 0
+        }))
+        .sort((a, b) => b.score - a.score);
+      const topSubtype = subtypeScores[0];
+      if (!topSubtype || topSubtype.score <= 0) return null;
+      const subtype = ARCHETYPES[topSubtype.id];
+      return subtype ? { ...subtype, score: this.archetypeScores[topSubtype.id]?.weighted || topSubtype.score } : null;
+    };
+
+    const primarySubtype = pickSubtype(primary);
+    if (primarySubtype) {
+      primary = { ...primarySubtype, parentType: primary?.id || primarySubtype.parentType };
+    }
     
     // Secondary archetype (next highest, must be >25% of primary)
     const secondary = sortedArchetypes[1] && sortedArchetypes[1].score > (primary.score * 0.25) 
