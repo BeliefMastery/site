@@ -1182,15 +1182,20 @@ export class ChannelsEngine {
       html += '<p>Based on your responses, here are the channel blockages identified and recommended remediation strategies.</p>';
       html += '</div>';
     
-    // Node summary
-    html += '<div class="node-summary">';
-    html += '<h4 style="color: var(--brand); margin-bottom: 1rem;">Node Health Summary</h4>';
+    // Node summary (collapsible)
+    html += '<details class="node-summary">';
+    html += '<summary><strong>Node Health Summary</strong></summary>';
+    html += '<div style="margin-top: 1rem;">';
     Object.keys(this.nodeScores).forEach(nodeKey => {
       const nodeScore = this.nodeScores[nodeKey];
-      const stateColor = nodeScore.state === 'abundant' ? '#28a745' : nodeScore.state === 'balanced' ? '#ffc107' : '#d32f2f';
+      const stateColor = nodeScore.state === 'abundant'
+        ? 'var(--brand)'
+        : nodeScore.state === 'balanced'
+          ? 'var(--accent)'
+          : 'var(--muted)';
       html += `<p><strong>${SecurityUtils.sanitizeHTML(nodeScore.node.name || '')}:</strong> <span style="color: ${stateColor};">${SecurityUtils.sanitizeHTML(nodeScore.state || '')}</span></p>`;
     });
-    html += '</div>';
+    html += '</div></details>';
     
     // Channel results
     if (this.analysisData.finalChannels.length > 0) {
@@ -1201,35 +1206,21 @@ export class ChannelsEngine {
         const channel = channelData.channel;
         const fromNode = NODES[channel.from];
         const toNode = NODES[channel.to];
+        const remediation = REMEDIATION_STRATEGIES[channelData.id];
         
         html += `
           <div class="channel-result">
             <h3>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</h3>
             <p>${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
             <p><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
-          </div>
-        `;
-      });
-      
-      html += '</div>';
-    }
-    
-    // Remediation strategies
-    if (this.analysisData.remediationStrategies.length > 0) {
-      html += '<div class="remediation-section">';
-      html += '<h4>Remediation Strategies</h4>';
-      
-      this.analysisData.remediationStrategies.forEach(strategy => {
-        const channel = strategy.channel;
-        const fromNode = NODES[channel.from];
-        const toNode = NODES[channel.to];
-        
-        html += `
-          <div class="remediation-item">
-            <strong>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</strong>
-            <ul>
-              ${Array.isArray(strategy.strategies) ? strategy.strategies.map(s => `<li>${SecurityUtils.sanitizeHTML(s || '')}</li>`).join('') : `<li>${SecurityUtils.sanitizeHTML(strategy.strategies || '')}</li>`}
-            </ul>
+            ${remediation ? `
+              <div style="margin-top: 1rem;">
+                <strong>Channel-Informed Actions for Greater Flow:</strong>
+                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                  ${Array.isArray(remediation) ? remediation.map(s => `<li>${SecurityUtils.sanitizeHTML(s || '')}</li>`).join('') : `<li>${SecurityUtils.sanitizeHTML(remediation || '')}</li>`}
+                </ul>
+              </div>
+            ` : ''}
           </div>
         `;
       });

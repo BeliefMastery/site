@@ -5765,7 +5765,7 @@ img {
 
 /* Channels Engine Classes */
 .node-summary {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass);
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 2rem;
