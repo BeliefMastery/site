@@ -672,7 +672,7 @@ export const PHASE_3_QUESTIONS = [
   {
     id: 'p3_aspiration_2',
     question: 'Which of these descriptions best fits how others would describe you?',
-    type: 'forced_choice',
+    type: 'multi_select',
     isAspiration: true,
     options: [
       { text: 'They see me as comfortable with leadership and authority', archetypes: ['alpha'], aspirationTarget: 'alpha', weight: 1 },

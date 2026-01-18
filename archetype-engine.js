@@ -26,6 +26,8 @@ export class ArchetypeEngine {
     this.archetypeScores = {};
     this.shuffledOptions = {};
     this.shuffledVignettes = {};
+    this.shuffledOptions = {};
+    this.shuffledVignettes = {};
     this.analysisData = {
       timestamp: new Date().toISOString(),
       gender: null,
@@ -640,6 +642,8 @@ showGenderSelection() {
     // Render the current question only (replace previous content)
     if (question.type === 'forced_choice') {
       html += this.renderForcedChoiceQuestion(question, isLocked);
+    } else if (question.type === 'multi_select') {
+      html += this.renderMultiSelectQuestion(question, isLocked);
     } else if (question.type === 'likert') {
       html += this.renderLikertQuestion(question, isLocked);
     } else if (question.type === 'narrative') {
@@ -808,6 +812,61 @@ showGenderSelection() {
     `;
   }
 
+  renderMultiSelectQuestion(question, isLocked = false) {
+    const currentAnswer = this.answers[question.id];
+    const selectedIndices = currentAnswer && Array.isArray(currentAnswer.selectedIndices)
+      ? currentAnswer.selectedIndices
+      : [];
+    const shuffledOptions = this.getShuffledItems(question.id, question.options, this.shuffledOptions);
+
+    let optionsHTML = shuffledOptions.map(({ item: option, index }) => {
+      const isSelected = selectedIndices.includes(index);
+      return `
+        <label class="option-label ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}">
+          <input type="checkbox" name="question_${question.id}" value="${index}" ${isSelected ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+          <span>${SecurityUtils.sanitizeHTML(option.text || '')}</span>
+          ${isSelected ? '<span class="selected-check">✓</span>' : ''}
+        </label>
+      `;
+    }).join('');
+
+    if (!isLocked) {
+      setTimeout(() => {
+        const inputs = document.querySelectorAll(`input[name="question_${question.id}"]:not([disabled])`);
+        inputs.forEach(input => {
+          input.addEventListener('change', () => {
+            const selected = Array.from(inputs)
+              .filter(el => el.checked)
+              .map(el => parseInt(el.value, 10));
+            this.processAnswer(question, selected);
+            document.querySelectorAll(`label.option-label`).forEach(label => {
+              label.classList.remove('selected');
+            });
+            selected.forEach(idx => {
+              const selectedInput = document.querySelector(`input[name="question_${question.id}"][value="${idx}"]`);
+              const label = selectedInput?.closest('label');
+              if (label) {
+                label.classList.add('selected');
+              }
+            });
+          });
+        });
+      }, 100);
+    }
+
+    const lockedNotice = isLocked ? '<div class="locked-notice"><strong>✓ Answered</strong> - This question has been answered and is locked.</div>' : '';
+    return `
+      <div class="question-card">
+        <h3>${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <p class="form-help" style="margin-bottom: 0.75rem;">Select all that apply.</p>
+        <div class="options-container">
+          ${optionsHTML}
+        </div>
+        ${lockedNotice}
+      </div>
+    `;
+  }
+
   renderNarrativeQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
     const shuffledVignettes = this.getShuffledItems(question.id, question.vignettes, this.shuffledVignettes);
@@ -861,7 +920,8 @@ showGenderSelection() {
     this.answers[question.id] = {
       questionId: question.id,
       value: answerValue,
-      selectedIndex: answerValue,
+      selectedIndex: Array.isArray(answerValue) ? undefined : answerValue,
+      selectedIndices: Array.isArray(answerValue) ? answerValue : undefined,
       timestamp: new Date().toISOString()
     };
 
@@ -1020,20 +1080,37 @@ showGenderSelection() {
 
   scorePhase3Answer(question, selectedIndex) {
     // Phase 3: 15% weight
-    const selectedOption = question.options[selectedIndex];
-    if (!selectedOption) return;
+    if (!Array.isArray(question.options)) return;
 
     // Track aspiration answers separately for bias mitigation
-    if (question.isAspiration && selectedOption.aspirationTarget) {
+    if (question.isAspiration) {
       if (!this.aspirationAnswers[question.id]) {
         this.aspirationAnswers[question.id] = [];
       }
-      this.aspirationAnswers[question.id].push(selectedOption.aspirationTarget);
+      if (Array.isArray(selectedIndex)) {
+        selectedIndex.forEach(idx => {
+          const opt = question.options[idx];
+          if (opt?.aspirationTarget) {
+            this.aspirationAnswers[question.id].push(opt.aspirationTarget);
+          }
+        });
+      } else {
+        const selectedOption = question.options[selectedIndex];
+        if (selectedOption?.aspirationTarget) {
+          this.aspirationAnswers[question.id].push(selectedOption.aspirationTarget);
+        }
+      }
       // Don't apply direct scoring for aspiration questions - they're used for reverse psychology
       return;
     }
 
-    selectedOption.archetypes.forEach(archId => {
+    const selectedOptions = Array.isArray(selectedIndex)
+      ? selectedIndex.map(idx => question.options[idx]).filter(Boolean)
+      : [question.options[selectedIndex]].filter(Boolean);
+
+    selectedOptions.forEach(selectedOption => {
+      if (!selectedOption || !selectedOption.archetypes) return;
+      selectedOption.archetypes.forEach(archId => {
       // Map to gender-specific archetype if gender is selected
       let targetArchId = archId;
       if (this.gender === 'female') {
@@ -1076,6 +1153,7 @@ showGenderSelection() {
       
       const weight = selectedOption.weight || 1;
       this.archetypeScores[targetArchId].phase3 += weight * 1; // Phase 3 gets 1x multiplier
+      });
     });
   }
 
