@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let NODES, CHANNELS, REMEDIATION_STRATEGIES;
@@ -118,6 +118,14 @@ export class ChannelsEngine {
         this.startAssessment();
       });
     }
+
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
     
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
@@ -142,6 +150,11 @@ export class ChannelsEngine {
     const exportCSVBtn = document.getElementById('exportAnalysisCsv');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
     
     const abandonBtn = document.getElementById('abandonAssessment');
@@ -1135,6 +1148,11 @@ export class ChannelsEngine {
       const json = exportJSON(this.analysisData, 'channels', 'Channel Taxonomy Analysis');
       downloadFile(json, `channel-analysis-${Date.now()}.json`, 'application/json');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'channels', 'Channel Taxonomy Analysis');
+    downloadFile(brief, `channel-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   /**

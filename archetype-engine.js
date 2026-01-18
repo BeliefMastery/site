@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let ARCHETYPES, CORE_GROUPS;
@@ -105,6 +105,14 @@ init() {
       }, 500);
     }
 
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
+
     // 2. THE GLOBAL "WATCHER" (Event Delegation)
     // This handles Phase 1, 2, 3, and 4 selections automatically.
     const container = document.getElementById('questionContainer');
@@ -186,6 +194,11 @@ init() {
     const exportCSVBtn = document.getElementById('exportCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
     const abandonBtn = document.getElementById('abandonAssessment');
@@ -1846,6 +1859,11 @@ showGenderSelection() {
       const csv = exportForAIAgent(this.analysisData, 'modern-archetype-identification', 'Modern Archetype Identification');
       downloadFile(csv, `archetype-analysis-${Date.now()}.csv`, 'text/csv');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'modern-archetype-identification', 'Modern Archetype Identification');
+    downloadFile(brief, `archetype-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 }
 

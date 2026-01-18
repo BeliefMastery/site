@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let GOOD_LIFE_PARADIGMS, GOD_PERSPECTIVES, PARADIGM_SCORING;
@@ -124,6 +124,14 @@ export class ParadigmEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
+
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -147,6 +155,11 @@ export class ParadigmEngine {
     const exportCSVBtn = document.getElementById('exportCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
     const abandonBtn = document.getElementById('abandonAssessment');
@@ -1713,6 +1726,11 @@ export class ParadigmEngine {
       const json = exportJSON(this.analysisData, 'logos-structure', 'Logos Structure');
       downloadFile(json, `paradigm-analysis-${Date.now()}.json`, 'application/json');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'logos-structure', 'Logos Structure');
+    downloadFile(brief, `paradigm-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   /**

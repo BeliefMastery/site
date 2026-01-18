@@ -1,7 +1,7 @@
 // Cognitive Resistance Capacity Assessment Engine
 // Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and resistance capacity
 
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { loadDataModule } from './shared/data-loader.js';
 
@@ -82,6 +82,14 @@ export class SovereigntyEngine {
       });
     }
 
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
+
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -105,6 +113,11 @@ export class SovereigntyEngine {
     const exportCSVBtn = document.getElementById('exportCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
     const abandonBtn = document.getElementById('abandonAssessment');
@@ -1816,6 +1829,11 @@ export class SovereigntyEngine {
       const csv = exportForAIAgent(this.analysisData, 'cognitive-resistance-capacity', 'Cognitive Resistance Capacity Assessment');
       downloadFile(csv, `sovereignty-analysis-${Date.now()}.csv`, 'text/csv');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'cognitive-resistance-capacity', 'Cognitive Resistance Capacity Assessment');
+    downloadFile(brief, `sovereignty-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   generateCSV() {

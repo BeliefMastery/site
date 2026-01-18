@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let COMPATIBILITY_POINTS, IMPACT_TIER_WEIGHTS, SCORING_THRESHOLDS;
@@ -407,6 +407,14 @@ export class RelationshipEngine {
       });
     }
 
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
+
     
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
@@ -426,6 +434,11 @@ export class RelationshipEngine {
     const exportCSVBtn = document.getElementById('exportAnalysisCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -1453,6 +1466,11 @@ export class RelationshipEngine {
       const jsonContent = exportJSON(this.analysisData, 'relationship', reportTitle);
       downloadFile(jsonContent, filename + '.json', 'application/json');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'relationship', 'Relationships Analysis');
+    downloadFile(brief, `relationship-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   /**

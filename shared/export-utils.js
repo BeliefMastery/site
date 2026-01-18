@@ -1,11 +1,127 @@
 // Shared Export Utilities
 // Standardized export functionality with AI agent instructions for all questionnaire systems
 
+const EXPORT_VERSION = '1.1.0';
+
+const FRAMEWORK_MAP = {
+  diagnosis: ['Sovereign of Mind', 'Distortion Codex'],
+  coaching: ['Belief Mastery', 'Sovereign of Mind'],
+  'life-domain-review': ['Belief Mastery', 'Sovereign of Mind'],
+  manipulation: ['Sovereign of Mind', 'Distortion Codex'],
+  channels: ['Sovereign of Mind'],
+  paradigm: ['Sovereign of Mind'],
+  'sovereignty-spectrum': ['Sovereign of Mind'],
+  sovereignty: ['Sovereign of Mind'],
+  relationship: ['Belief Mastery', 'Sovereign of Mind'],
+  temperament: ['Belief Mastery', 'Sovereign of Mind'],
+  'temperament-analysis': ['Belief Mastery', 'Sovereign of Mind'],
+  'needs-dependency': ['Belief Mastery', 'Sovereign of Mind'],
+  archetype: ['Belief Mastery', 'Sovereign of Mind'],
+  'archetype-analysis': ['Belief Mastery', 'Sovereign of Mind']
+};
+
+function getFrameworksForSystem(systemType) {
+  if (!systemType) return ['Belief Mastery', 'Sovereign of Mind'];
+  return FRAMEWORK_MAP[systemType] || ['Belief Mastery', 'Sovereign of Mind'];
+}
+
+function getTopEntriesByValue(entries, valueKey, limit = 3) {
+  return entries
+    .filter(entry => typeof entry[valueKey] === 'number')
+    .sort((a, b) => b[valueKey] - a[valueKey])
+    .slice(0, limit);
+}
+
+function buildExecutiveHighlights(data) {
+  const highlights = [];
+  if (!data) return highlights;
+
+  if (Array.isArray(data.identifiedVectors) && data.identifiedVectors.length) {
+    getTopEntriesByValue(data.identifiedVectors, 'weightedScore').forEach(vec => {
+      highlights.push(`Manipulation vector: ${vec.name} (${vec.weightedScore?.toFixed?.(2) || vec.weightedScore})`);
+    });
+  }
+
+  if (Array.isArray(data.weakestLinks) && data.weakestLinks.length) {
+    data.weakestLinks.slice(0, 3).forEach(link => {
+      highlights.push(`Relationship strain: ${link.name} (${link.rawScore}/10)`);
+    });
+  }
+
+  if (data.obstacles && typeof data.obstacles === 'object') {
+    const obsList = Object.values(data.obstacles || {});
+    getTopEntriesByValue(obsList, 'weightedScore').forEach(obs => {
+      highlights.push(`Sovereignty obstacle: ${obs.name} (${obs.weightedScore?.toFixed?.(2) || obs.weightedScore})`);
+    });
+  }
+
+  if (data.domains && typeof data.domains === 'object') {
+    const domList = Object.values(data.domains || {});
+    const lowest = domList
+      .filter(dom => typeof dom.combinedScore === 'number')
+      .sort((a, b) => a.combinedScore - b.combinedScore)
+      .slice(0, 2);
+    lowest.forEach(dom => {
+      highlights.push(`Life domain strain: ${dom.name} (${dom.combinedScore?.toFixed?.(1) || dom.combinedScore}/10)`);
+    });
+  }
+
+  if (data.probabilities && typeof data.probabilities === 'object') {
+    const probs = Object.entries(data.probabilities)
+      .map(([name, value]) => ({ name, value }))
+      .filter(item => typeof item.value === 'number');
+    getTopEntriesByValue(probs, 'value').forEach(item => {
+      highlights.push(`Diagnostic indicator: ${item.name} (${Math.round(item.value * 100)}%)`);
+    });
+  }
+
+  if (data.primaryArchetype) {
+    highlights.push(`Primary archetype: ${data.primaryArchetype}`);
+  }
+
+  if (data.primaryPattern) {
+    highlights.push(`Primary pattern: ${data.primaryPattern}`);
+  }
+
+  return highlights;
+}
+
+export function exportExecutiveBrief(assessmentData, systemType, systemName) {
+  const frameworks = getFrameworksForSystem(systemType).join(', ');
+  const highlights = buildExecutiveHighlights(assessmentData);
+  const guidance = [
+    'Focus on the top 1–3 findings before expanding scope.',
+    'Use the full export for AI-guided action planning.',
+    'Re-run the assessment after applying corrective actions.'
+  ];
+
+  let text = `${systemName} — Executive Brief\n`;
+  text += `Version: ${EXPORT_VERSION}\n`;
+  text += `Generated: ${new Date().toISOString()}\n`;
+  text += `Frameworks: ${frameworks}\n\n`;
+  text += 'Key Findings:\n';
+  if (highlights.length) {
+    highlights.forEach(item => {
+      text += `- ${item}\n`;
+    });
+  } else {
+    text += '- No dominant findings detected. Review the full report for detail.\n';
+  }
+  text += '\nNext Actions:\n';
+  guidance.forEach(item => {
+    text += `- ${item}\n`;
+  });
+
+  return text;
+}
+
 export function exportForAIAgent(assessmentData, systemType, systemName) {
   // Generate comprehensive CSV export with AI interpretation instructions
   let csv = `${systemName} Assessment Profile\n`;
+  csv += `Export Version: ${EXPORT_VERSION}\n`;
   csv += 'Generated: ' + new Date().toISOString() + '\n';
   csv += 'System Type: ' + systemType + '\n';
+  csv += 'Frameworks: ' + getFrameworksForSystem(systemType).join(', ') + '\n';
   csv += '\n';
   csv += '=== HOW TO USE THIS DATA ===\n';
   csv += 'This CSV contains assessment data with comprehensive explanations for how your AI agent should interpret, value, and prioritize the content.\n';
@@ -749,9 +865,11 @@ function generateSovereigntyExport(data) {
 
 export function exportJSON(assessmentData, systemType, systemName) {
   const exportData = {
+    exportVersion: EXPORT_VERSION,
     systemType: systemType,
     systemName: systemName,
     timestamp: new Date().toISOString(),
+    frameworks: getFrameworksForSystem(systemType),
     assessmentData: assessmentData,
     aiAgentInstructions: {
       systemPrompt: `Use this ${systemName} assessment profile to understand the user's patterns, obstacles, and needs. Focus on sovereignty-aligned support and structural clarity.`,

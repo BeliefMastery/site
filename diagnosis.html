@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pathology Assessment</title>
-  <meta name="description" content="Pathology assessment and clinical education mapping system based on DSM-5 criteria.">
+  <meta name="description" content=" param($m) $m.Value + $suffix ">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://beliefmastery.github.io/site/diagnosis.html">
   <meta property="og:title" content="Pathology Assessment">
-  <meta property="og:description" content="Map psychological patterns to DSM-5 categories. Educational self-reporting tool for pattern awareness, not clinical diagnosis.">
+  <meta property="og:description" content=" param($m) $m.Value + $suffix ">
   <meta property="og:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
   
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://beliefmastery.github.io/site/diagnosis.html">
   <meta name="twitter:title" content="Pathology Assessment">
-  <meta name="twitter:description" content="Map psychological patterns to DSM-5 categories. Educational self-reporting tool for pattern awareness, not clinical diagnosis.">
+  <meta name="twitter:description" content=" param($m) $m.Value + $suffix ">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
 
   <!-- CRITICAL: Universal styles MUST load first -->
@@ -136,7 +136,20 @@
               <p class="question-description"><em>This question helps validate consistency in your responses.</em></p>
             </div>
           </div>
+        </div>        <div class="content-section">
+          <div class="ack-box">
+            <p><strong>Sovereignty Through-Line:</strong> This engine strengthens self-authorship, consent, and structural clarity. It is designed to increase agency, not dependence.</p>
+          </div>
+          <div class="ack-box">
+            <h4>Methodology</h4>
+            <ul class="feature-list">
+              <li><strong>Belief Mastery:</strong> Belief architecture, pattern recognition, calibrated change.</li>
+              <li><strong>Sovereign of Mind:</strong> Sovereignty, consent, and authorship in decision-making.</li>
+              <li><strong>Distortion Codex:</strong> Distortion detection, reality testing, and corrective clarity.</li>
+            </ul>
+          </div>
         </div>
+
 
         <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
@@ -159,7 +172,9 @@
               <li><strong>By proceeding, you acknowledge that you understand these limitations and that this tool is intended for educational exploration only.</strong></li>                    
             </ul>
           </div>
-        </section>
+        
+        <p class="form-help"><strong>Non-therapeutic disclaimer:</strong> This tool supports sovereignty-aligned self-inquiry and is not therapy, medical, or legal advice.</p>
+      </section>
                 <h2>Select one or more categories to continue.</h2>
       </section>
 
@@ -174,6 +189,7 @@
       <section class="content-section" id="actionButtonsSection">  
         <div class="action-buttons">
           <a href="example-reports/diagnosis-example.html" target="_blank" class="btn btn-secondary">View Example Report</a>
+          <button class="btn btn-secondary" id="resumeAssessment">Resume Last Assessment</button>
           <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
           <button class="btn btn-secondary" id="clearCacheBtn">🔄 Reset Data</button>
         </div>
@@ -205,6 +221,7 @@
         <div class="results-actions">
           <button class="btn btn-primary" id="newAssessment">New Assessment</button>
           <button class="btn btn-secondary" id="viewData">View Data</button>
+          <button class="btn btn-secondary" id="exportExecutiveBrief">Export Executive Brief</button>
         </div>
       </section>
     </div>
@@ -284,5 +301,8 @@
   </script>
 </body>
 </html>
+
+
+
 
 

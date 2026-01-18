@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_PARADIGMS, SPECTRUM_THRESHOLDS, DERAILERS, SPECTRUM_QUESTIONS;
@@ -103,6 +103,14 @@ export class SovereigntySpectrumEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
+
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -126,6 +134,11 @@ export class SovereigntySpectrumEngine {
     const exportCSVBtn = document.getElementById('exportCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
     // Clear cache buttons (both in action section and during assessment)
@@ -1134,6 +1147,11 @@ export class SovereigntySpectrumEngine {
       const json = exportJSON(this.analysisData, 'sovereignty-spectrum-analysis');
       downloadFile(json, 'sovereignty-spectrum-analysis.json', 'application/json');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'sovereignty-spectrum', 'Your Sovereignty Paradigm');
+    downloadFile(brief, `sovereignty-spectrum-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   /**

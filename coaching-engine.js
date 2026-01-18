@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
@@ -174,6 +174,14 @@ export class CoachingEngine {
     if (startBtn) {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
+
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
     
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
@@ -193,6 +201,11 @@ export class CoachingEngine {
     const exportCSVBtn = document.getElementById('exportProfileCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportProfile('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
     
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -1092,6 +1105,11 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     // Use shared export utility for consistency, but keep existing detailed CSV format
     const csv = exportForAIAgent(this.profileData, 'life-domain-review', 'Life Domain Review');
     downloadFile(csv, `coaching-profile-${Date.now()}.csv`, 'text/csv');
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.profileData, 'life-domain-review', 'Life Domain Review');
+    downloadFile(brief, `coaching-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   exportCSV_legacy() {

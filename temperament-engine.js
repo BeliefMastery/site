@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let TEMPERAMENT_DIMENSIONS, INTIMATE_DYNAMICS;
@@ -259,6 +259,14 @@ export class TemperamentEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
+
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -277,6 +285,11 @@ export class TemperamentEngine {
     const exportCSVBtn = document.getElementById('exportAnalysisCSV');
     if (exportCSVBtn) {
       exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
 
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -1137,6 +1150,11 @@ AI AGENT CONFIGURATION:
     } else {
       exportJSON(this.analysisData, 'temperament-analysis');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'temperament-analysis', 'Polarity Position Mapping');
+    downloadFile(brief, `temperament-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   /**

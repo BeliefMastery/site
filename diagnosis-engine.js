@@ -12,7 +12,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS;
@@ -542,6 +542,14 @@ export class DiagnosisEngine {
         newBtn.addEventListener('click', () => this.startAssessment());
       }
     }
+
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
     
     const startHereGuideBtn = document.getElementById('startHereGuide');
     if (startHereGuideBtn) {
@@ -573,6 +581,11 @@ export class DiagnosisEngine {
     const viewDataBtn = document.getElementById('viewData');
     if (viewDataBtn) {
       viewDataBtn.addEventListener('click', () => this.viewAnalysisData());
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
     
     const viewAllConditionsBtn = document.getElementById('viewAllConditions');
@@ -1988,6 +2001,11 @@ export class DiagnosisEngine {
       const json = exportJSON(exportData, 'pathology-assessment', 'Pathology Assessment');
       downloadFile(json, `diagnosis-analysis-${Date.now()}.json`, 'application/json');
     }
+  }
+
+  exportExecutiveBrief() {
+    const brief = exportExecutiveBrief(this.analysisData, 'diagnosis', 'Pathology Assessment');
+    downloadFile(brief, `diagnosis-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
   resetAssessment() {

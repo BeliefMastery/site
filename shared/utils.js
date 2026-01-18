@@ -122,6 +122,9 @@ export class DataStore {
    */
   load(key) {
     try {
+      const resumeKey = `resume:${this.namespace}`;
+      const resumeAllowed = sessionStorage.getItem(resumeKey) === 'true';
+      if (key === 'progress' && !resumeAllowed) return null;
       const stored = localStorage.getItem(`${this.namespace}:${key}`) 
                   || sessionStorage.getItem(`${this.namespace}:${key}`);
       if (!stored) return null;
@@ -133,6 +136,9 @@ export class DataStore {
         return this.migrate(payload);
       }
       
+      if (key === 'progress' && resumeAllowed) {
+        sessionStorage.removeItem(resumeKey);
+      }
       return payload.data;
     } catch (error) {
       console.error('Load failed:', error);

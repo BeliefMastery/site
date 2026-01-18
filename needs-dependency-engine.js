@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
@@ -400,6 +400,14 @@ export class NeedsDependencyEngine {
     if (startBtn) {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
+
+    const resumeBtn = document.getElementById('resumeAssessment');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
+        window.location.reload();
+      });
+    }
     
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
@@ -419,6 +427,11 @@ export class NeedsDependencyEngine {
     const exportBtnCsv = document.getElementById('exportAnalysisCsv');
     if (exportBtnCsv) {
       exportBtnCsv.addEventListener('click', () => this.exportAnalysis('csv'));
+    }
+
+    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
+    if (exportBriefBtn) {
+      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
     }
     
     const newAssessmentBtn = document.getElementById('newAssessment');
@@ -1431,6 +1444,17 @@ export class NeedsDependencyEngine {
       const csv = exportForAIAgent(exportData, 'needs-dependency', 'Needs Dependency Loop Determinator');
       downloadFile(csv, 'needs-dependency-analysis.csv', 'text/csv');
     }
+  }
+
+  exportExecutiveBrief() {
+    const exportData = {
+      ...this.analysisData,
+      exportDate: new Date().toISOString(),
+      systemType: 'needs-dependency-v2',
+      systemName: 'Needs Dependency Loop Determinator (4-Phase Architecture)'
+    };
+    const brief = exportExecutiveBrief(exportData, 'needs-dependency', 'Needs Dependency Loop Determinator');
+    downloadFile(brief, `needs-dependency-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 }
 
