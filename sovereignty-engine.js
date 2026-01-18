@@ -96,6 +96,34 @@ export class SovereigntyEngine {
     }
   }
 
+  async ensureDataLoaded() {
+    if (COGNITIVE_BANDS && SECTION_1_USAGE_PATTERNS) {
+      return;
+    }
+    try {
+      const bandsModule = await loadDataModule(
+        './sovereignty-data/cognitive-bands.js',
+        'Cognitive Bands'
+      );
+      COGNITIVE_BANDS = bandsModule.COGNITIVE_BANDS;
+      SUBCLASSES = bandsModule.SUBCLASSES;
+      SOVEREIGN_SPLIT_POSITIONS = bandsModule.SOVEREIGN_SPLIT_POSITIONS;
+
+      const questionsModule = await loadDataModule(
+        './sovereignty-data/sovereignty-questions.js',
+        'Sovereignty Questions'
+      );
+      SECTION_1_USAGE_PATTERNS = questionsModule.SECTION_1_USAGE_PATTERNS;
+      SECTION_2_COGNITIVE_STYLE = questionsModule.SECTION_2_COGNITIVE_STYLE;
+      SECTION_3_ATTACHMENT = questionsModule.SECTION_3_ATTACHMENT;
+      SECTION_4_SOVEREIGNTY = questionsModule.SECTION_4_SOVEREIGNTY;
+    } catch (error) {
+      ErrorHandler.logError(error, 'SovereigntyEngine.ensureDataLoaded');
+      ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
+      throw error;
+    }
+  }
+
   attachEventListeners() {
     const startBtn = document.getElementById('startAssessment');
     if (startBtn) {
