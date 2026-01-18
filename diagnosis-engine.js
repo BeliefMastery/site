@@ -1706,17 +1706,22 @@ export class DiagnosisEngine {
       
       categoryGroups[categoryName].forEach(pattern => {
         const isPrimary = pattern.isPrimary;
+        const alignmentColor = pattern.alignmentBand === 'High alignment'
+          ? 'var(--accent)'
+          : pattern.alignmentBand === 'Moderate alignment'
+            ? 'var(--brand)'
+            : 'var(--muted)';
         html += `
-          <div style="margin-bottom: ${isPrimary ? '1.5rem' : '1rem'}; padding: ${isPrimary ? '1.5rem' : '1rem'}; background: ${isPrimary ? 'rgba(0, 123, 255, 0.1)' : 'rgba(255,255,255,0.7)'}; border-radius: var(--radius); border-left: 4px solid ${isPrimary ? 'var(--brand)' : 'var(--accent)'};">
+          <div style="margin-bottom: ${isPrimary ? '1.5rem' : '1rem'}; padding: ${isPrimary ? '1.5rem' : '1rem'}; background: ${isPrimary ? 'var(--brand-panel)' : 'var(--glass)'}; border-radius: var(--radius); border-left: 4px solid ${isPrimary ? 'var(--brand)' : 'var(--accent)'};">
             <h4 style="color: ${isPrimary ? 'var(--brand)' : 'var(--accent)'}; margin-bottom: 0.75rem;">
               ${isPrimary ? '🎯 Primary Pattern Match:' : 'Secondary Pattern Match:'} ${pattern.disorder}
             </h4>
             <div style="margin-bottom: 0.5rem;">
-              <strong>Alignment Band:</strong> <span style="color: ${pattern.alignmentBand === 'High alignment' ? '#d32f2f' : pattern.alignmentBand === 'Moderate alignment' ? '#ffc107' : '#28a745'};">${pattern.alignmentBand}</span>
+              <strong>Alignment Band:</strong> <span style="color: ${alignmentColor};">${pattern.alignmentBand}</span>
             </div>
             <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">
               Raw alignment score: ${Math.round(pattern.alignment * 100)}% 
-              ${this.analysisData.validationConsistency === 'low' ? '<span style="color: #d32f2f;">(Low confidence due to response inconsistency)</span>' : ''}
+              ${this.analysisData.validationConsistency === 'low' ? '<span style="color: var(--accent);">(Low confidence due to response inconsistency)</span>' : ''}
             </p>
           </div>
         `;
@@ -1725,47 +1730,18 @@ export class DiagnosisEngine {
       html += `</div></div>`;
     });
     
-    // Integration step before showing full details
-    if (primaryPattern) {
-      html += `
-        <div style="background: rgba(255, 184, 0, 0.15); border: 2px solid var(--accent); border-radius: var(--radius); padding: 2rem; margin-top: 2rem; text-align: center;">
-          <h3 style="color: var(--brand); margin-bottom: 1rem;">Integration Step</h3>
-          <p style="color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7;">
-            Which result feels most relevant to explore right now? This helps focus your learning and prevents overwhelm.
-          </p>
-          <button class="btn btn-primary" onclick="window.diagnosisEngine.showFullDetails('${primaryPattern}')" style="margin: 0.5rem;">
-            Explore: ${primaryPattern}
-          </button>
-      `;
-      
-      if (vector.secondaryPatternMatches.length > 0) {
-        vector.secondaryPatternMatches.slice(0, 2).forEach(secondary => {
-          html += `<button class="btn btn-secondary" onclick="window.diagnosisEngine.showFullDetails('${secondary.disorder}')" style="margin: 0.5rem;">
-            Explore: ${secondary.disorder}
-          </button>`;
-        });
-      }
-      
-      html += `</div>`;
-    }
-    
-    // Display comprehensive support information for selected pattern
-    if (treatmentData && primaryPattern) {
-      html += `<div id="fullDetailsSection" style="display: none; margin-top: 2rem;">`;
-      html += this.renderTreatmentInformation(primaryPattern, treatmentData);
-      html += `</div>`;
-    }
+    // Skip integration/treatment prompts (external references preferred)
     
     // Display comorbidity information
     if (vector.comorbidity && vector.comorbidity.length > 0) {
       html += `
-        <div class="comorbidity-section" style="margin-top: 2rem; padding: 1.5rem; background: rgba(255, 184, 0, 0.1); border: 2px solid var(--accent); border-radius: var(--radius);">
+        <div class="comorbidity-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--accent-panel); border: 2px solid var(--accent); border-radius: var(--radius);">
           <h4 style="margin-bottom: 1rem; color: var(--brand);">🔗 Multi-Branching / Comorbidity Detected</h4>
           <p style="margin-bottom: 1rem; line-height: 1.6;">
             The assessment detected potential <strong>comorbidity</strong> (multiple disorders that commonly co-occur). This requires careful differential diagnosis.
           </p>
           ${vector.comorbidity.map(group => `
-            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.7); border-radius: var(--radius);">
+            <div style="margin-bottom: 1rem; padding: 1rem; background: var(--glass); border-radius: var(--radius);">
               <strong style="display: block; margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(group.name || '')}</strong>
               <div style="margin-bottom: 0.5rem;">Related disorders: ${group.disorders.map(d => SecurityUtils.sanitizeHTML(d || '')).join(', ')}</div>
               <em style="font-size: 0.9rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(group.message || '')}</em>
