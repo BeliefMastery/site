@@ -52,6 +52,8 @@ cd site
 - `books.html` - Complete book catalog and descriptions
 - `tools.html` - All diagnostic tools listing
 - `about-the-author.html` - Author biography
+- `framework-atlas.html` - Cross-map of book principles, engines, and outputs
+- `case-studies.html` - Example outputs hub for every engine
 
 ### Diagnostic Tools (13 tools)
 1. **Pathology Assessment** (`diagnosis.html`) - DSM-5 self-reporting diagnostic tool
@@ -88,7 +90,9 @@ cd site
 - Static site with client-side JavaScript
 - No server required
 - All data stored in JS modules
-- Results exportable as JSON/CSV
+- Results exportable as JSON/CSV + Executive Brief
+- Export metadata includes framework alignment and versioning
+- Resume last assessment is user-triggered (no auto-restore by default)
 - All data stored in JS data modules
 - Results exportable as JSON/CSV (per-tool)
 
@@ -163,6 +167,7 @@ The following improvements have been made to address grading feedback:
 - ✅ Consistent metadata across pages
 - ✅ Clear tool descriptions
 - ✅ Standardized navigation structure
+- ✅ Framework Atlas and Case Studies for portfolio-grade clarity
 
 ## Contact & Links
 

@@ -18,6 +18,8 @@ Allow: /index.html
 Allow: /books.html
 Allow: /tools.html
 Allow: /about-the-author.html
+Allow: /framework-atlas.html
+Allow: /case-studies.html
 Allow: /diagnosis.html
 Allow: /coaching.html
 Allow: /needs-dependency.html
@@ -32,3 +34,4 @@ Allow: /character-sheet.html
 Allow: /sovereignty.html
 Allow: /images/
 Allow: /style.css
+Allow: /shared/
