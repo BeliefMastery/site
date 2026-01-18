@@ -1612,7 +1612,9 @@ showGenderSelection() {
     }
     
     const aspirationAnalysis = this.analysisData.aspirationAnalysis;
-    const aspirationCounts = aspirationAnalysis ? aspirationAnalysis.aspirationCounts : {};
+    const aspirationCounts = (aspirationAnalysis && aspirationAnalysis.aspirationCounts)
+      ? aspirationAnalysis.aspirationCounts
+      : {};
     
     const genderText = this.gender === 'male' ? 'For males' : 'For females';
     let explanation = `${genderText}, aspiration patterns can reveal self-reporting bias. `;
