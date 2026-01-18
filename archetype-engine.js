@@ -1621,9 +1621,15 @@ showGenderSelection() {
 
   renderResultsToContainer(container) {
 
-    const primary = this.analysisData.primaryArchetype;
-    const secondary = this.analysisData.secondaryArchetype;
-    const tertiary = this.analysisData.tertiaryArchetype;
+    const hydrateArchetype = (entry) => {
+      if (!entry) return null;
+      const base = ARCHETYPES?.[entry.id] || ARCHETYPES?.[entry.baseId] || null;
+      return base ? { ...base, ...entry } : entry;
+    };
+
+    const primary = hydrateArchetype(this.analysisData.primaryArchetype);
+    const secondary = hydrateArchetype(this.analysisData.secondaryArchetype);
+    const tertiary = hydrateArchetype(this.analysisData.tertiaryArchetype);
     const primarySpread = this.getSpreadInfo(primary);
     const secondarySpread = this.getSpreadInfo(secondary);
     const tertiarySpread = this.getSpreadInfo(tertiary);
