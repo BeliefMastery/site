@@ -4954,9 +4954,9 @@ img {
 }
 
 .vulnerability-risks {
-    background: rgba(255, 0, 0, 0.1);
+    background: var(--accent-panel);
     padding: 2rem;
-    border-left: 4px solid #ff4444;
+    border-left: 4px solid var(--accent);
     border-radius: var(--radius);
     margin-bottom: 2rem;
 }
@@ -4969,11 +4969,11 @@ img {
 }
 
 .risk-item.critical {
-    border-left: 3px solid #ff0000;
+    border-left: 3px solid var(--accent);
 }
 
 .risk-item.high {
-    border-left: 3px solid #ff8800;
+    border-left: 3px solid var(--brand);
 }
 
 .risk-title {
@@ -4990,11 +4990,11 @@ img {
 }
 
 .risk-badge.critical {
-    background: #ff0000;
+    background: var(--accent);
 }
 
 .risk-badge.high {
-    background: #ff8800;
+    background: var(--brand);
 }
 
 .risk-description {
@@ -5003,9 +5003,9 @@ img {
 }
 
 .action-plan {
-    background: rgba(0, 255, 0, 0.1);
+    background: var(--brand-panel);
     padding: 2rem;
-    border-left: 4px solid #00aa00;
+    border-left: 4px solid var(--brand);
     border-radius: var(--radius);
     margin-bottom: 2rem;
 }
