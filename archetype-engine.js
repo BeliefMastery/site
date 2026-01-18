@@ -915,22 +915,76 @@ showGenderSelection() {
     // Phase 2: 30% weight
     // Likert scale: 1-5, convert to -2 to +2 for scoring
     const normalizedValue = value - 3; // -2 to +2
-    
+
+    const mapArchetypeId = (archId) => {
+      if (this.gender !== 'female') return archId;
+      const femaleMapping = {
+        'alpha': 'alpha_female',
+        'alpha_xi': 'alpha_xi_female',
+        'alpha_rho': 'alpha_xi_female',
+        'dark_alpha': 'dark_alpha_female',
+        'beta': 'beta_female',
+        'beta_iota': 'alpha_unicorn_female',
+        'beta_nu': 'beta_nu_female',
+        'beta_manipulator': 'beta_manipulator_female',
+        'beta_kappa': 'beta_kappa_female',
+        'gamma': 'gamma_female',
+        'gamma_theta': 'gamma_theta_female',
+        'dark_gamma': 'dark_gamma_female',
+        'delta': 'delta_female',
+        'delta_mu': 'delta_mu_female',
+        'dark_delta': 'dark_delta_female',
+        'sigma': 'sigma_female',
+        'dark_sigma_zeta': 'dark_sigma_zeta_female',
+        'omega': 'omega_female',
+        'dark_omega': 'dark_omega_female',
+        'phi': 'phi_female'
+      };
+      return femaleMapping[archId] || archId;
+    };
+
+    // Handle forced-choice refinement questions that use options instead of archetypes
+    if (question.options && Array.isArray(question.options)) {
+      const selectedOption = question.options[value];
+      if (!selectedOption || !Array.isArray(selectedOption.archetypes)) {
+        this.debugReporter.logError(new Error('Phase 2 forced-choice option missing archetypes array'), 'scorePhase2Answer');
+        return;
+      }
+
+      selectedOption.archetypes.forEach(archId => {
+        const targetArchId = mapArchetypeId(archId);
+        if (!this.archetypeScores[targetArchId]) {
+          this.archetypeScores[targetArchId] = {
+            phase1: 0,
+            phase2: 0,
+            phase3: 0,
+            phase4: 0,
+            total: 0,
+            weighted: 0
+          };
+        }
+        const weight = selectedOption.weight || 1;
+        this.archetypeScores[targetArchId].phase2 += 1 * weight * 2;
+      });
+      return;
+    }
+
     if (!question.archetypes || !Array.isArray(question.archetypes)) {
       this.debugReporter.logError(new Error('Phase 2 question missing archetypes array'), 'scorePhase2Answer');
       return;
     }
-    
+
     question.archetypes.forEach(arch => {
       // Skip if arch or arch.id is missing
       if (!arch || !arch.id) {
         this.debugReporter.logError(new Error('Phase 2 archetype missing id'), 'scorePhase2Answer');
         return;
       }
-      
+
+      const targetArchId = mapArchetypeId(arch.id);
       // Initialize score object if it doesn't exist
-      if (!this.archetypeScores[arch.id]) {
-        this.archetypeScores[arch.id] = {
+      if (!this.archetypeScores[targetArchId]) {
+        this.archetypeScores[targetArchId] = {
           phase1: 0,
           phase2: 0,
           phase3: 0,
@@ -941,7 +995,7 @@ showGenderSelection() {
       }
       
       const weight = arch.weight || 1;
-      this.archetypeScores[arch.id].phase2 += normalizedValue * weight * 2; // Phase 2 gets 2x multiplier
+      this.archetypeScores[targetArchId].phase2 += normalizedValue * weight * 2; // Phase 2 gets 2x multiplier
     });
   }
 
