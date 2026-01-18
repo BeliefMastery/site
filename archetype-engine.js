@@ -1724,9 +1724,9 @@ showGenderSelection() {
     const primarySpread = this.getSpreadInfo(primary);
     const secondarySpread = this.getSpreadInfo(secondary);
     const tertiarySpread = this.getSpreadInfo(tertiary);
-    const primaryPopulation = this.formatSocialProportion(primarySpread?.socialProportion);
-    const secondaryPopulation = this.formatSocialProportion(secondarySpread?.socialProportion);
-    const tertiaryPopulation = this.formatSocialProportion(tertiarySpread?.socialProportion);
+    const primaryParent = primary?.parentType ? ARCHETYPES?.[primary.parentType]?.name : null;
+    const secondaryParent = secondary?.parentType ? ARCHETYPES?.[secondary.parentType]?.name : null;
+    const tertiaryParent = tertiary?.parentType ? ARCHETYPES?.[tertiary.parentType]?.name : null;
 
     const formatList = (items) => {
       if (!Array.isArray(items)) return '';
@@ -1740,9 +1740,14 @@ showGenderSelection() {
         .join('');
     };
 
+    const headerParts = [primary?.name, secondary?.name, tertiary?.name].filter(Boolean);
+    const headerDetail = headerParts.length
+      ? `: ${SecurityUtils.sanitizeHTML(headerParts.join(', '))}`
+      : '';
+
     let resultsHTML = `
       <div class="results-container" style="max-width: 900px; margin: 0 auto;">
-        <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile</h2>
+        <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile${headerDetail}</h2>
         
         <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
           <p style="margin: 0; color: var(--muted); line-height: 1.7; font-size: 0.95rem;">
@@ -1757,7 +1762,7 @@ showGenderSelection() {
           <h3 style="color: var(--brand); margin-top: 0; font-size: 1.5rem;">Primary Archetype: ${SecurityUtils.sanitizeHTML(primary.name || '')}</h3>
           ${primary.explanation ? `<div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin: 1rem 0;"><p style="margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-style: italic;">${primary.explanation}</p></div>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(primary.socialRole || '')}</p>
-          ${primaryPopulation ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Estimated Population Share:</strong> ${primaryPopulation}</p>` : ''}
+          ${primaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(primaryParent)}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(primary.description || '')}</p>
           
           <div style="margin-top: 1.5rem;">
@@ -1835,7 +1840,7 @@ showGenderSelection() {
           <h3 style="color: var(--brand); margin-top: 0;">Secondary Influence: ${SecurityUtils.sanitizeHTML(secondary.name || '')}</h3>
           ${secondary.explanation ? `<div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin: 1rem 0;"><p style="margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-style: italic;">${secondary.explanation}</p></div>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(secondary.socialRole || '')}</p>
-          ${secondaryPopulation ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Estimated Population Share:</strong> ${secondaryPopulation}</p>` : ''}
+          ${secondaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(secondaryParent)}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(secondary.description || '')}</p>
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype influences you in specific contexts or situations, complementing your primary archetype.
@@ -1850,7 +1855,7 @@ showGenderSelection() {
         <div class="archetype-card tertiary" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;">
           <h3 style="color: var(--brand); margin-top: 0;">Tertiary Influence: ${SecurityUtils.sanitizeHTML(tertiary.name || '')}</h3>
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(tertiary.socialRole || '')}</p>
-          ${tertiaryPopulation ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Estimated Population Share:</strong> ${tertiaryPopulation}</p>` : ''}
+          ${tertiaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(tertiaryParent)}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(tertiary.description || '')}</p>
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype may emerge under stress, represent aspirational qualities, or appear in specific life domains.
