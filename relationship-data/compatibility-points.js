@@ -41,8 +41,8 @@ export const COMPATIBILITY_POINTS = {
     id: 'personal-boundaries',
     name: 'Personal Boundaries',
     impactTier: 'very-high',
-    description: 'Personal boundaries refer to the physical, emotional, and mental limits that individuals set in relationships to protect their well-being. Healthy boundaries ensure respect for individuality and prevent codependency or emotional overwhelm.',
-    impact: 'Clear and respected boundaries allow for healthy interdependence and individual autonomy. Violating these boundaries can lead to feelings of disrespect, suffocation, or resentment.',
+    description: 'Personal boundaries refer to the physical, emotional, and mental limits that individuals set in relationships to protect their well-being. Healthy boundaries ensure respect for individuality and prevent codependency or emotional overwhelm, including the balance between closeness and space.',
+    impact: 'Clear and respected boundaries allow for healthy interdependence and individual autonomy. Violating these boundaries can lead to feelings of disrespect, suffocation, or resentment, and can polarize partners into control vs. withdrawal.',
     needs: ['Autonomy', 'Respect', 'Safety', 'Security', 'Independence', 'Space', 'Freedom', 'Trust'],
     negativeExpressions: ['Anger', 'Fear', 'Resentment', 'Frustration', 'Anxiety', 'Inferiority', 'Guilt'],
     questions: [
@@ -50,7 +50,7 @@ export const COMPATIBILITY_POINTS = {
       'Do you feel your need for space and independence is honored?',
       'How often do you feel your boundaries are violated or ignored?',
       'Do you feel comfortable saying "no" without fear of conflict?',
-      'Is there a healthy balance between togetherness and individual autonomy?'
+      'Is there a healthy balance between togetherness and individual autonomy, or does the relationship swing between closeness and distance?'
     ],
     weight: 1.0
   },
@@ -111,8 +111,8 @@ export const COMPATIBILITY_POINTS = {
     id: 'life-goals',
     name: 'Life Goals and Aspirations',
     impactTier: 'high',
-    description: 'Life goals are long-term objectives that shape the direction of one\'s life. Compatibility in this area means both partners have aligned or complementary visions for their future.',
-    impact: 'When partners\' life goals align, there is a sense of shared purpose. Divergence in goals can create tension, as one partner may feel unsupported or misunderstood in their pursuits.',
+    description: 'Life goals are long-term objectives that shape the direction of one\'s life. Compatibility in this area means both partners have aligned or complementary visions for their future and a shared sense of direction.',
+    impact: 'When partners\' life goals align, there is a sense of shared purpose and clarity. Divergence in goals can create tension and anxiety, especially when the relationship lacks direction or initiative.',
     needs: ['Purpose', 'Connection', 'Support', 'Growth', 'Independence', 'Competence', 'Mutuality', 'Respect'],
     negativeExpressions: ['Frustration', 'Resentment', 'Disappointment', 'Anger', 'Inferiority'],
     questions: [
@@ -120,7 +120,7 @@ export const COMPATIBILITY_POINTS = {
       'Do you feel supported in pursuing your personal goals?',
       'How well do your individual goals complement each other?',
       'Do you share a vision for your future together?',
-      'How often do you feel your goals conflict with your partner\'s?'
+      'How often do you feel uncertain about the direction of the relationship or who is initiating next steps?'
     ],
     weight: 0.9
   },
@@ -137,7 +137,7 @@ export const COMPATIBILITY_POINTS = {
       'Do conflicts typically lead to resolution or lingering resentment?',
       'How well do you both handle disagreements without escalation?',
       'Do you feel safe expressing disagreements?',
-      'How often do conflicts remain unresolved or resurface?'
+      'When conflict appears, does one of you pursue resolution while the other withdraws or avoids it?'
     ],
     weight: 0.9
   },
@@ -145,8 +145,8 @@ export const COMPATIBILITY_POINTS = {
     id: 'energy-dynamics',
     name: 'Energy Dynamics / Temperament',
     impactTier: 'high',
-    description: 'The natural energetic dynamic between partners, including their emotional rhythm, physical energy levels, and how they interact emotionally. A mismatch in energy can lead to discord.',
-    impact: 'When energies match, it creates a smooth, harmonious relationship. When mismatched, one partner may feel overwhelmed, ignored, or drained, leading to emotional exhaustion.',
+    description: 'The natural energetic dynamic between partners, including their emotional rhythm, physical energy levels, and how they interact emotionally. A mismatch in energy or polarity (who leads, who follows, who initiates, who responds) can lead to discord.',
+    impact: 'When energies align, it creates a smooth, harmonious relationship. When mismatched, one partner may feel overwhelmed, ignored, or drained, and polarity can collapse into neutrality or swing into control vs. withdrawal.',
     needs: ['Connection', 'Closeness', 'Support', 'Nurturing', 'Mutuality', 'Safety', 'Compassion', 'Trust'],
     negativeExpressions: ['Frustration', 'Resentment', 'Impatience', 'Anger', 'Anxiety'],
     questions: [
@@ -154,7 +154,7 @@ export const COMPATIBILITY_POINTS = {
       'Do you feel your partner\'s energy complements or drains yours?',
       'How often do you feel overwhelmed or ignored due to energy mismatches?',
       'Do you feel your emotional needs are met in terms of energy and presence?',
-      'How well do you both manage differences in energy and temperament?'
+      'Does the lead/follow or initiate/receive dynamic feel natural, or does it create tension or confusion?'
     ],
     weight: 0.9
   },
@@ -162,8 +162,8 @@ export const COMPATIBILITY_POINTS = {
     id: 'transactional-compatibility',
     name: 'Transactional Compatibility (Give and Take)',
     impactTier: 'high',
-    description: 'Transactional compatibility refers to how the partners balance the effort and emotional investment they give to the relationship. This includes sharing responsibilities and emotional labor.',
-    impact: 'An imbalance in effort can lead to feelings of resentment and emotional depletion, as one partner may feel like they are carrying more of the weight.',
+    description: 'Transactional compatibility refers to how the partners balance the effort and emotional investment they give to the relationship. This includes sharing responsibilities and emotional labor without falling into overfunctioner/underfunctioner dynamics.',
+    impact: 'An imbalance in effort can lead to feelings of resentment and emotional depletion, as one partner may feel like they are carrying more of the weight or the relationship direction.',
     needs: ['Mutuality', 'Support', 'Trust', 'Respect', 'Nurturing', 'Compassion', 'Cooperation', 'Stability'],
     negativeExpressions: ['Frustration', 'Resentment', 'Bitterness', 'Anger', 'Exhaustion'],
     questions: [
@@ -171,7 +171,7 @@ export const COMPATIBILITY_POINTS = {
       'Do you feel you contribute equally to the relationship?',
       'How often do you feel you\'re carrying more of the emotional or practical load?',
       'Do you feel your contributions are recognized and appreciated?',
-      'How well do you both share responsibilities and emotional labor?'
+      'Does the relationship drift into one partner managing everything while the other defaults to passivity?'
     ],
     weight: 0.9
   },
@@ -196,8 +196,8 @@ export const COMPATIBILITY_POINTS = {
     id: 'relationship-efficiency',
     name: 'Relationship Efficiency and Emotional Management',
     impactTier: 'high',
-    description: 'The capacity of both partners to handle emotional challenges, anxieties, and apprehensions without allowing them to consume an overwhelming portion of the relationship\'s energy. When partners frequently need to renegotiate boundaries, comfort levels, or past emotional reactions, it can divert focus from practical concerns and long-term goals.',
-    impact: 'While addressing emotional concerns is critical, an overemphasis on managing emotional turbulence can sap the relationship\'s energy, reducing its overall productivity and diminishing the practical progress of shared household goals.',
+    description: 'The capacity of both partners to handle emotional challenges, anxieties, and apprehensions without allowing them to consume an overwhelming portion of the relationship\'s energy. This includes clarity around direction, decision-making, and who carries momentum when uncertainty appears.',
+    impact: 'While addressing emotional concerns is critical, an overemphasis on managing turbulence can sap the relationship\'s energy, reduce practical progress, and intensify anxiety about direction or responsibility.',
     needs: ['Emotional Regulation', 'Stability', 'Cooperation', 'Autonomy', 'Focused Energy', 'Practicality', 'Progress'],
     negativeExpressions: ['Exhaustion', 'Frustration', 'Overwhelm', 'Anxiety', 'Resentment', 'Insecurity', 'Defensiveness'],
     questions: [
@@ -205,7 +205,7 @@ export const COMPATIBILITY_POINTS = {
       'Do emotional issues consume an excessive amount of your relationship energy?',
       'How well do you balance emotional processing with practical relationship goals?',
       'Do you feel the relationship has energy for growth and shared projects?',
-      'How often do past emotional reactions interfere with present connection?'
+      'When uncertainty appears, does one of you take direction while the other stalls or disengages?'
     ],
     weight: 0.9
   },
@@ -215,8 +215,8 @@ export const COMPATIBILITY_POINTS = {
     id: 'sexual-compatibility',
     name: 'Sexual Compatibility',
     impactTier: 'moderate-high',
-    description: 'Sexual compatibility refers to alignment in sexual desires, frequency, and intimacy needs. When partners are sexually compatible, they feel more connected, and the relationship tends to have a higher level of intimacy.',
-    impact: 'Sexual intimacy strengthens the bond, while mismatched desires or preferences can lead to frustration and emotional disconnection.',
+    description: 'Sexual compatibility refers to alignment in sexual desires, frequency, and intimacy needs. It includes polarity in initiation and receptivity, not just attraction.',
+    impact: 'Sexual intimacy strengthens the bond, while mismatched desires, initiation, or receptivity can lead to frustration and emotional disconnection.',
     needs: ['Affection', 'Intimacy', 'Trust', 'Respect', 'Closeness', 'Compassion', 'Safety', 'Nurturing'],
     negativeExpressions: ['Frustration', 'Resentment', 'Anger', 'Fear', 'Guilt', 'Shame', 'Disappointment'],
     questions: [
@@ -224,7 +224,7 @@ export const COMPATIBILITY_POINTS = {
       'Do you feel sexually satisfied and connected?',
       'How well do you communicate about sexual needs and preferences?',
       'Do you feel safe and respected in your sexual relationship?',
-      'How often do sexual differences create tension or distance?'
+      'How balanced is initiation and receptivity between you (and does it shift comfortably by context)?'
     ],
     weight: 0.8
   },

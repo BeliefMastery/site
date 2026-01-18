@@ -270,7 +270,7 @@ export const STAGE_2_DOMAIN_QUESTIONS = {
       },
       {
         id: 'domain_goals_5',
-        question: 'When your goals conflict with your partner\'s, how do you typically handle it? Do you find ways to support each other, or does it create ongoing tension?',
+        question: 'When your goals conflict with your partner\'s, how do you typically handle it? Do you find ways to support each other, or does it create ongoing tension or uncertainty about direction?',
         weight: 1.0,
         compatibilityPoint: 'life-goals',
         domain: 'values-foundation'
@@ -310,10 +310,142 @@ export const STAGE_2_DOMAIN_QUESTIONS = {
       },
       {
         id: 'domain_conflict_5',
-        question: 'When conflicts remain unresolved or resurface later, what patterns do you notice? What prevents you from fully resolving certain issues?',
+        question: 'When conflicts remain unresolved or resurface later, what patterns do you notice? Does one of you pursue resolution while the other withdraws or avoids it?',
         weight: 1.0,
         compatibilityPoint: 'conflict-resolution',
         domain: 'communication-connection'
+      }
+    ]
+  },
+  'energy-dynamics': {
+    domain: 'intimacy-emotional',
+    questions: [
+      {
+        id: 'domain_energy_1',
+        question: 'How well do your energy levels and emotional rhythms align across different situations (calm vs. stressful, social vs. private)?',
+        weight: 1.0,
+        compatibilityPoint: 'energy-dynamics',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_energy_2',
+        question: 'When one of you naturally leads or initiates, does the other feel comfortable responding, or does it create tension or resistance?',
+        weight: 1.1,
+        compatibilityPoint: 'energy-dynamics',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_energy_3',
+        question: 'How often do you feel your partner’s energy complements or destabilizes your own? (Think: calming, motivating, draining, or overwhelming.)',
+        weight: 1.1,
+        compatibilityPoint: 'energy-dynamics',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_energy_4',
+        question: 'When roles shift (who leads, who follows), does the transition feel smooth or does it create confusion?',
+        weight: 1.0,
+        compatibilityPoint: 'energy-dynamics',
+        domain: 'intimacy-emotional'
+      }
+    ]
+  },
+  'sexual-compatibility': {
+    domain: 'intimacy-emotional',
+    questions: [
+      {
+        id: 'domain_sexual_1',
+        question: 'How aligned are your sexual desires and pacing? Do you feel matched in intensity and frequency?',
+        weight: 1.0,
+        compatibilityPoint: 'sexual-compatibility',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_sexual_2',
+        question: 'How balanced is initiation and receptivity between you? Does it shift comfortably by context?',
+        weight: 1.1,
+        compatibilityPoint: 'sexual-compatibility',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_sexual_3',
+        question: 'When one of you initiates and the other is not receptive, how well do you handle the mismatch without resentment or withdrawal?',
+        weight: 1.1,
+        compatibilityPoint: 'sexual-compatibility',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_sexual_4',
+        question: 'Do you feel your partner understands and respects your boundaries and desires without pressure or shutdown?',
+        weight: 1.0,
+        compatibilityPoint: 'sexual-compatibility',
+        domain: 'intimacy-emotional'
+      }
+    ]
+  },
+  'relationship-efficiency': {
+    domain: 'intimacy-emotional',
+    questions: [
+      {
+        id: 'domain_efficiency_1',
+        question: 'How often does emotional turbulence consume the relationship’s energy and stall progress on practical goals?',
+        weight: 1.0,
+        compatibilityPoint: 'relationship-efficiency',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_efficiency_2',
+        question: 'When uncertainty appears, does one of you take direction while the other hesitates or disengages?',
+        weight: 1.1,
+        compatibilityPoint: 'relationship-efficiency',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_efficiency_3',
+        question: 'How well do you both move from emotional processing to concrete decisions and next steps?',
+        weight: 1.0,
+        compatibilityPoint: 'relationship-efficiency',
+        domain: 'intimacy-emotional'
+      },
+      {
+        id: 'domain_efficiency_4',
+        question: 'Does decision-making feel balanced, or does one person consistently carry momentum?',
+        weight: 1.0,
+        compatibilityPoint: 'relationship-efficiency',
+        domain: 'intimacy-emotional'
+      }
+    ]
+  },
+  'transactional-compatibility': {
+    domain: 'growth-development',
+    questions: [
+      {
+        id: 'domain_transaction_1',
+        question: 'How balanced is the day-to-day load (planning, logistics, emotional labor) between you?',
+        weight: 1.0,
+        compatibilityPoint: 'transactional-compatibility',
+        domain: 'growth-development'
+      },
+      {
+        id: 'domain_transaction_2',
+        question: 'Do responsibilities and follow-through feel evenly shared, or does one of you become the default manager?',
+        weight: 1.1,
+        compatibilityPoint: 'transactional-compatibility',
+        domain: 'growth-development'
+      },
+      {
+        id: 'domain_transaction_3',
+        question: 'When one of you is overwhelmed, how reliably does the other step in without resentment?',
+        weight: 1.0,
+        compatibilityPoint: 'transactional-compatibility',
+        domain: 'growth-development'
+      },
+      {
+        id: 'domain_transaction_4',
+        question: 'Does the relationship drift into one person overfunctioning while the other underfunctions? If so, how often?',
+        weight: 1.0,
+        compatibilityPoint: 'transactional-compatibility',
+        domain: 'growth-development'
       }
     ]
   }
