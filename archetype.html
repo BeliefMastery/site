@@ -311,47 +311,60 @@
   </script>
   
   <script>
-    // Hamburger menu toggle
-    (function(){
-      const hamburger = document.querySelector('.hamburger');
-      const nav = document.querySelector('#top-nav');
-      if(!hamburger || !nav) return;
-      
-      hamburger.addEventListener('click', () => {
-        const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
-        hamburger.setAttribute('aria-expanded', !isExpanded);
-        nav.classList.toggle('active');
-      });
-    })();
-
-    // Dropdown menu toggle
-    (function(){
-      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
-      if(!dropdownToggles.length) return;
-
-      dropdownToggles.forEach(toggle => {
-        toggle.addEventListener('click', (e) => {
-          e.preventDefault();
-          const dropdown = toggle.closest('.nav-dropdown');
-          if(dropdown) {
-            document.querySelectorAll('.nav-dropdown').forEach(dd => {
-              if (dd !== dropdown) {
-                dd.classList.remove('active');
-              }
-            });
-            dropdown.classList.toggle('active');
-          }
-        });
-      });
-
-      document.addEventListener('click', (e) => {
-        if(!e.target.closest('.nav-dropdown')) {
-          document.querySelectorAll('.nav-dropdown').forEach(dd => {
-            dd.classList.remove('active');
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle helper for explanation/disclaimer panels
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
           });
         }
-      });
-    })();
+      };
+
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+
+      // Hamburger menu toggle
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', () => {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      // Dropdown menu toggle
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      if (dropdownToggles.length) {
+        dropdownToggles.forEach(toggle => {
+          toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dropdown = toggle.closest('.nav-dropdown');
+            if (dropdown) {
+              document.querySelectorAll('.nav-dropdown').forEach(dd => {
+                if (dd !== dropdown) {
+                  dd.classList.remove('active');
+                }
+              });
+              dropdown.classList.toggle('active');
+            }
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.nav-dropdown')) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              dd.classList.remove('active');
+            });
+          }
+        });
+      }
+    });
   </script>
   
   <!-- Universal background JavaScript -->
