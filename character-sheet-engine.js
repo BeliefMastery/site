@@ -160,7 +160,7 @@ export class CharacterSheetEngine {
       const chineseAnimalKey = getChineseAnimal(birthYear);
       const chineseElementKey = getChineseElement(birthYear);
       const chineseAnimal = CHINESE_ANIMALS[chineseAnimalKey]?.name || '';
-      const chineseElement = CHINESE_ELEMENTS[chineseElementKey]?.name || '';
+      const chineseElement = chineseElementKey || '';
 
       const mayanTone = this.getRandomItem(Object.values(MAYAN_TONES))?.name || '';
       const mayanKin = this.getRandomItem(Object.values(MAYAN_SEALS))?.name || '';
@@ -234,7 +234,7 @@ export class CharacterSheetEngine {
       const chineseAnimalKey = getChineseAnimal(year);
       const chineseElementKey = getChineseElement(year);
       this.setFieldValue('chineseAnimal', CHINESE_ANIMALS[chineseAnimalKey]?.name || '');
-      this.setFieldValue('chineseElement', CHINESE_ELEMENTS[chineseElementKey]?.name || '');
+      this.setFieldValue('chineseElement', chineseElementKey || '');
 
       const mayanData = calculateMayanSign(birthDate);
       this.setFieldValue('mayanTone', MAYAN_TONES[mayanData.tone]?.name || '');
@@ -365,7 +365,7 @@ export class CharacterSheetEngine {
     if (formData.chineseElement) {
       // Find matching element from manual input
       const elementKey = Object.keys(CHINESE_ELEMENTS).find(
-        key => CHINESE_ELEMENTS[key].name.toLowerCase() === formData.chineseElement.toLowerCase()
+        key => key.toLowerCase() === formData.chineseElement.toLowerCase()
       );
       if (elementKey) {
         chineseElementData = CHINESE_ELEMENTS[elementKey];
