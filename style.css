@@ -5636,6 +5636,15 @@ img {
     color: var(--muted);
 }
 
+.framework-atlas .analysis-modules-grid .card {
+    padding: 1.6rem;
+    min-height: 240px;
+}
+
+.framework-atlas .analysis-modules-grid .feature-list {
+    margin-bottom: 1rem;
+}
+
 .temperament-spectrum-position {
     text-align: center;
     margin-top: 0.5rem;
