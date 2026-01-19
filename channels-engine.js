@@ -1207,6 +1207,7 @@ export class ChannelsEngine {
         const fromNode = NODES[channel.from];
         const toNode = NODES[channel.to];
         const remediation = REMEDIATION_STRATEGIES[channelData.id];
+        const remediationHighlights = this.getRemediationHighlights(remediation);
         
         html += `
           <div class="channel-result">
@@ -1214,11 +1215,11 @@ export class ChannelsEngine {
             <p><strong>Flow direction:</strong> ${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</p>
             <p><strong>Relationship focus:</strong> ${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
             <p><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
-            ${remediation ? `
+            ${remediationHighlights.length > 0 ? `
               <div style="margin-top: 1rem;">
                 <strong>Channel-Informed Actions for Greater Flow:</strong>
                 <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-                  ${Array.isArray(remediation) ? remediation.map(s => `<li>${SecurityUtils.sanitizeHTML(s || '')}</li>`).join('') : `<li>${SecurityUtils.sanitizeHTML(remediation || '')}</li>`}
+                  ${remediationHighlights.map(item => `<li>${SecurityUtils.sanitizeHTML(item)}</li>`).join('')}
                 </ul>
               </div>
             ` : ''}
@@ -1240,6 +1241,21 @@ export class ChannelsEngine {
       this.debugReporter.logError(error, 'renderResults');
       ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
     }
+  }
+
+  getRemediationHighlights(remediation) {
+    if (!remediation) return [];
+    if (typeof remediation === 'string') return [remediation];
+    if (Array.isArray(remediation)) return remediation.filter(Boolean);
+    if (typeof remediation !== 'object') return [];
+
+    const primaryList = Array.isArray(remediation.strategies) && remediation.strategies.length > 0
+      ? remediation.strategies
+      : Array.isArray(remediation.practices) && remediation.practices.length > 0
+        ? remediation.practices
+        : [];
+
+    return primaryList.filter(Boolean).slice(0, 5);
   }
 
   exportAnalysis(format = 'json') {

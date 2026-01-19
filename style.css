@@ -5605,6 +5605,37 @@ img {
     margin: 0 0 0.75rem 0;
 }
 
+.remediation-table {
+    width: 100%;
+    margin-top: 0.75rem;
+    border-collapse: collapse;
+    background: var(--glass);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.remediation-table th,
+.remediation-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-medium);
+}
+
+.remediation-table th {
+    width: 180px;
+    color: var(--brand);
+    font-weight: 600;
+    background: var(--glass-light);
+}
+
+.remediation-table td ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--muted);
+}
+
 .temperament-spectrum-position {
     text-align: center;
     margin-top: 0.5rem;
