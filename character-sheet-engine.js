@@ -936,130 +936,152 @@ export class CharacterSheetEngine {
         {
           name: 'Fighting Style',
           description: 'You specialize in a combat discipline that shapes how you handle conflict, defense, and initiative. This style guides your training, posture, and decision-making under pressure.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Self: improves tactical focus and consistency under stress.'
         },
         {
           name: 'Second Wind',
           description: 'You can rally and recover in the middle of a challenge, regaining stamina and composure through focused breath and grit.',
-          frequency: 'Once per short rest'
+          frequency: 'Once per short rest',
+          influence: 'Self: restores momentum and steadiness after setbacks.'
         }
       ],
       'Rogue': [
         {
           name: 'Sneak Attack',
           description: 'You excel at precision strikes that capitalize on distraction or advantage, turning small openings into decisive impact.',
-          frequency: 'Once per turn when advantage is present'
+          frequency: 'Once per turn when advantage is present',
+          influence: 'Target: amplifies impact when the opponent is distracted or exposed.'
         },
         {
           name: 'Cunning Action',
           description: 'Your agility lets you reposition, disengage, or hide with minimal effort, keeping you one step ahead in dynamic situations.',
-          frequency: 'Once per turn'
+          frequency: 'Once per turn',
+          influence: 'Self: increases mobility and escape options in tense moments.'
         },
         {
           name: 'Thieves\' Cant',
           description: 'You fluently interpret coded cues and subtext, allowing you to communicate quietly in sensitive environments.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Allies: enables discreet coordination and covert signaling.'
         }
       ],
       'Barbarian': [
         {
           name: 'Rage',
           description: 'You can enter a heightened state of intensity that amplifies your power, focus, and resolve under pressure.',
-          frequency: 'Twice per long rest'
+          frequency: 'Twice per long rest',
+          influence: 'Self: boosts force, resilience, and single-point focus.'
         },
         {
           name: 'Unarmored Defense',
           description: 'Your instinctive resilience keeps you protected even without external armor, relying on raw endurance and awareness.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Self: improves natural durability without added gear.'
         }
       ],
       'Wizard': [
         {
           name: 'Spellcasting',
           description: 'You wield focused knowledge to channel complex effects, relying on intellect, preparation, and disciplined practice.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Targets: can be shaped, supported, or disrupted through learned techniques.'
         },
         {
           name: 'Arcane Recovery',
           description: 'You can restore part of your mental reserves through focused rest and reflection, recovering spent resources.',
-          frequency: 'Once per day after a short rest'
+          frequency: 'Once per day after a short rest',
+          influence: 'Self: restores mental capacity and strategic clarity.'
         }
       ],
       'Cleric': [
         {
           name: 'Spellcasting',
           description: 'You channel restorative and protective forces through faith and wisdom, shaping outcomes with spiritual authority.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Allies: stabilizes, protects, and supports group cohesion.'
         },
         {
           name: 'Channel Divinity',
           description: 'You can invoke a powerful surge of sacred energy to heal, protect, or turn the tide in critical moments.',
-          frequency: 'Once per short rest'
+          frequency: 'Once per short rest',
+          influence: 'Allies: provides a short, high-impact burst of protection or recovery.'
         }
       ],
       'Bard': [
         {
           name: 'Spellcasting',
           description: 'You weave creative expression into tangible influence, shaping attention, emotion, and momentum with style.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Targets: shifts emotion, morale, or attention through expression.'
         },
         {
           name: 'Bardic Inspiration',
           description: 'You uplift allies with timely insight or encouragement, granting a burst of confidence and clarity.',
-          frequency: 'Uses equal to Charisma modifier per long rest'
+          frequency: 'Uses equal to Charisma modifier per long rest',
+          influence: 'Allies: grants momentum and morale in clutch moments.'
         }
       ],
       'Paladin': [
         {
           name: 'Lay on Hands',
           description: 'You can deliver restorative support through focused touch, stabilizing allies and restoring strength.',
-          frequency: 'Pool refreshes per long rest'
+          frequency: 'Pool refreshes per long rest',
+          influence: 'Allies: direct restorative aid for recovery and stabilization.'
         },
         {
           name: 'Divine Sense',
           description: 'You sense hidden corruption or sacred presence, helping you detect subtle threats or alignments.',
-          frequency: 'Uses equal to Charisma modifier per long rest'
+          frequency: 'Uses equal to Charisma modifier per long rest',
+          influence: 'Self: heightens perception of hidden dangers or intent.'
         },
         {
           name: 'Aura of Protection',
           description: 'Allies within 20 meters benefit from your stabilizing presence, gaining a subtle resilience boost.',
-          frequency: 'Always active while conscious'
+          frequency: 'Always active while conscious',
+          influence: 'Allies within 20 meters: gain increased resilience and steadiness.'
         }
       ],
       'Druid': [
         {
           name: 'Wild Shape',
           description: 'You can adapt your form to match the environment, enhancing mobility, endurance, or stealth.',
-          frequency: 'Twice per short rest'
+          frequency: 'Twice per short rest',
+          influence: 'Self: adapts capabilities to fit terrain and threats.'
         },
         {
           name: 'Nature\'s Voice',
           description: 'You interpret natural signs and ecosystems, gaining guidance from patterns in the living world.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Self: improves navigation, timing, and ecological awareness.'
         }
       ],
       'Monk': [
         {
           name: 'Ki Focus',
           description: 'You harness disciplined inner energy for bursts of precision, mobility, and defensive clarity.',
-          frequency: 'Points refresh per short rest'
+          frequency: 'Points refresh per short rest',
+          influence: 'Self: enhances agility, precision, and defensive control.'
         },
         {
           name: 'Deflect Missiles',
           description: 'You can redirect incoming force with refined timing, minimizing harm and conserving energy.',
-          frequency: 'Once per round as a reaction'
+          frequency: 'Once per round as a reaction',
+          influence: 'Self: reduces incoming impact and preserves stamina.'
         }
       ],
       'Ranger': [
         {
           name: 'Hunter\'s Focus',
           description: 'You can mark a priority target or mission, sharpening attention and persistence toward the objective.',
-          frequency: 'Once per short rest'
+          frequency: 'Once per short rest',
+          influence: 'Target: increases tracking accuracy and follow-through.'
         },
         {
           name: 'Natural Explorer',
           description: 'You move efficiently through terrain, noticing subtle signals that others miss.',
-          frequency: 'Always active'
+          frequency: 'Always active',
+          influence: 'Self: improves navigation and environmental awareness.'
         }
       ]
     };
@@ -1075,7 +1097,8 @@ export class CharacterSheetEngine {
       features.push({
         name: astrologyData.mayan.seal.ability.split(' - ')[0],
         description: astrologyData.mayan.seal.ability,
-        frequency: 'At will'
+        frequency: 'At will',
+        influence: 'Self/Allies: amplifies natural strengths tied to the seal theme.'
       });
     }
     
@@ -1083,7 +1106,8 @@ export class CharacterSheetEngine {
       features.push({
         name: astrologyData.mayan.tone.approach.split(' - ')[0],
         description: astrologyData.mayan.tone.approach,
-        frequency: 'At will'
+        frequency: 'At will',
+        influence: 'Self/Allies: shapes approach style and group dynamics.'
       });
     }
     
@@ -1237,7 +1261,7 @@ export class CharacterSheetEngine {
               ${character.savingThrows.map(s => `
                 <tr>
                   <td>${s.name}</td>
-                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')} ×2</strong>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
+                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')}</strong> <span class="label">advantage roll</span>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1257,7 +1281,7 @@ export class CharacterSheetEngine {
               ${character.skills.map(s => `
                 <tr>
                   <td>${s.name}</td>
-                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')} ×2</strong>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
+                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')}</strong> <span class="label">advantage roll</span>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1270,6 +1294,7 @@ export class CharacterSheetEngine {
             <div class="feature-item">
               <h4>${f.name}</h4>
               <p><strong>Frequency:</strong> ${f.frequency}</p>
+              <p><strong>Influence:</strong> ${f.influence}</p>
               <p>${f.description}</p>
             </div>
           `).join('')}
