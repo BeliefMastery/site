@@ -937,13 +937,17 @@ export class CharacterSheetEngine {
           name: 'Fighting Style',
           description: 'You specialize in a combat discipline that shapes how you handle conflict, defense, and initiative. This style guides your training, posture, and decision-making under pressure.',
           frequency: 'Always active',
-          influence: 'Self: improves tactical focus and consistency under stress.'
+          influence: 'Self: improves tactical focus and consistency under stress.',
+          numericalInfluence: '+1 to initiative decisions',
+          effectiveRange: 'Self'
         },
         {
           name: 'Second Wind',
           description: 'You can rally and recover in the middle of a challenge, regaining stamina and composure through focused breath and grit.',
           frequency: 'Once per short rest',
-          influence: 'Self: restores momentum and steadiness after setbacks.'
+          influence: 'Self: restores momentum and steadiness after setbacks.',
+          numericalInfluence: '+2 resilience for the next challenge',
+          effectiveRange: 'Self'
         }
       ],
       'Rogue': [
@@ -951,19 +955,25 @@ export class CharacterSheetEngine {
           name: 'Sneak Attack',
           description: 'You excel at precision strikes that capitalize on distraction or advantage, turning small openings into decisive impact.',
           frequency: 'Once per turn when advantage is present',
-          influence: 'Target: amplifies impact when the opponent is distracted or exposed.'
+          influence: 'Target: amplifies impact when the opponent is distracted or exposed.',
+          numericalInfluence: '+3 impact on exposed targets',
+          effectiveRange: 'Line of sight'
         },
         {
           name: 'Cunning Action',
           description: 'Your agility lets you reposition, disengage, or hide with minimal effort, keeping you one step ahead in dynamic situations.',
           frequency: 'Once per turn',
-          influence: 'Self: increases mobility and escape options in tense moments.'
+          influence: 'Self: increases mobility and escape options in tense moments.',
+          numericalInfluence: '+2 mobility for one turn',
+          effectiveRange: 'Self'
         },
         {
           name: 'Thieves\' Cant',
           description: 'You fluently interpret coded cues and subtext, allowing you to communicate quietly in sensitive environments.',
           frequency: 'Always active',
-          influence: 'Allies: enables discreet coordination and covert signaling.'
+          influence: 'Allies: enables discreet coordination and covert signaling.',
+          numericalInfluence: '+2 coordination in covert contexts',
+          effectiveRange: 'Within 30 meters'
         }
       ],
       'Barbarian': [
@@ -971,13 +981,17 @@ export class CharacterSheetEngine {
           name: 'Rage',
           description: 'You can enter a heightened state of intensity that amplifies your power, focus, and resolve under pressure.',
           frequency: 'Twice per long rest',
-          influence: 'Self: boosts force, resilience, and single-point focus.'
+          influence: 'Self: boosts force, resilience, and single-point focus.',
+          numericalInfluence: '+3 strength, +2 resilience while active',
+          effectiveRange: 'Self'
         },
         {
           name: 'Unarmored Defense',
           description: 'Your instinctive resilience keeps you protected even without external armor, relying on raw endurance and awareness.',
           frequency: 'Always active',
-          influence: 'Self: improves natural durability without added gear.'
+          influence: 'Self: improves natural durability without added gear.',
+          numericalInfluence: '+2 defensive stability',
+          effectiveRange: 'Self'
         }
       ],
       'Wizard': [
@@ -985,13 +999,17 @@ export class CharacterSheetEngine {
           name: 'Spellcasting',
           description: 'You wield focused knowledge to channel complex effects, relying on intellect, preparation, and disciplined practice.',
           frequency: 'Always active',
-          influence: 'Targets: can be shaped, supported, or disrupted through learned techniques.'
+          influence: 'Targets: can be shaped, supported, or disrupted through learned techniques.',
+          numericalInfluence: '+2 to precision on targeted outcomes',
+          effectiveRange: 'Line of sight'
         },
         {
           name: 'Arcane Recovery',
           description: 'You can restore part of your mental reserves through focused rest and reflection, recovering spent resources.',
           frequency: 'Once per day after a short rest',
-          influence: 'Self: restores mental capacity and strategic clarity.'
+          influence: 'Self: restores mental capacity and strategic clarity.',
+          numericalInfluence: '+3 focus on next complex task',
+          effectiveRange: 'Self'
         }
       ],
       'Cleric': [
@@ -999,13 +1017,17 @@ export class CharacterSheetEngine {
           name: 'Spellcasting',
           description: 'You channel restorative and protective forces through faith and wisdom, shaping outcomes with spiritual authority.',
           frequency: 'Always active',
-          influence: 'Allies: stabilizes, protects, and supports group cohesion.'
+          influence: 'Allies: stabilizes, protects, and supports group cohesion.',
+          numericalInfluence: '+2 restoration or protection effect',
+          effectiveRange: 'Within 15 meters'
         },
         {
           name: 'Channel Divinity',
           description: 'You can invoke a powerful surge of sacred energy to heal, protect, or turn the tide in critical moments.',
           frequency: 'Once per short rest',
-          influence: 'Allies: provides a short, high-impact burst of protection or recovery.'
+          influence: 'Allies: provides a short, high-impact burst of protection or recovery.',
+          numericalInfluence: '+3 recovery or protection burst',
+          effectiveRange: 'Within 20 meters'
         }
       ],
       'Bard': [
@@ -1013,13 +1035,17 @@ export class CharacterSheetEngine {
           name: 'Spellcasting',
           description: 'You weave creative expression into tangible influence, shaping attention, emotion, and momentum with style.',
           frequency: 'Always active',
-          influence: 'Targets: shifts emotion, morale, or attention through expression.'
+          influence: 'Targets: shifts emotion, morale, or attention through expression.',
+          numericalInfluence: '+2 morale shift on engaged targets',
+          effectiveRange: 'Within 25 meters'
         },
         {
           name: 'Bardic Inspiration',
           description: 'You uplift allies with timely insight or encouragement, granting a burst of confidence and clarity.',
           frequency: 'Uses equal to Charisma modifier per long rest',
-          influence: 'Allies: grants momentum and morale in clutch moments.'
+          influence: 'Allies: grants momentum and morale in clutch moments.',
+          numericalInfluence: '+3 confidence on next action',
+          effectiveRange: 'Within 20 meters'
         }
       ],
       'Paladin': [
@@ -1027,19 +1053,25 @@ export class CharacterSheetEngine {
           name: 'Lay on Hands',
           description: 'You can deliver restorative support through focused touch, stabilizing allies and restoring strength.',
           frequency: 'Pool refreshes per long rest',
-          influence: 'Allies: direct restorative aid for recovery and stabilization.'
+          influence: 'Allies: direct restorative aid for recovery and stabilization.',
+          numericalInfluence: '+4 recovery on contact',
+          effectiveRange: 'Touch'
         },
         {
           name: 'Divine Sense',
           description: 'You sense hidden corruption or sacred presence, helping you detect subtle threats or alignments.',
           frequency: 'Uses equal to Charisma modifier per long rest',
-          influence: 'Self: heightens perception of hidden dangers or intent.'
+          influence: 'Self: heightens perception of hidden dangers or intent.',
+          numericalInfluence: '+3 clarity on threat detection',
+          effectiveRange: 'Within 30 meters'
         },
         {
           name: 'Aura of Protection',
           description: 'Allies within 20 meters benefit from your stabilizing presence, gaining a subtle resilience boost.',
           frequency: 'Always active while conscious',
-          influence: 'Allies within 20 meters: gain increased resilience and steadiness.'
+          influence: 'Allies within 20 meters: gain increased resilience and steadiness.',
+          numericalInfluence: '+2 resilience while in aura',
+          effectiveRange: 'Aura (20 meters)'
         }
       ],
       'Druid': [
@@ -1047,13 +1079,17 @@ export class CharacterSheetEngine {
           name: 'Wild Shape',
           description: 'You can adapt your form to match the environment, enhancing mobility, endurance, or stealth.',
           frequency: 'Twice per short rest',
-          influence: 'Self: adapts capabilities to fit terrain and threats.'
+          influence: 'Self: adapts capabilities to fit terrain and threats.',
+          numericalInfluence: '+2 mobility and resilience while adapted',
+          effectiveRange: 'Self'
         },
         {
           name: 'Nature\'s Voice',
           description: 'You interpret natural signs and ecosystems, gaining guidance from patterns in the living world.',
           frequency: 'Always active',
-          influence: 'Self: improves navigation, timing, and ecological awareness.'
+          influence: 'Self: improves navigation, timing, and ecological awareness.',
+          numericalInfluence: '+2 insight on environmental cues',
+          effectiveRange: 'Within 50 meters'
         }
       ],
       'Monk': [
@@ -1061,13 +1097,17 @@ export class CharacterSheetEngine {
           name: 'Ki Focus',
           description: 'You harness disciplined inner energy for bursts of precision, mobility, and defensive clarity.',
           frequency: 'Points refresh per short rest',
-          influence: 'Self: enhances agility, precision, and defensive control.'
+          influence: 'Self: enhances agility, precision, and defensive control.',
+          numericalInfluence: '+2 precision and defense while focused',
+          effectiveRange: 'Self'
         },
         {
           name: 'Deflect Missiles',
           description: 'You can redirect incoming force with refined timing, minimizing harm and conserving energy.',
           frequency: 'Once per round as a reaction',
-          influence: 'Self: reduces incoming impact and preserves stamina.'
+          influence: 'Self: reduces incoming impact and preserves stamina.',
+          numericalInfluence: '-3 incoming impact on reaction',
+          effectiveRange: 'Self'
         }
       ],
       'Ranger': [
@@ -1075,13 +1115,17 @@ export class CharacterSheetEngine {
           name: 'Hunter\'s Focus',
           description: 'You can mark a priority target or mission, sharpening attention and persistence toward the objective.',
           frequency: 'Once per short rest',
-          influence: 'Target: increases tracking accuracy and follow-through.'
+          influence: 'Target: increases tracking accuracy and follow-through.',
+          numericalInfluence: '+2 tracking accuracy on marked targets',
+          effectiveRange: 'Within 30 meters'
         },
         {
           name: 'Natural Explorer',
           description: 'You move efficiently through terrain, noticing subtle signals that others miss.',
           frequency: 'Always active',
-          influence: 'Self: improves navigation and environmental awareness.'
+          influence: 'Self: improves navigation and environmental awareness.',
+          numericalInfluence: '+2 navigation and tracking',
+          effectiveRange: 'Self'
         }
       ]
     };
@@ -1098,7 +1142,9 @@ export class CharacterSheetEngine {
         name: astrologyData.mayan.seal.ability.split(' - ')[0],
         description: astrologyData.mayan.seal.ability,
         frequency: 'At will',
-        influence: 'Self/Allies: amplifies natural strengths tied to the seal theme.'
+        influence: 'Self/Allies: amplifies natural strengths tied to the seal theme.',
+        numericalInfluence: '+2 to theme-aligned actions',
+        effectiveRange: 'Self or close allies (15 meters)'
       });
     }
     
@@ -1107,7 +1153,9 @@ export class CharacterSheetEngine {
         name: astrologyData.mayan.tone.approach.split(' - ')[0],
         description: astrologyData.mayan.tone.approach,
         frequency: 'At will',
-        influence: 'Self/Allies: shapes approach style and group dynamics.'
+        influence: 'Self/Allies: shapes approach style and group dynamics.',
+        numericalInfluence: '+2 to approach-aligned outcomes',
+        effectiveRange: 'Self or team (20 meters)'
       });
     }
     
@@ -1295,6 +1343,8 @@ export class CharacterSheetEngine {
               <h4>${f.name}</h4>
               <p><strong>Frequency:</strong> ${f.frequency}</p>
               <p><strong>Influence:</strong> ${f.influence}</p>
+              <p><strong>Numerical Influence:</strong> ${f.numericalInfluence}</p>
+              <p><strong>Effective Range:</strong> ${f.effectiveRange}</p>
               <p>${f.description}</p>
             </div>
           `).join('')}
