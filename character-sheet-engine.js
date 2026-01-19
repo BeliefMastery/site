@@ -1276,7 +1276,6 @@ export class CharacterSheetEngine {
               <thead>
                 <tr>
                   <th>Flaw</th>
-                  <th>Source</th>
                   <th>Modifier</th>
                 </tr>
               </thead>
@@ -1284,35 +1283,12 @@ export class CharacterSheetEngine {
                 ${character.flaws.map(f => `
                   <tr>
                     <td>${f.name}</td>
-                    <td>${f.source}</td>
                     <td>${f.modifier}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
           ` : '<p>No significant flaws identified.</p>'}
-        </section>
-        
-        <section class="astrology-reference">
-          <h3>Astrological Reference</h3>
-          <div class="astrology-details">
-            <div class="western-astro">
-              <h4>Western Astrology</h4>
-              <p><strong>Sun:</strong> ${character.astrologyData.western.sun?.name || 'Not provided'}</p>
-              ${character.astrologyData.western.moon ? `<p><strong>Moon:</strong> ${character.astrologyData.western.moon.name}</p>` : ''}
-              ${character.astrologyData.western.ascendant ? `<p><strong>Ascendant:</strong> ${character.astrologyData.western.ascendant.name}</p>` : ''}
-            </div>
-            <div class="chinese-astro">
-              <h4>Chinese Astrology</h4>
-              <p><strong>Animal:</strong> ${character.astrologyData.chinese.animal?.name || 'Unknown'}</p>
-              <p><strong>Element:</strong> ${chineseElementName || 'Unknown'}</p>
-            </div>
-            <div class="mayan-astro">
-              <h4>Mayan Astrology (Dreamspell)</h4>
-              <p><strong>Galactic Signature:</strong> ${getMayanSignDisplayName(character.astrologyData.mayan.seal?.id || character.astrologyData.mayan.seal?.name?.toLowerCase().replace(/\s+/g, '_') || '', character.astrologyData.mayan.tone?.name || '') || 'Unknown'}</p>
-              <p><strong>Kin:</strong> ${character.astrologyData.mayan.kin || 'Unknown'}</p>
-            </div>
-          </div>
         </section>
       </div>
     `;
