@@ -1197,6 +1197,7 @@ export class CharacterSheetEngine {
     if (formSection) formSection.classList.add('hidden');
     if (resultsSection) {
       resultsSection.classList.remove('hidden');
+      resultsSection.classList.add('active');
       resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
   }
@@ -1207,7 +1208,10 @@ export class CharacterSheetEngine {
     const resultsSection = document.getElementById('characterSheetResults');
     
     if (formSection) formSection.classList.remove('hidden');
-    if (resultsSection) resultsSection.classList.add('hidden');
+    if (resultsSection) {
+      resultsSection.classList.add('hidden');
+      resultsSection.classList.remove('active');
+    }
     
     this.characterData = null;
   }
