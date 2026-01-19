@@ -1092,14 +1092,20 @@ export class CharacterSheetEngine {
 
   generateFlaws(astrologyData) {
     const flaws = [];
+    const getScaledModifier = (index, scale) => {
+      const tier = scale[index % scale.length];
+      return tier > 0 ? `+${tier}` : `${tier}`;
+    };
     
     // Sun sign challenges
     if (astrologyData.western.sun) {
+      const sunScale = [-2, -1, -2, -3];
       astrologyData.western.sun.challenges.forEach(challenge => {
+        const modifier = getScaledModifier(flaws.length, sunScale);
         flaws.push({
           name: challenge,
           source: `Sun Sign (${SecurityUtils.sanitizeHTML(astrologyData.western.sun.name || '')})`,
-          modifier: '-1'
+          modifier
         });
       });
     }
@@ -1109,7 +1115,7 @@ export class CharacterSheetEngine {
       flaws.push({
         name: astrologyData.mayan.seal.negativeModifier.split(' - ')[0],
         source: `Mayan Seal (${SecurityUtils.sanitizeHTML(astrologyData.mayan.seal.name || '')})`,
-        modifier: '-1'
+        modifier: '-2'
       });
     }
     
@@ -1118,7 +1124,7 @@ export class CharacterSheetEngine {
       flaws.push({
         name: astrologyData.chinese.animal.challenges[0],
         source: `Chinese Animal (${SecurityUtils.sanitizeHTML(astrologyData.chinese.animal.name || '')})`,
-        modifier: '-1'
+        modifier: '-2'
       });
     }
     
