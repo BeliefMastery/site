@@ -362,6 +362,7 @@ export class CharacterSheetEngine {
     // Chinese Astrology - check for manual input first
     let chineseAnimalData = null;
     let chineseElementData = null;
+    let chineseElementKey = null;
     
     if (formData.chineseAnimal) {
       // Find matching animal from manual input
@@ -380,6 +381,7 @@ export class CharacterSheetEngine {
       );
       if (elementKey) {
         chineseElementData = CHINESE_ELEMENTS[elementKey];
+        chineseElementKey = elementKey;
       }
     }
     
@@ -392,6 +394,7 @@ export class CharacterSheetEngine {
     if (!chineseElementData) {
       const chineseElement = getChineseElement(year);
       chineseElementData = CHINESE_ELEMENTS[chineseElement];
+      chineseElementKey = chineseElement;
     }
 
     // Mayan Astrology - check for manual input first
@@ -431,7 +434,8 @@ export class CharacterSheetEngine {
       },
       chinese: {
         animal: chineseAnimalData,
-        element: chineseElementData
+        element: chineseElementData,
+        elementKey: chineseElementKey
       },
       mayan: {
         seal: mayanSeal,
@@ -617,7 +621,9 @@ export class CharacterSheetEngine {
 
   determineRace(astrologyData) {
     // Race is determined primarily by Chinese element
-    const element = astrologyData.chinese.element?.name || 'Earth';
+    const element = astrologyData.chinese.element?.name
+      || astrologyData.chinese.elementKey
+      || 'Earth';
     
     const raceMap = {
       'Wood': 'Elf',
@@ -698,7 +704,8 @@ export class CharacterSheetEngine {
     
     // Chinese astrology - earthly influence
     if (chineseAnimal && chineseElement) {
-      narratives.push(`In the year of the ${SecurityUtils.sanitizeHTML(chineseElement.name || '')} ${SecurityUtils.sanitizeHTML(chineseAnimal.name || '')}, earthly forces granted them ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[1] || '').toLowerCase()}, while the ${SecurityUtils.sanitizeHTML(chineseElement.name || '').toLowerCase()} element flows through their ${SecurityUtils.sanitizeHTML(chineseElement.traits[0] || '').toLowerCase()} nature.`);
+      const elementName = chineseElement.name || astrologyData.chinese.elementKey || 'Unknown';
+      narratives.push(`In the year of the ${SecurityUtils.sanitizeHTML(elementName || '')} ${SecurityUtils.sanitizeHTML(chineseAnimal.name || '')}, earthly forces granted them ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[1] || '').toLowerCase()}, while the ${SecurityUtils.sanitizeHTML(elementName || '').toLowerCase()} element flows through their ${SecurityUtils.sanitizeHTML(chineseElement.traits[0] || '').toLowerCase()} nature.`);
     }
     
     // Mayan seal - galactic signature
@@ -999,8 +1006,11 @@ export class CharacterSheetEngine {
     );
     
     // Format Chinese sign display
-    const chineseDisplay = character.astrologyData.chinese.element?.name && character.astrologyData.chinese.animal?.name
-      ? `${character.astrologyData.chinese.element.name} ${character.astrologyData.chinese.animal.name}`
+    const chineseElementName = character.astrologyData.chinese.element?.name
+      || character.astrologyData.chinese.elementKey
+      || '';
+    const chineseDisplay = chineseElementName && character.astrologyData.chinese.animal?.name
+      ? `${chineseElementName} ${character.astrologyData.chinese.animal.name}`
       : 'Unknown';
     
     let html = `
@@ -1165,7 +1175,7 @@ export class CharacterSheetEngine {
             <div class="chinese-astro">
               <h4>Chinese Astrology</h4>
               <p><strong>Animal:</strong> ${character.astrologyData.chinese.animal?.name || 'Unknown'}</p>
-              <p><strong>Element:</strong> ${character.astrologyData.chinese.element?.name || 'Unknown'}</p>
+              <p><strong>Element:</strong> ${chineseElementName || 'Unknown'}</p>
             </div>
             <div class="mayan-astro">
               <h4>Mayan Astrology (Dreamspell)</h4>
