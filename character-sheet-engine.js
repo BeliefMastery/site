@@ -236,9 +236,9 @@ export class CharacterSheetEngine {
 
   collectFormData() {
     return {
-      name: document.getElementById('characterName')?.value || 'Adventurer',
+      name: document.getElementById('characterName')?.value || '',
       birthDate: document.getElementById('birthDate')?.value,
-      birthTime: document.getElementById('birthTime')?.value || '12:00',
+      birthTime: document.getElementById('birthTime')?.value || '',
       birthLocation: document.getElementById('birthLocation')?.value || '',
       sunSign: document.getElementById('sunSign')?.value || '',
       moonSign: document.getElementById('moonSign')?.value || '',
@@ -257,21 +257,26 @@ export class CharacterSheetEngine {
    * @returns {boolean} - True if valid
    */
   validateFormData(formData) {
-    if (!formData.birthDate) {
-      ErrorHandler.showUserError('Please enter your birth date.');
-      return false;
-    }
-    
-    if (!formData.sunSign) {
-      ErrorHandler.showUserError('Please enter your Sun sign (or select a birth date to auto-calculate).');
+    const requiredFields = [
+      { key: 'name', label: 'Character name' },
+      { key: 'birthDate', label: 'Birth date' },
+      { key: 'birthTime', label: 'Birth time' },
+      { key: 'birthLocation', label: 'Birth location' },
+      { key: 'sunSign', label: 'Sun sign' },
+      { key: 'moonSign', label: 'Moon sign' },
+      { key: 'ascendantSign', label: 'Ascendant (Rising) sign' },
+      { key: 'chineseAnimal', label: 'Chinese animal' },
+      { key: 'chineseElement', label: 'Chinese element' },
+      { key: 'mayanTone', label: 'Mayan Dreamspell tone' },
+      { key: 'mayanKin', label: 'Mayan Dreamspell kin' }
+    ];
+
+    const missing = requiredFields.find(field => !String(formData[field.key] || '').trim());
+    if (missing) {
+      ErrorHandler.showUserError(`Please complete the ${missing.label} field.`);
       return false;
     }
 
-    if (!formData.mayanTone || !formData.mayanKin) {
-      ErrorHandler.showUserError('Please enter your Dreamspell Tone and Kin. Use the Dreamspell calculator link in the form if needed.');
-      return false;
-    }
-    
     return true;
   }
 

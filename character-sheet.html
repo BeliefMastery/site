@@ -108,7 +108,7 @@
             <!-- Acknowledgment Box -->
             <div class="ack-box">
               <p>
-                <strong>Note:</strong> For the most accurate character sheet, you'll need your Sun, Moon, and Ascendant signs from Western astrology. The Sun sign can be auto-calculated from your birth date, but Moon and Ascendant require your exact birth time and location. You can get these from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar astrology calculators.
+                <strong>Note:</strong> For the most accurate character sheet, you'll need your Sun, Moon, and Ascendant signs from Western astrology. The Sun sign can be auto-calculated from your birth date, but Moon and Ascendant require your exact birth time and location. You can get these from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar astrology calculators. Use the <a href="coaching/astrology-cheat-sheet.html" target="_blank" rel="noopener">astrology cheat sheet</a> for the combined calculation logic behind this generator.
               </p>
             </div>
           </div>
@@ -203,7 +203,7 @@
           </div>
 
           <div class="form-group">
-            <label for="chineseAnimal">Chinese Animal (Optional)</label>
+            <label for="chineseAnimal">Chinese Animal</label>
             <input type="text" id="chineseAnimal" name="chineseAnimal" list="chineseAnimals" placeholder="Will auto-calculate from birth year">
             <datalist id="chineseAnimals">
               <option value="Rat">Rat</option>
@@ -223,7 +223,7 @@
           </div>
 
           <div class="form-group">
-            <label for="chineseElement">Chinese Element (Optional)</label>
+            <label for="chineseElement">Chinese Element</label>
             <input type="text" id="chineseElement" name="chineseElement" list="chineseElements" placeholder="Will auto-calculate from birth year">
             <datalist id="chineseElements">
               <option value="Wood">Wood</option>
@@ -236,9 +236,9 @@
           </div>
 
           <div class="form-group">
-            <label for="mayanTone">Mayan Dreamspell Tone (Required)</label>
-            <select id="mayanTone" name="mayanTone" required>
-              <option value="" disabled selected>Select tone</option>
+            <label for="mayanTone">Mayan Dreamspell Tone</label>
+            <input type="text" id="mayanTone" name="mayanTone" list="mayanTones" placeholder="Select tone">
+            <datalist id="mayanTones">
               <option value="Magnetic">Magnetic</option>
               <option value="Lunar">Lunar</option>
               <option value="Electric">Electric</option>
@@ -252,14 +252,13 @@
               <option value="Spectral">Spectral</option>
               <option value="Crystal">Crystal</option>
               <option value="Cosmic">Cosmic</option>
-            </select>
-            <small class="form-help">Required for character formulation (see <a href="coaching/_combined%20astrology%20cheat%20sheet%202025.pdf" target="_blank" rel="noopener">combined astrology cheat sheet 2025</a>).</small>
+            </datalist>
           </div>
 
           <div class="form-group">
-            <label for="mayanKin">Mayan Dreamspell Kin (Required)</label>
-            <select id="mayanKin" name="mayanKin" required>
-              <option value="" disabled selected>Select color + kin</option>
+            <label for="mayanKin">Mayan Dreamspell Kin</label>
+            <input type="text" id="mayanKin" name="mayanKin" list="mayanKins" placeholder="Select color + kin">
+            <datalist id="mayanKins">
               <option value="Red Dragon">Red Dragon</option>
               <option value="White Wind">White Wind</option>
               <option value="Blue Night">Blue Night</option>
@@ -280,7 +279,7 @@
               <option value="White Mirror">White Mirror</option>
               <option value="Blue Storm">Blue Storm</option>
               <option value="Yellow Sun">Yellow Sun</option>
-            </select>
+            </datalist>
             <small class="form-help">If you don’t know your Dreamspell Tone + Kin, use the <a href="https://www.starroot.com/cgi/daycalc.pl" target="_blank" rel="noopener">Dreamspell calculator</a>.</small>
           </div>
 
