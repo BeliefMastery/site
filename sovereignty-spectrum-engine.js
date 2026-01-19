@@ -482,6 +482,16 @@ export class SovereigntySpectrumEngine {
     
     const paradigm = SOVEREIGNTY_PARADIGMS[this.currentParadigmIndex];
     if (!paradigm) return;
+
+    const description = String(paradigm.description || '');
+    const splitIndex = (() => {
+      const howeverIndex = description.search(/However,/i);
+      if (howeverIndex >= 0) return howeverIndex;
+      const tooFarIndex = description.search(/When taken too far/i);
+      return tooFarIndex >= 0 ? tooFarIndex : -1;
+    })();
+    const explanationText = splitIndex >= 0 ? description.slice(0, splitIndex).trim() : description.trim();
+    const weaknessText = splitIndex >= 0 ? description.slice(splitIndex).trim() : '';
     
     const currentRating = this.paradigmRatings[paradigm.id] || 50; // Default to middle (50)
     const progress = ((this.currentParadigmIndex + 1) / SOVEREIGNTY_PARADIGMS.length) * 100;
@@ -495,9 +505,16 @@ export class SovereigntySpectrumEngine {
     
     html += '<div class="paradigm-card-single">';
     html += `<h4>${SecurityUtils.sanitizeHTML(paradigm.name)}</h4>`;
-    html += `<p class="paradigm-description">${SecurityUtils.sanitizeHTML(paradigm.description)}</p>`;
-    html += '<div class="paradigm-values">';
-    html += `<strong>Core Values:</strong> ${SecurityUtils.sanitizeHTML(paradigm.values.join(', '))}`;
+    html += '<div class="paradigm-text-block">';
+    if (Array.isArray(paradigm.values) && paradigm.values.length > 0) {
+      html += `<p><strong>Core Values:</strong> ${SecurityUtils.sanitizeHTML(paradigm.values.join(', '))}</p>`;
+    }
+    if (explanationText) {
+      html += `<p><strong>Explanation & Conditions:</strong> ${SecurityUtils.sanitizeHTML(explanationText)}</p>`;
+    }
+    if (weaknessText) {
+      html += `<p><strong>Weaknesses & Vulnerabilities:</strong> ${SecurityUtils.sanitizeHTML(weaknessText)}</p>`;
+    }
     html += '</div>';
     
     html += '<div class="paradigm-rating-slider">';

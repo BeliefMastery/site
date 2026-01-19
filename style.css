@@ -5597,6 +5597,14 @@ img {
     background: #ff7fb1;
 }
 
+.paradigm-text-block {
+    margin-top: 1rem;
+}
+
+.paradigm-text-block p {
+    margin: 0 0 0.75rem 0;
+}
+
 .temperament-spectrum-position {
     text-align: center;
     margin-top: 0.5rem;

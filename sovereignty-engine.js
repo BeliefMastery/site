@@ -1619,12 +1619,6 @@ export class SovereigntyEngine {
       <div class="results-dashboard">
         <h2 class="results-title">Your Sovereignty Profile</h2>
         
-        <div class="profile-summary">
-          <h3 class="profile-title">Cognitive Band: ${SecurityUtils.sanitizeHTML(band.iqRange || '')} IQ</h3>
-          <p class="profile-name">${SecurityUtils.sanitizeHTML(band.name || '')}</p>
-          <p class="profile-description">${SecurityUtils.sanitizeHTML(band.description || '')}</p>
-        </div>
-
         ${subclasses.length > 0 ? `
           <div class="subclasses">
             <h3 class="section-title">Top Subclass Matches</h3>
@@ -1638,22 +1632,17 @@ export class SovereigntyEngine {
           </div>
         ` : ''}
 
-        <div class="split-position panel-brand-left">
-          <h3 class="section-title">Sovereign Split Position</h3>
-          <p class="split-name">${SecurityUtils.sanitizeHTML(split.name || '')}</p>
-          <p class="split-description">${SecurityUtils.sanitizeHTML(split.description || '')}</p>
-        </div>
-
         <div class="sovereignty-score">
           <h3 class="section-title">Resistance Capacity Score</h3>
           <div class="score-value">${sovereigntyScore}/100</div>
           <div class="score-bar">
             <div class="sovereignty-score-fill" style="width: ${sovereigntyScore}%"></div>
           </div>
+          <p class="score-description">Higher scores indicate stronger cognitive resistance and greater independence from external influence.</p>
         </div>
 
         <div class="attachment-mode">
-          <h3 class="section-title">Attachment Mode</h3>
+          <h3 class="section-title">Primary Attachment Vector</h3>
           <p class="attachment-name">${SecurityUtils.sanitizeHTML(attachmentMode || '')}</p>
           <p class="attachment-description">
             ${attachmentMode === 'independent' ? 'You maintain clear boundaries with AI tools.' :

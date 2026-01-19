@@ -1412,6 +1412,9 @@ export class NeedsDependencyEngine {
   renderNeedChain() {
     if (this.needChain.length === 0) return '';
     const uniqueChain = this.getUniqueNeedChain();
+    const loopNeedRaw = this.analysisData.primaryLoop
+      ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop)
+      : null;
     const surfaceNeed = uniqueChain[0]?.need || 'Unknown';
     const deeperNeeds = uniqueChain.slice(1).map(n => SecurityUtils.sanitizeHTML(n.need || '')).filter(Boolean);
     const rootNeed = uniqueChain.length > 0 ? uniqueChain[uniqueChain.length - 1].need : surfaceNeed;
@@ -1420,15 +1423,22 @@ export class NeedsDependencyEngine {
       .map(need => String(need))
       .filter(need => !uniqueChain.map(n => String(n.need).toLowerCase().trim()).includes(String(need).toLowerCase().trim()));
     
+    const chainParts = [];
+    if (loopNeedRaw) {
+      chainParts.push(SecurityUtils.sanitizeHTML(loopNeedRaw));
+    }
+    if (surfaceNeed && (!loopNeedRaw || String(loopNeedRaw).toLowerCase().trim() !== String(surfaceNeed).toLowerCase().trim())) {
+      chainParts.push(SecurityUtils.sanitizeHTML(surfaceNeed));
+    }
+    chainParts.push(...deeperNeeds);
+    const chainText = chainParts.filter(Boolean).join(' → ');
+
     return `
       <div class="need-chain-section">
         <h2>Need Chain Analysis</h2>
         <div class="need-chain-visualization">
           <p>This chain traces why the loop formed: the surface need shows how the pattern tries to cope, while the deeper needs reveal the underlying reason the loop exists.</p>
-          <p><strong>Surface Need:</strong> ${SecurityUtils.sanitizeHTML(surfaceNeed)}</p>
-          ${deeperNeeds.length > 0 ? `
-            <p><strong>Deeper Needs:</strong> ${deeperNeeds.join(' → ')}</p>
-          ` : ''}
+          ${chainText ? `<p><strong>Need Chain (Loop → Root):</strong> ${chainText}</p>` : ''}
           <p><strong>Root Need Focus:</strong> ${SecurityUtils.sanitizeHTML(rootNeed)}</p>
           ${rootCandidates.length > 0 ? `
             <p><strong>Root Need Candidates:</strong> ${rootCandidates.map(n => SecurityUtils.sanitizeHTML(n)).join(', ')}</p>
