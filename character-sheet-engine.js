@@ -328,6 +328,10 @@ export class CharacterSheetEngine {
       const latitudeInput = document.getElementById('birthLatitude');
       const longitudeInput = document.getElementById('birthLongitude');
 
+      const wantsMoonAscendant = timezoneOffsetInput?.value !== ''
+        || latitudeInput?.value
+        || longitudeInput?.value;
+
       const hasMoonInputs = birthTimeInput?.value
         && timezoneOffsetInput?.value !== ''
         && latitudeInput?.value
@@ -368,12 +372,7 @@ export class CharacterSheetEngine {
 
         const ascendantLongitude = this.calculateAscendantLongitude(julianDate, latitude, longitude);
         this.setFieldValue('ascendantSign', this.getZodiacFromLongitude(ascendantLongitude));
-      } else if (
-        birthTimeInput?.value
-        || timezoneOffsetInput?.value
-        || latitudeInput?.value
-        || longitudeInput?.value
-      ) {
+      } else if (wantsMoonAscendant) {
         ErrorHandler.showUserError('To calculate Moon and Ascendant, enter birth time, UTC offset, latitude, and longitude.');
       }
     } catch (error) {
