@@ -274,19 +274,24 @@ export const MAYAN_TONES = {
 // Mayan Dreamspell calendar calculation (Tzolkin - 260-day cycle)
 // The Dreamspell Tzolkin combines 20 solar seals with 13 galactic tones
 // This creates a 260-day cycle (20 × 13 = 260)
-// The Dreamspell epoch is July 26, 1992 (Kin 1 = Red Dragon, Magnetic)
-// For accurate calculations matching starroot.com, use their calculator and input manually
+// Anchored to Starroot Dreamspell day calculator: 1984-02-03 = White Magnetic World-Bridger (Kin 66)
+// https://www.starroot.com/cgi/daycalc.pl
 export function calculateMayanSign(date) {
-  // Dreamspell epoch: July 26, 1992 is Kin 1 (Red Dragon, Magnetic)
-  const dreamspellEpoch = new Date('1992-07-26');
-  const targetDate = new Date(date);
+  const anchorKin = 66;
+  const anchorUtc = Date.UTC(1984, 1, 3); // Feb 3, 1984
+  const targetDate = date instanceof Date ? date : new Date(date);
+  const targetUtc = Date.UTC(
+    targetDate.getUTCFullYear(),
+    targetDate.getUTCMonth(),
+    targetDate.getUTCDate()
+  );
   
-  // Calculate days difference
-  const daysDiff = Math.floor((targetDate - dreamspellEpoch) / (1000 * 60 * 60 * 24));
+  // Calculate days difference in UTC to avoid timezone drift
+  const daysDiff = Math.floor((targetUtc - anchorUtc) / (1000 * 60 * 60 * 24));
   
   // Calculate Tzolkin day (1-260)
   // Add 260 to handle negative differences
-  const tzolkinDay = ((daysDiff % 260) + 260) % 260 + 1;
+  const tzolkinDay = ((anchorKin - 1 + daysDiff) % 260 + 260) % 260 + 1;
   
   // Seal number (1-20) - cycles through 20 seals
   const sealNumber = ((tzolkinDay - 1) % 20) + 1;
