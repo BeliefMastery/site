@@ -1259,7 +1259,6 @@ export class ManipulationEngine {
             <h3>Primary Vector: ${primaryName}</h3>
             <p>${primaryDesc}</p>
             <p><strong>Activation Level:</strong> ${this.getActivationLevelLabel(primary.activationLevel)}</p>
-            <p><strong>Score:</strong> ${primary.rawScore.toFixed(1)}/10 (Weighted: ${primary.weightedScore.toFixed(1)})</p>
             ${this.analysisData.structuralModifier ? `<p><strong>Pattern Type:</strong> ${this.getStructuralModifierLabel(this.analysisData.structuralModifier)}</p>` : ''}
           </div>
         `;
@@ -1276,7 +1275,6 @@ export class ManipulationEngine {
             <div class="vector-result" style="background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
               <h4>${vecName}</h4>
               <p style="font-size: 0.9rem; color: var(--muted);">${vecDesc}</p>
-              <p><strong>Score:</strong> ${vector.rawScore.toFixed(1)}/10</p>
             </div>
           `;
         });

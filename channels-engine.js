@@ -1210,8 +1210,9 @@ export class ChannelsEngine {
         
         html += `
           <div class="channel-result">
-            <h3>${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</h3>
-            <p>${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
+            <h3>Channel Issue: ${SecurityUtils.sanitizeHTML(channel.name || '')}</h3>
+            <p><strong>Flow direction:</strong> ${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</p>
+            <p><strong>Relationship focus:</strong> ${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
             <p><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
             ${remediation ? `
               <div style="margin-top: 1rem;">

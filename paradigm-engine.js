@@ -208,6 +208,17 @@ export class ParadigmEngine {
   getEmptyAnalysisData() {
     return {
       timestamp: new Date().toISOString(),
+      goodLife: {},
+      god: {},
+      identifiedParadigms: [],
+      confidenceBands: {},
+      dimensionalTensions: {},
+      translationCapacity: null,
+      shadowBlindSpots: {},
+      developmentEdges: {},
+      compatibleFrameworks: [],
+      tensionPoints: [],
+      contradictions: [],
       phase1Results: {},
       phase2Results: {},
       phase3Results: {},

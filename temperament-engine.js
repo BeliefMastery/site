@@ -25,6 +25,11 @@ const GENDER_QUESTION = {
   ]
 };
 
+const EXPECTED_GENDER_TRENDS = {
+  man: 0.6,
+  woman: 0.4
+};
+
 /**
  * Temperament Engine - Analyzes masculine-feminine temperament spectrum
  */
@@ -1070,6 +1075,14 @@ export class TemperamentEngine {
 
       const temperament = this.analysisData.overallTemperament;
       const interpretation = TEMPERAMENT_SCORING.interpretation[temperament.category];
+      const genderAnswer = this.answers[GENDER_QUESTION.id];
+      const genderLabel = (() => {
+        if (!genderAnswer) return 'Not specified';
+        const option = GENDER_QUESTION.options.find(opt => opt.value === genderAnswer);
+        return option ? option.label : 'Not specified';
+      })();
+      const maleTrend = EXPECTED_GENDER_TRENDS.man;
+      const femaleTrend = EXPECTED_GENDER_TRENDS.woman;
 
     // Contextual framing block at results entry
     let html = `
@@ -1094,6 +1107,7 @@ export class TemperamentEngine {
     html += `
       <div class="temperament-profile-card">
         <h2>Temperament Expression Profile</h2>
+        <p class="temperament-assessment-context"><strong>Assessment context:</strong> Taken as ${SecurityUtils.sanitizeHTML(genderLabel)}.</p>
         <div class="temperament-profile-inner">
           <h3>${SecurityUtils.sanitizeHTML(interpretation.label || '')}</h3>
           <p>${SecurityUtils.sanitizeHTML(interpretation.description || '')}</p>
@@ -1113,12 +1127,18 @@ export class TemperamentEngine {
         <div class="temperament-spectrum-container">
           <h4>Temperament Spectrum Position</h4>
           <div class="temperament-spectrum-large">
+            <div class="temperament-trend-dot temperament-trend-male" style="left: ${maleTrend * 100}%;" title="Expected trend for males"></div>
+            <div class="temperament-trend-dot temperament-trend-female" style="left: ${femaleTrend * 100}%;" title="Expected trend for females"></div>
             <div class="temperament-marker temperament-marker-large" style="left: ${temperament.normalizedScore * 100}%;"></div>
           </div>
           <div class="temperament-spectrum-labels">
             <span>Feminine-Leaning (0%)</span>
             <span>Balanced (50%)</span>
             <span>Masculine-Leaning (100%)</span>
+          </div>
+          <div class="temperament-trend-legend">
+            <span><span class="temperament-trend-dot temperament-trend-male"></span> Expected trend for males</span>
+            <span><span class="temperament-trend-dot temperament-trend-female"></span> Expected trend for females</span>
           </div>
           <p class="temperament-spectrum-position">
             Expression Position: ${(temperament.normalizedScore * 100).toFixed(1)}% on the spectrum
@@ -1144,6 +1164,8 @@ export class TemperamentEngine {
         <div class="dimension-item">
           <h4>${SecurityUtils.sanitizeHTML(dimName || '')}</h4>
           <div class="dimension-spectrum">
+            <div class="temperament-trend-dot temperament-trend-male" style="left: ${maleTrend * 100}%;"></div>
+            <div class="temperament-trend-dot temperament-trend-female" style="left: ${femaleTrend * 100}%;"></div>
             <div class="dimension-marker" style="left: ${normalizedDimScore * 100}%;"></div>
           </div>
           <p class="dimension-score-text">

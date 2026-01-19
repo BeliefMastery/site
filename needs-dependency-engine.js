@@ -1345,6 +1345,7 @@ export class NeedsDependencyEngine {
   renderPrimaryLoop() {
     const loop = this.analysisData.primaryLoop;
     const scores = this.analysisData.loopScores[loop];
+    const surfaceNeed = this.surfaceNeed || this.getSurfaceNeedForLoop(loop);
     const compulsionScore = scores?.compulsionScore || 0;
     const aversionScore = scores?.aversionScore || 0;
     const tilt = compulsionScore >= aversionScore ? 'compulsive sourcing' : 'avoidant sourcing';
@@ -1363,8 +1364,9 @@ export class NeedsDependencyEngine {
           </div>
           <p class="loop-description">Based on your responses, the ${loop} dependency loop shows the strongest alignment with your patterns.</p>
           <div class="loop-mechanics">
-            <p><strong>How the loop functions:</strong> When this need is not met, the system defaults to ${tilt}, ${tiltWhy}.</p>
-            <p><strong>Why it persists:</strong> The immediate relief reinforces the loop while the root need remains under-met.</p>
+            <p><strong>How the loop functions:</strong> When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to ${tilt}, ${tiltWhy}.</p>
+            <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
+            <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
             ${chainDepth > 0 ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>` : ''}
             ${this.analysisData.secondaryLoops.length > 0 ? '<p style="color: var(--muted);">Secondary signals were detected but are intentionally omitted here to keep the focus on the dominant loop.</p>' : ''}
           </div>
@@ -1422,6 +1424,7 @@ export class NeedsDependencyEngine {
       <div class="need-chain-section">
         <h2>Need Chain Analysis</h2>
         <div class="need-chain-visualization">
+          <p>This chain traces why the loop formed: the surface need shows how the pattern tries to cope, while the deeper needs reveal the underlying reason the loop exists.</p>
           <p><strong>Surface Need:</strong> ${SecurityUtils.sanitizeHTML(surfaceNeed)}</p>
           ${deeperNeeds.length > 0 ? `
             <p><strong>Deeper Needs:</strong> ${deeperNeeds.join(' → ')}</p>
@@ -1430,7 +1433,7 @@ export class NeedsDependencyEngine {
           ${rootCandidates.length > 0 ? `
             <p><strong>Root Need Candidates:</strong> ${rootCandidates.map(n => SecurityUtils.sanitizeHTML(n)).join(', ')}</p>
           ` : ''}
-          <p style="color: var(--muted);">The chain is de-duplicated to prevent repeated needs. Address the root need to collapse the loop; the surface symptom still needs attention but won\'t resolve the pattern alone.</p>
+          <p style="color: var(--muted);">Addressing the root need is what collapses the loop; the surface symptom still needs attention but won’t resolve the pattern on its own.</p>
         </div>
       </div>
     `;

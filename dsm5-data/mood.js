@@ -171,11 +171,11 @@ export const MOOD_DISORDERS = {
         }
       }
     },
-    "Other Specified Depressive Disorder": {
+    "Low-Intensity Depressive Pattern": {
       code: "311",
       criteria: {
         A: {
-          text: "Depressive symptoms causing distress but not meeting full criteria",
+          text: "Subthreshold depressive symptoms causing distress without meeting full criteria",
           weight: 0.8
         }
       }

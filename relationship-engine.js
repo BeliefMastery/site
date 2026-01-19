@@ -509,7 +509,7 @@ export class RelationshipEngine {
       this.questionSequence.forEach(q => {
         this.answers[q.id] = this.getRandomInt(0, 10);
       });
-      this.analyzeStage1Results();
+      await this.analyzeStage1Results();
 
       if (this.weakestLinks.length === 0 && Object.keys(this.analysisData.compatibilityScores || {}).length > 0) {
         const fallbackLinks = Object.entries(this.analysisData.compatibilityScores)
@@ -1188,27 +1188,32 @@ export class RelationshipEngine {
     html += '<p style="color: var(--muted); margin-bottom: 1rem;">These are the areas showing current strain, ranked by weighted impact score.</p>';
     
     // Normalize universal weak points
-    html += '<div style="background: rgba(0, 123, 255, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
+    html += '<div style="background: var(--glass); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
     html += '<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">Note:</strong> All relationships show strain in at least 3–5 areas. This is normal, not failure. These strain points indicate areas for attention, not verdicts on relationship viability.</p>';
     html += '</div>';
 
     // Cross-domain spillover
     if (this.crossDomainSpillover.detected) {
-      html += '<div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
+      html += '<div style="background: var(--glass); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
       html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Cross-Domain Amplification:</strong> ${SecurityUtils.sanitizeHTML(this.crossDomainSpillover.message || '')}</p>`;
       html += '</div>';
     }
 
     let weakestLinks = this.analysisData.weakestLinks || [];
-    if (weakestLinks.length === 0 && Object.keys(this.analysisData.compatibilityScores || {}).length > 0) {
-      weakestLinks = Object.entries(this.analysisData.compatibilityScores)
-        .map(([key, data]) => ({
-          point: key,
-          ...data,
-          strategies: this.getActionStrategies(key, data.rawScore)
-        }))
-        .sort((a, b) => a.weightedScore - b.weightedScore)
-        .slice(0, 3);
+    if (weakestLinks.length === 0) {
+      const fallbackSource = Object.keys(this.analysisData.compatibilityScores || {}).length > 0
+        ? this.analysisData.compatibilityScores
+        : this.analysisData.stage1Results || {};
+      if (Object.keys(fallbackSource).length > 0) {
+        weakestLinks = Object.entries(fallbackSource)
+          .map(([key, data]) => ({
+            point: key,
+            ...data,
+            strategies: this.getActionStrategies(key, data.rawScore)
+          }))
+          .sort((a, b) => a.weightedScore - b.weightedScore)
+          .slice(0, 3);
+      }
     }
 
     if (weakestLinks.length > 0) {
@@ -1233,7 +1238,7 @@ export class RelationshipEngine {
             <div class="action-strategies" style="margin-top: 1.5rem;">
               <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
               
-              <div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+              <div style="background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
                 <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Actions you can take independently to improve your experience:</p>
                 <ul style="margin-left: 1.5rem;">
@@ -1241,7 +1246,7 @@ export class RelationshipEngine {
                 </ul>
               </div>
               
-              <div style="background: rgba(255, 184, 0, 0.1); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+              <div style="background: var(--glass); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
                 <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Ways to invite mutual participation and improvement:</p>
                 <ul style="margin-left: 1.5rem;">
@@ -1249,15 +1254,15 @@ export class RelationshipEngine {
                 </ul>
               </div>
               
-              <div style="background: rgba(211, 47, 47, 0.1); border-left: 3px solid #d32f2f; border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                <h5 style="color: #d32f2f; margin-bottom: 0.5rem;">3. Structural Boundaries (Optional)</h5>
+              <div style="background: var(--glass); border-left: 3px solid var(--muted); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
+                <h5 style="color: var(--muted); margin-bottom: 0.5rem;">3. Structural Boundaries (Optional)</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Boundaries to reduce harm if dynamics persist:</p>
                 <ul style="margin-left: 1.5rem;">
                   ${structuralBoundary.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
-              <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.7); border-radius: var(--radius);">
+              <div style="margin-top: 1.5rem; padding: 1rem; background: var(--glass); border-radius: var(--radius);">
                 <h5 style="color: var(--brand); margin-bottom: 0.75rem;">Change vs. Acceptance:</h5>
                 <div style="margin-bottom: 1rem;">
                   <strong style="color: var(--brand);">Actions Aiming to Improve Dynamics:</strong>
@@ -1276,7 +1281,7 @@ export class RelationshipEngine {
                 </p>
               </div>
               
-              <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius);">
+              <div style="margin-top: 1.5rem; padding: 1rem; background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius);">
                 <h5 style="color: var(--brand); margin-bottom: 0.5rem;">Archetypal Pressures:</h5>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; font-style: italic;">
                   <strong>Note:</strong> These describe activated archetypal pressures, not fixed identities. Each archetype has a complementary counterpart. Insight applies forward; avoid rereading the past through a single lens.
@@ -1290,7 +1295,7 @@ export class RelationshipEngine {
         `;
       });
     } else {
-      html += '<p>No high-priority strain points were flagged. Review the overview below for your lowest-scoring areas.</p>';
+      html += '<p>No dominant strain points were flagged. Review the overview below for your lowest-scoring areas.</p>';
     }
 
     // Add summary of all scores
@@ -1304,7 +1309,7 @@ export class RelationshipEngine {
     
     html += '<ul style="list-style: none; padding: 0;">';
     allScores.forEach(item => {
-      const scoreColor = item.rawScore <= 3 ? '#dc3545' : item.rawScore <= 5 ? '#ffc107' : '#28a745';
+      const scoreColor = item.rawScore <= 3 ? 'var(--accent)' : item.rawScore <= 5 ? 'var(--brand)' : 'var(--muted)';
       html += `<li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
         <strong>${SecurityUtils.sanitizeHTML(item.name || '')}</strong>: <span style="color: ${scoreColor};">${item.rawScore}/10</span> 
         <span style="color: var(--muted); font-size: 0.9em;">(Weighted: ${item.weightedScore.toFixed(2)}, ${SecurityUtils.sanitizeHTML(item.impactTier || '')} impact)</span>

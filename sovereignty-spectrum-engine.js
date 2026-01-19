@@ -34,11 +34,15 @@ export class SovereigntySpectrumEngine {
     };
     this.spectrumPosition = 0;
     this.paradigmAlignments = {};
+    this.phase2Questions = [];
     this.analysisData = {
       timestamp: new Date().toISOString(),
       selectedParadigms: [],
       paradigmRatings: {},
       paradigmAlignments: {},
+      dominantParadigm: null,
+      paradigmDominance: [],
+      paradigmConflicts: [],
       derailerScores: {},
       spectrumPosition: 0,
       spectrumLabel: '',
@@ -219,6 +223,9 @@ export class SovereigntySpectrumEngine {
       selectedParadigms: [],
       paradigmRatings: {},
       paradigmAlignments: {},
+      dominantParadigm: null,
+      paradigmDominance: [],
+      paradigmConflicts: [],
       derailerScores: {},
       spectrumPosition: 0,
       spectrumLabel: '',
@@ -649,6 +656,7 @@ export class SovereigntySpectrumEngine {
     
     // Shuffle to reduce order bias
     this.questionSequence = this.shuffleArray([...this.questionSequence]);
+    this.phase2Questions = [...this.questionSequence];
     
     this.debugReporter.recordQuestionCount(this.questionSequence.length);
   }
@@ -1066,6 +1074,9 @@ export class SovereigntySpectrumEngine {
   async calculateSpectrumPosition() {
     await this.loadSpectrumData();
     
+    this.calculateParadigmAlignments();
+    this.calculateParadigmDominance();
+
     // Calculate base score from paradigm alignments
     let baseScore = 0;
     let totalWeight = 0;
@@ -1134,6 +1145,129 @@ export class SovereigntySpectrumEngine {
     this.generateRemediationPaths();
   }
 
+  calculateParadigmAlignments() {
+    const alignments = {};
+    if (!Array.isArray(this.phase2Questions) || this.phase2Questions.length === 0) {
+      this.paradigmAlignments = {};
+      this.analysisData.paradigmAlignments = {};
+      return;
+    }
+
+    this.selectedParadigms.forEach(paradigmId => {
+      const questions = this.phase2Questions.filter(q => q.paradigm === paradigmId);
+      const answers = questions
+        .map(q => this.answers[q.id])
+        .filter(a => a !== undefined && a !== null)
+        .map(a => parseInt(a, 10))
+        .filter(a => Number.isFinite(a));
+
+      if (answers.length === 0) {
+        alignments[paradigmId] = 0;
+        return;
+      }
+
+      const average = answers.reduce((sum, val) => sum + val, 0) / answers.length;
+      const normalized = ((average - 1) / 4) * 100;
+      alignments[paradigmId] = Math.max(0, Math.min(100, normalized));
+    });
+
+    this.paradigmAlignments = alignments;
+    this.analysisData.paradigmAlignments = { ...alignments };
+  }
+
+  calculateParadigmDominance() {
+    if (!this.selectedParadigms.length) {
+      this.analysisData.dominantParadigm = null;
+      this.analysisData.paradigmDominance = [];
+      this.analysisData.paradigmConflicts = [];
+      return;
+    }
+
+    const dominance = this.selectedParadigms.map(paradigmId => {
+      const rating = this.paradigmRatings[paradigmId] ?? 0;
+      const alignment = this.paradigmAlignments[paradigmId] ?? 0;
+      const score = (rating * 0.6) + (alignment * 0.4);
+      return { id: paradigmId, rating, alignment, score };
+    }).sort((a, b) => b.score - a.score);
+
+    const dominant = dominance[0] || null;
+    this.analysisData.dominantParadigm = dominant ? dominant.id : null;
+    this.analysisData.paradigmDominance = dominance;
+    this.analysisData.paradigmConflicts = this.resolveParadigmConflicts(dominance);
+  }
+
+  resolveParadigmConflicts(dominance) {
+    const selected = new Set(this.selectedParadigms);
+    const dominanceMap = new Map(dominance.map(entry => [entry.id, entry]));
+    const getParadigmName = paradigmId => {
+      const paradigm = SOVEREIGNTY_PARADIGMS.find(p => p.id === paradigmId);
+      return paradigm ? paradigm.name : paradigmId;
+    };
+    const getPrimary = (a, b) => {
+      const scoreA = dominanceMap.get(a)?.score ?? 0;
+      const scoreB = dominanceMap.get(b)?.score ?? 0;
+      return scoreA >= scoreB ? a : b;
+    };
+
+    const conflictPairs = [
+      {
+        a: 'anarchism',
+        b: 'hierarchical_model',
+        tension: 'Voluntary autonomy vs structured authority',
+        guidance: (primary, secondary) => primary === 'anarchism'
+          ? 'Default to voluntary cooperation; only use structure when it is explicitly consented to and time-bound.'
+          : 'Use structure when it improves coordination, but preserve consent and exit rights to avoid coercion.'
+      },
+      {
+        a: 'anarchism',
+        b: 'neoreaction',
+        tension: 'Anti-hierarchy vs elite-governance exit strategies',
+        guidance: (primary, secondary) => primary === 'anarchism'
+          ? 'Keep exit and experimentation, but reject imposed hierarchy as a default operating mode.'
+          : 'Allow voluntary exit and diversity of systems, but do not collapse into coercive control.'
+      },
+      {
+        a: 'utilitarianism',
+        b: 'kantian_deontology',
+        tension: 'Outcome maximization vs duty-based rules',
+        guidance: (primary, secondary) => primary === 'utilitarianism'
+          ? 'Let consequences decide, but use duty-based constraints to protect individuals from being sacrificed.'
+          : 'Follow duty and universal rules first; use outcome analysis only to choose between equally moral options.'
+      },
+      {
+        a: 'stoicism',
+        b: 'epicureanism',
+        tension: 'Discipline under hardship vs comfort and simplicity',
+        guidance: (primary, secondary) => primary === 'stoicism'
+          ? 'Lead with resilience and self-command while still permitting restorative pleasure when it supports stability.'
+          : 'Lead with peace and simplicity while borrowing stoic discipline when discomfort is required for growth.'
+      },
+      {
+        a: 'libertarianism',
+        b: 'confucianism',
+        tension: 'Individual sovereignty vs relational duty and hierarchy',
+        guidance: (primary, secondary) => primary === 'libertarianism'
+          ? 'Preserve individual agency, but treat family and community commitments as chosen responsibilities.'
+          : 'Honor relational duties first, while protecting individual consent and personal boundaries.'
+      }
+    ];
+
+    return conflictPairs
+      .filter(pair => selected.has(pair.a) && selected.has(pair.b))
+      .map(pair => {
+        const primary = getPrimary(pair.a, pair.b);
+        const secondary = primary === pair.a ? pair.b : pair.a;
+        return {
+          primary,
+          secondary,
+          tension: pair.tension,
+          resolution: pair.guidance(primary, secondary),
+          primaryName: getParadigmName(primary),
+          secondaryName: getParadigmName(secondary)
+        };
+      });
+  }
+
   /**
    * Generate remediation paths based on results
    */
@@ -1192,12 +1326,26 @@ export class SovereigntySpectrumEngine {
     let html = '<div class="spectrum-results">';
     html += '<h3>Your Sovereignty Paradigm Results</h3>';
     html += '<p>Based on your responses, here is your identified sovereignty paradigm and your integration level with that paradigm.</p>';
+
+    const dominance = this.analysisData.paradigmDominance || [];
+    const dominantEntry = dominance[0];
+    const dominantParadigm = dominantEntry
+      ? SOVEREIGNTY_PARADIGMS.find(p => p.id === dominantEntry.id)
+      : null;
     
     // Selected paradigms (show first - identification is primary)
     html += '<div class="selected-paradigms">';
     html += '<h4>Your Identified Sovereignty Paradigm(s)</h4>';
     html += '<p class="content-section">These are the paradigms that best describe your approach to sovereignty. This is about identification and clarification, not ranking paradigms as superior or inferior.</p>';
+    if (dominantParadigm) {
+      html += '<div class="paradigm-result-card" style="border-left: 3px solid var(--accent); background: var(--glass);">';
+      html += `<h5>Dominant Paradigm: ${SecurityUtils.sanitizeHTML(dominantParadigm.name)}</h5>`;
+      html += `<p>${SecurityUtils.sanitizeHTML(dominantParadigm.description)}</p>`;
+      html += '<p class="content-section">This is the paradigm with the strongest combined resonance and lived alignment, and it should be treated as your primary operating stance when paradigms compete.</p>';
+      html += '</div>';
+    }
     this.selectedParadigms.forEach(paradigmId => {
+      if (dominantEntry && paradigmId === dominantEntry.id) return;
       const paradigm = SOVEREIGNTY_PARADIGMS.find(p => p.id === paradigmId);
       if (paradigm) {
         html += `<div class="paradigm-result-card">`;
@@ -1207,6 +1355,20 @@ export class SovereigntySpectrumEngine {
       }
     });
     html += '</div>';
+
+    if (this.analysisData.paradigmConflicts && this.analysisData.paradigmConflicts.length > 0) {
+      html += '<div class="paradigm-conflicts">';
+      html += '<h4>Paradigm Tensions & Resolutions</h4>';
+      html += '<p class="content-section">When two paradigms pull in opposite directions, the dominant paradigm is the deciding lens and the other becomes a modifier rather than a competing rule.</p>';
+      this.analysisData.paradigmConflicts.forEach(conflict => {
+        html += '<div class="paradigm-result-card" style="background: var(--glass); border-left: 3px solid var(--brand);">';
+        html += `<h5>${SecurityUtils.sanitizeHTML(conflict.primaryName)} ⇄ ${SecurityUtils.sanitizeHTML(conflict.secondaryName)}</h5>`;
+        html += `<p><strong>Tension:</strong> ${SecurityUtils.sanitizeHTML(conflict.tension)}</p>`;
+        html += `<p><strong>Resolution:</strong> ${SecurityUtils.sanitizeHTML(conflict.resolution)}</p>`;
+        html += '</div>';
+      });
+      html += '</div>';
+    }
     
     // Integration level (secondary - how well they live according to their identified paradigm)
     html += '<div class="spectrum-bar-container">';

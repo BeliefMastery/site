@@ -1235,6 +1235,7 @@ export class SovereigntyEngine {
 
   updatePreliminaryFilters(question, answerValue) {
     // Update filters based on early questions to enable adaptive filtering
+    if (!question || !question.id) return;
     
     // Section 1: Usage frequency (from u2 - daily usage frequency)
     if (question.id === 'u2' && question.options) {

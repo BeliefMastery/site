@@ -5555,6 +5555,48 @@ img {
     color: var(--muted);
 }
 
+.temperament-trend-legend {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.temperament-assessment-context {
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+
+.temperament-trend-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--glass);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    z-index: 2;
+}
+
+.temperament-trend-legend .temperament-trend-dot {
+    position: static;
+    transform: none;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.35rem;
+}
+
+.temperament-trend-male {
+    background: #4c8bff;
+}
+
+.temperament-trend-female {
+    background: #ff7fb1;
+}
+
 .temperament-spectrum-position {
     text-align: center;
     margin-top: 0.5rem;
