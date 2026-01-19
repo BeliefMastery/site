@@ -134,13 +134,40 @@
           <div class="form-group">
             <label for="birthTime">Birth Time</label>
             <input type="time" id="birthTime" name="birthTime" value="12:00">
-            <small class="form-help">Optional: Used for calculating Moon and Ascendant (if not provided manually)</small>
+            <small class="form-help">Required for Moon + Ascendant calculations (if not provided manually)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="timezoneOffset">Timezone Offset (UTC)</label>
+            <input type="number" id="timezoneOffset" name="timezoneOffset" step="0.25" placeholder="e.g. +10, -5, +5.5">
+            <small class="form-help">Enter your UTC offset at birth (include DST separately).</small>
+          </div>
+
+          <div class="form-group">
+            <label for="dstObserved">Daylight Saving Time (DST)</label>
+            <select id="dstObserved" name="dstObserved">
+              <option value="0">No</option>
+              <option value="1">Yes (+1 hour)</option>
+            </select>
+            <small class="form-help">Set to Yes if DST was in effect at birth time.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="birthLatitude">Birth Latitude</label>
+            <input type="number" id="birthLatitude" name="birthLatitude" step="0.0001" placeholder="e.g. -33.8688">
+            <small class="form-help">Latitude in decimal degrees (negative for south).</small>
+          </div>
+
+          <div class="form-group">
+            <label for="birthLongitude">Birth Longitude</label>
+            <input type="number" id="birthLongitude" name="birthLongitude" step="0.0001" placeholder="e.g. 151.2093">
+            <small class="form-help">Longitude in decimal degrees (positive for east, negative for west).</small>
           </div>
 
           <div class="form-group">
             <label for="birthLocation">Birth Location</label>
             <input type="text" id="birthLocation" name="birthLocation" placeholder="City, Country">
-            <small class="form-help">Optional: Used for calculating Ascendant (if not provided manually)</small>
+            <small class="form-help">Optional: Used for your reference only.</small>
           </div>
 
           <div class="form-group">
