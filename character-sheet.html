@@ -92,6 +92,10 @@
         
         <p>Your character sheet includes Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Skills, Class Features, and Character Flaws—all derived from your astrological influences.</p>
 
+        <div class="action-buttons" style="margin-top: 1.5rem;">
+          <button class="btn btn-secondary" id="generateSampleReport">Generate Sample Character</button>
+        </div>
+
         <!-- Extended Explanation Toggle -->
         <div class="extended-explanation-toggle" id="extendedExplanationToggle">
           <div class="extended-explanation-toggle-text">
@@ -215,7 +219,7 @@
               <option value="Dog">Dog</option>
               <option value="Pig">Pig</option>
             </datalist>
-            <small class="form-help">Auto-calculated from birth year, or enter manually if you know your Chinese zodiac animal</small>
+            <small class="form-help">Auto-calculated from birth year, or enter manually. If unknown, use the <a href="https://astrologizeme.com/your_chinese_sign.shtml" target="_blank" rel="noopener">Chinese sign calculator</a>.</small>
           </div>
 
           <div class="form-group">
@@ -228,13 +232,56 @@
               <option value="Metal">Metal</option>
               <option value="Water">Water</option>
             </datalist>
-            <small class="form-help">Auto-calculated from birth year, or enter manually if you know your Chinese element</small>
+            <small class="form-help">Auto-calculated from birth year, or enter manually. If unknown, use the <a href="https://astrologizeme.com/your_chinese_sign.shtml" target="_blank" rel="noopener">Chinese sign calculator</a>.</small>
           </div>
 
           <div class="form-group">
-            <label for="mayanSign">Mayan Dreamspell Sign (Optional)</label>
-            <input type="text" id="mayanSign" name="mayanSign" placeholder="e.g., White Solar Wind, Yellow Cosmic Star">
-            <small class="form-help">Auto-calculated from birth date, but you can override with the exact result from <a href="https://www.starroot.com/cgi/daycalc.pl" target="_blank" rel="noopener">starroot.com Dreamspell calculator</a> (format: Color Tone Seal, e.g., "White Solar Wind")</small>
+            <label for="mayanTone">Mayan Dreamspell Tone (Required)</label>
+            <select id="mayanTone" name="mayanTone" required>
+              <option value="" disabled selected>Select tone</option>
+              <option value="Magnetic">Magnetic</option>
+              <option value="Lunar">Lunar</option>
+              <option value="Electric">Electric</option>
+              <option value="Self-Existing">Self-Existing</option>
+              <option value="Overtone">Overtone</option>
+              <option value="Rhythmic">Rhythmic</option>
+              <option value="Resonant">Resonant</option>
+              <option value="Galactic">Galactic</option>
+              <option value="Solar">Solar</option>
+              <option value="Planetary">Planetary</option>
+              <option value="Spectral">Spectral</option>
+              <option value="Crystal">Crystal</option>
+              <option value="Cosmic">Cosmic</option>
+            </select>
+            <small class="form-help">Required for character formulation (see <a href="coaching/_combined%20astrology%20cheat%20sheet%202025.pdf" target="_blank" rel="noopener">combined astrology cheat sheet 2025</a>).</small>
+          </div>
+
+          <div class="form-group">
+            <label for="mayanKin">Mayan Dreamspell Kin (Required)</label>
+            <select id="mayanKin" name="mayanKin" required>
+              <option value="" disabled selected>Select color + kin</option>
+              <option value="Red Dragon">Red Dragon</option>
+              <option value="White Wind">White Wind</option>
+              <option value="Blue Night">Blue Night</option>
+              <option value="Yellow Seed">Yellow Seed</option>
+              <option value="Red Serpent">Red Serpent</option>
+              <option value="White World-Bridger">White World-Bridger</option>
+              <option value="Blue Hand">Blue Hand</option>
+              <option value="Yellow Star">Yellow Star</option>
+              <option value="Red Moon">Red Moon</option>
+              <option value="White Dog">White Dog</option>
+              <option value="Blue Monkey">Blue Monkey</option>
+              <option value="Yellow Human">Yellow Human</option>
+              <option value="Red Skywalker">Red Skywalker</option>
+              <option value="White Wizard">White Wizard</option>
+              <option value="Blue Eagle">Blue Eagle</option>
+              <option value="Yellow Warrior">Yellow Warrior</option>
+              <option value="Red Earth">Red Earth</option>
+              <option value="White Mirror">White Mirror</option>
+              <option value="Blue Storm">Blue Storm</option>
+              <option value="Yellow Sun">Yellow Sun</option>
+            </select>
+            <small class="form-help">If you don’t know your Dreamspell Tone + Kin, use the <a href="https://www.starroot.com/cgi/daycalc.pl" target="_blank" rel="noopener">Dreamspell calculator</a>.</small>
           </div>
 
           <div class="navigation-buttons">

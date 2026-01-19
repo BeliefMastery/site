@@ -37,6 +37,9 @@ export class CharacterSheetEngine {
    */
   init() {
     this.attachEventListeners();
+    if (this.shouldAutoGenerateSample()) {
+      this.generateSampleReport();
+    }
   }
 
   /**
@@ -93,6 +96,11 @@ export class CharacterSheetEngine {
       generateBtn.addEventListener('click', () => this.generateCharacter());
     }
 
+    const sampleBtn = document.getElementById('generateSampleReport');
+    if (sampleBtn) {
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
+    }
+
     const newCharacterBtn = document.getElementById('newCharacter');
     if (newCharacterBtn) {
       newCharacterBtn.addEventListener('click', () => this.resetForm());
@@ -107,6 +115,60 @@ export class CharacterSheetEngine {
     const birthDateInput = document.getElementById('birthDate');
     if (birthDateInput) {
       birthDateInput.addEventListener('change', () => this.calculateSunSign());
+    }
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    if (value === null || value === '' || value === '1' || value === 'true') return true;
+    return false;
+  }
+
+  getRandomItem(items) {
+    if (!Array.isArray(items) || items.length === 0) return null;
+    return items[Math.floor(Math.random() * items.length)];
+  }
+
+  setFieldValue(id, value) {
+    const field = document.getElementById(id);
+    if (field && value !== undefined && value !== null) {
+      field.value = value;
+    }
+  }
+
+  async generateSampleReport() {
+    try {
+      await this.loadAstrologyData();
+
+      const birthYear = 1980 + Math.floor(Math.random() * 25);
+      const birthMonth = 1 + Math.floor(Math.random() * 12);
+      const birthDay = 1 + Math.floor(Math.random() * 28);
+      const birthDate = `${birthYear}-${String(birthMonth).padStart(2, '0')}-${String(birthDay).padStart(2, '0')}`;
+
+      const signKey = getWesternSign(birthMonth, birthDay);
+      const sunSign = signKey && WESTERN_SIGNS[signKey] ? WESTERN_SIGNS[signKey].name : '';
+      const moonSign = this.getRandomItem(Object.values(WESTERN_SIGNS))?.name || '';
+      const ascendantSign = this.getRandomItem(Object.values(WESTERN_SIGNS))?.name || '';
+
+      const mayanTone = this.getRandomItem(Object.values(MAYAN_TONES))?.name || '';
+      const mayanKin = this.getRandomItem(Object.values(MAYAN_SEALS))?.name || '';
+
+      this.setFieldValue('characterName', 'Sample Adventurer');
+      this.setFieldValue('birthDate', birthDate);
+      this.setFieldValue('birthTime', '12:00');
+      this.setFieldValue('birthLocation', 'Sample City');
+      this.setFieldValue('sunSign', sunSign);
+      this.setFieldValue('moonSign', moonSign);
+      this.setFieldValue('ascendantSign', ascendantSign);
+      this.setFieldValue('mayanTone', mayanTone);
+      this.setFieldValue('mayanKin', mayanKin);
+
+      this.generateCharacter();
+    } catch (error) {
+      this.debugReporter.logError(error, 'generateSampleReport');
+      ErrorHandler.showUserError('Failed to generate sample character. Please try again.');
     }
   }
 
@@ -183,7 +245,9 @@ export class CharacterSheetEngine {
       ascendantSign: document.getElementById('ascendantSign')?.value || '',
       chineseAnimal: document.getElementById('chineseAnimal')?.value || '',
       chineseElement: document.getElementById('chineseElement')?.value || '',
-      mayanSign: document.getElementById('mayanSign')?.value || ''
+      mayanSign: document.getElementById('mayanSign')?.value || '',
+      mayanTone: document.getElementById('mayanTone')?.value || '',
+      mayanKin: document.getElementById('mayanKin')?.value || ''
     };
   }
 
@@ -200,6 +264,11 @@ export class CharacterSheetEngine {
     
     if (!formData.sunSign) {
       ErrorHandler.showUserError('Please enter your Sun sign (or select a birth date to auto-calculate).');
+      return false;
+    }
+
+    if (!formData.mayanTone || !formData.mayanKin) {
+      ErrorHandler.showUserError('Please enter your Dreamspell Tone and Kin. Use the Dreamspell calculator link in the form if needed.');
       return false;
     }
     
@@ -268,7 +337,13 @@ export class CharacterSheetEngine {
     let mayanTone = null;
     let mayanKin = null;
     
-    if (formData.mayanSign) {
+    if (formData.mayanTone && formData.mayanKin) {
+      mayanTone = this.findMayanTone(formData.mayanTone);
+      mayanSeal = this.findMayanSeal(formData.mayanKin);
+      mayanKin = formData.mayanKin;
+    }
+
+    if (!mayanSeal && !mayanTone && formData.mayanSign) {
       // Parse manual input (e.g., "White Solar Wind")
       const parsed = this.parseMayanSign(formData.mayanSign);
       if (parsed) {
@@ -335,6 +410,32 @@ export class CharacterSheetEngine {
     }
     
     return null;
+  }
+
+  findMayanTone(input) {
+    const normalized = this.normalizeKey(input);
+    const toneKey = Object.keys(MAYAN_TONES || {}).find(key => {
+      const tone = MAYAN_TONES[key];
+      return this.normalizeKey(tone.name) === normalized;
+    });
+    return toneKey ? MAYAN_TONES[toneKey] : null;
+  }
+
+  findMayanSeal(input) {
+    const normalized = this.normalizeKey(input);
+    const sealKey = Object.keys(MAYAN_SEALS || {}).find(key => {
+      const seal = MAYAN_SEALS[key];
+      const fullName = this.normalizeKey(seal.name);
+      const withoutColor = this.normalizeKey(seal.name.split(' ').slice(1).join(' '));
+      return fullName === normalized || withoutColor === normalized;
+    });
+    return sealKey ? MAYAN_SEALS[sealKey] : null;
+  }
+
+  normalizeKey(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z]/g, '');
   }
 
   buildCharacterSheet(formData, astrologyData) {

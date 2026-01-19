@@ -53,7 +53,7 @@ cd site
 - `tools.html` - All diagnostic tools listing
 - `about-the-author.html` - Author biography
 - `framework-atlas.html` - Cross-map of book principles, engines, and outputs
-- `case-studies.html` - Example outputs hub for every engine
+- `assessment-examples.html` - Example outputs hub for every engine
 
 ### Diagnostic Tools (13 tools)
 1. **Pathology Assessment** (`diagnosis.html`) - DSM-5 self-reporting diagnostic tool
@@ -75,8 +75,9 @@ cd site
 - `shared/` - Shared background, utilities, and diagnostics
 - `*-engine.js` - Individual tool engines (one per tool)
 - `*-data/` - Data modules for each tool
-- `example-reports/` - Example reports linked from tools
 - `images/` - All site images
+- `assessment-examples.html` - Generates live sample reports via `?sample=1`
+- `books/` and `tools/` - Source text files for book and tool materials (not public pages)
 
 ## Technical Details
 

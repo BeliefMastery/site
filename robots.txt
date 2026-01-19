@@ -5,13 +5,13 @@ Allow: /
 Sitemap: https://beliefmastery.github.io/site/sitemap.xml
 Allow: /sitemap.xml
 
-# Disallow example reports (internal use)
+# Disallow internal/legacy directories
 Disallow: /example-reports/
-
-# Disallow archive directories
 Disallow: /archive/
 Disallow: /PRBV/
 Disallow: /coaching/
+Disallow: /books/
+Disallow: /tools/
 
 # Allow main pages and tools
 Allow: /index.html
@@ -19,7 +19,7 @@ Allow: /books.html
 Allow: /tools.html
 Allow: /about-the-author.html
 Allow: /framework-atlas.html
-Allow: /case-studies.html
+Allow: /assessment-examples.html
 Allow: /diagnosis.html
 Allow: /coaching.html
 Allow: /needs-dependency.html
