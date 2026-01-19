@@ -680,46 +680,74 @@ export class CharacterSheetEngine {
     }
     const mayanDisplay = getMayanSignDisplayName(sealKey, mayanTone?.name || '');
     
-    // Create a more narrative, innovative backstory
-    const narratives = [];
-    
-    // Opening - character origin
-    narratives.push(`${SecurityUtils.sanitizeHTML(formData.name || '')} emerged into the world as a ${SecurityUtils.sanitizeHTML(race || '')}, their essence shaped by cosmic forces that converged at the moment of their birth.`);
-    
-    // Sun sign - core identity
-    if (sunSign) {
-      const sunTrait = sunSign.keyTraits[Math.floor(Math.random() * sunSign.keyTraits.length)];
-      narratives.push(`Born under the ${SecurityUtils.sanitizeHTML(sunSign.name || '')} Sun, their fundamental nature is ${SecurityUtils.sanitizeHTML(sunTrait || '').toLowerCase()}, driving them toward ${SecurityUtils.sanitizeHTML(sunSign.keyTraits.filter(t => t !== sunTrait)[0] || '').toLowerCase()} in all endeavors.`);
+    const name = SecurityUtils.sanitizeHTML(formData.name || 'They');
+    const safeRace = SecurityUtils.sanitizeHTML(race || '');
+    const safeClass = SecurityUtils.sanitizeHTML(characterClass || '');
+
+    const coreTraits = [];
+    const innerTraits = [];
+    const outwardTraits = [];
+    const groundingTraits = [];
+    const guidingTraits = [];
+
+    if (sunSign?.keyTraits?.length) {
+      coreTraits.push(sunSign.keyTraits[0], sunSign.keyTraits[1]);
     }
-    
-    // Moon sign - inner world
-    if (moonSign) {
-      narratives.push(`Beneath the surface, the ${SecurityUtils.sanitizeHTML(moonSign.name || '')} Moon illuminates their inner landscape, making them deeply ${SecurityUtils.sanitizeHTML(moonSign.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(moonSign.keyTraits[1] || '').toLowerCase()}, though this emotional depth often remains hidden from casual observers.`);
+    if (moonSign?.keyTraits?.length) {
+      innerTraits.push(moonSign.keyTraits[0], moonSign.keyTraits[1]);
     }
-    
-    // Ascendant - outward expression
-    if (ascendantSign) {
-      narratives.push(`To the world, they present as ${SecurityUtils.sanitizeHTML(ascendantSign.name || '')} rising—${SecurityUtils.sanitizeHTML(ascendantSign.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(ascendantSign.keyTraits[1] || '').toLowerCase()}, a mask that both protects and reveals their true nature.`);
+    if (ascendantSign?.keyTraits?.length) {
+      outwardTraits.push(ascendantSign.keyTraits[0], ascendantSign.keyTraits[1]);
     }
-    
-    // Chinese astrology - earthly influence
-    if (chineseAnimal && chineseElement) {
-      const elementName = chineseElement.name || astrologyData.chinese.elementKey || 'Unknown';
-      narratives.push(`In the year of the ${SecurityUtils.sanitizeHTML(elementName || '')} ${SecurityUtils.sanitizeHTML(chineseAnimal.name || '')}, earthly forces granted them ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[0] || '').toLowerCase()} and ${SecurityUtils.sanitizeHTML(chineseAnimal.keyTraits[1] || '').toLowerCase()}, while the ${SecurityUtils.sanitizeHTML(elementName || '').toLowerCase()} element flows through their ${SecurityUtils.sanitizeHTML(chineseElement.traits[0] || '').toLowerCase()} nature.`);
+    if (chineseAnimal?.keyTraits?.length) {
+      groundingTraits.push(chineseAnimal.keyTraits[0], chineseAnimal.keyTraits[1]);
     }
-    
-    // Mayan seal - galactic signature
-    if (mayanSeal && mayanTone) {
-      narratives.push(`Their galactic signature, ${SecurityUtils.sanitizeHTML(mayanDisplay || '')}, marks them as one who ${SecurityUtils.sanitizeHTML(mayanSeal.ability.split(' - ')[1] || mayanSeal.ability || '').toLowerCase()}, while the ${SecurityUtils.sanitizeHTML(mayanTone.name || '')} tone shapes their approach: ${SecurityUtils.sanitizeHTML(mayanTone.approach.split(' - ')[1] || mayanTone.approach || '').toLowerCase()}.`);
+    if (chineseElement?.traits?.length) {
+      groundingTraits.push(chineseElement.traits[0]);
     }
-    
-    // Class connection
-    narratives.push(`These converging influences naturally led ${SecurityUtils.sanitizeHTML(formData.name || '')} to the path of the ${SecurityUtils.sanitizeHTML(characterClass || '')}, where their unique combination of ${SecurityUtils.sanitizeHTML(sunSign?.keyTraits[0] || 'abilities').toLowerCase()} and ${SecurityUtils.sanitizeHTML(moonSign?.keyTraits[0] || 'insights').toLowerCase()} finds its fullest expression.`);
-    
-    // Closing - destiny
-    narratives.push(`Their journey is one of integration—learning to harmonize the ${sunSign?.element?.toLowerCase() || 'elemental'} fire of their Sun with the ${moonSign?.element?.toLowerCase() || 'emotional'} waters of their Moon, while the ${mayanDisplay} signature guides them toward their galactic purpose.`);
-    
-    return narratives.join(' ');
+    if (mayanSeal?.ability) {
+      guidingTraits.push(mayanSeal.ability.split(' - ')[1] || mayanSeal.ability);
+    }
+    if (mayanTone?.approach) {
+      guidingTraits.push(mayanTone.approach.split(' - ')[1] || mayanTone.approach);
+    }
+
+    const summarize = (traits) => traits
+      .filter(Boolean)
+      .map(trait => SecurityUtils.sanitizeHTML(trait).toLowerCase())
+      .filter((trait, index, array) => array.indexOf(trait) === index)
+      .slice(0, 3);
+
+    const coreSummary = summarize(coreTraits);
+    const innerSummary = summarize(innerTraits);
+    const outwardSummary = summarize(outwardTraits);
+    const groundingSummary = summarize(groundingTraits);
+    const guidingSummary = summarize(guidingTraits);
+
+    const sentences = [];
+    sentences.push(`${name} is a ${safeRace} whose character centers on ${coreSummary.join(', ') || 'quiet resolve'}.`);
+
+    if (innerSummary.length) {
+      sentences.push(`At their core, they are ${innerSummary.join(' and ')}, which shapes how they process experience.`);
+    }
+
+    if (outwardSummary.length) {
+      sentences.push(`To others, they appear ${outwardSummary.join(' and ')}, carrying themselves with a distinct presence.`);
+    }
+
+    if (groundingSummary.length) {
+      sentences.push(`Their grounding nature is ${groundingSummary.join(', ')}, making them steady under pressure.`);
+    }
+
+    if (guidingSummary.length) {
+      sentences.push(`Their guiding impulse is to be ${guidingSummary.join(' and ')}, pushing them toward purposeful impact.`);
+    }
+
+    if (safeClass) {
+      sentences.push(`This temperament draws them toward the ${safeClass} path, where their strengths can be refined into mastery.`);
+    }
+
+    return sentences.join(' ');
   }
 
   generateProficiencies(astrologyData, characterClass) {
