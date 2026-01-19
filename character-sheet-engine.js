@@ -755,16 +755,16 @@ export class CharacterSheetEngine {
     
     // Base class proficiencies
     const classProficiencies = {
-      'Fighter': ['Armor (All)', 'Shields', 'Simple Weapons', 'Martial Weapons'],
-      'Rogue': ['Light Armor', 'Simple Weapons', 'Hand Crossbows', 'Longswords', 'Rapiers', 'Shortswords'],
-      'Barbarian': ['Light Armor', 'Medium Armor', 'Shields', 'Simple Weapons', 'Martial Weapons'],
-      'Wizard': ['Daggers', 'Darts', 'Slings', 'Quarterstaffs', 'Light Crossbows'],
-      'Cleric': ['Light Armor', 'Medium Armor', 'Shields', 'Simple Weapons'],
-      'Bard': ['Light Armor', 'Simple Weapons', 'Hand Crossbows', 'Longswords', 'Rapiers', 'Shortswords'],
-      'Paladin': ['Armor (All)', 'Shields', 'Simple Weapons', 'Martial Weapons'],
-      'Druid': ['Light Armor', 'Medium Armor', 'Shields', 'Clubs', 'Daggers', 'Darts', 'Javelins', 'Maces', 'Quarterstaffs', 'Scimitars', 'Sickles', 'Slings', 'Spears'],
-      'Monk': ['Simple Weapons', 'Shortswords'],
-      'Ranger': ['Light Armor', 'Medium Armor', 'Shields', 'Simple Weapons', 'Martial Weapons']
+      'Fighter': ['Crisis response', 'Tactical planning', 'Boundary enforcement', 'Team leadership', 'Physical resilience'],
+      'Rogue': ['Risk assessment', 'Situational awareness', 'Negotiation', 'Discretion', 'Pattern recognition'],
+      'Barbarian': ['Protective presence', 'Stamina training', 'Intensity management', 'Direct action', 'Resilience under pressure'],
+      'Wizard': ['Research synthesis', 'Systems thinking', 'Strategic foresight', 'Analytical writing', 'Deep learning'],
+      'Cleric': ['Counseling', 'Ethical guidance', 'Conflict mediation', 'Community care', 'Ritual facilitation'],
+      'Bard': ['Public speaking', 'Storytelling', 'Motivational coaching', 'Social intelligence', 'Creative facilitation'],
+      'Paladin': ['Values-based leadership', 'Accountability frameworks', 'Mentorship', 'Crisis leadership', 'Integrity under pressure'],
+      'Druid': ['Ecological awareness', 'Somatic grounding', 'Holistic assessment', 'Regeneration practices', 'Environmental stewardship'],
+      'Monk': ['Emotional regulation', 'Focus training', 'Body-mind alignment', 'Discipline routines', 'Mindful presence'],
+      'Ranger': ['Field navigation', 'Preparedness', 'Observation', 'Resource management', 'Boundary scouting']
     };
     
     if (classProficiencies[characterClass]) {
@@ -773,16 +773,16 @@ export class CharacterSheetEngine {
     
     // Add astrological proficiencies
     if (astrologyData.western.sun?.element === 'Fire') {
-      proficiencies.push('Intimidation');
+      proficiencies.push('Initiative & momentum', 'Decisive action');
     }
     if (astrologyData.western.sun?.element === 'Water') {
-      proficiencies.push('Insight');
+      proficiencies.push('Empathic listening', 'Emotional attunement');
     }
     if (astrologyData.western.sun?.element === 'Air') {
-      proficiencies.push('Investigation');
+      proficiencies.push('Strategic communication', 'Idea synthesis');
     }
     if (astrologyData.western.sun?.element === 'Earth') {
-      proficiencies.push('Survival');
+      proficiencies.push('Operational planning', 'Grounded execution');
     }
     
     return [...new Set(proficiencies)]; // Remove duplicates
@@ -932,31 +932,141 @@ export class CharacterSheetEngine {
     
     // Base class features
     const baseFeatures = {
-      'Fighter': {
-        'Fighting Style': 'Choose a fighting style that reflects your combat approach.',
-        'Second Wind': 'Once per short rest, regain 1d10 + Fighter level hit points as a bonus action.'
-      },
-      'Rogue': {
-        'Sneak Attack': 'Once per turn, deal extra 1d6 damage when you have advantage or an ally is within 5 feet.',
-        'Thieves\' Cant': 'You know the secret language of thieves.'
-      },
-      'Wizard': {
-        'Spellcasting': 'You can cast wizard spells using Intelligence as your spellcasting ability.',
-        'Arcane Recovery': 'Once per day, recover spell slots during a short rest.'
-      },
-      'Cleric': {
-        'Spellcasting': 'You can cast cleric spells using Wisdom as your spellcasting ability.',
-        'Divine Domain': 'Choose a domain that reflects your deity\'s influence.'
-      },
-      'Bard': {
-        'Spellcasting': 'You can cast bard spells using Charisma as your spellcasting ability.',
-        'Bardic Inspiration': 'Grant allies 1d6 inspiration die as a bonus action, usable a number of times equal to your Charisma modifier.'
-      }
+      'Fighter': [
+        {
+          name: 'Fighting Style',
+          description: 'You specialize in a combat discipline that shapes how you handle conflict, defense, and initiative. This style guides your training, posture, and decision-making under pressure.',
+          frequency: 'Always active'
+        },
+        {
+          name: 'Second Wind',
+          description: 'You can rally and recover in the middle of a challenge, regaining stamina and composure through focused breath and grit.',
+          frequency: 'Once per short rest'
+        }
+      ],
+      'Rogue': [
+        {
+          name: 'Sneak Attack',
+          description: 'You excel at precision strikes that capitalize on distraction or advantage, turning small openings into decisive impact.',
+          frequency: 'Once per turn when advantage is present'
+        },
+        {
+          name: 'Cunning Action',
+          description: 'Your agility lets you reposition, disengage, or hide with minimal effort, keeping you one step ahead in dynamic situations.',
+          frequency: 'Once per turn'
+        },
+        {
+          name: 'Thieves\' Cant',
+          description: 'You fluently interpret coded cues and subtext, allowing you to communicate quietly in sensitive environments.',
+          frequency: 'Always active'
+        }
+      ],
+      'Barbarian': [
+        {
+          name: 'Rage',
+          description: 'You can enter a heightened state of intensity that amplifies your power, focus, and resolve under pressure.',
+          frequency: 'Twice per long rest'
+        },
+        {
+          name: 'Unarmored Defense',
+          description: 'Your instinctive resilience keeps you protected even without external armor, relying on raw endurance and awareness.',
+          frequency: 'Always active'
+        }
+      ],
+      'Wizard': [
+        {
+          name: 'Spellcasting',
+          description: 'You wield focused knowledge to channel complex effects, relying on intellect, preparation, and disciplined practice.',
+          frequency: 'Always active'
+        },
+        {
+          name: 'Arcane Recovery',
+          description: 'You can restore part of your mental reserves through focused rest and reflection, recovering spent resources.',
+          frequency: 'Once per day after a short rest'
+        }
+      ],
+      'Cleric': [
+        {
+          name: 'Spellcasting',
+          description: 'You channel restorative and protective forces through faith and wisdom, shaping outcomes with spiritual authority.',
+          frequency: 'Always active'
+        },
+        {
+          name: 'Channel Divinity',
+          description: 'You can invoke a powerful surge of sacred energy to heal, protect, or turn the tide in critical moments.',
+          frequency: 'Once per short rest'
+        }
+      ],
+      'Bard': [
+        {
+          name: 'Spellcasting',
+          description: 'You weave creative expression into tangible influence, shaping attention, emotion, and momentum with style.',
+          frequency: 'Always active'
+        },
+        {
+          name: 'Bardic Inspiration',
+          description: 'You uplift allies with timely insight or encouragement, granting a burst of confidence and clarity.',
+          frequency: 'Uses equal to Charisma modifier per long rest'
+        }
+      ],
+      'Paladin': [
+        {
+          name: 'Lay on Hands',
+          description: 'You can deliver restorative support through focused touch, stabilizing allies and restoring strength.',
+          frequency: 'Pool refreshes per long rest'
+        },
+        {
+          name: 'Divine Sense',
+          description: 'You sense hidden corruption or sacred presence, helping you detect subtle threats or alignments.',
+          frequency: 'Uses equal to Charisma modifier per long rest'
+        },
+        {
+          name: 'Aura of Protection',
+          description: 'Allies within 20 meters benefit from your stabilizing presence, gaining a subtle resilience boost.',
+          frequency: 'Always active while conscious'
+        }
+      ],
+      'Druid': [
+        {
+          name: 'Wild Shape',
+          description: 'You can adapt your form to match the environment, enhancing mobility, endurance, or stealth.',
+          frequency: 'Twice per short rest'
+        },
+        {
+          name: 'Nature\'s Voice',
+          description: 'You interpret natural signs and ecosystems, gaining guidance from patterns in the living world.',
+          frequency: 'Always active'
+        }
+      ],
+      'Monk': [
+        {
+          name: 'Ki Focus',
+          description: 'You harness disciplined inner energy for bursts of precision, mobility, and defensive clarity.',
+          frequency: 'Points refresh per short rest'
+        },
+        {
+          name: 'Deflect Missiles',
+          description: 'You can redirect incoming force with refined timing, minimizing harm and conserving energy.',
+          frequency: 'Once per round as a reaction'
+        }
+      ],
+      'Ranger': [
+        {
+          name: 'Hunter\'s Focus',
+          description: 'You can mark a priority target or mission, sharpening attention and persistence toward the objective.',
+          frequency: 'Once per short rest'
+        },
+        {
+          name: 'Natural Explorer',
+          description: 'You move efficiently through terrain, noticing subtle signals that others miss.',
+          frequency: 'Always active'
+        }
+      ]
     };
     
     if (baseFeatures[characterClass]) {
-      Object.entries(baseFeatures[characterClass]).forEach(([name, description]) => {
-        features.push({ name, description, frequency: 'Varies' });
+      baseFeatures[characterClass].forEach((feature) => {
+        features.push({ ...feature });
       });
     }
     
@@ -1094,7 +1204,6 @@ export class CharacterSheetEngine {
             <thead>
               <tr>
                 <th>Trait</th>
-                <th>Source</th>
                 <th>Modifier</th>
               </tr>
             </thead>
@@ -1102,7 +1211,6 @@ export class CharacterSheetEngine {
               ${character.traits.map(t => `
                 <tr>
                   <td>${SecurityUtils.sanitizeHTML(t.name || '')}</td>
-                  <td>${SecurityUtils.sanitizeHTML(t.source || '')}</td>
                   <td>${SecurityUtils.sanitizeHTML(t.modifier || '')}</td>
                 </tr>
               `).join('')}
@@ -1117,15 +1225,13 @@ export class CharacterSheetEngine {
               <tr>
                 <th>Ability</th>
                 <th>Modifier</th>
-                <th>Proficient</th>
               </tr>
             </thead>
             <tbody>
               ${character.savingThrows.map(s => `
                 <tr>
                   <td>${s.name}</td>
-                  <td>${s.modifier}</td>
-                  <td>${s.proficient ? '✓' : ''}</td>
+                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')} ×2</strong>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1138,18 +1244,14 @@ export class CharacterSheetEngine {
             <thead>
               <tr>
                 <th>Skill</th>
-                <th>Ability</th>
                 <th>Modifier</th>
-                <th>Proficient</th>
               </tr>
             </thead>
             <tbody>
               ${character.skills.map(s => `
                 <tr>
                   <td>${s.name}</td>
-                  <td>${s.ability}</td>
-                  <td>${s.modifier}</td>
-                  <td>${s.proficient ? '✓' : ''}</td>
+                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')} ×2</strong>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
