@@ -116,6 +116,11 @@ export class CharacterSheetEngine {
     if (birthDateInput) {
       birthDateInput.addEventListener('change', () => this.calculateSunSign());
     }
+
+    const calculateBtn = document.getElementById('calculateAstrology');
+    if (calculateBtn) {
+      calculateBtn.addEventListener('click', () => this.calculateFromBirthDate());
+    }
   }
 
   shouldAutoGenerateSample() {
@@ -152,6 +157,11 @@ export class CharacterSheetEngine {
       const moonSign = this.getRandomItem(Object.values(WESTERN_SIGNS))?.name || '';
       const ascendantSign = this.getRandomItem(Object.values(WESTERN_SIGNS))?.name || '';
 
+      const chineseAnimalKey = getChineseAnimal(birthYear);
+      const chineseElementKey = getChineseElement(birthYear);
+      const chineseAnimal = CHINESE_ANIMALS[chineseAnimalKey]?.name || '';
+      const chineseElement = CHINESE_ELEMENTS[chineseElementKey]?.name || '';
+
       const mayanTone = this.getRandomItem(Object.values(MAYAN_TONES))?.name || '';
       const mayanKin = this.getRandomItem(Object.values(MAYAN_SEALS))?.name || '';
 
@@ -162,6 +172,8 @@ export class CharacterSheetEngine {
       this.setFieldValue('sunSign', sunSign);
       this.setFieldValue('moonSign', moonSign);
       this.setFieldValue('ascendantSign', ascendantSign);
+      this.setFieldValue('chineseAnimal', chineseAnimal);
+      this.setFieldValue('chineseElement', chineseElement);
       this.setFieldValue('mayanTone', mayanTone);
       this.setFieldValue('mayanKin', mayanKin);
 
@@ -196,6 +208,40 @@ export class CharacterSheetEngine {
     } catch (error) {
       this.debugReporter.logError(error, 'calculateSunSign');
       ErrorHandler.showUserError('Failed to calculate sun sign.');
+    }
+  }
+
+  async calculateFromBirthDate() {
+    try {
+      await this.loadAstrologyData();
+
+      const birthDateInput = document.getElementById('birthDate');
+      if (!birthDateInput || !birthDateInput.value) {
+        ErrorHandler.showUserError('Please enter your birth date first.');
+        return;
+      }
+
+      const birthDate = new Date(birthDateInput.value);
+      const year = birthDate.getFullYear();
+      const month = birthDate.getMonth() + 1;
+      const day = birthDate.getDate();
+
+      const signKey = getWesternSign(month, day);
+      if (signKey && WESTERN_SIGNS[signKey]) {
+        this.setFieldValue('sunSign', WESTERN_SIGNS[signKey].name);
+      }
+
+      const chineseAnimalKey = getChineseAnimal(year);
+      const chineseElementKey = getChineseElement(year);
+      this.setFieldValue('chineseAnimal', CHINESE_ANIMALS[chineseAnimalKey]?.name || '');
+      this.setFieldValue('chineseElement', CHINESE_ELEMENTS[chineseElementKey]?.name || '');
+
+      const mayanData = calculateMayanSign(birthDate);
+      this.setFieldValue('mayanTone', MAYAN_TONES[mayanData.tone]?.name || '');
+      this.setFieldValue('mayanKin', MAYAN_SEALS[mayanData.seal]?.name || '');
+    } catch (error) {
+      this.debugReporter.logError(error, 'calculateFromBirthDate');
+      ErrorHandler.showUserError('Failed to calculate astrology data. Please try again.');
     }
   }
 
