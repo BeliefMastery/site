@@ -91,9 +91,20 @@ export class CharacterSheetEngine {
   }
 
   attachEventListeners() {
+    const form = document.getElementById('characterForm');
+    if (form) {
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        this.generateCharacter();
+      });
+    }
+
     const generateBtn = document.getElementById('generateCharacter');
     if (generateBtn) {
-      generateBtn.addEventListener('click', () => this.generateCharacter());
+      generateBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        this.generateCharacter();
+      });
     }
 
     const sampleBtn = document.getElementById('generateSampleReport');
