@@ -1887,6 +1887,7 @@ export class SovereigntyEngine {
       };
       
       sessionStorage.removeItem('sovereigntyAssessment');
+      localStorage.removeItem('sovereigntyAssessment');
       
       this.ui.transition('idle');
       
@@ -1906,12 +1907,17 @@ export class SovereigntyEngine {
       preliminaryFilters: this.preliminaryFilters,
       analysisData: this.analysisData
     };
-    sessionStorage.setItem('sovereigntyAssessment', JSON.stringify(progress));
+    try {
+      localStorage.setItem('sovereigntyAssessment', JSON.stringify(progress));
+    } catch (error) {
+      sessionStorage.setItem('sovereigntyAssessment', JSON.stringify(progress));
+    }
   }
 
   loadStoredData() {
     try {
-      const stored = sessionStorage.getItem('sovereigntyAssessment');
+      const stored = localStorage.getItem('sovereigntyAssessment')
+        || sessionStorage.getItem('sovereigntyAssessment');
       if (stored) {
         const progress = JSON.parse(stored);
         this.currentSection = progress.currentSection || 0; // Default to IQ selection

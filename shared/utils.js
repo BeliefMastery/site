@@ -101,12 +101,18 @@ export class DataStore {
         timestamp: Date.now(),
         data: data
       };
+      if (key === 'progress') {
+        localStorage.setItem(`resume:${this.namespace}`, 'true');
+      }
       localStorage.setItem(`${this.namespace}:${key}`, JSON.stringify(payload));
       return true;
     } catch (error) {
       console.error('Save failed:', error);
       // Fallback to sessionStorage
       try {
+        if (key === 'progress') {
+          sessionStorage.setItem(`resume:${this.namespace}`, 'true');
+        }
         sessionStorage.setItem(`${this.namespace}:${key}`, JSON.stringify(payload));
         return true;
       } catch {
@@ -123,11 +129,17 @@ export class DataStore {
   load(key) {
     try {
       const resumeKey = `resume:${this.namespace}`;
-      const resumeAllowed = sessionStorage.getItem(resumeKey) === 'true';
+      const storedLocal = localStorage.getItem(`${this.namespace}:${key}`);
+      const storedSession = sessionStorage.getItem(`${this.namespace}:${key}`);
+      const stored = storedLocal || storedSession;
+      const resumeAllowed = sessionStorage.getItem(resumeKey) === 'true'
+        || localStorage.getItem(resumeKey) === 'true'
+        || Boolean(storedLocal);
       if (key === 'progress' && !resumeAllowed) return null;
-      const stored = localStorage.getItem(`${this.namespace}:${key}`) 
-                  || sessionStorage.getItem(`${this.namespace}:${key}`);
       if (!stored) return null;
+      if (key === 'progress' && !sessionStorage.getItem(resumeKey) && !localStorage.getItem(resumeKey)) {
+        localStorage.setItem(resumeKey, 'true');
+      }
       
       const payload = JSON.parse(stored);
       
@@ -162,8 +174,23 @@ export class DataStore {
    * @param {string} key - Storage key
    */
   clear(key) {
+    if (!key) {
+      Object.keys(localStorage)
+        .filter(storageKey => storageKey.startsWith(`${this.namespace}:`))
+        .forEach(storageKey => localStorage.removeItem(storageKey));
+      Object.keys(sessionStorage)
+        .filter(storageKey => storageKey.startsWith(`${this.namespace}:`))
+        .forEach(storageKey => sessionStorage.removeItem(storageKey));
+      localStorage.removeItem(`resume:${this.namespace}`);
+      sessionStorage.removeItem(`resume:${this.namespace}`);
+      return;
+    }
     localStorage.removeItem(`${this.namespace}:${key}`);
     sessionStorage.removeItem(`${this.namespace}:${key}`);
+    if (key === 'progress') {
+      localStorage.removeItem(`resume:${this.namespace}`);
+      sessionStorage.removeItem(`resume:${this.namespace}`);
+    }
   }
 
   /**
