@@ -10,7 +10,7 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let ARCHETYPES, CORE_GROUPS;
-let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
+let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS, PHASE_5_QUESTIONS;
 let SUBTYPE_REFINEMENT_QUESTIONS;
 let ARCHETYPE_SPREAD_MAP;
 
@@ -36,6 +36,7 @@ export class ArchetypeEngine {
       phase2Results: {},
       phase3Results: {},
       phase4Results: {},
+      phase5Results: {},
       aspirationAnalysis: {},
       primaryArchetype: null,
       secondaryArchetype: null,
@@ -258,6 +259,7 @@ init() {
       phase2Results: {},
       phase3Results: {},
       phase4Results: {},
+      phase5Results: {},
       aspirationAnalysis: {},
       primaryArchetype: null,
       secondaryArchetype: null,
@@ -327,6 +329,10 @@ init() {
 
       await this.buildPhase4Sequence();
       this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+
+      await this.buildPhase5Sequence();
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzePhase5Results();
 
       this.finalizeResults();
     } catch (error) {
@@ -513,6 +519,7 @@ showGenderSelection() {
       SUBTYPE_REFINEMENT_QUESTIONS = questionsModule.SUBTYPE_REFINEMENT_QUESTIONS;
       PHASE_3_QUESTIONS = questionsModule.PHASE_3_QUESTIONS;
       PHASE_4_QUESTIONS = questionsModule.PHASE_4_QUESTIONS;
+      PHASE_5_QUESTIONS = questionsModule.PHASE_5_QUESTIONS;
 
       const spreadModule = await loadDataModule(
         './archetype-data/archetype-spread.js',
@@ -524,6 +531,8 @@ showGenderSelection() {
       this.debugReporter.recordSection('Phase 2', PHASE_2_QUESTIONS?.length || 0);
       this.debugReporter.recordSection('Phase 3', PHASE_3_QUESTIONS?.length || 0);
       this.debugReporter.recordSection('Phase 4', PHASE_4_QUESTIONS?.length || 0);
+      const phase5Count = (PHASE_5_QUESTIONS?.male?.length || 0) + (PHASE_5_QUESTIONS?.female?.length || 0);
+      this.debugReporter.recordSection('Phase 5', phase5Count);
     } catch (error) {
       this.debugReporter.logError(error, 'loadArchetypeData');
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
@@ -720,6 +729,27 @@ showGenderSelection() {
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
+  /**
+   * Build Phase 5 question sequence
+   * @returns {Promise<void>}
+   */
+  async buildPhase5Sequence() {
+    await this.loadArchetypeData();
+
+    // Phase 5: Status, Selection & Attraction Markers (gender-specific)
+    this.currentPhase = 5;
+    this.currentQuestionIndex = 0;
+    const genderKey = this.gender === 'female' ? 'female' : 'male';
+    const questions = Array.isArray(PHASE_5_QUESTIONS?.[genderKey])
+      ? [...PHASE_5_QUESTIONS[genderKey]]
+      : [];
+
+    this.questionSequence = questions;
+    this.debugReporter.recordQuestionCount(questions.length);
+    // Shuffle to mitigate order bias
+    this.questionSequence.sort(() => Math.random() - 0.5);
+  }
+
   renderCurrentQuestion() {
     const renderStart = performance.now();
     
@@ -789,6 +819,11 @@ showGenderSelection() {
         title: 'Phase 4: Validation & Narrative Matching',
         description: 'Finally, we\'ll present narrative scenarios to confirm the resonance of your identified archetype.',
         purpose: 'This phase uses holistic pattern recognition to validate your results through real-world scenarios.'
+      },
+      5: {
+        title: 'Phase 5: Status, Selection & Attraction Markers',
+        description: 'This extension explores self-reported selection criteria and social positioning signals.',
+        purpose: 'These markers refine archetype weighting by mapping coalition rank, reproductive confidence, and attraction signals.'
       }
     };
 
@@ -1037,6 +1072,8 @@ showGenderSelection() {
       this.scorePhase3Answer(question, answerValue);
     } else if (this.currentPhase === 4) {
       this.scorePhase4Answer(question, answerValue);
+    } else if (this.currentPhase === 5) {
+      this.scorePhase5Answer(question, answerValue);
     }
 
     this.saveProgress();
@@ -1083,6 +1120,7 @@ showGenderSelection() {
           phase2: 0,
           phase3: 0,
           phase4: 0,
+          phase5: 0,
           total: 0,
           weighted: 0
         };
@@ -1141,6 +1179,7 @@ showGenderSelection() {
             phase2: 0,
             phase3: 0,
             phase4: 0,
+            phase5: 0,
             total: 0,
             weighted: 0
           };
@@ -1150,19 +1189,19 @@ showGenderSelection() {
       });
       return;
     }
-
+    
     if (!question.archetypes || !Array.isArray(question.archetypes)) {
       this.debugReporter.logError(new Error('Phase 2 question missing archetypes array'), 'scorePhase2Answer');
       return;
     }
-
+    
     question.archetypes.forEach(arch => {
       // Skip if arch or arch.id is missing
       if (!arch || !arch.id) {
         this.debugReporter.logError(new Error('Phase 2 archetype missing id'), 'scorePhase2Answer');
         return;
       }
-
+      
       const targetArchId = mapArchetypeId(arch.id);
       // Initialize score object if it doesn't exist
       if (!this.archetypeScores[targetArchId]) {
@@ -1171,6 +1210,7 @@ showGenderSelection() {
           phase2: 0,
           phase3: 0,
           phase4: 0,
+          phase5: 0,
           total: 0,
           weighted: 0
         };
@@ -1200,7 +1240,7 @@ showGenderSelection() {
       } else {
         const selectedOption = question.options[selectedIndex];
         if (selectedOption?.aspirationTarget) {
-          this.aspirationAnswers[question.id].push(selectedOption.aspirationTarget);
+      this.aspirationAnswers[question.id].push(selectedOption.aspirationTarget);
         }
       }
       // Don't apply direct scoring for aspiration questions - they're used for reverse psychology
@@ -1213,7 +1253,7 @@ showGenderSelection() {
 
     selectedOptions.forEach(selectedOption => {
       if (!selectedOption || !selectedOption.archetypes) return;
-      selectedOption.archetypes.forEach(archId => {
+    selectedOption.archetypes.forEach(archId => {
       // Map to gender-specific archetype if gender is selected
       let targetArchId = archId;
       if (this.gender === 'female') {
@@ -1249,6 +1289,7 @@ showGenderSelection() {
           phase2: 0,
           phase3: 0,
           phase4: 0,
+          phase5: 0,
           total: 0,
           weighted: 0
         };
@@ -1271,6 +1312,64 @@ showGenderSelection() {
     });
   }
 
+  scorePhase5Answer(question, value) {
+    // Phase 5: Status/Selection/Attraction markers (light weighting)
+    const normalizedValue = value - 3; // -2 to +2
+
+    const mapArchetypeId = (archId) => {
+      if (this.gender !== 'female') return archId;
+      const femaleMapping = {
+        'alpha': 'alpha_female',
+        'alpha_xi': 'alpha_xi_female',
+        'alpha_rho': 'alpha_xi_female',
+        'dark_alpha': 'dark_alpha_female',
+        'beta': 'beta_female',
+        'beta_iota': 'alpha_unicorn_female',
+        'beta_nu': 'beta_nu_female',
+        'beta_manipulator': 'beta_manipulator_female',
+        'beta_kappa': 'beta_kappa_female',
+        'gamma': 'gamma_female',
+        'gamma_theta': 'gamma_theta_female',
+        'dark_gamma': 'dark_gamma_female',
+        'delta': 'delta_female',
+        'delta_mu': 'delta_mu_female',
+        'dark_delta': 'dark_delta_female',
+        'sigma': 'sigma_female',
+        'dark_sigma_zeta': 'dark_sigma_zeta_female',
+        'omega': 'omega_female',
+        'dark_omega': 'dark_omega_female',
+        'phi': 'phi_female'
+      };
+      return femaleMapping[archId] || archId;
+    };
+
+    if (!question.archetypes || !Array.isArray(question.archetypes)) {
+      this.debugReporter.logError(new Error('Phase 5 question missing archetypes array'), 'scorePhase5Answer');
+      return;
+    }
+
+    question.archetypes.forEach(arch => {
+      if (!arch || !arch.id) {
+        this.debugReporter.logError(new Error('Phase 5 archetype missing id'), 'scorePhase5Answer');
+        return;
+      }
+      const targetArchId = mapArchetypeId(arch.id);
+      if (!this.archetypeScores[targetArchId]) {
+        this.archetypeScores[targetArchId] = {
+          phase1: 0,
+          phase2: 0,
+          phase3: 0,
+          phase4: 0,
+          phase5: 0,
+          total: 0,
+          weighted: 0
+        };
+      }
+      const weight = arch.weight || 1;
+      this.archetypeScores[targetArchId].phase5 += normalizedValue * weight;
+    });
+  }
+
   calculateFinalScores() {
     // Apply aspiration-based adjustments BEFORE final calculation
     if (this.analysisData.aspirationAnalysis && this.analysisData.aspirationAnalysis.adjustments) {
@@ -1284,11 +1383,24 @@ showGenderSelection() {
       });
     }
     
-    // Apply phase weights: Phase 1 (50%), Phase 2 (30%), Phase 3 (15%), Phase 4 (5%)
+    const baseWeightFactor = 0.95;
+    const phaseWeights = {
+      phase1: 0.5 * baseWeightFactor,
+      phase2: 0.3 * baseWeightFactor,
+      phase3: 0.15 * baseWeightFactor,
+      phase4: 0.05 * baseWeightFactor,
+      phase5: 0.05
+    };
+
+    // Apply phase weights with Phase 5 extension
     Object.keys(this.archetypeScores).forEach(archId => {
       const scores = this.archetypeScores[archId];
-      scores.total = scores.phase1 + scores.phase2 + scores.phase3 + scores.phase4;
-      scores.weighted = (scores.phase1 * 0.5) + (scores.phase2 * 0.3) + (scores.phase3 * 0.15) + (scores.phase4 * 0.05);
+      scores.total = scores.phase1 + scores.phase2 + scores.phase3 + scores.phase4 + (scores.phase5 || 0);
+      scores.weighted = (scores.phase1 * phaseWeights.phase1)
+        + (scores.phase2 * phaseWeights.phase2)
+        + (scores.phase3 * phaseWeights.phase3)
+        + (scores.phase4 * phaseWeights.phase4)
+        + ((scores.phase5 || 0) * phaseWeights.phase5);
     });
   }
 
@@ -1440,6 +1552,10 @@ showGenderSelection() {
         await this.buildPhase4Sequence();
         this.renderCurrentQuestion();
       } else if (this.currentPhase === 4) {
+        await this.buildPhase5Sequence();
+        this.renderCurrentQuestion();
+      } else if (this.currentPhase === 5) {
+        this.analyzePhase5Results();
         this.finalizeResults();
       }
     } catch (error) {
@@ -1471,6 +1587,52 @@ showGenderSelection() {
     
     // Analyze aspirations for bias mitigation
     this.analysisData.aspirationAnalysis = this.analyzeAspirations();
+  }
+
+  analyzePhase5Results() {
+    const clusters = {};
+    const markers = [];
+
+    this.questionSequence.forEach(question => {
+      const answer = this.answers[question.id];
+      if (!answer || typeof answer.value !== 'number') return;
+      if (!question.cluster) return;
+
+      const normalized = (answer.value - 1) / 4; // 0-1
+      const clusterKey = question.cluster;
+      if (!clusters[clusterKey]) {
+        clusters[clusterKey] = {
+          label: question.clusterLabel || clusterKey,
+          total: 0,
+          count: 0
+        };
+      }
+      clusters[clusterKey].total += normalized;
+      clusters[clusterKey].count += 1;
+      markers.push({
+        label: question.markerLabel || question.question || '',
+        cluster: clusterKey,
+        clusterLabel: question.clusterLabel || clusterKey,
+        score: normalized
+      });
+    });
+
+    Object.keys(clusters).forEach(key => {
+      const entry = clusters[key];
+      const avg = entry.count > 0 ? entry.total / entry.count : 0;
+      entry.score = avg;
+    });
+
+    const topMarkers = markers
+      .filter(marker => marker.label)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+
+    this.analysisData.phase5Results = {
+      clusters,
+      topMarkers,
+      timestamp: new Date().toISOString()
+    };
   }
   
   analyzeAspirations() {
@@ -1921,6 +2083,39 @@ showGenderSelection() {
       `;
     }
 
+    const phase5Results = this.analysisData.phase5Results || {};
+    const clusterOrder = ['coalition_rank', 'reproductive_confidence', 'axis_of_attraction'];
+    const phase5Clusters = clusterOrder
+      .map(key => phase5Results.clusters?.[key])
+      .filter(Boolean);
+    const phase5Markers = Array.isArray(phase5Results.topMarkers) ? phase5Results.topMarkers : [];
+
+    if (phase5Clusters.length > 0) {
+      resultsHTML += `
+        <div class="panel panel-outline-accent" style="margin-bottom: 2rem;">
+          <h3 class="panel-title">Status, Selection & Attraction Markers</h3>
+          <p class="panel-text">Self-reported signals that refine archetype weighting across coalition rank, selection criteria, and attraction dynamics.</p>
+          <div style="margin-top: 1rem;">
+            <ul style="color: var(--muted); line-height: 1.8;">
+              ${phase5Clusters.map(cluster => `
+                <li><strong>${SecurityUtils.sanitizeHTML(cluster.label || '')}:</strong> ${Math.round((cluster.score || 0) * 100)}%</li>
+              `).join('')}
+            </ul>
+          </div>
+          ${phase5Markers.length ? `
+            <div style="margin-top: 1rem;">
+              <p style="color: var(--muted); margin-bottom: 0.5rem;"><strong>Top markers:</strong></p>
+              <ul style="color: var(--muted); line-height: 1.8;">
+                ${phase5Markers.map(marker => `
+                  <li>${SecurityUtils.sanitizeHTML(marker.label || '')} (${Math.round((marker.score || 0) * 100)}%)</li>
+                `).join('')}
+              </ul>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
     // Shadow Patterns
     const shadowPatterns = this.analysisData.phase3Results?.shadowIndicators || [];
     if (shadowPatterns.length > 0) {
@@ -2062,10 +2257,12 @@ showGenderSelection() {
         await this.buildPhase3Sequence();
       } else if (this.currentPhase === 4) {
         await this.buildPhase4Sequence();
+      } else if (this.currentPhase === 5) {
+        await this.buildPhase5Sequence();
       }
 
       // If assessment is in progress, show question container
-      if (this.currentPhase <= 4 && this.questionSequence.length > 0) {
+      if (this.currentPhase <= 5 && this.questionSequence.length > 0) {
         this.renderCurrentQuestion();
         this.showQuestionContainer();
       } else if (this.analysisData.primaryArchetype) {
@@ -2103,6 +2300,7 @@ showGenderSelection() {
       phase2Results: {},
       phase3Results: {},
       phase4Results: {},
+      phase5Results: {},
       aspirationAnalysis: {},
       primaryArchetype: null,
       secondaryArchetype: null,

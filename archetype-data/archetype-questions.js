@@ -1005,3 +1005,250 @@ export const PHASE_4_QUESTIONS = [
   }
 ];
 
+// PHASE 5: Status, Selection & Attraction Markers (gender-specific self-report)
+// Purpose: Add selection-criteria signals that refine archetype positioning
+export const PHASE_5_QUESTIONS = {
+  male: [
+    {
+      id: 'p5_m_cr_courage',
+      question: 'I stay steady and decisive when facing real risk or confrontation.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'coalition_rank',
+      clusterLabel: 'Coalition Rank (3Cs)',
+      markerLabel: 'Courage',
+      archetypes: [
+        { id: 'alpha_xi', weight: 2.0 },
+        { id: 'alpha', weight: 1.2 },
+        { id: 'sigma', weight: 0.6 }
+      ]
+    },
+    {
+      id: 'p5_m_cr_control',
+      question: 'I maintain self-control and composure under pressure.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'coalition_rank',
+      clusterLabel: 'Coalition Rank (3Cs)',
+      markerLabel: 'Control',
+      archetypes: [
+        { id: 'alpha', weight: 1.4 },
+        { id: 'alpha_rho', weight: 1.1 },
+        { id: 'sigma', weight: 0.7 }
+      ]
+    },
+    {
+      id: 'p5_m_cr_competence',
+      question: 'People rely on me to solve complex problems or secure resources.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'coalition_rank',
+      clusterLabel: 'Coalition Rank (3Cs)',
+      markerLabel: 'Competence',
+      archetypes: [
+        { id: 'gamma', weight: 1.4 },
+        { id: 'delta', weight: 1.2 },
+        { id: 'alpha', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_perspicacity',
+      question: 'I quickly perceive threats/opportunities and read situations accurately.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Perspicacity',
+      archetypes: [
+        { id: 'gamma', weight: 1.2 },
+        { id: 'sigma_kappa', weight: 1.2 },
+        { id: 'alpha', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_protector',
+      question: 'I can reliably protect and defend those close to me when needed.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Protector',
+      archetypes: [
+        { id: 'alpha_xi', weight: 1.6 },
+        { id: 'delta_mu', weight: 1.2 },
+        { id: 'alpha', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_provider',
+      question: 'I provide consistent resources and stability over time.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Provider',
+      archetypes: [
+        { id: 'delta', weight: 1.6 },
+        { id: 'beta_nu', weight: 1.2 },
+        { id: 'alpha', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_parental',
+      question: 'I am willing to invest deeply in long-term partnership and parenting.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Parental Investor',
+      archetypes: [
+        { id: 'delta_mu', weight: 1.5 },
+        { id: 'beta_nu', weight: 1.3 },
+        { id: 'beta', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_m_aa_status',
+      question: 'My status or accomplishments are clearly visible and shape how others respond.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'axis_of_attraction',
+      clusterLabel: 'Axis of Attraction (Display Signals)',
+      markerLabel: 'Performance/Status Signals',
+      archetypes: [
+        { id: 'alpha', weight: 1.6 },
+        { id: 'gamma_pi', weight: 1.0 },
+        { id: 'dark_alpha', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_m_aa_physical',
+      question: 'Physical presence, fitness, and vitality are strengths I actively cultivate.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'axis_of_attraction',
+      clusterLabel: 'Axis of Attraction (Display Signals)',
+      markerLabel: 'Physical/Genetic Signals',
+      archetypes: [
+        { id: 'alpha', weight: 1.4 },
+        { id: 'sigma', weight: 1.0 },
+        { id: 'gamma_pi', weight: 0.8 }
+      ]
+    }
+  ],
+  female: [
+    {
+      id: 'p5_f_cr_social',
+      question: 'I can shape perceptions and alliances in social groups when needed.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'coalition_rank',
+      clusterLabel: 'Coalition Rank (3Ss)',
+      markerLabel: 'Social Influence',
+      archetypes: [
+        { id: 'alpha', weight: 1.4 },
+        { id: 'beta_manipulator', weight: 1.0 },
+        { id: 'gamma', weight: 0.6 }
+      ]
+    },
+    {
+      id: 'p5_f_cr_selectivity',
+      question: 'I can attract and retain high-value attention without losing leverage.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'coalition_rank',
+      clusterLabel: 'Coalition Rank (3Ss)',
+      markerLabel: 'Selectivity & Mate Guarding',
+      archetypes: [
+        { id: 'alpha', weight: 1.2 },
+        { id: 'beta_kappa', weight: 1.0 },
+        { id: 'beta_manipulator', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_f_cr_status',
+      question: 'I know how to signal status/beauty without provoking backlash.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'coalition_rank',
+      clusterLabel: 'Coalition Rank (3Ss)',
+      markerLabel: 'Status Signaling',
+      archetypes: [
+        { id: 'alpha', weight: 1.3 },
+        { id: 'beta_manipulator', weight: 1.0 },
+        { id: 'beta_nu', weight: 0.7 }
+      ]
+    },
+    {
+      id: 'p5_f_rc_loyalty',
+      question: 'I naturally signal loyalty and exclusivity in committed bonds.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Paternity Certainty',
+      archetypes: [
+        { id: 'beta_nu', weight: 1.5 },
+        { id: 'beta', weight: 1.0 },
+        { id: 'delta_mu', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_f_rc_nurture',
+      question: 'My nurturing standard is high; I naturally provide care and warmth.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Nurturing Standard',
+      archetypes: [
+        { id: 'beta_iota', weight: 1.4 },
+        { id: 'delta_mu', weight: 1.2 },
+        { id: 'beta', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_f_rc_trust',
+      question: 'I build collaborative trust and avoid chronic conflict in partnership.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Collaborative Trust',
+      archetypes: [
+        { id: 'delta', weight: 1.2 },
+        { id: 'beta_nu', weight: 1.0 },
+        { id: 'beta', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_f_aa_fertility',
+      question: 'I actively maintain health, vitality, and fertility cues.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'axis_of_attraction',
+      clusterLabel: 'Axis of Attraction (Male Mate Choice)',
+      markerLabel: 'Fertility & Health Cues',
+      archetypes: [
+        { id: 'alpha', weight: 1.2 },
+        { id: 'beta_iota', weight: 1.0 },
+        { id: 'beta_kappa', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_f_aa_risk',
+      question: 'I keep volatility low and avoid behaviors that signal instability.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'axis_of_attraction',
+      clusterLabel: 'Axis of Attraction (Male Mate Choice)',
+      markerLabel: 'Risk-Cost Management',
+      archetypes: [
+        { id: 'beta_nu', weight: 1.2 },
+        { id: 'delta', weight: 1.0 },
+        { id: 'beta', weight: 0.8 }
+      ]
+    }
+  ]
+};
+
