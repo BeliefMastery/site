@@ -384,7 +384,7 @@ export const ARCHETYPE_SPREAD = [
     "vedicEquivalent": "Sita in Exile (Purity, Grace)",
     "greekPantheon": "Eirene (Peace)",
     "tarotCard": "The World",
-    "socialProportion": 0.001
+    "socialProportion": 0
   }
 ];
 

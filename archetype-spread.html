@@ -213,6 +213,9 @@
 
         const archetype = resolveArchetype(entry.name);
         const brutalTruth = buildNarrative(archetype?.archetypalNarrative);
+        const populationLabel = typeof entry.socialProportion === 'number'
+          ? `${entry.socialProportion.toFixed(1)}%`
+          : '—';
         const cells = [
           entry.name,
           entry.socialRole,
@@ -220,7 +223,7 @@
           entry.vedicEquivalent,
           entry.greekPantheon,
           entry.tarotCard,
-          entry.socialProportion ? `${entry.socialProportion.toFixed(1)}%` : '—'
+          populationLabel
         ];
         cells.forEach(text => {
           const cell = document.createElement('td');
