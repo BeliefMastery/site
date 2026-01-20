@@ -9,7 +9,7 @@ import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from
 import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
-let ARCHETYPES, CORE_GROUPS;
+let ARCHETYPES, CORE_GROUPS, ARCHETYPE_OPTIMIZATION;
 let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS, PHASE_5_QUESTIONS;
 let SUBTYPE_REFINEMENT_QUESTIONS;
 let ARCHETYPE_SPREAD_MAP;
@@ -508,6 +508,7 @@ showGenderSelection() {
       );
       ARCHETYPES = archetypesModule.ARCHETYPES;
       CORE_GROUPS = archetypesModule.CORE_GROUPS;
+      ARCHETYPE_OPTIMIZATION = archetypesModule.ARCHETYPE_OPTIMIZATION || {};
 
       // Load questions data
       const questionsModule = await loadDataModule(
@@ -1980,12 +1981,17 @@ showGenderSelection() {
       return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
     };
     const primaryTraitsSummary = summarizeArchetype(primary);
-    const primaryBlindSpot = primary?.stressResponse
-      ? `Likely blind spot: ${ensurePeriod(primary.stressResponse)}`
-      : 'Likely blind spot: Under pressure, your default pattern can narrow options and reduce flexibility.';
-    const primaryOptimization = primary?.growthEdge
-      ? `Within-archetype strategy: ${ensurePeriod(primary.growthEdge)}${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`
-      : `Within-archetype strategy: Build stability by doubling down on your healthiest traits while expanding flexibility.${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`;
+    const optimizationCopy = (primary?.id && ARCHETYPE_OPTIMIZATION?.[primary.id]) || null;
+    const primaryBlindSpot = optimizationCopy?.likelyBlindSpot
+      ? `Likely blind spot: ${ensurePeriod(optimizationCopy.likelyBlindSpot)}`
+      : primary?.stressResponse
+        ? `Likely blind spot: ${ensurePeriod(primary.stressResponse)}`
+        : 'Likely blind spot: Under pressure, your default pattern can narrow options and reduce flexibility.';
+    const primaryOptimization = optimizationCopy?.optimizationStrategy
+      ? `Within-archetype strategy: ${ensurePeriod(optimizationCopy.optimizationStrategy)}${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`
+      : primary?.growthEdge
+        ? `Within-archetype strategy: ${ensurePeriod(primary.growthEdge)}${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`
+        : `Within-archetype strategy: Build stability by doubling down on your healthiest traits while expanding flexibility.${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`;
 
     let resultsHTML = `
       <div class="results-container" style="max-width: 900px; margin: 0 auto;">

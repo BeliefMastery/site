@@ -786,3 +786,190 @@ export const GENDER_NEUTRAL_MAPPING = {
   'Phi Female': 'phi'
 };
 
+export const ARCHETYPE_OPTIMIZATION = {
+  alpha: {
+    likelyBlindSpot: 'Dominance focus can dismiss collaboration and emotional nuance.',
+    optimizationStrategy: 'Lead by building allies, delegating well, and tying power to service.'
+  },
+  alpha_xi: {
+    likelyBlindSpot: 'Protector identity can turn into rigidity and overextension.',
+    optimizationStrategy: 'Choose battles, rest strategically, and pair courage with flexibility.'
+  },
+  alpha_rho: {
+    likelyBlindSpot: 'Justice focus can become cold and unforgiving.',
+    optimizationStrategy: 'Balance law with mercy and use authority to build trust.'
+  },
+  dark_alpha: {
+    likelyBlindSpot: 'Control obsession creates fear, enemies, and isolation.',
+    optimizationStrategy: 'Discipline power through accountability and channel intensity into protection, not domination.'
+  },
+  beta: {
+    likelyBlindSpot: 'Harmony seeking can erase your needs and build resentment.',
+    optimizationStrategy: 'Set boundaries, build competence, and seek reciprocal partnerships.'
+  },
+  beta_iota: {
+    likelyBlindSpot: 'Innocence invites exploitation and dependency.',
+    optimizationStrategy: 'Keep kindness while practicing discernment and assertive self-protection.'
+  },
+  beta_nu: {
+    likelyBlindSpot: 'Stability-first mindset can stagnate growth.',
+    optimizationStrategy: 'Introduce controlled novelty and personal ambition within loyal structures.'
+  },
+  beta_kappa: {
+    likelyBlindSpot: 'Approval seeking undermines respect and self-trust.',
+    optimizationStrategy: 'Hold principles, build value, and earn access through competence.'
+  },
+  beta_rho: {
+    likelyBlindSpot: 'Care becomes control and suffocates others.',
+    optimizationStrategy: 'Empower through autonomy and share responsibility in your systems.'
+  },
+  gamma: {
+    likelyBlindSpot: 'Intellectual distance blocks warmth and intimacy.',
+    optimizationStrategy: 'Translate insight into empathy and practice social engagement.'
+  },
+  gamma_nu: {
+    likelyBlindSpot: 'Idealism rejects imperfect partners.',
+    optimizationStrategy: 'Anchor romance in consistent action and realistic standards.'
+  },
+  gamma_theta: {
+    likelyBlindSpot: 'Visionary focus detaches from everyday reality.',
+    optimizationStrategy: 'Ground insight with routine, embodiment, and service.'
+  },
+  gamma_pi: {
+    likelyBlindSpot: 'Risk hunger undermines stability.',
+    optimizationStrategy: 'Use calculated gambles backed by a secure base.'
+  },
+  dark_gamma: {
+    likelyBlindSpot: 'Cynicism fuels isolation and meaninglessness.',
+    optimizationStrategy: 'Use skepticism to refine goals, then commit to one community.'
+  },
+  delta: {
+    likelyBlindSpot: 'Hard work without agency breeds quiet resentment.',
+    optimizationStrategy: 'Own your craft, negotiate value, and seek leadership by competence.'
+  },
+  delta_mu: {
+    likelyBlindSpot: 'Caretaking slides into martyrdom.',
+    optimizationStrategy: 'Ask for support, set limits, and protect your energy.'
+  },
+  dark_delta: {
+    likelyBlindSpot: 'Resentment sabotages loyalty and productivity.',
+    optimizationStrategy: 'Name needs directly and rebuild agreements from self-respect.'
+  },
+  sigma: {
+    likelyBlindSpot: 'Independence can become detachment.',
+    optimizationStrategy: 'Choose selective alliances and communicate boundaries clearly.'
+  },
+  sigma_kappa: {
+    likelyBlindSpot: 'Strategy without loyalty erodes trust.',
+    optimizationStrategy: 'Use cunning for mutual benefit and show consistent character.'
+  },
+  sigma_lambda: {
+    likelyBlindSpot: 'Solitude becomes avoidance.',
+    optimizationStrategy: 'Pursue mastery projects and share outcomes with a trusted circle.'
+  },
+  dark_sigma_zeta: {
+    likelyBlindSpot: 'Defiance becomes self-destruction.',
+    optimizationStrategy: 'Channel rebellion into principled innovation and long-term goals.'
+  },
+  omega: {
+    likelyBlindSpot: 'Self-neglect reinforces marginalization.',
+    optimizationStrategy: 'Build micro-wins, routines, and supportive environments.'
+  },
+  dark_omega: {
+    likelyBlindSpot: 'Destruction becomes identity and burns bridges.',
+    optimizationStrategy: 'Interrupt cycles with accountability and acts of repair.'
+  },
+  phi: {
+    likelyBlindSpot: 'Transcendence can drift into disconnection.',
+    optimizationStrategy: 'Ground wisdom through mentorship and community contribution.'
+  },
+  alpha_female: {
+    likelyBlindSpot: 'High value can isolate and intensify rivalry.',
+    optimizationStrategy: 'Lead with social intelligence, build loyal allies, and choose partners who value depth.'
+  },
+  alpha_xi_female: {
+    likelyBlindSpot: 'Hyper-selectivity can narrow options and harden judgment.',
+    optimizationStrategy: 'Keep standards while practicing openness and compassion.'
+  },
+  alpha_unicorn_female: {
+    likelyBlindSpot: 'Devotion risks dependence and loss of self.',
+    optimizationStrategy: 'Balance loyalty with autonomy and clear boundaries.'
+  },
+  alpha_iota_female: {
+    likelyBlindSpot: 'Harmony seeking turns into passivity.',
+    optimizationStrategy: 'Embrace necessary conflict and assert your needs.'
+  },
+  dark_alpha_female: {
+    likelyBlindSpot: 'Control and chaos destroy trust and safety.',
+    optimizationStrategy: 'Channel power into disciplined leadership and self-regulation.'
+  },
+  beta_female: {
+    likelyBlindSpot: 'Security seeking accepts uneven deals.',
+    optimizationStrategy: 'Build intrinsic value and insist on reciprocity.'
+  },
+  beta_nu_female: {
+    likelyBlindSpot: 'Duty can erase your identity.',
+    optimizationStrategy: 'Honor tradition while protecting personal goals and voice.'
+  },
+  beta_kappa_female: {
+    likelyBlindSpot: 'Manipulation secures access but kills intimacy.',
+    optimizationStrategy: 'Develop authentic value and practice honest communication.'
+  },
+  beta_rho_female: {
+    likelyBlindSpot: 'Nurture becomes management and martyrdom.',
+    optimizationStrategy: 'Share responsibility and allow others to grow.'
+  },
+  gamma_female: {
+    likelyBlindSpot: 'Critical independence blocks tenderness.',
+    optimizationStrategy: 'Pair intellect with empathy and vulnerability.'
+  },
+  gamma_theta_female: {
+    likelyBlindSpot: 'Prophetic edge becomes confrontational.',
+    optimizationStrategy: 'Soften delivery and build alliances around truth.'
+  },
+  gamma_feminist_female: {
+    likelyBlindSpot: 'Achievement focus breeds bitterness and distance.',
+    optimizationStrategy: 'Reopen emotional connection and integrate relational goals.'
+  },
+  dark_gamma_female: {
+    likelyBlindSpot: 'Detachment hardens into despair.',
+    optimizationStrategy: 'Choose one meaningful bond and re-engage with purpose.'
+  },
+  delta_female: {
+    likelyBlindSpot: 'Self-sacrifice makes you invisible.',
+    optimizationStrategy: 'Prioritize self-care and ask for reciprocity.'
+  },
+  delta_mu_female: {
+    likelyBlindSpot: 'Joy becomes performance under pressure.',
+    optimizationStrategy: 'Protect your joy with boundaries and rest.'
+  },
+  dark_delta_female: {
+    likelyBlindSpot: 'Martyrdom creates resentment.',
+    optimizationStrategy: 'Set limits, ask directly, and rebuild self-worth.'
+  },
+  sigma_female: {
+    likelyBlindSpot: 'Autonomy keeps intimacy at distance.',
+    optimizationStrategy: 'Allow selective vulnerability while keeping clear boundaries.'
+  },
+  sigma_feminist_female: {
+    likelyBlindSpot: 'Unyielding independence blocks partnership.',
+    optimizationStrategy: 'Practice flexibility and interdependence without surrender.'
+  },
+  dark_sigma_zeta_female: {
+    likelyBlindSpot: 'Rebellion burns bridges and safety.',
+    optimizationStrategy: 'Channel defiance into constructive boundaries and stable support.'
+  },
+  omega_female: {
+    likelyBlindSpot: 'Withdrawal makes you unseen and stuck.',
+    optimizationStrategy: 'Build small routines, community touchpoints, and self-care.'
+  },
+  dark_omega_female: {
+    likelyBlindSpot: 'Destruction becomes self-fulfilling.',
+    optimizationStrategy: 'Choose creation, accountability, and repair.'
+  },
+  phi_female: {
+    likelyBlindSpot: 'Transcendence can feel detached.',
+    optimizationStrategy: 'Serve with grounded compassion and community presence.'
+  }
+};
+
