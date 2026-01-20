@@ -261,7 +261,7 @@ export const PHASE_2_QUESTIONS = [
     type: 'likert',
     scale: 5,
     archetypes: [
-      { id: 'beta_manipulator', weight: 3 },
+      { id: 'beta_kappa', weight: 3 },
       { id: 'sigma_kappa', weight: 2 },
       { id: 'dark_alpha', weight: 1 }
     ]
@@ -355,7 +355,7 @@ export const PHASE_2_QUESTIONS = [
     scale: 5,
     archetypes: [
       { id: 'delta_mu', weight: 3 },
-      { id: 'beta_kappa', weight: 2 }
+      { id: 'beta_rho', weight: 2 }
     ]
   },
   {
@@ -444,7 +444,7 @@ export const PHASE_2_QUESTIONS = [
     type: 'likert',
     scale: 5,
     archetypes: [
-      { id: 'beta_kappa', weight: 3 },
+      { id: 'beta_rho', weight: 3 },
       { id: 'delta_mu', weight: 1 }
     ]
   },
@@ -496,8 +496,8 @@ export const SUBTYPE_REFINEMENT_QUESTIONS = {
         { text: 'Reliable, supportive, but tends to defer', archetypes: ['beta'], weight: 2 },
         { text: 'Gentle, nurturing, innocent-leaning', archetypes: ['beta_iota'], weight: 3 },
         { text: 'Traditional, dutiful, and stability-focused', archetypes: ['beta_nu'], weight: 3 },
-        { text: 'Resource-seeking or strategically self-interested', archetypes: ['beta_manipulator'], weight: 3 },
-        { text: 'Motherly/creator energy with controlling tendencies', archetypes: ['beta_kappa'], weight: 3 }
+        { text: 'Resource-seeking or strategically self-interested', archetypes: ['beta_kappa'], weight: 3 },
+        { text: 'Motherly/creator energy with controlling tendencies', archetypes: ['beta_rho'], weight: 3 }
       ]
     },
     {
@@ -508,8 +508,8 @@ export const SUBTYPE_REFINEMENT_QUESTIONS = {
         { text: 'Harmony and dependable support', archetypes: ['beta'], weight: 2 },
         { text: 'Innocence, caretaking, and reassurance', archetypes: ['beta_iota'], weight: 2 },
         { text: 'Duty, tradition, and long-term stability', archetypes: ['beta_nu'], weight: 2 },
-        { text: 'Securing resources or leverage', archetypes: ['beta_manipulator'], weight: 2 },
-        { text: 'Creative care with strong boundaries and direction', archetypes: ['beta_kappa'], weight: 2 }
+        { text: 'Securing resources or leverage', archetypes: ['beta_kappa'], weight: 2 },
+        { text: 'Creative care with strong boundaries and direction', archetypes: ['beta_rho'], weight: 2 }
       ]
     }
   ],
@@ -801,7 +801,7 @@ export const PHASE_3_QUESTIONS = [
     options: [
       { text: 'Need for control and dominance', archetypes: ['dark_alpha'], weight: 2, isShadow: true },
       { text: 'Isolation and nihilism', archetypes: ['dark_gamma'], weight: 2, isShadow: true },
-      { text: 'Manipulation and self-interest', archetypes: ['beta_manipulator'], weight: 2, isShadow: true },
+      { text: 'Manipulation and self-interest', archetypes: ['beta_kappa'], weight: 2, isShadow: true },
       { text: 'Martyrdom and resentment', archetypes: ['dark_delta'], weight: 2, isShadow: true },
       { text: 'Destructive rebellion', archetypes: ['dark_sigma_zeta'], weight: 2, isShadow: true },
       { text: 'Destructive consumption', archetypes: ['dark_omega'], weight: 2, isShadow: true }
@@ -1147,7 +1147,7 @@ export const PHASE_5_QUESTIONS = {
       markerLabel: 'Social Influence',
       archetypes: [
         { id: 'alpha', weight: 1.4 },
-        { id: 'beta_manipulator', weight: 1.0 },
+        { id: 'beta_kappa', weight: 1.0 },
         { id: 'gamma', weight: 0.6 }
       ]
     },
@@ -1161,8 +1161,8 @@ export const PHASE_5_QUESTIONS = {
       markerLabel: 'Selectivity & Mate Guarding',
       archetypes: [
         { id: 'alpha', weight: 1.2 },
-        { id: 'beta_kappa', weight: 1.0 },
-        { id: 'beta_manipulator', weight: 0.8 }
+        { id: 'beta_rho', weight: 1.0 },
+        { id: 'beta_kappa', weight: 0.8 }
       ]
     },
     {
@@ -1175,7 +1175,7 @@ export const PHASE_5_QUESTIONS = {
       markerLabel: 'Status Signaling',
       archetypes: [
         { id: 'alpha', weight: 1.3 },
-        { id: 'beta_manipulator', weight: 1.0 },
+        { id: 'beta_kappa', weight: 1.0 },
         { id: 'beta_nu', weight: 0.7 }
       ]
     },
@@ -1232,7 +1232,7 @@ export const PHASE_5_QUESTIONS = {
       archetypes: [
         { id: 'alpha', weight: 1.2 },
         { id: 'beta_iota', weight: 1.0 },
-        { id: 'beta_kappa', weight: 0.8 }
+        { id: 'beta_rho', weight: 0.8 }
       ]
     },
     {

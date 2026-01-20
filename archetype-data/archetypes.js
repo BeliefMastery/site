@@ -74,7 +74,7 @@ export const ARCHETYPES = {
     motivations: ['belonging', 'approval', 'stability', 'service'],
     stressResponse: 'Seeks support, becomes more passive, avoids conflict',
     growthEdge: 'Developing assertiveness, setting boundaries',
-    subtypes: ['beta_iota', 'beta_nu', 'beta_manipulator', 'beta_kappa'],
+    subtypes: ['beta_iota', 'beta_nu', 'beta_kappa', 'beta_rho'],
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'medium', // Lower status and submissive, often resentful, gets used as second choice to "Alpha-widows" but still achieves reproduction
     reproductiveDescription: 'Typically achieves reproduction but as second choice or "backup" after Alpha relationships fail. Lower status and submissive positioning leads to resentful dynamics. Still manages reproduction despite being the fallback option.',
@@ -106,9 +106,9 @@ export const ARCHETYPES = {
     archetypalNarrative: 'You build a stable life, but it is built on caution and fear of loss. You become predictable and slowly lose the spark that once made you feel alive. Others lean on your reliability while you quietly accept a life of routine. The truth: you protect stability at the cost of vitality.',
     parentType: 'beta'
   },
-  beta_manipulator: {
-    id: 'beta_manipulator',
-    name: 'Beta-Manipulator',
+  beta_kappa: {
+    id: 'beta_kappa',
+    name: 'Beta-Kappa',
     socialRole: 'Hypergamous, Deceptive, Chaotic',
     description: 'Uses manipulation to gain resources or status. May appear supportive but operates from self-interest.',
     behavioralTraits: ['manipulation', 'deception', 'chaos', 'self-interest', 'resource-seeking'],
@@ -119,9 +119,9 @@ export const ARCHETYPES = {
     parentType: 'beta',
     isShadow: true
   },
-  beta_kappa: {
-    id: 'beta_kappa',
-    name: 'Beta-Kappa',
+  beta_rho: {
+    id: 'beta_rho',
+    name: 'Beta-Rho',
     socialRole: 'Creator, Motherly, Controlling',
     description: 'Nurturing and creative, but may use care as a form of control. Motherly presence with controlling tendencies.',
     behavioralTraits: ['nurturing', 'creativity', 'control', 'mothering', 'care'],
@@ -443,7 +443,7 @@ export const ARCHETYPES = {
     motivations: ['security', 'resources', 'survival', 'stability'],
     stressResponse: 'Becomes more resource-seeking, may become manipulative',
     growthEdge: 'Developing self-sufficiency, building intrinsic value',
-    subtypes: ['beta_nu_female', 'beta_manipulator_female', 'beta_kappa_female'],
+    subtypes: ['beta_nu_female', 'beta_kappa_female', 'beta_rho_female'],
     jungianEquivalent: 'Distorted Lover',
     vedicEquivalent: 'Rati (Love, Attachment)',
     greekPantheon: 'Echo (Unreciprocated Love)',
@@ -468,9 +468,9 @@ export const ARCHETYPES = {
     tarotCard: 'The Hierophant',
     archetypalNarrative: 'You build the home and keep it running, but you fade into the background. You trade personal ambition for family stability and get taken for granted. Your loyalty keeps the structure intact while your identity dissolves. The truth: you become the foundation everyone stands on and no one sees.'
   },
-  beta_manipulator_female: {
-    id: 'beta_manipulator_female',
-    name: 'Beta-Manipulator Female',
+  beta_kappa_female: {
+    id: 'beta_kappa_female',
+    name: 'Beta-Kappa Female',
     socialRole: 'Hypergamous, Deceptive, Chaotic',
     description: 'Uses manipulation and deception to gain resources or move up socially. Hypergamous - seeks partners of higher status.',
     behavioralTraits: ['manipulation', 'deception', 'hypergamy', 'chaos', 'resource-seeking'],
@@ -485,9 +485,9 @@ export const ARCHETYPES = {
     tarotCard: 'Seven of Swords',
     archetypalNarrative: 'You climb through seduction and strategy, then wonder why trust never lasts. You extract value and call it survival, but people feel the extraction. Your relationships are transactions, not bonds. The truth: you can win the game and still lose intimacy.'
   },
-  beta_kappa_female: {
-    id: 'beta_kappa_female',
-    name: 'Beta-Kappa Female',
+  beta_rho_female: {
+    id: 'beta_rho_female',
+    name: 'Beta-Rho Female',
     socialRole: 'Creator, Motherly, Controlling',
     description: 'Nurturing and motherly, but may use this role to control. Values creation, fertility, and family.',
     behavioralTraits: ['nurturing', 'motherly', 'creation', 'control', 'fertility'],
@@ -726,7 +726,7 @@ export const ARCHETYPES = {
 
 export const CORE_GROUPS = {
   alpha: ['alpha', 'alpha_xi', 'alpha_rho', 'dark_alpha'],
-  beta: ['beta', 'beta_iota', 'beta_nu', 'beta_manipulator', 'beta_kappa'],
+  beta: ['beta', 'beta_iota', 'beta_nu', 'beta_kappa', 'beta_rho'],
   gamma: ['gamma', 'gamma_nu', 'gamma_theta', 'gamma_pi', 'dark_gamma'],
   delta: ['delta', 'delta_mu', 'dark_delta'],
   sigma: ['sigma', 'sigma_kappa', 'sigma_lambda', 'dark_sigma_zeta'],
@@ -744,8 +744,9 @@ export const GENDER_NEUTRAL_MAPPING = {
   'Beta Male': 'beta',
   'Beta-Iota Male': 'beta_iota',
   'Beta-Nu Male': 'beta_nu',
-  'Beta-Manipulator Male': 'beta_manipulator',
+  'Beta-Manipulator Male': 'beta_kappa',
   'Beta-Kappa Male': 'beta_kappa',
+  'Beta-Rho Male': 'beta_rho',
   'Gamma Male': 'gamma',
   'Gamma-Nu Male': 'gamma_nu',
   'Gamma-Theta Male': 'gamma_theta',
@@ -768,8 +769,9 @@ export const GENDER_NEUTRAL_MAPPING = {
   'Dark Alpha Female': 'dark_alpha',
   'Beta Female': 'beta',
   'Beta-Nu Female': 'beta_nu',
-  'Beta-Manipulator Female': 'beta_manipulator',
+  'Beta-Manipulator Female': 'beta_kappa',
   'Beta-Kappa Female': 'beta_kappa',
+  'Beta-Rho Female': 'beta_rho',
   'Gamma Female': 'gamma',
   'Gamma-Theta Female': 'gamma_theta',
   'Gamma-Feminist Female': 'gamma',

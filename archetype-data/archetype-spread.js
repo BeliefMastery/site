@@ -62,7 +62,7 @@ export const ARCHETYPE_SPREAD = [
     "tarotCard": ""
   },
   {
-    "name": "Beta-Manipulator Male",
+    "name": "Beta-Kappa Male",
     "socialRole": "Hypergamous, Deceptive, Chaotic",
     "jungianEquivalent": "",
     "vedicEquivalent": "",
@@ -70,7 +70,7 @@ export const ARCHETYPE_SPREAD = [
     "tarotCard": ""
   },
   {
-    "name": "Beta-Kappa Male",
+    "name": "Beta-Rho Male",
     "socialRole": "Creator, Motherly, Controlling",
     "jungianEquivalent": "",
     "vedicEquivalent": "",
@@ -267,7 +267,7 @@ export const ARCHETYPE_SPREAD = [
     "socialProportion": 8
   },
   {
-    "name": "Beta-Manipulator Female",
+    "name": "Beta-Kappa Female",
     "socialRole": "Hypergamous, Deceptive, Chaotic",
     "jungianEquivalent": "Devourer (Shadow Lover)",
     "vedicEquivalent": "Mohini (Illusion, Seduction)",
@@ -276,7 +276,7 @@ export const ARCHETYPE_SPREAD = [
     "socialProportion": 10
   },
   {
-    "name": "Beta-Kappa Female",
+    "name": "Beta-Rho Female",
     "socialRole": "Creator, Motherly, Controlling",
     "jungianEquivalent": "Weaver (Queen-Lover)",
     "vedicEquivalent": "Parvati (Motherhood, Fertility)",
