@@ -1088,10 +1088,14 @@ export class TemperamentEngine {
 
       const temperament = this.analysisData.overallTemperament;
       const interpretation = TEMPERAMENT_SCORING.interpretation[temperament.category];
-    const genderAnswer = this.answers[GENDER_QUESTION.id];
+      const genderAnswer = this.answers[GENDER_QUESTION.id];
+      const genderValue = typeof genderAnswer === 'string' ? genderAnswer : genderAnswer?.value;
+      if (!this.analysisData.gender && genderValue) {
+        this.analysisData.gender = genderValue;
+      }
       const genderLabel = (() => {
-        if (!genderAnswer) return 'Not specified';
-        const option = GENDER_QUESTION.options.find(opt => opt.value === genderAnswer);
+        if (!genderValue) return 'Not specified';
+        const option = GENDER_QUESTION.options.find(opt => opt.value === genderValue);
         return option ? option.label : 'Not specified';
       })();
     const reportedGender = this.analysisData.gender;
