@@ -1973,6 +1973,19 @@ showGenderSelection() {
       : this.gender === 'male'
         ? 'Man'
         : 'Not specified';
+    const ensurePeriod = (text) => {
+      if (!text) return '';
+      const trimmed = String(text).trim();
+      if (!trimmed) return '';
+      return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+    };
+    const primaryTraitsSummary = summarizeArchetype(primary);
+    const primaryBlindSpot = primary?.stressResponse
+      ? `Likely blind spot: ${ensurePeriod(primary.stressResponse)}`
+      : 'Likely blind spot: Under pressure, your default pattern can narrow options and reduce flexibility.';
+    const primaryOptimization = primary?.growthEdge
+      ? `Within-archetype strategy: ${ensurePeriod(primary.growthEdge)}${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`
+      : `Within-archetype strategy: Build stability by doubling down on your healthiest traits while expanding flexibility.${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`;
 
     let resultsHTML = `
       <div class="results-container" style="max-width: 900px; margin: 0 auto;">
@@ -2017,6 +2030,12 @@ showGenderSelection() {
           <div style="margin-top: 1.5rem;">
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Growth Edge:</h4>
             <p style="color: var(--muted); line-height: 1.7;">${primary.growthEdge}</p>
+          </div>
+
+          <div style="margin-top: 1.5rem; background: rgba(0, 120, 200, 0.12); border-left: 4px solid #1e90ff; border-radius: var(--radius); padding: 1.25rem;">
+            <h4 style="color: #7fbfff; margin-top: 0; margin-bottom: 0.75rem;">Within-Archetype Optimization</h4>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0 0 0.75rem;">${SecurityUtils.sanitizeHTML(primaryBlindSpot)}</p>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0;">${SecurityUtils.sanitizeHTML(primaryOptimization)}</p>
           </div>
 
           ${primary.archetypalNarrative ? `
