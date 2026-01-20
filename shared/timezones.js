@@ -1,4 +1,5 @@
-﻿// Time zone list derived from IANA zone1970.tab (country codes)\nexport const TIMEZONES = [
+﻿// Time zone list derived from IANA zone1970.tab (country codes)
+export const TIMEZONES = [
     {
         "name":  "Africa/Abidjan",
         "countries":  [
@@ -1982,4 +1983,4 @@
                           "TO"
                       ]
     }
-];\n
+];
