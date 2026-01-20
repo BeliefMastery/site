@@ -138,18 +138,11 @@
           </div>
 
           <div class="form-group">
-            <label for="timezoneOffset">Timezone Offset (UTC)</label>
-            <input type="number" id="timezoneOffset" name="timezoneOffset" step="0.25" placeholder="e.g. +10, -5, +5.5">
-            <small class="form-help">Enter your UTC offset at birth (include DST separately).</small>
-          </div>
-
-          <div class="form-group">
-            <label for="dstObserved">Daylight Saving Time (DST)</label>
-            <select id="dstObserved" name="dstObserved">
-              <option value="0">No</option>
-              <option value="1">Yes (+1 hour)</option>
+            <label for="timeZone">Time Zone</label>
+            <select id="timeZone" name="timeZone">
+              <option value="">Select a time zone</option>
             </select>
-            <small class="form-help">Set to Yes if DST was in effect at birth time.</small>
+            <small class="form-help">Includes country codes from the IANA time zone database.</small>
           </div>
 
           <div class="form-group">

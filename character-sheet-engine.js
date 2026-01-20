@@ -5,6 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
+import { TIMEZONES } from './shared/timezones.js';
 
 // Data modules - will be loaded lazily
 let WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign;
@@ -38,9 +39,23 @@ export class CharacterSheetEngine {
    */
   init() {
     this.attachEventListeners();
+    this.populateTimezones();
     if (this.shouldAutoGenerateSample()) {
       this.generateSampleReport();
     }
+  }
+  populateTimezones() {
+    const select = document.getElementById('timeZone');
+    if (!select || !Array.isArray(TIMEZONES)) return;
+    if (select.options.length > 1) return;
+
+    TIMEZONES.forEach((tz) => {
+      const option = document.createElement('option');
+      const countries = Array.isArray(tz.countries) ? tz.countries.join(', ') : '';
+      option.value = tz.name;
+      option.textContent = countries ? `${tz.name} (${countries})` : tz.name;
+      select.appendChild(option);
+    });
   }
 
   /**
@@ -117,12 +132,38 @@ export class CharacterSheetEngine {
     return signKey && WESTERN_SIGNS[signKey] ? WESTERN_SIGNS[signKey].name : '';
   }
 
-  createUtcDateFromInputs(birthDateValue, birthTimeValue, timezoneOffset, dstOffset) {
+  getTimeZoneOffsetMinutes(date, timeZone) {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    const parts = formatter.formatToParts(date).reduce((acc, part) => {
+      acc[part.type] = part.value;
+      return acc;
+    }, {});
+    const tzDate = Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour),
+      Number(parts.minute),
+      Number(parts.second)
+    );
+    return (tzDate - date.getTime()) / 60000;
+  }
+
+  createUtcDateFromInputs(birthDateValue, birthTimeValue, timeZone) {
     const [year, month, day] = birthDateValue.split('-').map(Number);
     const [hour = 12, minute = 0] = (birthTimeValue || '12:00').split(':').map(Number);
-    const totalOffset = Number(timezoneOffset) + Number(dstOffset || 0);
-    const utcMillis = Date.UTC(year, month - 1, day, hour - totalOffset, minute);
-    return new Date(utcMillis);
+    const assumedUtc = new Date(Date.UTC(year, month - 1, day, hour, minute));
+    const offsetMinutes = this.getTimeZoneOffsetMinutes(assumedUtc, timeZone);
+    return new Date(assumedUtc.getTime() - offsetMinutes * 60000);
   }
 
   calculateObliquityDegrees(julianDate) {
@@ -256,8 +297,7 @@ export class CharacterSheetEngine {
       this.setFieldValue('characterName', 'Sample Adventurer');
       this.setFieldValue('birthDate', birthDate);
       this.setFieldValue('birthTime', '12:00');
-      this.setFieldValue('timezoneOffset', '0');
-      this.setFieldValue('dstObserved', '0');
+      this.setFieldValue('timeZone', 'Etc/UTC');
       this.setFieldValue('birthLatitude', '51.5074');
       this.setFieldValue('birthLongitude', '-0.1278');
       this.setFieldValue('birthLocation', 'Sample City');
@@ -333,17 +373,16 @@ export class CharacterSheetEngine {
       this.setFieldValue('mayanKin', MAYAN_SEALS[mayanData.seal]?.name || '');
 
       const birthTimeInput = document.getElementById('birthTime');
-      const timezoneOffsetInput = document.getElementById('timezoneOffset');
-      const dstObservedInput = document.getElementById('dstObserved');
+      const timeZoneInput = document.getElementById('timeZone');
       const latitudeInput = document.getElementById('birthLatitude');
       const longitudeInput = document.getElementById('birthLongitude');
 
-      const wantsMoonAscendant = timezoneOffsetInput?.value !== ''
+      const wantsMoonAscendant = timeZoneInput?.value !== ''
         || latitudeInput?.value
         || longitudeInput?.value;
 
       const hasMoonInputs = birthTimeInput?.value
-        && timezoneOffsetInput?.value !== ''
+        && timeZoneInput?.value !== ''
         && latitudeInput?.value
         && longitudeInput?.value;
 
@@ -353,20 +392,18 @@ export class CharacterSheetEngine {
         const utcDate = this.createUtcDateFromInputs(
           birthDateInput.value,
           birthTimeInput.value,
-          timezoneOffsetInput.value,
-          dstObservedInput?.value || 0
+          timeZoneInput.value
         );
         const julianDate = this.calculateJulianDate(utcDate);
         const latitude = parseFloat(latitudeInput.value);
         const longitude = parseFloat(longitudeInput.value);
-        const timezoneOffset = parseFloat(timezoneOffsetInput.value);
 
         if (
-          Number.isNaN(latitude) || Number.isNaN(longitude) || Number.isNaN(timezoneOffset)
+          Number.isNaN(latitude) || Number.isNaN(longitude)
           || latitude < -90 || latitude > 90
           || longitude < -180 || longitude > 180
         ) {
-          ErrorHandler.showUserError('Latitude/longitude must be valid decimal degrees, and UTC offset must be a number.');
+          ErrorHandler.showUserError('Latitude/longitude must be valid decimal degrees.');
           return;
         }
 
@@ -384,10 +421,10 @@ export class CharacterSheetEngine {
         this.setFieldValue('ascendantSign', this.getZodiacFromLongitude(ascendantLongitude));
       } else if (wantsMoonAscendant) {
         this.setFieldError('birthTime', !birthTimeInput?.value);
-        this.setFieldError('timezoneOffset', timezoneOffsetInput?.value === '');
+        this.setFieldError('timeZone', timeZoneInput?.value === '');
         this.setFieldError('birthLatitude', !latitudeInput?.value);
         this.setFieldError('birthLongitude', !longitudeInput?.value);
-        ErrorHandler.showUserError('To calculate Moon and Ascendant, enter birth time, UTC offset, latitude, and longitude.');
+        ErrorHandler.showUserError('To calculate Moon and Ascendant, enter birth time, time zone, latitude, and longitude.');
       }
     } catch (error) {
       this.debugReporter.logError(error, 'calculateFromBirthDate');
@@ -435,8 +472,7 @@ export class CharacterSheetEngine {
       name: document.getElementById('characterName')?.value || '',
       birthDate: document.getElementById('birthDate')?.value,
       birthTime: document.getElementById('birthTime')?.value || '',
-      timezoneOffset: document.getElementById('timezoneOffset')?.value || '',
-      dstObserved: document.getElementById('dstObserved')?.value || '0',
+      timeZone: document.getElementById('timeZone')?.value || '',
       birthLatitude: document.getElementById('birthLatitude')?.value || '',
       birthLongitude: document.getElementById('birthLongitude')?.value || '',
       birthLocation: document.getElementById('birthLocation')?.value || '',
@@ -461,7 +497,7 @@ export class CharacterSheetEngine {
       { key: 'name', label: 'Character name' },
       { key: 'birthDate', label: 'Birth date' },
       { key: 'birthTime', label: 'Birth time' },
-      { key: 'timezoneOffset', label: 'Timezone offset (UTC)' },
+      { key: 'timeZone', label: 'Time zone' },
       { key: 'birthLatitude', label: 'Birth latitude' },
       { key: 'birthLongitude', label: 'Birth longitude' },
       { key: 'sunSign', label: 'Sun sign' },
