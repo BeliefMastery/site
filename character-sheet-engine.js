@@ -221,6 +221,16 @@ export class CharacterSheetEngine {
     }
   }
 
+  setFieldError(id, hasError) {
+    const field = document.getElementById(id);
+    if (!field) return;
+    if (hasError) {
+      field.classList.add('field-error');
+    } else {
+      field.classList.remove('field-error');
+    }
+  }
+
   async generateSampleReport() {
     try {
       await this.loadAstrologyData();
@@ -373,6 +383,10 @@ export class CharacterSheetEngine {
         const ascendantLongitude = this.calculateAscendantLongitude(julianDate, latitude, longitude);
         this.setFieldValue('ascendantSign', this.getZodiacFromLongitude(ascendantLongitude));
       } else if (wantsMoonAscendant) {
+        this.setFieldError('birthTime', !birthTimeInput?.value);
+        this.setFieldError('timezoneOffset', timezoneOffsetInput?.value === '');
+        this.setFieldError('birthLatitude', !latitudeInput?.value);
+        this.setFieldError('birthLongitude', !longitudeInput?.value);
         ErrorHandler.showUserError('To calculate Moon and Ascendant, enter birth time, UTC offset, latitude, and longitude.');
       }
     } catch (error) {
@@ -459,9 +473,20 @@ export class CharacterSheetEngine {
       { key: 'mayanKin', label: 'Mayan Dreamspell kin' }
     ];
 
-    const missing = requiredFields.find(field => !String(formData[field.key] || '').trim());
-    if (missing) {
-      ErrorHandler.showUserError(`Please complete the ${missing.label} field.`);
+    requiredFields.forEach((field) => {
+      this.setFieldError(field.key, false);
+    });
+
+    const missingFields = requiredFields.filter(
+      field => !String(formData[field.key] || '').trim()
+    );
+
+    missingFields.forEach((field) => {
+      this.setFieldError(field.key, true);
+    });
+
+    if (missingFields.length) {
+      ErrorHandler.showUserError(`Please complete the ${missingFields[0].label} field.`);
       return false;
     }
 

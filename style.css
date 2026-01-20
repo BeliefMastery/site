@@ -3061,6 +3061,12 @@ small.form-help {
     color: var(--accent-hover);
 }
 
+.field-error {
+    border-color: var(--error) !important;
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+    background: rgba(248, 113, 113, 0.06);
+}
+
 form#subscribe-form {
     display: flex;
     gap: .5rem;
