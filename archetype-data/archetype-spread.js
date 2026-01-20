@@ -54,6 +54,30 @@ export const ARCHETYPE_SPREAD = [
     "socialProportion": 5
   },
   {
+    "name": "Beta-Nu Male",
+    "socialRole": "Traditionalist, Dutiful, Settler",
+    "jungianEquivalent": "",
+    "vedicEquivalent": "",
+    "greekPantheon": "",
+    "tarotCard": ""
+  },
+  {
+    "name": "Beta-Manipulator Male",
+    "socialRole": "Hypergamous, Deceptive, Chaotic",
+    "jungianEquivalent": "",
+    "vedicEquivalent": "",
+    "greekPantheon": "",
+    "tarotCard": ""
+  },
+  {
+    "name": "Beta-Kappa Male",
+    "socialRole": "Creator, Motherly, Controlling",
+    "jungianEquivalent": "",
+    "vedicEquivalent": "",
+    "greekPantheon": "",
+    "tarotCard": ""
+  },
+  {
     "name": "Gamma Male",
     "socialRole": "Intellectual, Rebellious Outsider",
     "jungianEquivalent": "Magician (Rebellious, Clever, Detached from Social Norms)",
