@@ -20,6 +20,33 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .archetype-row {
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .archetype-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .archetype-row.is-open {
+      background: rgba(255, 184, 0, 0.12);
+    }
+    .brutal-truth-row {
+      display: none;
+    }
+    .brutal-truth-row.is-open {
+      display: table-row;
+    }
+    .brutal-truth-panel {
+      background: rgba(100, 0, 0, 0.15);
+      border-left: 4px solid #cc0000;
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.7;
+    }
+  </style>
 </head>
 <body class="page-fullbleed">
   <!-- Nebula-style cosmic background -->
@@ -140,14 +167,59 @@
   <script src="./shared/background.js"></script>
   <script type="module">
     import { ARCHETYPE_SPREAD } from './archetype-data/archetype-spread.js';
+    import { ARCHETYPES, GENDER_NEUTRAL_MAPPING } from './archetype-data/archetypes.js';
 
     const tbodyMale = document.getElementById('archetypeTableBodyMale');
     const tbodyFemale = document.getElementById('archetypeTableBodyFemale');
+
+    const archetypeNameMap = new Map(
+      Object.values(ARCHETYPES || {}).map(archetype => [archetype.name, archetype])
+    );
+
+    const normalizeName = (name) => (name || '').replace(/\s+(Male|Female)$/, '');
+
+    const resolveArchetype = (entryName) => {
+      if (!entryName) return null;
+      const isFemale = entryName.includes('Female');
+      const directMatch = archetypeNameMap.get(entryName);
+      if (directMatch) return directMatch;
+
+      const normalizedName = normalizeName(entryName);
+      const normalizedMatch = archetypeNameMap.get(normalizedName);
+      if (normalizedMatch) return normalizedMatch;
+
+      const neutralId = GENDER_NEUTRAL_MAPPING?.[entryName] || GENDER_NEUTRAL_MAPPING?.[normalizedName];
+      if (neutralId) {
+        if (isFemale && ARCHETYPES?.[`${neutralId}_female`]) {
+          return ARCHETYPES[`${neutralId}_female`];
+        }
+        return ARCHETYPES?.[neutralId] || null;
+      }
+      return null;
+    };
+
+    const buildExcerpt = (text, maxLength = 240) => {
+      if (!text) return 'Brutal truth coming soon.';
+      const trimmed = text.trim();
+      if (trimmed.length <= maxLength) return trimmed;
+      const slice = trimmed.slice(0, maxLength);
+      const lastPeriod = slice.lastIndexOf('.');
+      if (lastPeriod > 80) {
+        return `${slice.slice(0, lastPeriod + 1)}`.trim();
+      }
+      return `${slice.trim()}...`;
+    };
 
     const renderRows = (targetBody, entries) => {
       if (!targetBody) return;
       entries.forEach(entry => {
         const row = document.createElement('tr');
+        row.classList.add('archetype-row');
+        row.setAttribute('tabindex', '0');
+        row.setAttribute('aria-expanded', 'false');
+
+        const archetype = resolveArchetype(entry.name);
+        const brutalTruth = buildExcerpt(archetype?.archetypalNarrative);
         const cells = [
           entry.name,
           entry.socialRole,
@@ -163,6 +235,31 @@
           row.appendChild(cell);
         });
         targetBody.appendChild(row);
+
+        const detailRow = document.createElement('tr');
+        detailRow.classList.add('brutal-truth-row');
+        const detailCell = document.createElement('td');
+        detailCell.colSpan = 7;
+        const detailPanel = document.createElement('div');
+        detailPanel.classList.add('brutal-truth-panel');
+        detailPanel.textContent = `Brutal Truth: ${brutalTruth}`;
+        detailCell.appendChild(detailPanel);
+        detailRow.appendChild(detailCell);
+        targetBody.appendChild(detailRow);
+
+        const toggleDetail = () => {
+          const isOpen = row.classList.toggle('is-open');
+          detailRow.classList.toggle('is-open', isOpen);
+          row.setAttribute('aria-expanded', String(isOpen));
+        };
+
+        row.addEventListener('click', toggleDetail);
+        row.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleDetail();
+          }
+        });
       });
     };
 
