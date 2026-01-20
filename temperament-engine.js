@@ -19,9 +19,7 @@ const GENDER_QUESTION = {
   question: 'What is your gender?',
   options: [
     { value: 'woman', label: 'Woman' },
-    { value: 'man', label: 'Man' },
-    { value: 'non_binary', label: 'Non-binary' },
-    { value: 'prefer_not_to_say', label: 'Prefer not to say' }
+    { value: 'man', label: 'Man' }
   ]
 };
 
@@ -504,7 +502,7 @@ export class TemperamentEngine {
             </label>
           `).join('')}
         </div>
-        <p class="question-help">This helps us contextualize your results. You can skip by choosing “Prefer not to say.”</p>
+        <p class="question-help">This helps us contextualize your results and selection criteria standards.</p>
       </div>
     `);
 
@@ -739,12 +737,8 @@ export class TemperamentEngine {
     if (this.currentPhase === 1) {
       if (this.answers[currentQ.id] === undefined) {
         if (currentQ.type === 'gender') {
-          const defaultOption = currentQ.options?.find(option => option.value === 'prefer_not_to_say');
-          if (defaultOption) {
-            this.answers[currentQ.id] = defaultOption;
-            this.analysisData.gender = defaultOption.value;
-            this.analysisData.genderLabel = defaultOption.label;
-          }
+          ErrorHandler.showUserError('Please select your gender to continue.');
+          return;
         } else if (currentQ.options && currentQ.options.length > 0) {
           // Default to middle option if none selected
           this.answers[currentQ.id] = currentQ.options[Math.floor(currentQ.options.length / 2)];
