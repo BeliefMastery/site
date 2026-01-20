@@ -265,7 +265,8 @@ export class TemperamentEngine {
           question: q.question,
           description: category.description,
           masculineWeight: q.masculineWeight,
-          feminineWeight: q.feminineWeight
+          feminineWeight: q.feminineWeight,
+          selectionStandard: q.selectionStandard
         });
       });
     });
@@ -817,6 +818,8 @@ export class TemperamentEngine {
     let totalFeminineScore = 0;
     let totalWeight = 0;
 
+    const reportedGender = this.analysisData.gender;
+
     Object.keys(dimensionGroups).forEach(groupKey => {
       const group = dimensionGroups[groupKey];
       let groupMasculine = 0;
@@ -826,10 +829,22 @@ export class TemperamentEngine {
       group.forEach(({ question, answer }) => {
         // Normalize answer to -1 to 1 scale (0-10 becomes -1 to 1)
         const normalizedAnswer = (answer - 5) / 5;
-        
-        // Apply weights
-        const masculineContribution = normalizedAnswer * question.masculineWeight;
-        const feminineContribution = normalizedAnswer * question.feminineWeight;
+
+        // Apply gender-aware selection criteria weighting
+        let masculineWeight = question.masculineWeight;
+        let feminineWeight = question.feminineWeight;
+        if (groupKey === 'selection_criteria' && question.selectionStandard && (reportedGender === 'man' || reportedGender === 'woman')) {
+          const aligns = (reportedGender === 'woman' && question.selectionStandard === 'female')
+            || (reportedGender === 'man' && question.selectionStandard === 'male');
+          if (!aligns) {
+            const originalMasculine = masculineWeight;
+            masculineWeight = feminineWeight;
+            feminineWeight = originalMasculine;
+          }
+        }
+
+        const masculineContribution = normalizedAnswer * masculineWeight;
+        const feminineContribution = normalizedAnswer * feminineWeight;
         
         // Get dimension weight
         const dimWeight = TEMPERAMENT_SCORING.dimensionWeights[groupKey] || 1.0;
@@ -1075,12 +1090,13 @@ export class TemperamentEngine {
 
       const temperament = this.analysisData.overallTemperament;
       const interpretation = TEMPERAMENT_SCORING.interpretation[temperament.category];
-      const genderAnswer = this.answers[GENDER_QUESTION.id];
+    const genderAnswer = this.answers[GENDER_QUESTION.id];
       const genderLabel = (() => {
         if (!genderAnswer) return 'Not specified';
         const option = GENDER_QUESTION.options.find(opt => opt.value === genderAnswer);
         return option ? option.label : 'Not specified';
       })();
+    const reportedGender = this.analysisData.gender;
       const maleTrend = EXPECTED_GENDER_TRENDS.man;
       const femaleTrend = EXPECTED_GENDER_TRENDS.woman;
 
@@ -1160,6 +1176,10 @@ export class TemperamentEngine {
       const netScore = score.net;
       const normalizedDimScore = (netScore + 1) / 2;
       
+      const selectionCriteriaNote = dimKey === 'selection_criteria' && (reportedGender === 'man' || reportedGender === 'woman')
+        ? `<p style="color: var(--muted); margin: 0.35rem 0 0; font-size: 0.85rem;">Selection criteria adjusted for ${reportedGender === 'man' ? 'male' : 'female'} standards.</p>`
+        : '';
+
       html += `
         <div class="dimension-item">
           <h4>${SecurityUtils.sanitizeHTML(dimName || '')}</h4>
@@ -1171,6 +1191,7 @@ export class TemperamentEngine {
           <p class="dimension-score-text">
             Masculine: ${(score.masculine * 100).toFixed(0)}% | Feminine: ${(score.feminine * 100).toFixed(0)}% | Net: ${(netScore * 100).toFixed(0)}%
           </p>
+          ${selectionCriteriaNote}
         </div>
       `;
     });

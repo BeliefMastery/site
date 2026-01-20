@@ -41,30 +41,35 @@ export const ATTRACTION_RESPONSIVENESS = {
       {
         id: 'attr_sel_1',
         question: 'When evaluating a potential partner, how important is it that they demonstrate: the ability to solve problems, handle challenges, and be resourceful?',
+        selectionStandard: 'female',
         masculineWeight: 0.3,
         feminineWeight: 1.0
       },
       {
         id: 'attr_sel_2',
         question: 'In what you look for in a partner, how much does this matter: their capacity to protect and provide, versus other qualities like emotional connection or compatibility?',
+        selectionStandard: 'female',
         masculineWeight: 0.2,
         feminineWeight: 1.0
       },
       {
         id: 'attr_sel_3',
         question: 'When considering someone as a potential partner, how important is: their loyalty, their capacity for nurture, and whether you can trust them to work collaboratively?',
+        selectionStandard: 'male',
         masculineWeight: 1.0,
         feminineWeight: 0.3
       },
       {
         id: 'attr_sel_4',
         question: 'How much does this matter when choosing a partner: their willingness and capacity to invest in long-term partnership, including parental investment if relevant?',
+        selectionStandard: 'female',
         masculineWeight: -0.3,
         feminineWeight: 1.0
       },
       {
         id: 'attr_sel_5',
         question: 'When looking for a long-term partner, how important is it that they: show clear willingness to invest in and commit to the relationship over time?',
+        selectionStandard: 'female',
         masculineWeight: 0.4,
         feminineWeight: 0.9
       }
