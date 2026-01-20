@@ -56,17 +56,17 @@ cd site
 - `assessment-examples.html` - Example outputs hub for every engine
 
 ### Diagnostic Tools (13 tools)
-1. **Pathology Assessment** (`diagnosis.html`) - DSM-5 self-reporting diagnostic tool
-2. **Life Domain Review** (`coaching.html`) - Obstacles and satisfaction domains mapping
-3. **Dependency Loop Tracer** (`needs-dependency.html`) - Needs and dependency pattern identification
-4. **Manipulation Defense Decoder** (`manipulation.html`) - Manipulation tactic identification
+1. **Pathology Assessment** (`diagnosis.html`) - DSM-5 educational self-assessment for pattern clarity
+2. **Life Domain Review** (`coaching.html`) - Sovereign of Mind + Belief Mastery obstacles/satisfaction mapping
+3. **Dependency Loop Tracer** (`needs-dependency.html`) - Belief Mastery Chapter 5 needs/dependency tracing
+4. **Manipulation Defense Decoder** (`manipulation.html`) - Sovereign of Mind manipulation vectors/tactics mapping
 5. **Technical Title for your Sovereignty Paradigm** (`sovereignty-spectrum.html`) - Philosophical paradigm alignment
-6. **Logos Structure** (`paradigm.html`) - Worldview foundation mapping
-7. **Relationships** (`relationship.html`) - Relationship compatibility assessment
-8. **Polarity Position Mapping** (`temperament.html`) - Masculine-feminine temperament spectrum
-9. **Modern Archetype Identification** (`archetype.html`) - Archetype identification system
+6. **Logos Structure** (`paradigm.html`) - Worldview foundation mapping (Good Life/God lenses)
+7. **Relationships** (`relationship.html`) - Compatibility assessment with polarity and status/selection/attraction
+8. **Polarity Position Mapping** (`temperament.html`) - Temperament spectrum with gender-calibrated selection criteria
+9. **Modern Archetype Identification** (`archetype.html`) - 5-phase archetype system with status/selection markers
 10. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification
-11. **Astrological Character Sheet** (`character-sheet.html`) - Astrology-to-RPG character conversion
+11. **Astrological Character Sheet** (`character-sheet.html`) - Western/Chinese/Mayan + Numerology RPG conversion
 12. **Unlocked GPT** - External link to custom GPT interface
 13. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
 
