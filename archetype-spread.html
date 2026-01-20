@@ -198,16 +198,9 @@
       return null;
     };
 
-    const buildExcerpt = (text, maxLength = 240) => {
+    const buildNarrative = (text) => {
       if (!text) return 'Brutal truth coming soon.';
-      const trimmed = text.trim();
-      if (trimmed.length <= maxLength) return trimmed;
-      const slice = trimmed.slice(0, maxLength);
-      const lastPeriod = slice.lastIndexOf('.');
-      if (lastPeriod > 80) {
-        return `${slice.slice(0, lastPeriod + 1)}`.trim();
-      }
-      return `${slice.trim()}...`;
+      return text.trim();
     };
 
     const renderRows = (targetBody, entries) => {
@@ -219,7 +212,7 @@
         row.setAttribute('aria-expanded', 'false');
 
         const archetype = resolveArchetype(entry.name);
-        const brutalTruth = buildExcerpt(archetype?.archetypalNarrative);
+        const brutalTruth = buildNarrative(archetype?.archetypalNarrative);
         const cells = [
           entry.name,
           entry.socialRole,
@@ -242,7 +235,7 @@
         detailCell.colSpan = 7;
         const detailPanel = document.createElement('div');
         detailPanel.classList.add('brutal-truth-panel');
-        detailPanel.textContent = `Brutal Truth: ${brutalTruth}`;
+        detailPanel.textContent = `Archetypal Narrative: The Brutal Truth — ${brutalTruth}`;
         detailCell.appendChild(detailPanel);
         detailRow.appendChild(detailCell);
         targetBody.appendChild(detailRow);
