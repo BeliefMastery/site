@@ -1963,10 +1963,16 @@ showGenderSelection() {
     const headerDetail = headerParts.length
       ? `: ${SecurityUtils.sanitizeHTML(headerParts.join(', '))}`
       : '';
+    const genderLabel = this.gender === 'female'
+      ? 'Woman'
+      : this.gender === 'male'
+        ? 'Man'
+        : 'Not specified';
 
     let resultsHTML = `
       <div class="results-container" style="max-width: 900px; margin: 0 auto;">
         <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile${headerDetail}</h2>
+        <p class="temperament-assessment-context" style="text-align: center;"><strong>You selected:</strong> ${SecurityUtils.sanitizeHTML(genderLabel)}.</p>
         
         <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
           <p style="margin: 0; color: var(--muted); line-height: 1.7; font-size: 0.95rem;">
