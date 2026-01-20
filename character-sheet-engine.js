@@ -58,6 +58,13 @@ export class CharacterSheetEngine {
     });
   }
 
+  getSampleTimeZone() {
+    const candidates = ['Etc/UTC', 'UTC', 'Europe/London'];
+    const timeZoneList = Array.isArray(TIMEZONES) ? TIMEZONES : [];
+    const match = candidates.find((candidate) => timeZoneList.some((tz) => tz.name === candidate));
+    return match || timeZoneList[0]?.name || '';
+  }
+
   /**
    * Load astrological data modules asynchronously
    * @returns {Promise<void>}
@@ -297,7 +304,7 @@ export class CharacterSheetEngine {
       this.setFieldValue('characterName', 'Sample Adventurer');
       this.setFieldValue('birthDate', birthDate);
       this.setFieldValue('birthTime', '12:00');
-      this.setFieldValue('timeZone', 'Etc/UTC');
+      this.setFieldValue('timeZone', this.getSampleTimeZone());
       this.setFieldValue('birthLatitude', '51.5074');
       this.setFieldValue('birthLongitude', '-0.1278');
       this.setFieldValue('birthLocation', 'Sample City');
