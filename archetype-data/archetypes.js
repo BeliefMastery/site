@@ -35,6 +35,7 @@ export const ARCHETYPES = {
     motivations: ['protection', 'justice', 'honor', 'service'],
     stressResponse: 'Fights harder, defends positions, may become rigid',
     growthEdge: 'Developing flexibility, learning when to yield',
+    archetypalNarrative: 'You earn respect by protecting people, but you become defined by crisis. You build your identity around strength and service, and quietly resent anyone who does not appreciate the cost. You win battles, but the constant posture of defense keeps intimacy at a distance. The truth: you are admired when danger is present and overlooked when peace arrives.',
     parentType: 'alpha'
   },
   alpha_rho: {
@@ -46,6 +47,7 @@ export const ARCHETYPES = {
     motivations: ['justice', 'order', 'fairness', 'righteousness'],
     stressResponse: 'Becomes more rigid, enforces rules strictly',
     growthEdge: 'Developing compassion, understanding context',
+    archetypalNarrative: 'You keep things fair, but you become the cold hand of order. People rely on your structure until it threatens their freedom, then they resent you. You trade warmth for principle and end up respected more than loved. The truth: you win the argument and lose the relationship.',
     parentType: 'alpha'
   },
   dark_alpha: {
@@ -57,6 +59,7 @@ export const ARCHETYPES = {
     motivations: ['power', 'control', 'fear', 'dominance'],
     stressResponse: 'Becomes more abusive, increases control',
     growthEdge: 'Healing power wounds, developing healthy authority',
+    archetypalNarrative: 'You use power as a weapon and call it leadership. You get compliance, not loyalty, and every bond you build is wired with fear. You may gain status quickly, but you leave scorched ground and enemies behind you. The truth: you rule by force and end up isolated, surrounded but never trusted.',
     parentType: 'alpha',
     isShadow: true
   },
@@ -88,6 +91,7 @@ export const ARCHETYPES = {
     motivations: ['harmony', 'care', 'purity', 'connection'],
     stressResponse: 'Withdraws, becomes more passive, seeks safety',
     growthEdge: 'Developing wisdom, learning healthy boundaries',
+    archetypalNarrative: 'You stay gentle to avoid conflict, but people mistake softness for weakness. You give more than you receive and call it love, while others learn they can take without consequence. You often end up protected rather than chosen, safe rather than respected. The truth: your innocence attracts caretakers, not equals.',
     parentType: 'beta'
   },
   beta_nu: {
@@ -99,6 +103,7 @@ export const ARCHETYPES = {
     motivations: ['stability', 'tradition', 'security', 'belonging'],
     stressResponse: 'Clings to tradition, becomes more rigid',
     growthEdge: 'Embracing change, developing flexibility',
+    archetypalNarrative: 'You build a stable life, but it is built on caution and fear of loss. You become predictable and slowly lose the spark that once made you feel alive. Others lean on your reliability while you quietly accept a life of routine. The truth: you protect stability at the cost of vitality.',
     parentType: 'beta'
   },
   beta_manipulator: {
@@ -110,6 +115,7 @@ export const ARCHETYPES = {
     motivations: ['resources', 'status', 'security', 'advantage'],
     stressResponse: 'Increases manipulation, becomes more deceptive',
     growthEdge: 'Developing authentic connection, honest communication',
+    archetypalNarrative: 'You survive by playing angles, but every win costs you trust. You secure short-term gains and long-term suspicion. People keep you close for utility and far from their heart. The truth: you get what you want but never get to be wanted.',
     parentType: 'beta',
     isShadow: true
   },
@@ -122,6 +128,7 @@ export const ARCHETYPES = {
     motivations: ['care', 'control', 'creation', 'nurturing'],
     stressResponse: 'Increases control, becomes more smothering',
     growthEdge: 'Releasing control, allowing autonomy',
+    archetypalNarrative: 'You nurture by taking over, then call it love. Your care becomes a cage, and the people you protect start to resist you. You become indispensable and resented at the same time. The truth: you keep people close by limiting their freedom.',
     parentType: 'beta'
   },
 
@@ -152,6 +159,7 @@ export const ARCHETYPES = {
     motivations: ['love', 'beauty', 'ideals', 'connection'],
     stressResponse: 'Becomes more idealistic, may become disillusioned',
     growthEdge: 'Balancing ideals with reality, developing pragmatism',
+    archetypalNarrative: 'You chase the perfect love and end up disappointed by real people. You mistake intensity for depth, and when reality arrives you withdraw. You keep waiting for the ideal partner and miss the ones who could have grown with you. The truth: your standards protect your heart by starving it.',
     parentType: 'gamma'
   },
   gamma_theta: {
@@ -163,6 +171,7 @@ export const ARCHETYPES = {
     motivations: ['transcendence', 'wisdom', 'divine', 'enlightenment'],
     stressResponse: 'Withdraws into spiritual practice, becomes detached',
     growthEdge: 'Grounding spirituality, integrating with daily life',
+    archetypalNarrative: 'You speak in visions, but most people cannot follow. Your spiritual depth becomes a social distance, and you confuse solitude for transcendence. You feel called but rarely understood, and connection fades as you drift upward. The truth: you trade intimacy for revelation and end up alone with your insights.',
     parentType: 'gamma'
   },
   gamma_pi: {
@@ -174,6 +183,7 @@ export const ARCHETYPES = {
     motivations: ['opportunity', 'fortune', 'risk', 'adventure'],
     stressResponse: 'Takes bigger risks, becomes more reckless',
     growthEdge: 'Developing stability, learning to plan',
+    archetypalNarrative: 'You live on the edge of chance and call it destiny. Your wins are loud, your losses are brutal, and stability always stays just out of reach. People enjoy your spark but do not trust your consistency. The truth: you gamble with your future and often lose the long game.',
     parentType: 'gamma'
   },
   dark_gamma: {
@@ -185,6 +195,7 @@ export const ARCHETYPES = {
     motivations: ['truth', 'isolation', 'nihilism', 'transcendence'],
     stressResponse: 'Becomes more isolated, deeper into nihilism',
     growthEdge: 'Finding meaning, reconnecting with life',
+    archetypalNarrative: 'You see the void and start worshiping it. Your insight becomes contempt, and your detachment becomes a prison. You push people away before they can disappoint you, then call it clarity. The truth: you are not above life, you are hiding from it.',
     parentType: 'gamma',
     isShadow: true
   },
@@ -216,6 +227,7 @@ export const ARCHETYPES = {
     motivations: ['care', 'protection', 'nurturing', 'family'],
     stressResponse: 'Becomes more protective, may become overbearing',
     growthEdge: 'Allowing independence, developing boundaries',
+    archetypalNarrative: 'You protect everyone, then resent how little they protect you. Your worth becomes tied to being needed, and you panic when people grow independent. You keep the family running but lose yourself in the role. The truth: you become a caretaker before you become a man.',
     parentType: 'delta'
   },
   dark_delta: {
@@ -227,6 +239,7 @@ export const ARCHETYPES = {
     motivations: ['service', 'sacrifice', 'approval', 'duty'],
     stressResponse: 'Increases sacrifice, becomes more resentful',
     growthEdge: 'Learning self-care, developing healthy boundaries',
+    archetypalNarrative: 'You sacrifice until you are hollow, then call it virtue. You keep giving in hopes of being chosen, but your quiet resentment leaks into everything. People rely on you, then forget you. The truth: you are a martyr to a life no one asked you to live.',
     parentType: 'delta',
     isShadow: true
   },
@@ -261,7 +274,8 @@ export const ARCHETYPES = {
     parentType: 'sigma',
     // Reproductive/Mating Success Metadata
     reproductiveSuccess: 'low', // Usually misses out on reproduction (Kappa category)
-    reproductiveDescription: 'Typically misses out on reproduction. Eccentricity, unpredictability, and strategic indirect influence limit mate access. Values strategy and autonomy over reproductive opportunities.'
+    reproductiveDescription: 'Typically misses out on reproduction. Eccentricity, unpredictability, and strategic indirect influence limit mate access. Values strategy and autonomy over reproductive opportunities.',
+    archetypalNarrative: 'You influence from the shadows and call it freedom. Your indirect style keeps you safe but makes you forgettable. People see the schemes, not the soul, and keep you at a distance. The truth: you are clever enough to control outcomes and too distant to be loved.'
   },
   sigma_lambda: {
     id: 'sigma_lambda',
@@ -272,6 +286,7 @@ export const ARCHETYPES = {
     motivations: ['beauty', 'expression', 'creativity', 'autonomy'],
     stressResponse: 'Withdraws into creativity, becomes more detached',
     growthEdge: 'Developing emotional connection, engaging with others',
+    archetypalNarrative: 'You turn inward and make art instead of relationships. Your inner world becomes richer while your outer life gets thinner. People admire your talent but rarely access your heart. The truth: you are productive in creation and absent in connection.',
     parentType: 'sigma'
   },
   dark_sigma_zeta: {
@@ -283,6 +298,7 @@ export const ARCHETYPES = {
     motivations: ['revolution', 'destruction', 'autonomy', 'freedom'],
     stressResponse: 'Becomes more destructive, increases rebellion',
     growthEdge: 'Finding constructive expression, developing purpose',
+    archetypalNarrative: 'You burn systems down without building a place to stand. Your identity becomes opposition, and peace feels like weakness. People fear your intensity but do not follow your chaos for long. The truth: you become a rebel without a home and a destroyer without a legacy.',
     parentType: 'sigma',
     isShadow: true
   },
@@ -314,6 +330,7 @@ export const ARCHETYPES = {
     motivations: ['destruction', 'consumption', 'chaos', 'nihilism'],
     stressResponse: 'Becomes more destructive, increases consumption',
     growthEdge: 'Finding purpose, developing creation over consumption',
+    archetypalNarrative: 'You take without building and call it survival. Your pain becomes your excuse, and your bitterness becomes your identity. You drain the few who try to help and confirm your belief that nothing changes. The truth: you are not only ignored, you become a warning to others.',
     parentType: 'omega',
     isShadow: true
   },
@@ -329,6 +346,7 @@ export const ARCHETYPES = {
     stressResponse: 'Maintains equanimity, responds with wisdom',
     growthEdge: 'Continuing integration, serving others',
     isRare: true,
+    archetypalNarrative: 'You live beyond the game, but the game still lives around you. People project sainthood onto you and then resent you for not saving them. You may be at peace, but you often walk alone because few can meet you there. The truth: transcendence costs you ordinary belonging.',
     explanation: 'The Phi archetype represents transcendent, fully integrated behavioral patterns that operate beyond typical social hierarchies. The term "Phi" refers to a state of integration and transcendence, representing someone who has moved beyond typical archetypal patterns into a more integrated expression.'
   },
 
@@ -348,6 +366,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Hera (Queen, Power)',
     tarotCard: 'The Empress',
     socialProportion: 3.0,
+    archetypalNarrative: 'You are pursued constantly, but few people see you beyond your value. You can select almost anyone, yet real loyalty is rare because everyone wants a piece of you. Your power is beauty and standards, and your vulnerability is being reduced to them. The truth: you are desired by many and truly known by few.',
     explanation: 'The Alpha Female archetype represents high social value and desirability. This archetype naturally attracts attention and sets standards in social contexts. The term refers to social positioning and behavioral patterns related to attractiveness and social value, not a ranking of worth.'
   },
   alpha_xi_female: {
@@ -363,7 +382,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Seer (Magician)',
     vedicEquivalent: 'Gayatri (Enlightenment)',
     greekPantheon: 'Nemesis (Retribution)',
-    tarotCard: 'King of Swords'
+    tarotCard: 'King of Swords',
+    archetypalNarrative: 'You rarely choose, so you rarely lose. Your standards keep you safe but also keep you alone. Men are tested and dismissed, and you quietly wonder why so few feel worthy. The truth: your discernment protects you from bad partners and blocks good ones.'
   },
   alpha_unicorn_female: {
     id: 'alpha_unicorn_female',
@@ -378,7 +398,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Maiden (Lover)',
     vedicEquivalent: 'Sita (Virtue, Devotion)',
     greekPantheon: 'Penelope (Fidelity)',
-    tarotCard: 'Two of Cups'
+    tarotCard: 'Two of Cups',
+    archetypalNarrative: 'You give loyalty freely and hope it will be honored. Your devotion attracts protectors, but it can also attract men who want a servant. You keep the bond alive even when it is not safe. The truth: your purity can become the chain that binds you.'
   },
   alpha_iota_female: {
     id: 'alpha_iota_female',
@@ -393,7 +414,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Healer (Lover-Magician)',
     vedicEquivalent: 'Gauri (Harmony, Grace)',
     greekPantheon: 'Harmonia (Concord)',
-    tarotCard: 'Four of Wands'
+    tarotCard: 'Four of Wands',
+    archetypalNarrative: 'You keep the peace, but peace becomes your prison. You smooth conflict until your own needs vanish. Others enjoy your stability while you quietly absorb the cost. The truth: harmony without assertion turns you into the one who always yields.'
   },
   dark_alpha_female: {
     id: 'dark_alpha_female',
@@ -409,7 +431,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Tyrant Queen (Shadow King)',
     vedicEquivalent: 'Kali (Chaos, Power)',
     greekPantheon: 'Eris (Discord)',
-    tarotCard: 'The Tower'
+    tarotCard: 'The Tower',
+    archetypalNarrative: 'You use attraction as leverage and call it empowerment. You win through control and chaos, leaving a trail of broken bonds. Men fear you or chase you for the wrong reasons, and trust never survives. The truth: you are powerful but toxic, and your dominance leaves you alone.'
   },
   beta_female: {
     id: 'beta_female',
@@ -426,6 +449,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Echo (Unreciprocated Love)',
     tarotCard: 'Five of Pentacles',
     socialProportion: 20.0,
+    archetypalNarrative: 'You secure survival through relationships, but the price is pride. You accept uneven deals and call it stability, then resent the imbalance. Your partners sense the hunger beneath your affection. The truth: you are chosen for convenience, not desire.',
     explanation: 'The Beta Female archetype represents resource-seeking and security-focused behavioral patterns. This archetype prioritizes survival and stability, often through relationships. The term refers to social positioning and behavioral tendencies, not a ranking of value.'
   },
   beta_nu_female: {
@@ -441,7 +465,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Dutiful Queen (Queen-Lover)',
     vedicEquivalent: 'Savitri (Loyalty, Sacrifice)',
     greekPantheon: 'Hestia (Home, Duty)',
-    tarotCard: 'The Hierophant'
+    tarotCard: 'The Hierophant',
+    archetypalNarrative: 'You build the home and keep it running, but you fade into the background. You trade personal ambition for family stability and get taken for granted. Your loyalty keeps the structure intact while your identity dissolves. The truth: you become the foundation everyone stands on and no one sees.'
   },
   beta_manipulator_female: {
     id: 'beta_manipulator_female',
@@ -457,7 +482,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Devourer (Shadow Lover)',
     vedicEquivalent: 'Mohini (Illusion, Seduction)',
     greekPantheon: 'Circe (Enchantment)',
-    tarotCard: 'Seven of Swords'
+    tarotCard: 'Seven of Swords',
+    archetypalNarrative: 'You climb through seduction and strategy, then wonder why trust never lasts. You extract value and call it survival, but people feel the extraction. Your relationships are transactions, not bonds. The truth: you can win the game and still lose intimacy.'
   },
   beta_kappa_female: {
     id: 'beta_kappa_female',
@@ -472,7 +498,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Weaver (Queen-Lover)',
     vedicEquivalent: 'Parvati (Motherhood, Fertility)',
     greekPantheon: 'Gaia (Earth Mother)',
-    tarotCard: 'Queen of Pentacles'
+    tarotCard: 'Queen of Pentacles',
+    archetypalNarrative: 'You nurture, create, and control the environment, but your care becomes a management system. You hold the family together and quietly feel trapped by the role. People rely on your competence and forget your desires. The truth: your love becomes labor.'
   },
   gamma_female: {
     id: 'gamma_female',
@@ -489,6 +516,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Hecate (Mysticism)',
     tarotCard: 'The Magician',
     socialProportion: 8.0,
+    archetypalNarrative: 'You are intelligent and different, and it makes connection hard. You sense the shallowness around you and become critical, then isolated. You want a partner who can meet your mind, and you rarely find one. The truth: you choose intellect over intimacy and pay for it with loneliness.',
     explanation: 'The Gamma Female archetype represents intellectual independence and non-conformity. This archetype values authenticity and knowledge over social acceptance. The term refers to behavioral patterns of intellectual rebellion and independence.'
   },
   gamma_theta_female: {
@@ -504,7 +532,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Wise Woman (High Priestess)',
     vedicEquivalent: 'Durga (Protection, Defiance)',
     greekPantheon: 'Bellona (War, Ruthlessness)',
-    tarotCard: 'Queen of Wands'
+    tarotCard: 'Queen of Wands',
+    archetypalNarrative: 'You see patterns others miss, but you speak like a blade. Your honesty cuts through illusion and also through intimacy. People admire your fire and fear your confrontation. The truth: your wisdom wins debates and loses softness.'
   },
   gamma_feminist_female: {
     id: 'gamma_feminist_female',
@@ -519,7 +548,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Rebel Scholar (Magician)',
     vedicEquivalent: 'Tara (Compassion, Wisdom)',
     greekPantheon: 'Athena (Wisdom, Strategy)',
-    tarotCard: 'Nine of Swords'
+    tarotCard: 'Nine of Swords',
+    archetypalNarrative: 'You prioritize career and independence, then wake up angry at the cost. You are competent and accomplished, but intimacy feels like a trade you no longer know how to make. You blame the world for the gap, but the gap was chosen. The truth: you built success and sacrificed softness.'
   },
   dark_gamma_female: {
     id: 'dark_gamma_female',
@@ -535,7 +565,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Crone (Shadow Magician)',
     vedicEquivalent: 'Dhumavati (Misfortune, Isolation)',
     greekPantheon: 'Nyx (Darkness)',
-    tarotCard: 'Five of Cups'
+    tarotCard: 'Five of Cups',
+    archetypalNarrative: 'You reject connection before it rejects you. Your intellect turns into contempt, and your isolation feels justified. You wear despair as armor and call it realism. The truth: you are not too deep for love, you are too closed to it.'
   },
   delta_female: {
     id: 'delta_female',
@@ -552,6 +583,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Demeter (Harvest)',
     tarotCard: 'Ten of Pentacles',
     socialProportion: 10.0,
+    archetypalNarrative: 'You create comfort and stability, but you become the background of everyone else’s life. Your care keeps the household alive, and your own needs get pushed aside. You receive gratitude but not desire. The truth: you are valued for what you provide, not who you are.',
     explanation: 'The Delta Female archetype represents nurturing and supportive behavioral patterns focused on home and family. This archetype creates warmth and stability for others, often prioritizing the needs of others over self.'
   },
   delta_mu_female: {
@@ -567,7 +599,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Light Maiden (Lover)',
     vedicEquivalent: 'Lakshmi (Prosperity, Nurturing)',
     greekPantheon: 'Eos (Dawn, Renewal)',
-    tarotCard: 'The Sun'
+    tarotCard: 'The Sun',
+    archetypalNarrative: 'You bring light to people, but they start to expect it. Your joy becomes a service, and you hide your darkness to keep others comfortable. When you finally need support, few know how to give it. The truth: you carry the mood of the room and pay for it alone.'
   },
   dark_delta_female: {
     id: 'dark_delta_female',
@@ -583,7 +616,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Distorted Weaver',
     vedicEquivalent: 'Annapurna (Self-Sustaining)',
     greekPantheon: 'Hestia (Martyrdom)',
-    tarotCard: 'Four of Cups'
+    tarotCard: 'Four of Cups',
+    archetypalNarrative: 'You give until there is nothing left, then resent everyone for taking. You stay because you fear being unwanted, and you become bitter inside the role you chose. People accept your sacrifice and do not notice your pain. The truth: you disappear in the name of love and call it loyalty.'
   },
   sigma_female: {
     id: 'sigma_female',
@@ -600,6 +634,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Artemis (Huntress)',
     tarotCard: 'The Fool',
     socialProportion: 3.0,
+    archetypalNarrative: 'You are independent and admired, but intimacy remains optional and therefore fragile. You keep your freedom by keeping people at arm’s length, then complain about the distance. You are hard to catch and easy to lose. The truth: your autonomy protects you from dependence and from depth.',
     explanation: 'The Sigma Female archetype represents independence and autonomy. This archetype maintains high value through self-sufficiency and freedom from dependency. The term refers to behavioral patterns of independence and elusiveness.'
   },
   sigma_feminist_female: {
@@ -615,7 +650,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Distorted Maiden',
     vedicEquivalent: 'Tara (Self-Sustaining Wisdom)',
     greekPantheon: 'Athena (Independent Strategy)',
-    tarotCard: 'Queen of Swords'
+    tarotCard: 'Queen of Swords',
+    archetypalNarrative: 'You reject dependence so strongly that partnership feels like a threat. You win respect but struggle to receive affection. Your stance protects you from loss and also blocks intimacy. The truth: you are unyielding and therefore alone by design.'
   },
   dark_sigma_zeta_female: {
     id: 'dark_sigma_zeta_female',
@@ -631,7 +667,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Revolutionary Outcast',
     vedicEquivalent: 'Kali (Fierce Autonomy)',
     greekPantheon: 'Nemesis (Defiance)',
-    tarotCard: 'Eight of Wands'
+    tarotCard: 'Eight of Wands',
+    archetypalNarrative: 'You burn bridges before anyone can cross them. Your defiance feels like strength, but it isolates you. You challenge every structure, then wonder why you have no shelter. The truth: you trade belonging for rebellion and call it freedom.'
   },
   omega_female: {
     id: 'omega_female',
@@ -648,6 +685,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Nyx (Darkness)',
     tarotCard: 'Four of Swords',
     socialProportion: 4.0,
+    archetypalNarrative: 'You feel unseen, and the feeling becomes your identity. You withdraw, then blame the world for not reaching you. You may want love but believe you are unlovable. The truth: your isolation keeps you safe and keeps you stuck.',
     explanation: 'The Omega Female archetype represents social isolation and despair. This archetype struggles with connection and may carry nihilism. The term refers to behavioral patterns of isolation and social difficulty, not a ranking of worth.'
   },
   dark_omega_female: {
@@ -664,7 +702,8 @@ export const ARCHETYPES = {
     jungianEquivalent: 'Devourer (Shadow Lover)',
     vedicEquivalent: 'Chamunda (Destruction)',
     greekPantheon: 'Eris (Chaos)',
-    tarotCard: 'Ten of Swords'
+    tarotCard: 'Ten of Swords',
+    archetypalNarrative: 'You consume what you cannot build and call it justice. Your pain becomes a weapon, and your relationships become collateral damage. You burn down what might have healed you. The truth: you stay broken because breaking feels like power.'
   },
   phi_female: {
     id: 'phi_female',
@@ -680,6 +719,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Eirene (Peace)',
     tarotCard: 'The World',
     socialProportion: 0.01,
+    archetypalNarrative: 'You live beyond the game, and most people cannot meet you there. Your peace is real, but it makes ordinary life feel distant. You are respected, sometimes idealized, and often lonely. The truth: transcendence grants freedom and removes the comfort of the crowd.',
     explanation: 'The Phi Female archetype represents full transcendence beyond social structures and games. This archetype has ascended beyond the need for external validation and operates from a place of inner peace and wisdom.'
   }
 };
