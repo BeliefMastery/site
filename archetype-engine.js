@@ -2122,9 +2122,27 @@ showGenderSelection() {
     const phase5Results = this.analysisData.phase5Results || {};
     const clusterOrder = ['coalition_rank', 'reproductive_confidence', 'axis_of_attraction'];
     const phase5Clusters = clusterOrder
-      .map(key => phase5Results.clusters?.[key])
+      .map(key => {
+        const cluster = phase5Results.clusters?.[key];
+        return cluster ? { key, ...cluster } : null;
+      })
       .filter(Boolean);
     const phase5Markers = Array.isArray(phase5Results.topMarkers) ? phase5Results.topMarkers : [];
+    const getGrade = (score = 0) => {
+      if (score >= 0.8) return 'High';
+      if (score >= 0.6) return 'Medium-High';
+      if (score >= 0.4) return 'Medium';
+      if (score >= 0.2) return 'Low';
+      return 'Very Low';
+    };
+    const getClusterInsight = (key, grade) => {
+      const insights = {
+        coalition_rank: `Relative standing within peer groups (grade: ${grade}).`,
+        reproductive_confidence: `Likelihood of sustained mate investment once bonded (grade: ${grade}).`,
+        axis_of_attraction: `Initial attraction and display-signal strength (grade: ${grade}).`
+      };
+      return insights[key] || `Summary grade: ${grade}.`;
+    };
 
     if (phase5Clusters.length > 0) {
       resultsHTML += `
@@ -2134,7 +2152,7 @@ showGenderSelection() {
           <div style="margin-top: 1rem;">
             <ul style="color: var(--muted); line-height: 1.8;">
               ${phase5Clusters.map(cluster => `
-                <li><strong>${SecurityUtils.sanitizeHTML(cluster.label || '')}:</strong> ${Math.round((cluster.score || 0) * 100)}%</li>
+                <li><strong>${SecurityUtils.sanitizeHTML(cluster.label || '')}:</strong> ${getGrade(cluster.score)} (${Math.round((cluster.score || 0) * 100)}%) — ${SecurityUtils.sanitizeHTML(getClusterInsight(cluster.key || '', getGrade(cluster.score)))}</li>
               `).join('')}
             </ul>
           </div>
@@ -2143,7 +2161,7 @@ showGenderSelection() {
               <p style="color: var(--muted); margin-bottom: 0.5rem;"><strong>Top markers:</strong></p>
               <ul style="color: var(--muted); line-height: 1.8;">
                 ${phase5Markers.map(marker => `
-                  <li>${SecurityUtils.sanitizeHTML(marker.label || '')} (${Math.round((marker.score || 0) * 100)}%)</li>
+                  <li>${SecurityUtils.sanitizeHTML(marker.label || '')}: ${getGrade(marker.score)} (${Math.round((marker.score || 0) * 100)}%)</li>
                 `).join('')}
               </ul>
             </div>
