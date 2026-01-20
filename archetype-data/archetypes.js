@@ -109,15 +109,14 @@ export const ARCHETYPES = {
   beta_kappa: {
     id: 'beta_kappa',
     name: 'Beta-Kappa',
-    socialRole: 'Hypergamous, Deceptive, Chaotic',
-    description: 'Uses manipulation to gain resources or status. May appear supportive but operates from self-interest.',
-    behavioralTraits: ['manipulation', 'deception', 'chaos', 'self-interest', 'resource-seeking'],
-    motivations: ['resources', 'status', 'security', 'advantage'],
-    stressResponse: 'Increases manipulation, becomes more deceptive',
-    growthEdge: 'Developing authentic connection, honest communication',
-    archetypalNarrative: 'You survive by playing angles, but every win costs you trust. You secure short-term gains and long-term suspicion. People keep you close for utility and far from their heart. The truth: you get what you want but never get to be wanted.',
-    parentType: 'beta',
-    isShadow: true
+    socialRole: 'Ideological Ally, Approval-Seeking, Coalition Adaptor',
+    description: 'Aligns with dominant social narratives to gain access, protection, and relational approval. Seeks security through alliance rather than confrontation.',
+    behavioralTraits: ['alignment', 'appeasement', 'social signaling', 'conflict avoidance', 'approval-seeking'],
+    motivations: ['acceptance', 'access', 'security', 'status by association'],
+    stressResponse: 'Becomes more performative and cautious, doubles down on alignment, avoids dissent',
+    growthEdge: 'Developing internal conviction, building value independent of approval',
+    archetypalNarrative: 'You trade conviction for access, and access for the illusion of belonging. You gain entry but lose respect, offering agreement where courage was required. People reward your compliance but rarely trust your backbone. The truth: you are welcomed as an ally but seldom chosen as a leader, and the approval you chase keeps you small.',
+    parentType: 'beta'
   },
   beta_rho: {
     id: 'beta_rho',

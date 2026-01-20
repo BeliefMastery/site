@@ -261,9 +261,18 @@ export const PHASE_2_QUESTIONS = [
     type: 'likert',
     scale: 5,
     archetypes: [
-      { id: 'beta_kappa', weight: 3 },
       { id: 'sigma_kappa', weight: 2 },
       { id: 'dark_alpha', weight: 1 }
+    ]
+  },
+  {
+    id: 'p2_q6b',
+    question: 'I align with dominant social causes to gain approval or access',
+    type: 'likert',
+    scale: 5,
+    archetypes: [
+      { id: 'beta_kappa', weight: 3 },
+      { id: 'beta', weight: 1 }
     ]
   },
   {
@@ -496,7 +505,7 @@ export const SUBTYPE_REFINEMENT_QUESTIONS = {
         { text: 'Reliable, supportive, but tends to defer', archetypes: ['beta'], weight: 2 },
         { text: 'Gentle, nurturing, innocent-leaning', archetypes: ['beta_iota'], weight: 3 },
         { text: 'Traditional, dutiful, and stability-focused', archetypes: ['beta_nu'], weight: 3 },
-        { text: 'Resource-seeking or strategically self-interested', archetypes: ['beta_kappa'], weight: 3 },
+        { text: 'Strategic alignment for access or advantage', archetypes: ['beta_kappa'], weight: 3 },
         { text: 'Motherly/creator energy with controlling tendencies', archetypes: ['beta_rho'], weight: 3 }
       ]
     },
@@ -508,7 +517,7 @@ export const SUBTYPE_REFINEMENT_QUESTIONS = {
         { text: 'Harmony and dependable support', archetypes: ['beta'], weight: 2 },
         { text: 'Innocence, caretaking, and reassurance', archetypes: ['beta_iota'], weight: 2 },
         { text: 'Duty, tradition, and long-term stability', archetypes: ['beta_nu'], weight: 2 },
-        { text: 'Securing resources or leverage', archetypes: ['beta_kappa'], weight: 2 },
+        { text: 'Securing access or leverage through alignment', archetypes: ['beta_kappa'], weight: 2 },
         { text: 'Creative care with strong boundaries and direction', archetypes: ['beta_rho'], weight: 2 }
       ]
     }
@@ -801,7 +810,7 @@ export const PHASE_3_QUESTIONS = [
     options: [
       { text: 'Need for control and dominance', archetypes: ['dark_alpha'], weight: 2, isShadow: true },
       { text: 'Isolation and nihilism', archetypes: ['dark_gamma'], weight: 2, isShadow: true },
-      { text: 'Manipulation and self-interest', archetypes: ['beta_kappa'], weight: 2, isShadow: true },
+      { text: 'Manipulation and self-interest', archetypes: ['sigma_kappa'], weight: 2, isShadow: true },
       { text: 'Martyrdom and resentment', archetypes: ['dark_delta'], weight: 2, isShadow: true },
       { text: 'Destructive rebellion', archetypes: ['dark_sigma_zeta'], weight: 2, isShadow: true },
       { text: 'Destructive consumption', archetypes: ['dark_omega'], weight: 2, isShadow: true }

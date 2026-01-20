@@ -42,7 +42,7 @@ export const ARCHETYPE_SPREAD = [
     "vedicEquivalent": "Vaishya Dharma (Servant to Structure, Duty)",
     "greekPantheon": "Hephaestus (Industrious, Dutiful, Unappreciated)",
     "tarotCard": "Six of Pentacles",
-    "socialProportion": 34
+    "socialProportion": 30
   },
   {
     "name": "Beta-Iota Male",
@@ -52,6 +52,15 @@ export const ARCHETYPE_SPREAD = [
     "greekPantheon": "Hestia (Hearth, Stability),",
     "tarotCard": "Four of Cups",
     "socialProportion": 5
+  },
+  {
+    "name": "Beta-Kappa Male",
+    "socialRole": "Ideological Ally, Approval-Seeking, Coalition Adaptor",
+    "jungianEquivalent": "Lover (Appeaser/Ally)",
+    "vedicEquivalent": "Bhakti (Devotional Service, Alignment)",
+    "greekPantheon": "Hermes (Mediator, Messenger)",
+    "tarotCard": "Temperance",
+    "socialProportion": 4
   },
   {
     "name": "Gamma Male",
