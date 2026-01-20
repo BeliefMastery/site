@@ -818,6 +818,10 @@ export class TemperamentEngine {
     let totalFeminineScore = 0;
     let totalWeight = 0;
 
+    const genderAnswer = this.answers[GENDER_QUESTION.id];
+    if (!this.analysisData.gender && genderAnswer?.value) {
+      this.analysisData.gender = genderAnswer.value;
+    }
     const reportedGender = this.analysisData.gender;
 
     Object.keys(dimensionGroups).forEach(groupKey => {
