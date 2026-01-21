@@ -2129,30 +2129,41 @@ showGenderSelection() {
       .filter(Boolean);
     const phase5Markers = Array.isArray(phase5Results.topMarkers) ? phase5Results.topMarkers : [];
     const getGrade = (score = 0) => {
-      if (score >= 0.8) return 'High';
-      if (score >= 0.6) return 'Medium-High';
-      if (score >= 0.4) return 'Medium';
-      if (score >= 0.2) return 'Low';
-      return 'Very Low';
+      if (score >= 0.8) return 'Very Strong';
+      if (score >= 0.6) return 'Strong';
+      if (score >= 0.4) return 'Moderate';
+      if (score >= 0.2) return 'Weak';
+      return 'Very Weak';
     };
-    const getClusterInsight = (key, grade) => {
+    const getRelativeBand = (score = 0) => {
+      if (score >= 0.8) return 'far above average';
+      if (score >= 0.6) return 'above average';
+      if (score >= 0.4) return 'around average';
+      if (score >= 0.2) return 'below average';
+      return 'far below average';
+    };
+    const getClusterInsight = (key, score, grade) => {
+      const relative = getRelativeBand(score);
       const insights = {
-        coalition_rank: `Relative standing within peer groups (grade: ${grade}).`,
-        reproductive_confidence: `Likelihood of sustained mate investment once bonded (grade: ${grade}).`,
-        axis_of_attraction: `Initial attraction and display-signal strength (grade: ${grade}).`
+        coalition_rank: `Peer standing is ${relative}.`,
+        reproductive_confidence: `Bonded mate‑investment likelihood is ${relative}.`,
+        axis_of_attraction: `Initial attraction signal strength is ${relative}.`
       };
-      return insights[key] || `Summary grade: ${grade}.`;
+      return insights[key] || `Relative position is ${relative}.`;
     };
 
     if (phase5Clusters.length > 0) {
       resultsHTML += `
         <div class="panel panel-outline-accent" style="margin-bottom: 2rem;">
           <h3 class="panel-title">Status, Selection & Attraction Markers</h3>
-          <p class="panel-text">Self-reported signals that refine archetype weighting across coalition rank, selection criteria, and attraction dynamics.</p>
+          <p class="panel-text">Self-reported signals that refine archetype weighting across coalition rank, selection criteria, and attraction dynamics. Grades are shown as relative position versus a typical baseline.</p>
+          <p class="panel-text" style="font-size: 0.9rem; color: var(--muted);">
+            Axis of Attraction accuracy depends on honest self‑reporting for health, fitness, aesthetics, cleanliness, wealth, productivity, popularity, and creative brilliance.
+          </p>
           <div style="margin-top: 1rem;">
             <ul style="color: var(--muted); line-height: 1.8;">
               ${phase5Clusters.map(cluster => `
-                <li><strong>${SecurityUtils.sanitizeHTML(cluster.label || '')}:</strong> ${getGrade(cluster.score)} (${Math.round((cluster.score || 0) * 100)}%) — ${SecurityUtils.sanitizeHTML(getClusterInsight(cluster.key || '', getGrade(cluster.score)))}</li>
+                <li><strong>${SecurityUtils.sanitizeHTML(cluster.label || '')}:</strong> ${getGrade(cluster.score)} — ${SecurityUtils.sanitizeHTML(getClusterInsight(cluster.key || '', cluster.score, getGrade(cluster.score)))}</li>
               `).join('')}
             </ul>
           </div>
@@ -2161,7 +2172,7 @@ showGenderSelection() {
               <p style="color: var(--muted); margin-bottom: 0.5rem;"><strong>Top markers:</strong></p>
               <ul style="color: var(--muted); line-height: 1.8;">
                 ${phase5Markers.map(marker => `
-                  <li>${SecurityUtils.sanitizeHTML(marker.label || '')}: ${getGrade(marker.score)} (${Math.round((marker.score || 0) * 100)}%)</li>
+                  <li>${SecurityUtils.sanitizeHTML(marker.label || '')}: ${getGrade(marker.score)} (${getRelativeBand(marker.score)})</li>
                 `).join('')}
               </ul>
             </div>
