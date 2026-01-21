@@ -5,11 +5,12 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 import { exportJSON, downloadFile } from './shared/export-utils.js';
 
 let DSM5_CATEGORIES, NODES, CHANNELS, NEEDS_VOCABULARY;
-let WILL_ANOMALY_TIERS, WILL_ANOMALY_QUESTIONS, TASTE_SKEW_OPTIONS, CONTRACT_THEMES, NODE_CONTRACT_MAP;
+let WILL_ANOMALY_TIERS, WILL_ANOMALY_QUESTIONS, TASTE_SKEW_OPTIONS, CONTRACT_THEMES, NODE_CONTRACT_MAP, NODE_TAINTED_EXPRESSIONS;
 
 export class EntitiesEngine {
   constructor() {
     this.currentQuestionIndex = 0;
+    this.currentStage = 'tier';
     this.answers = {};
     this.tasteSkews = [];
     this.contractTheme = '';
@@ -26,6 +27,8 @@ export class EntitiesEngine {
       tierScores: {},
       tierResult: null,
       tasteSkews: [],
+      tasteSkewSelections: [],
+      tasteSkewSuggestions: [],
       contract: null
     };
 
@@ -85,6 +88,7 @@ export class EntitiesEngine {
     TASTE_SKEW_OPTIONS = entitiesModule.TASTE_SKEW_OPTIONS;
     CONTRACT_THEMES = entitiesModule.CONTRACT_THEMES;
     NODE_CONTRACT_MAP = entitiesModule.NODE_CONTRACT_MAP;
+    NODE_TAINTED_EXPRESSIONS = entitiesModule.NODE_TAINTED_EXPRESSIONS;
   }
 
   populateIntakeSelectors() {
@@ -227,6 +231,7 @@ export class EntitiesEngine {
     this.captureIntake();
     if (!this.validateIntake()) return;
     this.currentQuestionIndex = 0;
+    this.currentStage = 'tier';
     this.answers = {};
     this.tasteSkews = [];
     this.contractTheme = '';
@@ -236,6 +241,10 @@ export class EntitiesEngine {
   }
 
   renderCurrentQuestion() {
+    if (this.currentStage === 'taste') {
+      this.renderTasteSkewStep();
+      return;
+    }
     const questionContainer = document.getElementById('questionContainer');
     const questionCount = document.getElementById('questionCount');
     const progressFill = document.getElementById('progressFill');
@@ -281,11 +290,24 @@ export class EntitiesEngine {
   updateNavButtons() {
     const prevBtn = document.getElementById('prevQuestion');
     const nextBtn = document.getElementById('nextQuestion');
-    if (prevBtn) prevBtn.disabled = this.currentQuestionIndex === 0;
-    if (nextBtn) nextBtn.textContent = this.currentQuestionIndex === WILL_ANOMALY_QUESTIONS.length - 1 ? 'Finish' : 'Next';
+    if (prevBtn) prevBtn.disabled = this.currentStage === 'tier' && this.currentQuestionIndex === 0;
+    if (nextBtn) {
+      if (this.currentStage === 'taste') {
+        nextBtn.textContent = 'Finish';
+      } else {
+        nextBtn.textContent = this.currentQuestionIndex === WILL_ANOMALY_QUESTIONS.length - 1 ? 'Next' : 'Next';
+      }
+    }
   }
 
   prevQuestion() {
+    if (this.currentStage === 'taste') {
+      this.currentStage = 'tier';
+      this.currentQuestionIndex = WILL_ANOMALY_QUESTIONS.length - 1;
+      this.renderCurrentQuestion();
+      this.saveProgress();
+      return;
+    }
     if (this.currentQuestionIndex === 0) return;
     this.currentQuestionIndex -= 1;
     this.renderCurrentQuestion();
@@ -293,6 +315,10 @@ export class EntitiesEngine {
   }
 
   nextQuestion() {
+    if (this.currentStage === 'taste') {
+      this.completeAssessment();
+      return;
+    }
     const question = WILL_ANOMALY_QUESTIONS[this.currentQuestionIndex];
     if (!question || typeof this.answers[question.id] !== 'number') {
       ErrorHandler.showUserError('Please select an option to continue.');
@@ -304,7 +330,70 @@ export class EntitiesEngine {
       this.saveProgress();
       return;
     }
-    this.completeAssessment();
+    this.currentStage = 'taste';
+    this.renderCurrentQuestion();
+    this.saveProgress();
+  }
+
+  renderTasteSkewStep() {
+    const questionContainer = document.getElementById('questionContainer');
+    const questionCount = document.getElementById('questionCount');
+    const progressFill = document.getElementById('progressFill');
+    if (!questionContainer) return;
+    if (questionCount) {
+      questionCount.textContent = 'Taste Skew Investigation';
+    }
+    if (progressFill) {
+      progressFill.style.width = '100%';
+    }
+
+    const nodeKey = this.intake.node;
+    const channelKey = this.intake.channel;
+    const nodeExpressions = NODE_TAINTED_EXPRESSIONS?.[nodeKey] || [];
+    const channelExpression = CHANNELS?.[channelKey]?.blocked || '';
+    const suggestions = [
+      ...nodeExpressions,
+      ...(channelExpression ? [channelExpression] : [])
+    ];
+
+    const selections = new Set(this.tasteSkews || []);
+    const buildCheckbox = (label) => `
+      <label class="option-label">
+        <input type="checkbox" value="${SecurityUtils.sanitizeHTML(label)}" ${selections.has(label) ? 'checked' : ''}>
+        <span>${SecurityUtils.sanitizeHTML(label)}</span>
+      </label>
+    `;
+
+    questionContainer.innerHTML = `
+      <div class="question-block">
+        <h3>Taste Skew and Tainted Expressions</h3>
+        <p class="form-help">Select any distorted habits or lifestyle expressions that resonate. These are inferred from the node and channel library.</p>
+        ${nodeExpressions.length ? `
+          <h4>Node Taint Expressions</h4>
+          <div class="options-container">
+            ${nodeExpressions.map(buildCheckbox).join('')}
+          </div>
+        ` : ''}
+        ${channelExpression ? `
+          <h4>Channel Taint Expression</h4>
+          <div class="options-container">
+            ${[channelExpression].map(buildCheckbox).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    questionContainer.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const checked = Array.from(questionContainer.querySelectorAll('input[type="checkbox"]'))
+          .filter(box => box.checked)
+          .map(box => box.value);
+        this.tasteSkews = checked;
+        this.saveProgress();
+      });
+    });
+
+    this.updateNavButtons();
   }
 
   scoreTiers() {
@@ -337,6 +426,12 @@ export class EntitiesEngine {
 
     const tierData = WILL_ANOMALY_TIERS[tierResult];
     const contract = this.deriveContract(this.intake.node);
+    const nodeExpressions = NODE_TAINTED_EXPRESSIONS?.[this.intake.node] || [];
+    const channelExpression = CHANNELS?.[this.intake.channel]?.blocked || '';
+    const tasteSkewSuggestions = [
+      ...nodeExpressions,
+      ...(channelExpression ? [channelExpression] : [])
+    ];
 
     this.analysisData = {
       timestamp: new Date().toISOString(),
@@ -345,6 +440,8 @@ export class EntitiesEngine {
       tierResult,
       tierSummary: tierData,
       tasteSkews: tierData?.tasteSkew || [],
+      tasteSkewSelections: this.tasteSkews || [],
+      tasteSkewSuggestions,
       contract
     };
 
@@ -385,6 +482,21 @@ export class EntitiesEngine {
         </ul>
       </div>
       <div class="panel panel-outline">
+        <h3 class="panel-title">Tainted Node/Channel Expressions</h3>
+        <p class="panel-text">Inferred from the selected node and channel:</p>
+        <ul class="feature-list">
+          ${(this.analysisData.tasteSkewSuggestions || []).map(item => `<li>${SecurityUtils.sanitizeHTML(item)}</li>`).join('')}
+        </ul>
+      </div>
+      ${this.analysisData.tasteSkewSelections?.length ? `
+      <div class="panel panel-outline-accent">
+        <h3 class="panel-title">Selected Taste Skews</h3>
+        <ul class="feature-list">
+          ${this.analysisData.tasteSkewSelections.map(item => `<li>${SecurityUtils.sanitizeHTML(item)}</li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
+      <div class="panel panel-outline">
         <h3 class="panel-title">Likely Contract</h3>
         <p class="panel-text"><strong>${SecurityUtils.sanitizeHTML(contract?.label || 'Unspecified')}</strong></p>
         <p class="panel-text">${SecurityUtils.sanitizeHTML(contract?.description || 'Consider which wound or unmet need might have anchored the contract.')}</p>
@@ -404,7 +516,9 @@ export class EntitiesEngine {
   saveProgress() {
     const progress = {
       currentQuestionIndex: this.currentQuestionIndex,
+      currentStage: this.currentStage,
       answers: this.answers,
+      tasteSkews: this.tasteSkews,
       intake: this.intake,
       analysisData: this.analysisData
     };
@@ -416,7 +530,9 @@ export class EntitiesEngine {
       const progress = this.dataStore.load('progress');
       if (!progress) return;
       this.currentQuestionIndex = progress.currentQuestionIndex || 0;
+      this.currentStage = progress.currentStage || 'tier';
       this.answers = progress.answers || {};
+      this.tasteSkews = progress.tasteSkews || [];
       this.intake = progress.intake || this.intake;
       this.analysisData = progress.analysisData || this.analysisData;
       if (this.analysisData?.tierResult) {
@@ -438,6 +554,13 @@ export class EntitiesEngine {
     WILL_ANOMALY_QUESTIONS.forEach(question => {
       this.answers[question.id] = Math.floor(Math.random() * question.options.length);
     });
+    const nodeExpressions = NODE_TAINTED_EXPRESSIONS?.[this.intake.node] || [];
+    const channelExpression = CHANNELS?.[this.intake.channel]?.blocked || '';
+    const suggestions = [
+      ...nodeExpressions,
+      ...(channelExpression ? [channelExpression] : [])
+    ];
+    this.tasteSkews = suggestions.length ? [suggestions[0]] : [];
     this.completeAssessment();
   }
 
@@ -471,7 +594,9 @@ export class EntitiesEngine {
       ['Tier Label', this.analysisData.tierSummary?.label || ''],
       ['Primary Healing Mode', this.analysisData.tierSummary?.primaryHealingMode || ''],
       ['Likely Contract', this.analysisData.contract?.label || ''],
-      ['Contract Description', this.analysisData.contract?.description || '']
+      ['Contract Description', this.analysisData.contract?.description || ''],
+      ['Taste Skew Selections', (this.analysisData.tasteSkewSelections || []).join('; ')],
+      ['Taste Skew Suggestions', (this.analysisData.tasteSkewSuggestions || []).join('; ')]
     ];
 
     const csv = rows
@@ -484,13 +609,17 @@ export class EntitiesEngine {
   resetAssessment() {
     this.dataStore.clear();
     this.currentQuestionIndex = 0;
+    this.currentStage = 'tier';
     this.answers = {};
+    this.tasteSkews = [];
     this.analysisData = {
       timestamp: new Date().toISOString(),
       intake: {},
       tierScores: {},
       tierResult: null,
       tasteSkews: [],
+      tasteSkewSelections: [],
+      tasteSkewSuggestions: [],
       contract: null
     };
     this.ui.transition('idle');

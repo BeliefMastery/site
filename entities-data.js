@@ -171,3 +171,55 @@ export const NODE_CONTRACT_MAP = {
   crown: 'meaning_void'
 };
 
+export const NODE_TAINTED_EXPRESSIONS = {
+  root: [
+    'Hypervigilant survival scanning and chronic anxiety',
+    'Hoarding, scarcity behaviors, or survival compulsions',
+    'Rigid routines used to control fear',
+    'Physical lethargy, shutdown, or dissociation from body',
+    'Aggressive territoriality or dominance as safety'
+  ],
+  sex: [
+    'Compulsive seduction or intimacy avoidance',
+    'Guilt-driven sexuality or shame loops',
+    'Creative stagnation with impulsive escapism',
+    'Addictive pursuit of stimulation without depth',
+    'Power-exchange dynamics used to mask vulnerability'
+  ],
+  gut: [
+    'Explosive anger or suppressed rage cycles',
+    'Control through intimidation or volatility',
+    'Compulsive risk-taking to avoid feeling powerless',
+    'Chronic self-judgment and harsh internal commands',
+    'Somatic anxiety masking as irritability'
+  ],
+  heart: [
+    'Anxious over-giving or martyr patterns',
+    'Emotional withdrawal and coldness',
+    'Attachment to unavailable partners',
+    'Over-identification with being needed',
+    'Numbing of tenderness to avoid hurt'
+  ],
+  throat: [
+    'Silencing self to avoid conflict or exposure',
+    'Compulsive confession or oversharing',
+    'Manipulative speech patterns or gaslighting',
+    'Chronic people-pleasing or approval chasing',
+    'Voice fragmentation: saying what you do not mean'
+  ],
+  mind: [
+    'Obsessive rumination and mental looping',
+    'Cynicism or intellectual detachment as armor',
+    'Ideological rigidity replacing curiosity',
+    'Over-analysis that paralyzes action',
+    'Grandiosity or intellectual superiority as defense'
+  ],
+  crown: [
+    'Spiritual bypassing and detachment from reality',
+    'Inflated certainty without grounded evidence',
+    'Dissociation into abstract meaning to avoid pain',
+    'Messianic or savior complexes',
+    'Loss of human warmth in pursuit of transcendence'
+  ]
+};
+
