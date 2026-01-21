@@ -141,6 +141,22 @@
         <h1 id="books-intro-title" class="tools-page-title">Sovereignty Tools</h1>
         <p class="tools-intro">Comprehensive diagnostic and coaching systems for reclaiming mental sovereignty and clarity.</p>
 
+        <div class="disclaimer-acknowledgement" id="privacyToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>🔒 Complete Privacy & Data Security</span>
+          </div>
+        </div>
+        <section class="disclaimer-section" id="privacyPanel">
+          <div class="tools-privacy">
+            <h3 class="tools-privacy-title">
+              <span>🔒</span> Complete Privacy & Data Security
+            </h3>
+            <p class="tools-privacy-text">
+              <strong class="tools-privacy-emphasis">Important:</strong> <strong class="tools-privacy-highlight">NO DATA is stored in a database</strong> as a result of engaging with any analysis tool. All data is stored <strong>purely locally in your browser</strong> and is only available in the export you can generate at the end of each assessment. This is <strong>completely private</strong>—your responses never leave your device unless you explicitly choose to export them.
+            </p>
+          </div>
+        </section>
+
         <!-- Psychological Tools -->
         <h3 class="tools-category-title"><blockquote class="portal-quote">Psychological</blockquote></h3>
         <div class="tools-grid">
@@ -429,16 +445,6 @@
 
         </div>
 
-        <!-- Privacy Notice -->
-        <div class="tools-privacy">
-          <h3 class="tools-privacy-title">
-            <span>🔒</span> Complete Privacy & Data Security
-          </h3>
-          <p class="tools-privacy-text">
-            <strong class="tools-privacy-emphasis">Important:</strong> <strong class="tools-privacy-highlight">NO DATA is stored in a database</strong> as a result of engaging with any analysis tool. All data is stored <strong>purely locally in your browser</strong> and is only available in the export you can generate at the end of each assessment. This is <strong>completely private</strong>—your responses never leave your device unless you explicitly choose to export them.
-          </p>
-        </div>
-
         <h3 class="tools-category-title"><blockquote class="portal-quote">Additional Features</blockquote></h3>
         <div class="analysis-modules-grid" style="margin: 2rem 0 0;">
           <div class="card">
@@ -466,6 +472,18 @@
 
   <!-- ---------- Scripts (deferred via placement at bottom; non-blocking) ---------- -->
   <script>
+    function setupToggle(toggleId, panelId) {
+      const toggle = document.getElementById(toggleId);
+      const panel = document.getElementById(panelId);
+      if (!toggle || !panel) return;
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('expanded');
+        panel.classList.toggle('expanded');
+      });
+    }
+
+    setupToggle('privacyToggle', 'privacyPanel');
+
     // Background crossfade per visible section
     (function(){
       const sections = Array.from(document.querySelectorAll('section[data-bg]'));
