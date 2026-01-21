@@ -649,6 +649,30 @@ header.site-header {
     color: var(--accent);
 }
 
+.dropdown-menu li.group-psych a {
+    background: rgba(20, 55, 85, 0.2);
+}
+
+.dropdown-menu li.group-relational a {
+    background: rgba(60, 40, 80, 0.2);
+}
+
+.dropdown-menu li.group-philosophical a {
+    background: rgba(25, 60, 55, 0.2);
+}
+
+.dropdown-menu li.group-defensive a {
+    background: rgba(80, 45, 30, 0.2);
+}
+
+.dropdown-menu li.group-esoteric a {
+    background: rgba(30, 65, 45, 0.2);
+}
+
+.dropdown-menu li.group-tech a {
+    background: rgba(35, 50, 90, 0.2);
+}
+
 .dropdown-menu a::after {
     display: none;
 }
