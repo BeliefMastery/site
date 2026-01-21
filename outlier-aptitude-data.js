@@ -48,6 +48,91 @@ export const APTITUDE_DIMENSIONS = [
     id: 'learning',
     name: 'Learning Velocity',
     description: 'Absorbing new skills fast and maintaining skill relevance over time.'
+  },
+  {
+    id: 'fluid',
+    name: 'Fluid Intelligence (Gf)',
+    description: 'Inductive, deductive, and abstract reasoning for novel problems.'
+  },
+  {
+    id: 'crystallized',
+    name: 'Crystallized Ability (Gc)',
+    description: 'Verbal comprehension, vocabulary, and applied knowledge.'
+  },
+  {
+    id: 'quantitative',
+    name: 'Quantitative Aptitude',
+    description: 'Numerical reasoning, data interpretation, and statistical intuition.'
+  },
+  {
+    id: 'spatial',
+    name: 'Visuo-Spatial Ability',
+    description: 'Spatial relations, mental rotation, and blueprint visualization.'
+  },
+  {
+    id: 'processing',
+    name: 'Processing Power',
+    description: 'Perceptual speed, accuracy, and attention to detail under time pressure.'
+  },
+  {
+    id: 'grit',
+    name: 'Grit & Persistence',
+    description: 'Sustaining effort toward long-term goals.'
+  },
+  {
+    id: 'achievement',
+    name: 'Achievement Motivation',
+    description: 'Drive to meet or exceed standards of excellence.'
+  },
+  {
+    id: 'self_regulation',
+    name: 'Self-Regulation',
+    description: 'Goal setting, time management, and focus discipline.'
+  },
+  {
+    id: 'adaptability',
+    name: 'Adaptability',
+    description: 'Comfort with ambiguity and rapid change.'
+  },
+  {
+    id: 'resilience',
+    name: 'Resilience',
+    description: 'Stress tolerance and recovery speed after setbacks.'
+  },
+  {
+    id: 'situational_judgment',
+    name: 'Situational Judgment',
+    description: 'Decision quality, conflict handling, and ethical reasoning.'
+  },
+  {
+    id: 'metacognition',
+    name: 'Metacognition',
+    description: 'Monitoring and adjusting one’s own problem-solving strategy.'
+  },
+  {
+    id: 'critical_thinking',
+    name: 'Critical Thinking',
+    description: 'Evaluating arguments, assumptions, and validity of conclusions.'
+  },
+  {
+    id: 'mechanical',
+    name: 'Mechanical Aptitude',
+    description: 'Understanding levers, gears, forces, and physical systems.'
+  },
+  {
+    id: 'linguistic',
+    name: 'Linguistic Aptitude',
+    description: 'Capacity for language learning and precision in expression.'
+  },
+  {
+    id: 'clerical',
+    name: 'Clerical Aptitude',
+    description: 'Accuracy in filing, coding, and administrative details.'
+  },
+  {
+    id: 'artistic',
+    name: 'Artistic Aptitude',
+    description: 'Divergent production and original idea generation.'
   }
 ];
 
@@ -202,6 +287,91 @@ export const APTITUDE_QUESTIONS = [
     id: 'q20',
     text: 'Even when tasks shift, you tend to keep the long‑term goal steady.',
     weights: { management: 0.6, systems: 0.6 }
+  },
+  {
+    id: 'q21',
+    text: 'When given a novel problem, others notice you find the underlying rule quickly.',
+    weights: { fluid: 1, diagnostics: 0.4 }
+  },
+  {
+    id: 'q22',
+    text: 'Your explanations are usually concise and use precise vocabulary.',
+    weights: { crystallized: 0.8, linguistic: 0.4 }
+  },
+  {
+    id: 'q23',
+    text: 'When data is presented, you are quick to extract the trend without heavy calculation.',
+    weights: { quantitative: 1, diagnostics: 0.3 }
+  },
+  {
+    id: 'q24',
+    text: 'People rely on you to interpret diagrams, layouts, or 3D relationships.',
+    weights: { spatial: 1, mechanical: 0.3 }
+  },
+  {
+    id: 'q25',
+    text: 'In time‑pressured tasks, you remain accurate rather than rushed.',
+    weights: { processing: 1, organization: 0.4 }
+  },
+  {
+    id: 'q26',
+    text: 'When a goal takes months, you are more likely to stay consistent than most.',
+    weights: { grit: 1, self_regulation: 0.4 }
+  },
+  {
+    id: 'q27',
+    text: 'Peers would say you set higher standards for your own output.',
+    weights: { achievement: 1 }
+  },
+  {
+    id: 'q28',
+    text: 'You are known for planning your time rather than reacting to it.',
+    weights: { self_regulation: 1, organization: 0.4 }
+  },
+  {
+    id: 'q29',
+    text: 'When a plan changes suddenly, you adapt faster than most.',
+    weights: { adaptability: 1, learning: 0.4 }
+  },
+  {
+    id: 'q30',
+    text: 'After a setback, people notice you recover and re‑engage quickly.',
+    weights: { resilience: 1, grit: 0.3 }
+  },
+  {
+    id: 'q31',
+    text: 'When conflict arises, others trust your judgment to resolve it.',
+    weights: { situational_judgment: 1, eq: 0.4 }
+  },
+  {
+    id: 'q32',
+    text: 'You can explain how you reached a conclusion and revise it when needed.',
+    weights: { metacognition: 1, critical_thinking: 0.4 }
+  },
+  {
+    id: 'q33',
+    text: 'You are the person who spots weak assumptions in a plan.',
+    weights: { critical_thinking: 1, scientific: 0.4 }
+  },
+  {
+    id: 'q34',
+    text: 'You can mentally picture how forces move through a machine or system.',
+    weights: { mechanical: 1, spatial: 0.4 }
+  },
+  {
+    id: 'q35',
+    text: 'Others say you pick up new languages or terminology faster than expected.',
+    weights: { linguistic: 1, learning: 0.4 }
+  },
+  {
+    id: 'q36',
+    text: 'You are trusted to organize records or details with minimal errors.',
+    weights: { clerical: 1, processing: 0.4 }
+  },
+  {
+    id: 'q37',
+    text: 'People notice you generate multiple original ideas under constraints.',
+    weights: { artistic: 1, creativity: 0.4 }
   }
 ];
 
@@ -268,6 +438,8 @@ export const VALIDATION_PROMPTS = [
   'Which tasks do people already rely on you for, without being asked?',
   'Which tasks drain you even if you are competent at them?',
   'Where do you learn faster than your peers?',
-  'Which environments make your performance noticeably better?'
+  'Which environments make your performance noticeably better?',
+  'If a colleague rated your strengths, what would they choose first?',
+  'Which problems do people bring to you because you solve them better than most?'
 ];
 
