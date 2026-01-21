@@ -67,7 +67,7 @@ cd site
 9. **Modern Archetype Identification** (`archetype.html`) - 5-phase archetype system with status/selection markers
 10. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification
 11. **Astrological Character Sheet** (`character-sheet.html`) - Western/Chinese/Mayan + Numerology RPG conversion
-12. **Will Anomaly Mapping & Reclamation** (`entities.html`) - Secular will-anomaly mapping with reclamation protocols
+12. **Will Anomaly Mapping** (`entities.html`) - Secular will-anomaly mapping with reclamation protocols
 13. **Outlier Aptitude Mapping** (`outlier-aptitude.html`) - Aptitude signal mapping with market projection matrix
 14. **Unlocked GPT** - External link to custom GPT interface
 15. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
