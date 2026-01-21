@@ -54,102 +54,102 @@ export const APTITUDE_DIMENSIONS = [
 export const APTITUDE_QUESTIONS = [
   {
     id: 'q1',
-    text: 'I can see how small changes ripple across a larger system.',
+    text: 'If someone watched how you work, they would say you notice how small changes ripple across a larger system.',
     weights: { systems: 1, diagnostics: 0.5 }
   },
   {
     id: 'q2',
-    text: 'I often spot a problem before others notice it.',
+    text: 'People close to your work would say you notice problems before they become obvious.',
     weights: { diagnostics: 1, systems: 0.5 }
   },
   {
     id: 'q3',
-    text: 'I learn technical tools faster than most people around me.',
+    text: 'Relative to peers, your learning curve for new tools appears fast.',
     weights: { technical: 1, learning: 0.5 }
   },
   {
     id: 'q4',
-    text: 'I stay effective when the job is physical, messy, or unpredictable.',
+    text: 'In messy or unpredictable environments, you still maintain effective execution.',
     weights: { field: 1, organization: 0.3 }
   },
   {
     id: 'q5',
-    text: 'I naturally build routines and checklists to keep work clean.',
+    text: 'Others would describe you as the person who creates routines or checklists to keep work clean.',
     weights: { organization: 1 }
   },
   {
     id: 'q6',
-    text: 'I coordinate people well, even under pressure.',
+    text: 'Under pressure, others tend to follow your coordination rather than resist it.',
     weights: { management: 1, eq: 0.4 }
   },
   {
     id: 'q7',
-    text: 'I generate novel solutions when others are stuck.',
+    text: 'When a group is stuck, you are often the one who proposes a workable alternative.',
     weights: { creativity: 1, systems: 0.3 }
   },
   {
     id: 'q8',
-    text: 'I prefer evidence and testing before accepting conclusions.',
+    text: 'People would say you want evidence or testing before accepting a conclusion.',
     weights: { scientific: 1 }
   },
   {
     id: 'q9',
-    text: 'People naturally confide in me or seek my emotional guidance.',
+    text: 'Friends or coworkers tend to confide in you when emotions or conflict are involved.',
     weights: { eq: 1 }
   },
   {
     id: 'q10',
-    text: 'I keep skills current and update my knowledge regularly.',
+    text: 'Compared with peers, you are more consistent at keeping skills up to date.',
     weights: { learning: 1 }
   },
   {
     id: 'q11',
-    text: 'I can troubleshoot complex equipment without a manual.',
+    text: 'When equipment breaks, you are usually the person asked to troubleshoot first.',
     weights: { diagnostics: 0.7, technical: 0.6 }
   },
   {
     id: 'q12',
-    text: 'I thrive in roles that combine hardware and software.',
+    text: 'You tend to perform best in roles that blend hardware and software.',
     weights: { technical: 0.8, systems: 0.6 }
   },
   {
     id: 'q13',
-    text: 'I prefer to lead projects rather than follow instructions.',
+    text: 'In team settings, you are more likely to be placed in a lead role than a follow role.',
     weights: { management: 0.8, organization: 0.4 }
   },
   {
     id: 'q14',
-    text: 'I can stay calm and organized during emergencies.',
+    text: 'In emergencies, others describe you as calm and structured rather than reactive.',
     weights: { organization: 0.7, field: 0.6, eq: 0.4 }
   },
   {
     id: 'q15',
-    text: 'I enjoy learning new frameworks or mental models.',
+    text: 'You are the type of person who collects new frameworks or mental models and applies them.',
     weights: { learning: 0.8, scientific: 0.4 }
   },
   {
     id: 'q16',
-    text: 'I can break down a complex task into a clean workflow.',
+    text: 'Colleagues often say you can break complex tasks into a clean workflow.',
     weights: { organization: 0.8, systems: 0.5 }
   },
   {
     id: 'q17',
-    text: 'I can intuit people’s motives or hidden concerns.',
+    text: 'People around you would say you read motives or hidden concerns accurately.',
     weights: { eq: 0.9, diagnostics: 0.3 }
   },
   {
     id: 'q18',
-    text: 'I feel energized by hands-on building, repair, or installation.',
+    text: 'Hands-on building, repair, or installation tends to energize you rather than drain you.',
     weights: { field: 1, technical: 0.4 }
   },
   {
     id: 'q19',
-    text: 'I can hold both creative exploration and rigorous execution.',
+    text: 'You can shift from creative exploration to rigorous execution without losing momentum.',
     weights: { creativity: 0.7, organization: 0.5 }
   },
   {
     id: 'q20',
-    text: 'I can keep a long-term goal steady even when tasks shift.',
+    text: 'Even when tasks shift, you tend to keep the long‑term goal steady.',
     weights: { management: 0.6, systems: 0.6 }
   }
 ];
