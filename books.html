@@ -145,15 +145,26 @@
           </p>
           
           <div class="portal-grid portal-grid-spaced">
-            <article class="portal-card" data-target="books.html#belief-mastery">
+            <article class="portal-card portal-card-collapsible" data-target="books.html#belief-mastery">
               <blockquote class="portal-quote">The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do.</blockquote>
-              <p class="portal-body">Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat the same emotional loops. <strong>Belief Mastery</strong> shows you how to address those cycles at the level of 'need' and 'belief' with a step-by-step process for tracing, exposing, and transforming the buried structures that govern behavior.</p>
-              <a class="btn btn-primary" href="#belief-mastery">Explore Inner Architecture</a>
+              <div class="portal-details">
+                <p class="portal-body">Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat the same emotional loops. <strong>Belief Mastery</strong> shows you how to address those cycles at the level of 'need' and 'belief' with a step-by-step process for tracing, exposing, and transforming the buried structures that govern behavior.</p>
+                <a class="btn btn-primary" href="#belief-mastery">Explore Inner Architecture</a>
+              </div>
             </article>
-            <article class="portal-card" data-target="books.html#sovereign-of-mind">
+            <article class="portal-card portal-card-collapsible" data-target="books.html#sovereign-of-mind">
               <blockquote class="portal-quote">Your thoughts may not always be your own.</blockquote>
-              <p class="portal-body">In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.</p>
-              <a class="btn btn-primary" href="#sovereign-of-mind">Fortify Cognitive Structure</a>
+              <div class="portal-details">
+                <p class="portal-body">In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.</p>
+                <a class="btn btn-primary" href="#sovereign-of-mind">Fortify Cognitive Structure</a>
+              </div>
+            </article>
+            <article class="portal-card portal-card-collapsible" data-target="books.html#distortion-codex">
+              <blockquote class="portal-quote">Distortion is not a mystery, it is a structure.</blockquote>
+              <div class="portal-details">
+                <p class="portal-body"><strong>The Sovereignty-Distortion Codex</strong> maps the repeatable architectures that erode will, coherence, and consent. It offers a diagnostic taxonomy for identifying cognitive hijacks, relational distortions, and energetic misalignments—so you can name the structure, see the pattern, and reclaim authorship.</p>
+                <a class="btn btn-primary" href="#distortion-codex">Map Distortion Patterns</a>
+              </div>
             </article>
           </div>
         </div>
@@ -656,14 +667,17 @@
       sections.forEach(s => observer.observe(s));
     })();
 
-    // Portal card click handler (for whole-card navigation, avoiding nested anchors)
+    // Portal card click handler (toggle for collapsible cards)
     (function(){
       document.querySelectorAll('.portal-card').forEach(card => {
         card.addEventListener('click', (e) => {
-          const link = card.querySelector('a.btn');
-          if (link && !e.target.closest('a')) {
-            link.click();
+          if (card.classList.contains('portal-card-collapsible')) {
+            if (e.target.closest('a')) return;
+            card.classList.toggle('expanded');
+            return;
           }
+          const link = card.querySelector('a.btn');
+          if (link && !e.target.closest('a')) link.click();
         });
       });
     })();

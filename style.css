@@ -1808,6 +1808,20 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     font-weight: 700;
 }
 
+.portal-card-collapsible .portal-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.3s ease;
+}
+
+.portal-card-collapsible.expanded .portal-details {
+    max-height: 600px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .portal-card blockquote {  /* If using quotes */
     font-style: italic;
     font-size: 1.1rem;
