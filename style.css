@@ -1817,8 +1817,9 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 }
 
 .portal-card-collapsible.expanded .portal-details {
-    max-height: 600px;
+    max-height: 1400px;
     opacity: 1;
+    overflow: visible;
     pointer-events: auto;
 }
 
