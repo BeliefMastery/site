@@ -47,13 +47,13 @@ export class OutlierAptitudeEngine {
       this.ui.transition('idle');
     } catch (error) {
       this.debugReporter.logError(error, 'OutlierAptitudeEngine init');
-      ErrorHandler.showUserError('Failed to initialize the Outlier Aptitude assessment.');
+      ErrorHandler.showUserError('Failed to initialize the Aptitude assessment.');
     }
   }
 
   async loadData() {
     if (APTITUDE_DIMENSIONS) return;
-    const module = await loadDataModule('./outlier-aptitude-data.js', 'Outlier Aptitude Data');
+    const module = await loadDataModule('./outlier-aptitude-data.js', 'Aptitude Data');
     APTITUDE_DIMENSIONS = module.APTITUDE_DIMENSIONS;
     APTITUDE_QUESTIONS = module.APTITUDE_QUESTIONS;
     MARKET_PROJECTION_MATRIX = module.MARKET_PROJECTION_MATRIX;
