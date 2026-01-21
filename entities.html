@@ -207,6 +207,20 @@
   </main>
 
   <script src="./shared/background.js"></script>
+  <script>
+    function setupToggle(toggleId, panelId) {
+      const toggle = document.getElementById(toggleId);
+      const panel = document.getElementById(panelId);
+      if (!toggle || !panel) return;
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('expanded');
+        panel.classList.toggle('expanded');
+      });
+    }
+
+    setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+    setupToggle('disclaimerToggle', 'disclaimerSection');
+  </script>
   <script type="module" src="./entities-engine.js"></script>
 </body>
 </html>
