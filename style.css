@@ -1289,7 +1289,7 @@ button:disabled,
 
 .section-title-btn:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16), 0 0 30px var(--glow-accent);
     border-color: rgba(255, 184, 0, 0.4);
     color: var(--accent);
 }
