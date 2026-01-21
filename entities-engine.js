@@ -58,6 +58,10 @@ export class EntitiesEngine {
       this.populateIntakeSelectors();
       this.bindEvents();
       await this.loadStoredData();
+      if (this.shouldAutoGenerateSample()) {
+        this.generateSampleReport();
+        return;
+      }
       this.ui.transition('idle');
     } catch (error) {
       this.debugReporter.logError(error, 'EntitiesEngine init');
@@ -179,7 +183,7 @@ export class EntitiesEngine {
 
     const sampleBtn = document.getElementById('generateSampleReport');
     if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSample());
+      sampleBtn.addEventListener('click', () => this.generateSampleReport());
     }
 
     const prevBtn = document.getElementById('prevQuestion');
@@ -191,6 +195,13 @@ export class EntitiesEngine {
     const exportCSVBtn = document.getElementById('exportCSV');
     if (exportJSONBtn) exportJSONBtn.addEventListener('click', () => exportJSON(this.analysisData, 'entities'));
     if (exportCSVBtn) exportCSVBtn.addEventListener('click', () => this.exportCSV());
+  }
+
+  shouldAutoGenerateSample() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('sample')) return false;
+    const value = params.get('sample');
+    return value === null || value === '' || value === '1' || value === 'true';
   }
 
   captureIntake() {
@@ -418,6 +429,16 @@ export class EntitiesEngine {
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
     }
+  }
+
+  generateSampleReport() {
+    this.generateSample();
+    this.captureIntake();
+    if (!this.validateIntake()) return;
+    WILL_ANOMALY_QUESTIONS.forEach(question => {
+      this.answers[question.id] = Math.floor(Math.random() * question.options.length);
+    });
+    this.completeAssessment();
   }
 
   generateSample() {
