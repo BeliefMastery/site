@@ -1264,6 +1264,13 @@ button:disabled,
     max-width: 90%;
 }
 
+/* Book section headings share the same centered heading layout */
+.book-section-title.section-title-btn {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .section-title-btn::before {
     content: '';
     position: absolute;
