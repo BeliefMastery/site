@@ -32,6 +32,8 @@ Allow: /temperament.html
 Allow: /archetype.html
 Allow: /channels.html
 Allow: /character-sheet.html
+Allow: /entities.html
+Allow: /outlier-aptitude.html
 Allow: /sovereignty.html
 Allow: /coaching/astrology-cheat-sheet.html
 Allow: /images/

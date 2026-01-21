@@ -10,7 +10,7 @@ This repository contains the official website for **Belief Mastery** and **Sover
 ### Primary Purpose
 A static website that serves as:
 - Book information and sales portal
-- Collection of 13 self-assessment tools for mental sovereignty and diagnostic clarity
+- Collection of 15 self-assessment tools for mental sovereignty and diagnostic clarity
 - Author biography and contact information
 
 ### Target Audience
@@ -55,7 +55,7 @@ cd site
 - `framework-atlas.html` - Cross-map of book principles, engines, and outputs
 - `assessment-examples.html` - Example outputs hub for every engine
 
-### Diagnostic Tools (13 tools)
+### Diagnostic Tools (15 tools)
 1. **Pathology Assessment** (`diagnosis.html`) - DSM-5 educational self-assessment for pattern clarity
 2. **Life Domain Review** (`coaching.html`) - Sovereign of Mind + Belief Mastery obstacles/satisfaction mapping
 3. **Dependency Loop Tracer** (`needs-dependency.html`) - Belief Mastery Chapter 5 needs/dependency tracing
@@ -67,8 +67,10 @@ cd site
 9. **Modern Archetype Identification** (`archetype.html`) - 5-phase archetype system with status/selection markers
 10. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification
 11. **Astrological Character Sheet** (`character-sheet.html`) - Western/Chinese/Mayan + Numerology RPG conversion
-12. **Unlocked GPT** - External link to custom GPT interface
-13. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
+12. **Will Anomaly Mapping & Reclamation** (`entities.html`) - Secular will-anomaly mapping with reclamation protocols
+13. **Outlier Aptitude Mapping** (`outlier-aptitude.html`) - Aptitude signal mapping with market projection matrix
+14. **Unlocked GPT** - External link to custom GPT interface
+15. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
 
 ### Key Files
 - `style.css` - Shared stylesheet for all pages
