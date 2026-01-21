@@ -532,6 +532,7 @@ export class EntitiesEngine {
         <ul class="feature-list">
           ${(this.analysisData.tasteSkewSuggestions || []).map(item => `<li>${SecurityUtils.sanitizeHTML(item)}</li>`).join('')}
         </ul>
+        <p class="panel-text"><strong>Why the taint exists:</strong> The will traded clarity for relief. To meet the unmet need (${SecurityUtils.sanitizeHTML(this.intake.rootNeed || 'unspecified')}), taste and impulse skew toward short‑term safety or control, and the node/channel narrows around that bargain.</p>
       </div>
       ${this.analysisData.tasteSkewSelections?.length ? `
       <div class="panel panel-outline-accent">
@@ -545,6 +546,7 @@ export class EntitiesEngine {
         <h3 class="panel-title">Likely Contract</h3>
         <p class="panel-text"><strong>${SecurityUtils.sanitizeHTML(contract?.label || 'Unspecified')}</strong></p>
         <p class="panel-text">${SecurityUtils.sanitizeHTML(contract?.description || 'Consider which wound or unmet need might have anchored the contract.')}</p>
+        <p class="panel-text"><strong>Why the contract existed:</strong> It formed to meet the unmet need (${SecurityUtils.sanitizeHTML(this.intake.rootNeed || 'unspecified')}) when personal capacity felt insufficient. The contract supplied stability or protection at the cost of partial will‑surrender.</p>
       </div>
       <div class="panel panel-outline-accent">
         <h3 class="panel-title">Strategy for Reclamation</h3>
