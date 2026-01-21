@@ -418,6 +418,40 @@ export class EntitiesEngine {
     return CONTRACT_THEMES.find(theme => theme.id === themeId) || null;
   }
 
+  buildStrategySteps({ tierResult, tierData, contract, nodeInfo, channelInfo, rootNeed }) {
+    const nodeLabel = nodeInfo?.name || 'the selected node';
+    const nodeFunction = nodeInfo?.function || 'core function';
+    const channelLabel = channelInfo?.name || 'the selected channel';
+    const channelBlock = channelInfo?.blocked || 'a blocked flow pattern';
+    const rootNeedText = rootNeed ? `root need "${rootNeed}"` : 'the root need named in your loop chain';
+    const contractLabel = contract?.label || 'the likely contract theme';
+
+    if (tierResult === 'tier1') {
+      return [
+        `Locate how ${nodeLabel} (${nodeFunction}) is hijacked; name the protector pattern that spikes it.`,
+        `Trace the original threat or invalidation that formed this overcompensation around ${rootNeedText}.`,
+        `Re-regulate the ${nodeLabel} node through daily boundary practice and reparenting in trigger contexts.`,
+        `Address the channel disruption (${channelLabel}): ${channelBlock}`
+      ];
+    }
+
+    if (tierResult === 'tier2') {
+      return [
+        `Dis‑identify from the foreign override and name the contract: ${contractLabel}.`,
+        `Locate the wound tied to ${rootNeedText} and demonstrate that the contract conditions no longer apply.`,
+        `Stabilize the housing node (${nodeLabel}) through consistent, grounded regulation.`,
+        `Disrupt the channel pattern (${channelLabel}): ${channelBlock}`
+      ];
+    }
+
+    return [
+      `Stabilize safety and reduce exposure to reinforcing environments while restoring the ${nodeLabel} node.`,
+      `Use containment and external accountability to interrupt entrenched override patterns.`,
+      `Address the channel distortion (${channelLabel}): ${channelBlock}`,
+      `Pair reclamation with trauma‑focused modalities (e.g., EMDR) and structured support.`
+    ];
+  }
+
   completeAssessment() {
     this.captureIntake();
     const tierScores = this.scoreTiers();
@@ -426,12 +460,22 @@ export class EntitiesEngine {
 
     const tierData = WILL_ANOMALY_TIERS[tierResult];
     const contract = this.deriveContract(this.intake.node);
+    const nodeInfo = NODES?.[this.intake.node];
+    const channelInfo = CHANNELS?.[this.intake.channel];
     const nodeExpressions = NODE_TAINTED_EXPRESSIONS?.[this.intake.node] || [];
     const channelExpression = CHANNELS?.[this.intake.channel]?.blocked || '';
     const tasteSkewSuggestions = [
       ...nodeExpressions,
       ...(channelExpression ? [channelExpression] : [])
     ];
+    const strategySteps = this.buildStrategySteps({
+      tierResult,
+      tierData,
+      contract,
+      nodeInfo,
+      channelInfo,
+      rootNeed: this.intake.rootNeed
+    });
 
     this.analysisData = {
       timestamp: new Date().toISOString(),
@@ -439,6 +483,7 @@ export class EntitiesEngine {
       tierScores,
       tierResult,
       tierSummary: tierData,
+      strategySteps,
       tasteSkews: tierData?.tasteSkew || [],
       tasteSkewSelections: this.tasteSkews || [],
       tasteSkewSuggestions,
@@ -504,7 +549,7 @@ export class EntitiesEngine {
       <div class="panel panel-outline-accent">
         <h3 class="panel-title">Strategy for Reclamation</h3>
         <ul class="feature-list">
-          ${(tierData?.strategy || []).map(step => `<li>${SecurityUtils.sanitizeHTML(step)}</li>`).join('')}
+          ${(this.analysisData.strategySteps || tierData?.strategy || []).map(step => `<li>${SecurityUtils.sanitizeHTML(step)}</li>`).join('')}
         </ul>
       </div>
       <div class="panel panel-outline">
