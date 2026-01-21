@@ -51,6 +51,57 @@ export const APTITUDE_DIMENSIONS = [
   }
 ];
 
+export const APTITUDE_ACUITY_DOMAINS = [
+  {
+    id: 'iq',
+    name: 'IQ (Analytical)',
+    description: 'Pattern recognition, logical inference, and structured problem‑solving.',
+    biasPrompt: 'If a peer had to bet on who solves complex logic fastest, would they pick you?'
+  },
+  {
+    id: 'eq',
+    name: 'EQ (Emotional)',
+    description: 'Reading people, managing emotions, and de‑escalating conflict.',
+    biasPrompt: 'If a team is tense, are you the person others trust to stabilize it?'
+  },
+  {
+    id: 'sq',
+    name: 'SQ (Strategic)',
+    description: 'Seeing leverage, long‑range positioning, and second‑order consequences.',
+    biasPrompt: 'Do others say you see the downstream effects before they do?'
+  },
+  {
+    id: 'aq',
+    name: 'AQ (Adversity)',
+    description: 'Resilience under pressure, chaos tolerance, and recovery speed.',
+    biasPrompt: 'In a high‑stress moment, are you the one who stays functional?'
+  },
+  {
+    id: 'cq',
+    name: 'CQ (Creative)',
+    description: 'Novel synthesis, original solutions, and adaptive framing.',
+    biasPrompt: 'When the group is stuck, do people look to you for a fresh angle?'
+  },
+  {
+    id: 'tq',
+    name: 'TQ (Technical)',
+    description: 'Tool fluency, systems handling, and applied technical judgment.',
+    biasPrompt: 'Are you the one people call first when tech breaks?'
+  },
+  {
+    id: 'oq',
+    name: 'OQ (Operational)',
+    description: 'Process discipline, sequencing, and reliable execution.',
+    biasPrompt: 'Do others rely on you to make things run on time?'
+  },
+  {
+    id: 'lq',
+    name: 'LQ (Learning)',
+    description: 'Skill uptake speed and ability to stay current.',
+    biasPrompt: 'Are you regularly ahead of peers in adopting new methods?'
+  }
+];
+
 export const APTITUDE_QUESTIONS = [
   {
     id: 'q1',
