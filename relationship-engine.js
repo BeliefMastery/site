@@ -708,6 +708,11 @@ export class RelationshipEngine {
       };
     }
 
+// Scroll to question after rendering
+    setTimeout(() => {
+      questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    
     prevBtn.disabled = this.currentQuestionIndex === 0;
     nextBtn.textContent = this.currentQuestionIndex === this.questionSequence.length - 1 ? 'Finish Assessment' : 'Next';
   }
