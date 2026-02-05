@@ -150,6 +150,11 @@ export class OutlierAptitudeEngine {
       });
     });
 
+// Scroll to question after rendering
+    setTimeout(() => {
+      questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    
     this.updateNavButtons();
   }
 
