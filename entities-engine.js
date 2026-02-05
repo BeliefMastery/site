@@ -287,6 +287,11 @@ export class EntitiesEngine {
     this.updateNavButtons();
   }
 
+  // Scroll to question after rendering
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
   updateNavButtons() {
     const prevBtn = document.getElementById('prevQuestion');
     const nextBtn = document.getElementById('nextQuestion');
