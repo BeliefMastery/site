@@ -1062,6 +1062,11 @@ export class DiagnosisEngine {
     }
   }
 
+  // Scroll to question after rendering
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
   updateProgress() {
     const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
     const totalQuestions = this.questionSequence.length + (isInRefinement ? this.refinedQuestionSequence.length : 0);
