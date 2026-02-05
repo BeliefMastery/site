@@ -427,7 +427,7 @@ export class TemperamentEngine {
   /**
    * Render the current question
    */
-  renderCurrentQuestion() {
+renderCurrentQuestion() {
     const renderStart = performance.now();
     const questionContainer = document.getElementById('questionContainer');
     
@@ -454,20 +454,44 @@ export class TemperamentEngine {
     // Phase 1: Render gender prompt first
     if (this.currentPhase === 1 && currentQ.type === 'gender') {
       this.renderGenderQuestion(currentQ);
+      // Scroll to question after rendering
+      setTimeout(() => {
+        questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
       return;
     }
 
     // Phase 1: Render 3-point orientation questions
     if (this.currentPhase === 1 && currentQ.type === 'three_point') {
       this.renderThreePointQuestion(currentQ);
+      // Scroll to question after rendering
+      setTimeout(() => {
+        questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
       return;
     }
     
     // Phase 2: Check if entering intimate dynamics section and show consent gate
     if (this.currentPhase === 2 && currentQ.type === 'intimate' && !this.analysisData.intimateConsentGiven) {
       this.showIntimateConsentGate();
+      // Scroll to question after rendering
+      setTimeout(() => {
+        questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
       return;
     }
+    
+    // Phase 2: Render slider-based questions (existing logic)
+    this.renderSliderQuestion(currentQ);
+    // Scroll to question after rendering
+    setTimeout(() => {
+      questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    } catch (error) {
+      this.debugReporter.logError(error, 'renderCurrentQuestion');
+      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
+    }
+  }
     
     // Phase 2: Render slider-based questions (existing logic)
     this.renderSliderQuestion(currentQ);
