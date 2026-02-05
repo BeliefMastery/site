@@ -844,6 +844,11 @@ export class SovereigntyEngine {
     this.updateNavigation();
   }
 
+// Scroll to question after rendering
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  
   getSectionExplanation(section) {
     const explanations = {
       1: {
