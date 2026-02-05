@@ -775,6 +775,11 @@ export class SovereigntySpectrumEngine {
       this.attachQuestionListeners(question);
       this.updateProgress();
       this.updateNavigationButtons();
+
+// Scroll to question after rendering
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
       
       // Focus management
       const firstInput = container.querySelector('input, button, select, textarea');
