@@ -3690,7 +3690,36 @@ img {
         padding: 1.5rem;
         margin: 1rem 0;
     }
-
+    
+/* Minimize section buffers for mobile */
+    section {
+        padding: 12px 8px;
+        margin: 8px 0;
+    }
+    
+    .question-block {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tool-container,
+    .manipulation-container,
+    .archetype-container,
+    .dependency-container,
+    .channels-container,
+    .coaching-container,
+    .needs-dependency-container,
+    .spectrum-container,
+    .paradigm-container,
+    .relationship-container,
+    .temperament-container,
+    .character-sheet-container,
+    .diagnosis-container,
+    .sovereignty-container {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
     /* Prevent text from being too small */
     body {
         font-size: clamp(1rem, 4vw, 1.125rem);
@@ -3808,6 +3837,17 @@ img {
         grid-template-columns: 1fr;
     }
 
+    /* Absolute minimum padding for small phones */
+    section {
+        padding: 8px 6px;
+        margin: 6px 0;
+    }
+    
+    .question-block {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }    
+    
     .image-card.tool-card .tool-summary {
         max-width: calc(100% - 2rem);
         min-width: auto;
