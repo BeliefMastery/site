@@ -585,7 +585,7 @@ export class ManipulationEngine {
   /**
    * Render the current question
    */
-  renderCurrentQuestion() {
+renderCurrentQuestion() {
     const renderStart = performance.now();
     
     if (this.currentQuestionIndex >= this.questionSequence.length) {
@@ -627,6 +627,11 @@ export class ManipulationEngine {
       // Track render performance
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
+      
+      // Scroll to question after rendering
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
       
       // Focus management for accessibility
       const firstInput = container.querySelector('input, button, select, textarea');
