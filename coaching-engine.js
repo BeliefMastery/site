@@ -641,6 +641,11 @@ export class CoachingEngine {
     this.updateNavigationButtons();
   }
 
+  // Scroll to question after rendering
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
   updateProgress() {
     const progress = this.questionSequence.length > 0 
       ? ((this.currentQuestionIndex + 1) / this.questionSequence.length) * 100 
