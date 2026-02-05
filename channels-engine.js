@@ -605,6 +605,11 @@ export class ChannelsEngine {
       // Track render performance
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
+
+      // Scroll to question after rendering
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
       
       // Focus management for accessibility
       const firstInput = container.querySelector('input, button, select, textarea');
