@@ -229,7 +229,8 @@ export class TemperamentEngine {
           question: q.question,
           description: dimension.description,
           masculineWeight: q.masculineWeight,
-          feminineWeight: q.feminineWeight
+          feminineWeight: q.feminineWeight,
+          poleLabels: q.poleLabels
         });
       });
     });
@@ -246,7 +247,8 @@ export class TemperamentEngine {
           question: q.question,
           description: category.description,
           masculineWeight: q.masculineWeight,
-          feminineWeight: q.feminineWeight
+          feminineWeight: q.feminineWeight,
+          poleLabels: q.poleLabels
         });
       });
     });
@@ -264,7 +266,8 @@ export class TemperamentEngine {
           description: category.description,
           masculineWeight: q.masculineWeight,
           feminineWeight: q.feminineWeight,
-          selectionStandard: q.selectionStandard
+          selectionStandard: q.selectionStandard,
+          poleLabels: q.poleLabels
         });
       });
     });
@@ -492,14 +495,6 @@ renderCurrentQuestion() {
       ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
   }
-    
-    // Phase 2: Render slider-based questions (existing logic)
-    this.renderSliderQuestion(currentQ);
-    } catch (error) {
-      this.debugReporter.logError(error, 'renderCurrentQuestion');
-      ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
-    }
-  }
 
   renderGenderQuestion(question) {
     const questionContainer = document.getElementById('questionContainer');
@@ -627,15 +622,15 @@ renderCurrentQuestion() {
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider" step="1">
             <div class="scale-labels">
-              <span>Very Low / Minimal / Weak / Rare / Never (0-2)</span>
-              <span>Moderate / Somewhat / Average / Sometimes (5-6)</span>
-              <span>Very High / Strong / Potent / Frequent / Always (9-10)</span>
+              <span>${currentQ.poleLabels ? SecurityUtils.sanitizeHTML(currentQ.poleLabels.low) + ' (0)' : 'Very Low / Minimal / Weak / Rare / Never (0-2)'}</span>
+              <span>${currentQ.poleLabels ? 'Balanced / Both / Mixed (5)' : 'Moderate / Somewhat / Average / Sometimes (5-6)'}</span>
+              <span>${currentQ.poleLabels ? SecurityUtils.sanitizeHTML(currentQ.poleLabels.high) + ' (10)' : 'Very High / Strong / Potent / Frequent / Always (9-10)'}</span>
             </div>
           </div>
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>
         </div>
         <div class="temperament-tip">
-          <strong>Tip:</strong> Answer based on your authentic experience and preferences, not what you think you "should" be.
+          <strong>Tip:</strong> ${currentQ.poleLabels ? 'Position the slider toward the pole that feels more natural or authentic to you. 0 and 10 represent the two options in the question.' : 'Answer based on your authentic experience and preferences, not what you think you "should" be.'}
         </div>
       </div>
     `);
@@ -1054,15 +1049,15 @@ renderCurrentQuestion() {
           <div class="scale-input">
             <input type="range" min="0" max="10" value="${savedAnswer}" class="slider" id="questionSlider">
             <div class="scale-labels">
-              <span>Very Low / Minimal / Weak / Poor / Rare / Never (0-2)</span>
-              <span>Moderate / Somewhat / Average / Moderate / Sometimes (5-6)</span>
-              <span>Very High / Strong / Potent / Excellent / Frequent / Always (9-10)</span>
+              <span>${question.poleLabels ? SecurityUtils.sanitizeHTML(question.poleLabels.low) + ' (0)' : 'Very Low / Minimal / Weak / Poor / Rare / Never (0-2)'}</span>
+              <span>${question.poleLabels ? 'Balanced / Both / Mixed (5)' : 'Moderate / Somewhat / Average / Moderate / Sometimes (5-6)'}</span>
+              <span>${question.poleLabels ? SecurityUtils.sanitizeHTML(question.poleLabels.high) + ' (10)' : 'Very High / Strong / Potent / Excellent / Frequent / Always (9-10)'}</span>
             </div>
           </div>
           <span class="scale-value" id="sliderValue">${savedAnswer}</span>
         </div>
         <p class="question-help">
-          Tip: Rate the degree to which this pattern is present in your experience.
+          ${question.poleLabels ? 'Tip: Position the slider toward the pole that feels more natural or authentic to you.' : 'Tip: Rate the degree to which this pattern is present in your experience.'}
         </p>
       </div>
     `);
