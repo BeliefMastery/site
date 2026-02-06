@@ -430,7 +430,7 @@ export class TemperamentEngine {
   /**
    * Render the current question
    */
-renderCurrentQuestion() {
+  renderCurrentQuestion() {
     const renderStart = performance.now();
     const questionContainer = document.getElementById('questionContainer');
     
