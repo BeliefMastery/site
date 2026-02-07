@@ -3089,6 +3089,29 @@ figure.headline-book a {
     margin-bottom: 0.4rem;
 }
 
+/* Top career fits ranked list */
+.career-fit-ranked {
+    list-style: none;
+    padding-left: 0;
+    margin: 1rem 0;
+    counter-reset: career-rank;
+}
+.career-fit-ranked .career-fit-item {
+    margin-bottom: 1.25rem;
+    padding-left: 0;
+}
+.career-fit-ranked .career-fit-item strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--brand);
+}
+.career-fit-ranked .career-justification {
+    margin: 0.35rem 0 0 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
 /* ========== FORM STYLES (Character Sheet & Forms) ========== */
 
 .form-group {

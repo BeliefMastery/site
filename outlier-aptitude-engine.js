@@ -487,17 +487,6 @@ export class OutlierAptitudeEngine {
     return labels[sector] || sector;
   }
 
-  groupProjectionBySector(projection) {
-    const bySector = {};
-    (projection || []).forEach(role => {
-      const s = role.sector || 'other';
-      if (!bySector[s]) bySector[s] = [];
-      bySector[s].push(role);
-    });
-    const order = ['technology', 'healthcare', 'legal', 'business', 'education', 'creative', 'trades', 'hospitality', 'sales', 'agriculture', 'other'];
-    return order.filter(s => bySector[s]?.length).map(s => ({ sector: s, careers: bySector[s] }));
-  }
-
   completeAssessment() {
     let dimensionScores = this.scoreDimensions();
     const acuityRank = this.deriveAcuityRankFromScores();
@@ -522,7 +511,7 @@ export class OutlierAptitudeEngine {
   }
 
   getVulnerabilityWarnings() {
-    const projection = (this.analysisData?.projection || []).slice(0, 25);
+    const projection = this.getTopCareerFits(this.analysisData?.projection, 7);
     const high = projection.filter(r => (r.automationResistanceScore || 0) < 0.5);
     const medium = projection.filter(r => {
       const s = r.automationResistanceScore || 0;
@@ -554,9 +543,41 @@ export class OutlierAptitudeEngine {
     return `${parts.join('. ')}. ${fitPhrase}.`;
   }
 
+  getCareerJustification(role, rank) {
+    const early = this.earlyInputs || {};
+    const userIndustrySectors = new Set((early.industries || []).map(id => INDUSTRY_TO_SECTOR[id] || id));
+    const userArchetypes = new Set((early.archetypes || []).map(a => String(a).trim()));
+    const topDims = (this.analysisData?.topDimensions || []).slice(0, 2).map(d => d.name);
+    const parts = [];
+    if (topDims.length) {
+      parts.push(`Aligns with your top aptitudes: ${topDims.join(' and ')}.`);
+    }
+    if (role.sector && userIndustrySectors.has(role.sector)) {
+      parts.push(`Matches your industry experience in ${this.formatSectorLabel(role.sector)}.`);
+    }
+    if (role.archetypeFit?.length && userArchetypes.size) {
+      const match = role.archetypeFit.find(a => userArchetypes.has(a));
+      if (match) parts.push(`Fits your ${match} profile.`);
+    }
+    if (role.growth === 'High') {
+      parts.push('High-growth sector with favorable outlook.');
+    }
+    if ((role.automationResistanceScore || 0) >= 0.7) {
+      parts.push('Strong automation resistance — resilient to near-term AI disruption.');
+    } else if ((role.automationResistanceScore || 0) < 0.55) {
+      parts.push('Consider augmenting with high-touch or creative skills given automation pressures.');
+    }
+    return parts.length ? parts.join(' ') : this.formatCareerRelevance(role);
+  }
+
+  getTopCareerFits(projection, max = 7) {
+    return (projection || []).slice(0, max);
+  }
+
   getRecommendedCourseOfAction() {
-    const topNames = (this.analysisData?.projection || []).slice(0, 3).map(r => r.name);
-    const highVuln = (this.analysisData?.projection || []).filter(r => (r.automationResistanceScore || 0) < 0.55);
+    const topFits = this.getTopCareerFits(this.analysisData?.projection, 7);
+    const topNames = topFits.slice(0, 3).map(r => r.name);
+    const highVuln = topFits.filter(r => (r.automationResistanceScore || 0) < 0.55);
     const topDims = (this.analysisData?.topDimensions || []).slice(0, 2).map(d => d.name);
     const immediate = highVuln.length
       ? `Identify 1–2 courses or certifications that add high-touch or creative skills to complement ${topNames[0] || 'your top match'}.`
@@ -574,20 +595,16 @@ export class OutlierAptitudeEngine {
     const actions = this.getRecommendedCourseOfAction();
     resultsContainer.innerHTML = `
       <div class="panel panel-outline-accent">
-        <h3 class="panel-title">Market Projection Matrix — Career Guidance &amp; Fit</h3>
-        <p class="form-help">Careers below show your relevance across sectors (technical, foster care, trades, etc.). Fit reflects aptitude, archetype, qualification, and industry alignment.</p>
-        <div class="career-fit-by-sector">
-          ${this.groupProjectionBySector(this.analysisData.projection).map(({ sector, careers }) => `
-            <div class="sector-group">
-              <h4 class="sector-name">${SecurityUtils.sanitizeHTML(this.formatSectorLabel(sector))}</h4>
-              <ul class="feature-list career-fit-list">
-                ${careers.map(role => `
-                  <li><strong>${SecurityUtils.sanitizeHTML(role.name)}</strong>: ${SecurityUtils.sanitizeHTML(this.formatCareerRelevance(role))}</li>
-                `).join('')}
-              </ul>
-            </div>
+        <h3 class="panel-title">Market Projection Matrix — Top Career Fits</h3>
+        <p class="form-help">Your most compelling career matches, ranked by aptitude, archetype, qualification, and industry alignment (max 7 across all domains).</p>
+        <ol class="career-fit-ranked">
+          ${this.getTopCareerFits(this.analysisData.projection, 7).map((role, i) => `
+            <li class="career-fit-item">
+              <strong>#${i + 1} ${SecurityUtils.sanitizeHTML(role.name)}</strong> — ${SecurityUtils.sanitizeHTML(this.formatCareerRelevance(role))}
+              <p class="career-justification">${SecurityUtils.sanitizeHTML(this.getCareerJustification(role, i + 1))}</p>
+            </li>
           `).join('')}
-        </div>
+        </ol>
       </div>
       <div class="panel panel-outline" style="border-left: 3px solid var(--color-warning, #c9a227);">
         <h3 class="panel-title">Industry &amp; Skillset Vulnerability (AGI/ASI)</h3>
