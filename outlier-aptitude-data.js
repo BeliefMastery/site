@@ -178,6 +178,9 @@ export const INDUSTRY_OPTIONS = [
   { id: 'other', label: 'Other / Mixed' }
 ];
 
+// Qualification order for comparison (higher index = higher level)
+export const QUALIFICATION_ORDER = ['none', 'certificate', 'associates', 'bachelors', 'masters', 'doctorate', 'md', 'jd'];
+
 export const APTITUDE_ACUITY_DOMAINS = [
   {
     id: 'iq',
@@ -426,10 +429,14 @@ export const APTITUDE_QUESTIONS = [
 ];
 
 // automationResistanceScore: 0-1 scale for AGI/ASI vulnerability (higher = more resistant)
+// sector: matches INDUSTRY_OPTIONS.id; educationMin: matches QUALIFICATION_LEVELS.id; archetypeFit: archetype names from ARCHETYPE_OPTIONS
 export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'renewable_tech',
     name: 'Renewable Energy Technician',
+    sector: 'trades',
+    educationMin: 'certificate',
+    archetypeFit: ['Delta Male', 'Sigma Male', 'Beta Male'],
     growth: 'High',
     automationResistance: 'High',
     automationResistanceScore: 0.85,
@@ -438,6 +445,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'ev_infrastructure',
     name: 'EV Infrastructure Specialist',
+    sector: 'technology',
+    educationMin: 'bachelors',
+    archetypeFit: ['Gamma Male', 'Delta Male', 'Sigma Male'],
     growth: 'High',
     automationResistance: 'Medium-High',
     automationResistanceScore: 0.72,
@@ -446,6 +456,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'mechatronics',
     name: 'Mechatronics / Smart Manufacturing',
+    sector: 'technology',
+    educationMin: 'bachelors',
+    archetypeFit: ['Gamma Male', 'Delta Male', 'Beta Male'],
     growth: 'High',
     automationResistance: 'Medium-High',
     automationResistanceScore: 0.70,
@@ -454,6 +467,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'healthcare_tech',
     name: 'Healthcare / Biomedical Technician',
+    sector: 'healthcare',
+    educationMin: 'associates',
+    archetypeFit: ['Beta Male', 'Beta-Iota Male', 'Delta-Mu Male'],
     growth: 'High',
     automationResistance: 'High',
     automationResistanceScore: 0.80,
@@ -462,6 +478,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'automation_integrator',
     name: 'Automation & Systems Integrator',
+    sector: 'technology',
+    educationMin: 'bachelors',
+    archetypeFit: ['Gamma Male', 'Sigma Male', 'Alpha Male'],
     growth: 'High',
     automationResistance: 'Medium',
     automationResistanceScore: 0.55,
@@ -470,6 +489,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'field_ops_lead',
     name: 'Field Operations Lead',
+    sector: 'trades',
+    educationMin: 'certificate',
+    archetypeFit: ['Alpha-Xi Male', 'Delta Male', 'Alpha Male'],
     growth: 'Medium-High',
     automationResistance: 'High',
     automationResistanceScore: 0.82,
@@ -478,6 +500,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'r_and_d_technician',
     name: 'Applied R&D Technician',
+    sector: 'technology',
+    educationMin: 'bachelors',
+    archetypeFit: ['Gamma Male', 'Sigma Male', 'Gamma-Nu Male'],
     growth: 'Medium',
     automationResistance: 'Medium',
     automationResistanceScore: 0.58,
@@ -486,6 +511,9 @@ export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'productivity_engineer',
     name: 'Productivity / Process Engineer',
+    sector: 'business',
+    educationMin: 'bachelors',
+    archetypeFit: ['Beta Male', 'Gamma Male', 'Sigma-Kappa Male'],
     growth: 'Medium',
     automationResistance: 'Medium',
     automationResistanceScore: 0.55,

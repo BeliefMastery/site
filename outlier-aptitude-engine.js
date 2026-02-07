@@ -5,7 +5,7 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 import { exportJSON, downloadFile } from './shared/export-utils.js';
 
 let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATION_PROMPTS, APTITUDE_ACUITY_DOMAINS;
-let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS;
+let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS, QUALIFICATION_ORDER;
 
 export class OutlierAptitudeEngine {
   constructor() {
@@ -64,6 +64,7 @@ export class OutlierAptitudeEngine {
     QUALIFICATION_LEVELS = module.QUALIFICATION_LEVELS || [];
     AGE_RANGES = module.AGE_RANGES || [];
     INDUSTRY_OPTIONS = module.INDUSTRY_OPTIONS || [];
+    QUALIFICATION_ORDER = module.QUALIFICATION_ORDER || [];
   }
 
   bindEvents() {
@@ -441,11 +442,33 @@ export class OutlierAptitudeEngine {
   }
 
   buildMarketProjection(dimensionScores) {
+    const early = this.earlyInputs || {};
+    const qualOrder = QUALIFICATION_ORDER || [];
+    const userQualIdx = qualOrder.indexOf(early.qualification);
+    const userIndustries = new Set(early.industries || []);
+    const userArchetypes = new Set((early.archetypes || []).map(a => String(a).trim()));
+
     return MARKET_PROJECTION_MATRIX.map(role => {
-      const fit = Object.entries(role.aptitudes).reduce((sum, [dimId, weight]) => {
+      let fit = Object.entries(role.aptitudes).reduce((sum, [dimId, weight]) => {
         return sum + (dimensionScores[dimId] || 0) * weight;
       }, 0);
-      return { ...role, fitScore: fit };
+      const baseFit = fit;
+
+      if (role.educationMin && early.qualification) {
+        const reqIdx = qualOrder.indexOf(role.educationMin);
+        if (reqIdx >= 0 && userQualIdx >= 0 && userQualIdx < reqIdx) {
+          const gap = reqIdx - userQualIdx;
+          fit *= Math.max(0.5, 1 - gap * 0.15);
+        }
+      }
+      if (role.archetypeFit && userArchetypes.size) {
+        const matches = role.archetypeFit.filter(a => userArchetypes.has(a)).length;
+        if (matches) fit *= (1 + matches * 0.08);
+      }
+      if (role.sector && userIndustries.has(role.sector)) {
+        fit *= 1.1;
+      }
+      return { ...role, fitScore: Math.min(1, fit), baseFit };
     }).sort((a, b) => b.fitScore - a.fitScore).slice(0, 5);
   }
 
