@@ -136,54 +136,104 @@ export const APTITUDE_DIMENSIONS = [
   }
 ];
 
+// Early-input options (archetype, age, qualification, industry)
+export const ARCHETYPE_OPTIONS = [
+  'Alpha Male', 'Alpha-Xi Male', 'Alpha-Rho Male', 'Dark Alpha Male',
+  'Beta Male', 'Beta-Iota Male', 'Gamma Male', 'Gamma-Nu Male', 'Gamma-Theta Male', 'Gamma-Pi Male', 'Dark Gamma Male',
+  'Delta Male', 'Delta-Mu Male', 'Sigma Male', 'Sigma-Kappa Male', 'Sigma-Lambda Male', 'Dark Sigma-Zeta Male',
+  'Omega Male', 'Dark Omega Male', 'Phi Male'
+];
+
+export const QUALIFICATION_LEVELS = [
+  { id: 'none', label: 'No formal qualification' },
+  { id: 'certificate', label: 'Certificate or vocational training' },
+  { id: 'associates', label: 'Associate degree' },
+  { id: 'bachelors', label: 'Bachelor\'s degree' },
+  { id: 'masters', label: 'Master\'s degree' },
+  { id: 'doctorate', label: 'Doctorate (PhD, EdD, etc.)' },
+  { id: 'md', label: 'Medical degree (MD, DO)' },
+  { id: 'jd', label: 'Law degree (JD)' }
+];
+
+export const AGE_RANGES = [
+  { id: '18-24', label: '18–24' },
+  { id: '25-34', label: '25–34' },
+  { id: '35-44', label: '35–44' },
+  { id: '45-54', label: '45–54' },
+  { id: '55-64', label: '55–64' },
+  { id: '65+', label: '65+' }
+];
+
+export const INDUSTRY_OPTIONS = [
+  { id: 'technology', label: 'Technology & Engineering' },
+  { id: 'healthcare', label: 'Healthcare & Life Sciences' },
+  { id: 'business', label: 'Business & Finance' },
+  { id: 'education', label: 'Education & Research' },
+  { id: 'creative', label: 'Creative & Media' },
+  { id: 'legal', label: 'Legal & Public Service' },
+  { id: 'trades', label: 'Trades & Technical Services' },
+  { id: 'hospitality', label: 'Hospitality & Personal Services' },
+  { id: 'sales', label: 'Sales & Customer Relations' },
+  { id: 'agriculture', label: 'Agriculture & Environmental' },
+  { id: 'other', label: 'Other / Mixed' }
+];
+
 export const APTITUDE_ACUITY_DOMAINS = [
   {
     id: 'iq',
     name: 'IQ (Analytical)',
     description: 'Pattern recognition, logical inference, and structured problem‑solving.',
-    biasPrompt: 'If a peer had to bet on who solves complex logic fastest, would they pick you?'
+    biasPrompt: 'If a peer had to bet on who solves complex logic fastest, would they pick you?',
+    sliderDescription: 'Rate your competence in logic, pattern recognition, and structured problem‑solving.'
   },
   {
     id: 'eq',
     name: 'EQ (Emotional)',
     description: 'Reading people, managing emotions, and de‑escalating conflict.',
-    biasPrompt: 'If a team is tense, are you the person others trust to stabilize it?'
+    biasPrompt: 'If a team is tense, are you the person others trust to stabilize it?',
+    sliderDescription: 'Rate your competence in reading people, managing emotions, and de‑escalating conflict.'
   },
   {
     id: 'sq',
     name: 'SQ (Strategic)',
     description: 'Seeing leverage, long‑range positioning, and second‑order consequences.',
-    biasPrompt: 'Do others say you see the downstream effects before they do?'
+    biasPrompt: 'Do others say you see the downstream effects before they do?',
+    sliderDescription: 'Rate your competence in seeing leverage, long‑range positioning, and second‑order consequences.'
   },
   {
     id: 'aq',
     name: 'AQ (Adversity)',
     description: 'Resilience under pressure, chaos tolerance, and recovery speed.',
-    biasPrompt: 'In a high‑stress moment, are you the one who stays functional?'
+    biasPrompt: 'In a high‑stress moment, are you the one who stays functional?',
+    sliderDescription: 'Rate your competence in staying functional under pressure and recovering from setbacks.'
   },
   {
     id: 'cq',
     name: 'CQ (Creative)',
     description: 'Novel synthesis, original solutions, and adaptive framing.',
-    biasPrompt: 'When the group is stuck, do people look to you for a fresh angle?'
+    biasPrompt: 'When the group is stuck, do people look to you for a fresh angle?',
+    sliderDescription: 'Rate your competence in generating novel ideas and original solutions.'
   },
   {
     id: 'tq',
     name: 'TQ (Technical)',
     description: 'Tool fluency, systems handling, and applied technical judgment.',
-    biasPrompt: 'Are you the one people call first when tech breaks?'
+    biasPrompt: 'Are you the one people call first when tech breaks?',
+    sliderDescription: 'Rate your competence with tools, systems, and technical troubleshooting.'
   },
   {
     id: 'oq',
     name: 'OQ (Operational)',
     description: 'Process discipline, sequencing, and reliable execution.',
-    biasPrompt: 'Do others rely on you to make things run on time?'
+    biasPrompt: 'Do others rely on you to make things run on time?',
+    sliderDescription: 'Rate your competence in process discipline, sequencing, and reliable execution.'
   },
   {
     id: 'lq',
     name: 'LQ (Learning)',
     description: 'Skill uptake speed and ability to stay current.',
-    biasPrompt: 'Are you regularly ahead of peers in adopting new methods?'
+    biasPrompt: 'Are you regularly ahead of peers in adopting new methods?',
+    sliderDescription: 'Rate your competence in picking up new skills quickly and staying current.'
   }
 ];
 
@@ -375,12 +425,14 @@ export const APTITUDE_QUESTIONS = [
   }
 ];
 
+// automationResistanceScore: 0-1 scale for AGI/ASI vulnerability (higher = more resistant)
 export const MARKET_PROJECTION_MATRIX = [
   {
     id: 'renewable_tech',
     name: 'Renewable Energy Technician',
     growth: 'High',
     automationResistance: 'High',
+    automationResistanceScore: 0.85,
     aptitudes: { diagnostics: 0.8, field: 0.9, technical: 0.7, organization: 0.5 }
   },
   {
@@ -388,6 +440,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'EV Infrastructure Specialist',
     growth: 'High',
     automationResistance: 'Medium-High',
+    automationResistanceScore: 0.72,
     aptitudes: { technical: 0.9, diagnostics: 0.7, field: 0.6, systems: 0.6 }
   },
   {
@@ -395,6 +448,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'Mechatronics / Smart Manufacturing',
     growth: 'High',
     automationResistance: 'Medium-High',
+    automationResistanceScore: 0.70,
     aptitudes: { technical: 0.9, systems: 0.8, diagnostics: 0.7, organization: 0.6 }
   },
   {
@@ -402,6 +456,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'Healthcare / Biomedical Technician',
     growth: 'High',
     automationResistance: 'High',
+    automationResistanceScore: 0.80,
     aptitudes: { technical: 0.7, diagnostics: 0.7, eq: 0.7, organization: 0.6 }
   },
   {
@@ -409,6 +464,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'Automation & Systems Integrator',
     growth: 'High',
     automationResistance: 'Medium',
+    automationResistanceScore: 0.55,
     aptitudes: { systems: 0.9, technical: 0.8, diagnostics: 0.6, management: 0.5 }
   },
   {
@@ -416,6 +472,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'Field Operations Lead',
     growth: 'Medium-High',
     automationResistance: 'High',
+    automationResistanceScore: 0.82,
     aptitudes: { field: 0.8, organization: 0.8, management: 0.7, eq: 0.5 }
   },
   {
@@ -423,6 +480,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'Applied R&D Technician',
     growth: 'Medium',
     automationResistance: 'Medium',
+    automationResistanceScore: 0.58,
     aptitudes: { scientific: 0.8, creativity: 0.7, technical: 0.7, systems: 0.5 }
   },
   {
@@ -430,6 +488,7 @@ export const MARKET_PROJECTION_MATRIX = [
     name: 'Productivity / Process Engineer',
     growth: 'Medium',
     automationResistance: 'Medium',
+    automationResistanceScore: 0.55,
     aptitudes: { organization: 0.9, systems: 0.8, diagnostics: 0.6, management: 0.5 }
   }
 ];
