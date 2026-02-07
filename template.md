@@ -260,3 +260,108 @@ Use this as a starting base and customize.
   }
 })();
 ```
+## 14) Cross-Tool Output Registry & Integration Map
+**Purpose:** Track what data each tool produces and which tools can consume it.
+
+### Tool Output Specification
+For each tool, document:
+- **Tool ID:** (short machine-readable name)
+- **Output Keys:** (what fields appear in `assessmentData`)
+- **Feeds Into:** (list of tools that can use this data)
+- **Consumes From:** (list of tools this can import from)
+- **Example Output Structure:**
+```json
+{
+  "exportVersion": "1.0",
+  "systemType": "assessment",
+  "systemName": "toolName",
+  "assessmentData": {
+    "exampleKey": "exampleValue"
+  }
+}
+```
+
+### Cross-Reference Dropdown Implementation
+- When a tool accepts input from others, use a **dropdown selector** rather than only free-text paste.
+- Dropdown should list compatible tools based on this registry.
+- Include parsing logic for each compatible input format.
+
+---
+
+## 15) Validation & Input Rules Per Tool
+For each tool, document:
+- **Input constraints:** (min/max values, required fields, formats)
+- **Contradiction checks:** (like DSM-5 pairs)
+- **Scoring thresholds:** (what ranges mean what)
+- **Cross-tool validation:** (when importing from another tool)
+
+Use shared validation utilities where possible. If tool-specific, document clearly in engine comments.
+
+---
+
+## 16) Import Standards
+**When a tool accepts data from another tool:**
+- [ ] Use dropdown to select source tool (from registry).
+- [ ] Parse using shared `ImportUtils.parse(toolId, jsonData)`.
+- [ ] Validate structure matches expected format.
+- [ ] Show clear error if format incompatible.
+- [ ] Provide “paste JSON” fallback if dropdown fails.
+
+**ImportUtils should:**
+- Accept raw JSON string.
+- Validate against known schemas.
+- Return normalized data or throw descriptive error.
+
+---
+
+## 17) External Link Security
+All external links with `target="_blank"` must include:
+```html
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">External Link</a>
+```
+This prevents security issues and performance problems.
+
+---
+
+## 18) Storage Lifecycle Per Tool
+Document for each tool:
+- **What gets saved:** (progress, results, preferences)
+- **Storage key names:** (for consistency)
+- **When to clear:** (on completion? on exit? on error?)
+- **Session vs. persistent:** (what uses each)
+- **Export before clear:** (remind user to save)
+
+Example:
+
+| Tool | Key Pattern | Cleared When | Persistent? |
+|------|-------------|--------------|-------------|
+| DSM-5 | `dsm5_progress` | On submit or manual clear | No (session) |
+
+---
+
+## 19) Performance Constraints
+- **Max assessment data size:** (e.g., 5MB JSON)
+- **Max results to display:** (e.g., 1000 entries before pagination)
+- **Debounce timing:** (300ms for search, 1000ms for auto-save)
+- **Timeout for external loads:** (5s for astronomy engine, etc.)
+
+Include performance monitoring for tools with heavy computation.
+
+---
+
+## 20) Security Checklist
+- [ ] CSP headers match external dependencies.
+- [ ] All user input sanitized via `SecurityUtils`.
+- [ ] External links use `rel="noopener noreferrer"`.
+- [ ] No `eval()` or `Function()` constructors.
+- [ ] External module sources pinned to version.
+
+---
+
+## 21) Testing Checklist (Expanded)
+- [ ] Test in stated browsers (Chrome/Firefox/Safari/Edge).
+- [ ] Test with keyboard only.
+- [ ] Test with screen reader.
+- [ ] Test with 200% zoom.
+- [ ] Test with slow network (throttling).
+- [ ] Test cross-tool import from each compatible tool.
