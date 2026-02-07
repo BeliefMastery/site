@@ -5,6 +5,7 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 import { exportJSON, downloadFile } from './shared/export-utils.js';
 
 let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATION_PROMPTS, APTITUDE_ACUITY_DOMAINS;
+let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS;
 
 export class OutlierAptitudeEngine {
   constructor() {
@@ -59,6 +60,10 @@ export class OutlierAptitudeEngine {
     MARKET_PROJECTION_MATRIX = module.MARKET_PROJECTION_MATRIX;
     VALIDATION_PROMPTS = module.VALIDATION_PROMPTS;
     APTITUDE_ACUITY_DOMAINS = module.APTITUDE_ACUITY_DOMAINS;
+    ARCHETYPE_OPTIONS = module.ARCHETYPE_OPTIONS || [];
+    QUALIFICATION_LEVELS = module.QUALIFICATION_LEVELS || [];
+    AGE_RANGES = module.AGE_RANGES || [];
+    INDUSTRY_OPTIONS = module.INDUSTRY_OPTIONS || [];
   }
 
   bindEvents() {
@@ -95,15 +100,20 @@ export class OutlierAptitudeEngine {
   startAssessment() {
     this.currentQuestionIndex = 0;
     this.answers = {};
-    this.currentStage = 'questions';
+    this.currentStage = 'earlyInput';
     this.acuityProfile = { primary: '', secondary: '', tertiary: '', additional: [] };
     this.analysisData = this.getEmptyAnalysisData();
+    this.earlyInputs = this.analysisData.earlyInputs || { archetypes: [], ageRange: '', qualification: '', industries: [] };
     this.ui.transition('assessment');
     this.renderCurrentQuestion();
     this.saveProgress();
   }
 
   renderCurrentQuestion() {
+    if (this.currentStage === 'earlyInput') {
+      this.renderEarlyInputStep();
+      return;
+    }
     if (this.currentStage === 'acuity') {
       this.renderAcuityStep();
       return;
@@ -161,13 +171,11 @@ export class OutlierAptitudeEngine {
   updateNavButtons() {
     const prevBtn = document.getElementById('prevQuestion');
     const nextBtn = document.getElementById('nextQuestion');
-    if (prevBtn) prevBtn.disabled = this.currentStage === 'questions' && this.currentQuestionIndex === 0;
+    if (prevBtn) prevBtn.disabled = this.currentStage === 'earlyInput' || (this.currentStage === 'questions' && this.currentQuestionIndex === 0);
     if (nextBtn) {
-      if (this.currentStage === 'acuity') {
-        nextBtn.textContent = 'Finish';
-      } else {
-        nextBtn.textContent = this.currentQuestionIndex === APTITUDE_QUESTIONS.length - 1 ? 'Next' : 'Next';
-      }
+      if (this.currentStage === 'earlyInput') nextBtn.textContent = 'Continue to Assessment';
+      else if (this.currentStage === 'acuity') nextBtn.textContent = 'Finish';
+      else nextBtn.textContent = 'Next';
     }
   }
 
@@ -179,6 +187,12 @@ export class OutlierAptitudeEngine {
       this.saveProgress();
       return;
     }
+    if (this.currentStage === 'questions' && this.currentQuestionIndex === 0) {
+      this.currentStage = 'earlyInput';
+      this.renderCurrentQuestion();
+      this.saveProgress();
+      return;
+    }
     if (this.currentQuestionIndex === 0) return;
     this.currentQuestionIndex -= 1;
     this.renderCurrentQuestion();
@@ -186,6 +200,16 @@ export class OutlierAptitudeEngine {
   }
 
   nextQuestion() {
+    if (this.currentStage === 'earlyInput') {
+      if (!this.validateEarlyInputs()) return;
+      this.captureEarlyInputs();
+      this.analysisData.earlyInputs = this.earlyInputs;
+      this.currentStage = 'questions';
+      this.currentQuestionIndex = 0;
+      this.renderCurrentQuestion();
+      this.saveProgress();
+      return;
+    }
     if (this.currentStage === 'acuity') {
       if (!this.validateAcuitySelections()) return;
       this.completeAssessment();
@@ -205,6 +229,102 @@ export class OutlierAptitudeEngine {
     this.currentStage = 'acuity';
     this.renderCurrentQuestion();
     this.saveProgress();
+  }
+
+  renderEarlyInputStep() {
+    const questionContainer = document.getElementById('questionContainer');
+    const questionCount = document.getElementById('questionCount');
+    const progressFill = document.getElementById('progressFill');
+    if (!questionContainer) return;
+    if (questionCount) questionCount.textContent = 'Profile Context';
+    if (progressFill) progressFill.style.width = '5%';
+
+    const archetypeOptions = (ARCHETYPE_OPTIONS || []).map(a => `<option value="${SecurityUtils.sanitizeHTML(a)}">${SecurityUtils.sanitizeHTML(a)}</option>`).join('');
+    const qualOptions = (QUALIFICATION_LEVELS || []).map(q => `<option value="${q.id}">${SecurityUtils.sanitizeHTML(q.label)}</option>`).join('');
+    const ageOptions = (AGE_RANGES || []).map(a => `<option value="${a.id}">${SecurityUtils.sanitizeHTML(a.label)}</option>`).join('');
+    const industryOptions = (INDUSTRY_OPTIONS || []).map(i =>
+      `<label class="option-label"><input type="checkbox" value="${i.id}" ${(this.earlyInputs?.industries || []).includes(i.id) ? 'checked' : ''}><span>${SecurityUtils.sanitizeHTML(i.label)}</span></label>`
+    ).join('');
+
+    questionContainer.innerHTML = `
+      <div class="question-block">
+        <h3>Context for Career Guidance</h3>
+        <p class="form-help">This context helps tailor your results. Select 2–3 archetypes if known, plus your age range, qualification, and work experience industries.</p>
+        <div class="form-group">
+          <label for="archetype1">Archetype 1</label>
+          <select id="archetype1"><option value="">— Select —</option>${archetypeOptions}</select>
+        </div>
+        <div class="form-group">
+          <label for="archetype2">Archetype 2 (optional)</label>
+          <select id="archetype2"><option value="">— Select —</option>${archetypeOptions}</select>
+        </div>
+        <div class="form-group">
+          <label for="archetype3">Archetype 3 (optional)</label>
+          <select id="archetype3"><option value="">— Select —</option>${archetypeOptions}</select>
+        </div>
+        <div class="form-group">
+          <label for="ageRange">Age range</label>
+          <select id="ageRange"><option value="">— Select —</option>${ageOptions}</select>
+        </div>
+        <div class="form-group">
+          <label for="qualification">Highest qualification</label>
+          <select id="qualification"><option value="">— Select —</option>${qualOptions}</select>
+        </div>
+        <div class="form-group">
+          <label>Work experience industries (select all that apply)</label>
+          <div class="options-container options-container-grid">${industryOptions}</div>
+        </div>
+      </div>
+    `;
+
+    const a1 = document.getElementById('archetype1');
+    const a2 = document.getElementById('archetype2');
+    const a3 = document.getElementById('archetype3');
+    const ageSelect = document.getElementById('ageRange');
+    const qualSelect = document.getElementById('qualification');
+    if (a1 && this.earlyInputs?.archetypes?.[0]) a1.value = this.earlyInputs.archetypes[0];
+    if (a2 && this.earlyInputs?.archetypes?.[1]) a2.value = this.earlyInputs.archetypes[1];
+    if (a3 && this.earlyInputs?.archetypes?.[2]) a3.value = this.earlyInputs.archetypes[2];
+    if (ageSelect && this.earlyInputs?.ageRange) ageSelect.value = this.earlyInputs.ageRange;
+    if (qualSelect && this.earlyInputs?.qualification) qualSelect.value = this.earlyInputs.qualification;
+
+    const updateEarlyInputs = () => {
+      this.earlyInputs = this.earlyInputs || {};
+      this.earlyInputs.archetypes = [a1?.value, a2?.value, a3?.value].filter(Boolean);
+      this.earlyInputs.ageRange = ageSelect?.value || '';
+      this.earlyInputs.qualification = qualSelect?.value || '';
+      this.earlyInputs.industries = Array.from(questionContainer.querySelectorAll('input[type="checkbox"]')).filter(cb => cb.checked).map(cb => cb.value);
+      this.saveProgress();
+    };
+    [a1, a2, a3, ageSelect, qualSelect].forEach(el => { if (el) el.addEventListener('change', updateEarlyInputs); });
+    questionContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', updateEarlyInputs));
+
+    this.updateNavButtons();
+    setTimeout(() => questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  validateEarlyInputs() {
+    const { ageRange, qualification } = this.earlyInputs || {};
+    if (!ageRange || !qualification) {
+      ErrorHandler.showUserError('Please select your age range and highest qualification.');
+      return false;
+    }
+    return true;
+  }
+
+  captureEarlyInputs() {
+    const a1 = document.getElementById('archetype1');
+    const a2 = document.getElementById('archetype2');
+    const a3 = document.getElementById('archetype3');
+    const ageSelect = document.getElementById('ageRange');
+    const qualSelect = document.getElementById('qualification');
+    const industryCheckboxes = document.querySelectorAll('#questionContainer input[type="checkbox"]');
+    this.earlyInputs = {
+      archetypes: [a1?.value, a2?.value, a3?.value].filter(Boolean),
+      ageRange: ageSelect?.value || '',
+      qualification: qualSelect?.value || '',
+      industries: Array.from(industryCheckboxes).filter(cb => cb.checked).map(cb => cb.value)
+    };
   }
 
   renderAcuityStep() {
@@ -351,6 +471,7 @@ export class OutlierAptitudeEngine {
 
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      earlyInputs: this.earlyInputs || this.getEmptyAnalysisData().earlyInputs,
       dimensionScores,
       acuityProfile: { ...this.acuityProfile },
       topDimensions: sortedDims.slice(0, 4),
@@ -401,6 +522,13 @@ export class OutlierAptitudeEngine {
   }
 
   generateSampleReport() {
+    this.earlyInputs = {
+      archetypes: (ARCHETYPE_OPTIONS || []).slice(0, 2),
+      ageRange: '25-34',
+      qualification: 'bachelors',
+      industries: ['technology', 'business']
+    };
+    this.analysisData.earlyInputs = this.earlyInputs;
     APTITUDE_QUESTIONS.forEach(question => {
       this.answers[question.id] = Math.floor(Math.random() * 5) + 1;
     });
@@ -430,6 +558,7 @@ export class OutlierAptitudeEngine {
   getEmptyAnalysisData() {
     return {
       timestamp: new Date().toISOString(),
+      earlyInputs: { archetypes: [], ageRange: '', qualification: '', industries: [] },
       dimensionScores: {},
       acuityProfile: { primary: '', secondary: '', tertiary: '', additional: [] },
       topDimensions: [],
@@ -444,6 +573,7 @@ export class OutlierAptitudeEngine {
       currentStage: this.currentStage,
       answers: this.answers,
       acuityProfile: this.acuityProfile,
+      earlyInputs: this.earlyInputs,
       analysisData: this.analysisData
     };
     this.dataStore.save('progress', progress);
@@ -457,11 +587,12 @@ export class OutlierAptitudeEngine {
       this.currentStage = progress.currentStage || 'questions';
       this.answers = progress.answers || {};
       this.acuityProfile = progress.acuityProfile || { primary: '', secondary: '', tertiary: '', additional: [] };
+      this.earlyInputs = progress.earlyInputs || this.getEmptyAnalysisData().earlyInputs;
       this.analysisData = progress.analysisData || this.analysisData;
       if (this.analysisData.topDimensions?.length) {
         this.renderResults();
         this.ui.transition('results');
-      } else if (Object.keys(this.answers).length) {
+      } else if (this.currentStage === 'earlyInput' || Object.keys(this.answers).length) {
         this.ui.transition('assessment');
         this.renderCurrentQuestion();
       }
@@ -476,6 +607,7 @@ export class OutlierAptitudeEngine {
     this.answers = {};
     this.currentStage = 'questions';
     this.acuityProfile = { primary: '', secondary: '', tertiary: '', additional: [] };
+    this.earlyInputs = { archetypes: [], ageRange: '', qualification: '', industries: [] };
     this.analysisData = this.getEmptyAnalysisData();
     this.ui.transition('idle');
   }
