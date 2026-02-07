@@ -495,9 +495,45 @@ export class OutlierAptitudeEngine {
     this.saveProgress();
   }
 
+  getVulnerabilityWarnings() {
+    const projection = this.analysisData?.projection || [];
+    const high = projection.filter(r => (r.automationResistanceScore || 0) < 0.5);
+    const medium = projection.filter(r => {
+      const s = r.automationResistanceScore || 0;
+      return s >= 0.5 && s < 0.7;
+    });
+    const lines = [];
+    if (high.length) {
+      lines.push(`<p><strong>Higher vulnerability (AGI/ASI):</strong> ${high.map(r => SecurityUtils.sanitizeHTML(r.name)).join(', ')} — routine-heavy tasks and mid-level analysis face significant automation pressure by 2030–2035. Consider adding high-touch, creative, or interpersonal skills.</p>`);
+    }
+    if (medium.length) {
+      lines.push(`<p><strong>Moderate vulnerability:</strong> ${medium.map(r => SecurityUtils.sanitizeHTML(r.name)).join(', ')} — mixed automation impact. Human oversight and soft skills remain central; continuous learning recommended.</p>`);
+    }
+    const low = projection.filter(r => (r.automationResistanceScore || 0) >= 0.7);
+    if (low.length) {
+      lines.push(`<p><strong>Lower vulnerability:</strong> ${low.map(r => SecurityUtils.sanitizeHTML(r.name)).join(', ')} — strong interpersonal, creative, or physical elements; resistant to near-term automation.</p>`);
+    }
+    return lines.length ? lines.join('') : '<p>No specific vulnerability warnings for your top matches.</p>';
+  }
+
+  getRecommendedCourseOfAction() {
+    const topNames = (this.analysisData?.projection || []).slice(0, 3).map(r => r.name);
+    const highVuln = (this.analysisData?.projection || []).filter(r => (r.automationResistanceScore || 0) < 0.55);
+    const topDims = (this.analysisData?.topDimensions || []).slice(0, 2).map(d => d.name);
+    const immediate = highVuln.length
+      ? `Identify 1–2 courses or certifications that add high-touch or creative skills to complement ${topNames[0] || 'your top match'}.`
+      : `Review job postings for ${topNames[0] || 'your top match'} to align your skills and identify quick wins.`;
+    const shortTerm = `Build experience in ${topNames[0] || 'a top match'} through projects, lateral moves, or targeted learning. Strengthen ${topDims[0] || 'your top aptitude'} with deliberate practice.`;
+    const mediumTerm = `Consider deeper pivots or credential upgrades if your goal is ${topNames[1] || 'a strong match'}. Monitor sector disruption and emerging roles in your industry.`;
+    const ongoing = `Maintain continuous learning and diversify skills. Track automation trends in your sector and adjust your development plan as AGI/ASI capabilities evolve.`;
+    return { immediate, shortTerm, mediumTerm, ongoing };
+  }
+
   renderResults() {
     const resultsContainer = document.getElementById('resultsContainer');
     if (!resultsContainer) return;
+    const vulnHtml = this.getVulnerabilityWarnings();
+    const actions = this.getRecommendedCourseOfAction();
     resultsContainer.innerHTML = `
       <div class="panel panel-outline-accent">
         <h3 class="panel-title">Top Aptitude Signals</h3>
@@ -522,6 +558,19 @@ export class OutlierAptitudeEngine {
           ${this.analysisData.projection.map(role => `
             <li><strong>${SecurityUtils.sanitizeHTML(role.name)}</strong> — Fit ${(role.fitScore * 100).toFixed(0)}% | Growth: ${role.growth} | Automation Resistance: ${role.automationResistance}</li>
           `).join('')}
+        </ul>
+      </div>
+      <div class="panel panel-outline" style="border-left: 3px solid var(--color-warning, #c9a227);">
+        <h3 class="panel-title">Industry &amp; Skillset Vulnerability (AGI/ASI)</h3>
+        <div class="vulnerability-content">${vulnHtml}</div>
+      </div>
+      <div class="panel panel-outline-accent">
+        <h3 class="panel-title">Recommended Course of Action</h3>
+        <ul class="feature-list action-list">
+          <li><strong>Immediate (0–6 months):</strong> ${SecurityUtils.sanitizeHTML(actions.immediate)}</li>
+          <li><strong>Short-term (6–18 months):</strong> ${SecurityUtils.sanitizeHTML(actions.shortTerm)}</li>
+          <li><strong>Medium-term (18–36 months):</strong> ${SecurityUtils.sanitizeHTML(actions.mediumTerm)}</li>
+          <li><strong>Ongoing:</strong> ${SecurityUtils.sanitizeHTML(actions.ongoing)}</li>
         </ul>
       </div>
       <div class="panel panel-outline-accent">
