@@ -332,51 +332,38 @@ export class OutlierAptitudeEngine {
     const questionCount = document.getElementById('questionCount');
     const progressFill = document.getElementById('progressFill');
     if (!questionContainer) return;
-    if (questionCount) {
-      questionCount.textContent = 'Acuity Profile';
-    }
-    if (progressFill) {
-      progressFill.style.width = '100%';
-    }
-    const options = APTITUDE_ACUITY_DOMAINS.map(domain => `<option value="${domain.id}">${domain.name}</option>`).join('');
-    const additionalSelections = new Set(this.acuityProfile.additional || []);
-    questionContainer.innerHTML = `
-      <div class="question-block">
-        <h3>Rank Your Dominant Acuity Domains</h3>
-        <p class="form-help">Choose the top three domains that best describe how others would rate your strengths. Then select any additional domains that also apply.</p>
-        <div class="form-group">
-          <label for="acuityPrimary">Primary Domain</label>
-          <select id="acuityPrimary">
-            <option value="">Select primary</option>
-            ${options}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="acuitySecondary">Secondary Domain</label>
-          <select id="acuitySecondary">
-            <option value="">Select secondary</option>
-            ${options}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="acuityTertiary">Tertiary Domain</label>
-          <select id="acuityTertiary">
-            <option value="">Select tertiary</option>
-            ${options}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Additional Domains (optional)</label>
-          <div class="options-container">
-            ${APTITUDE_ACUITY_DOMAINS.map(domain => `
-              <label class="option-label">
-                <input type="checkbox" value="${domain.id}" ${additionalSelections.has(domain.id) ? 'checked' : ''}>
-                <span>${SecurityUtils.sanitizeHTML(domain.name)}</span>
-              </label>
-            `).join('')}
+    if (questionCount) questionCount.textContent = 'Acuity Self‑Evaluation';
+    if (progressFill) progressFill.style.width = '100%';
+
+    const scores = this.acuityProfile?.scores || {};
+    const slidersHtml = APTITUDE_ACUITY_DOMAINS.map(domain => {
+      const val = scores[domain.id] !== undefined ? scores[domain.id] : 5;
+      const desc = domain.sliderDescription || domain.description;
+      return `
+        <div class="form-group acuity-slider-group">
+          <label for="acuity-${domain.id}">${SecurityUtils.sanitizeHTML(domain.name)}</label>
+          <p class="acuity-slider-desc">${SecurityUtils.sanitizeHTML(desc)}</p>
+          <div class="scale-container">
+            <div class="scale-input">
+              <input type="range" min="0" max="10" value="${val}" class="slider" id="acuity-${domain.id}" data-domain="${domain.id}" step="1">
+              <div class="scale-labels">
+                <span>0 — Low</span>
+                <span>5 — Moderate</span>
+                <span>10 — Very high</span>
+              </div>
+            </div>
+            <span class="scale-value acuity-value" id="acuity-val-${domain.id}">${val}</span>
           </div>
         </div>
-        <div class="panel panel-outline">
+      `;
+    }).join('');
+
+    questionContainer.innerHTML = `
+      <div class="question-block">
+        <h3>Self‑Evaluate Your Competence by Domain</h3>
+        <p class="form-help">Rate your competence in each domain from 0 (low) to 10 (very high). Use the descriptions and your experience to gauge where you stand relative to peers.</p>
+        ${slidersHtml}
+        <div class="panel panel-outline acuity-bias-panel">
           <h4 class="panel-title">Bias‑Mitigating Prompts</h4>
           <ul class="feature-list">
             ${APTITUDE_ACUITY_DOMAINS.map(domain => `<li><strong>${SecurityUtils.sanitizeHTML(domain.name)}:</strong> ${SecurityUtils.sanitizeHTML(domain.biasPrompt)}</li>`).join('')}
@@ -385,49 +372,50 @@ export class OutlierAptitudeEngine {
       </div>
     `;
 
-    const primarySelect = document.getElementById('acuityPrimary');
-    const secondarySelect = document.getElementById('acuitySecondary');
-    const tertiarySelect = document.getElementById('acuityTertiary');
-    if (primarySelect) primarySelect.value = this.acuityProfile.primary || '';
-    if (secondarySelect) secondarySelect.value = this.acuityProfile.secondary || '';
-    if (tertiarySelect) tertiarySelect.value = this.acuityProfile.tertiary || '';
-
-    const updateSelections = () => {
-      this.acuityProfile.primary = primarySelect?.value || '';
-      this.acuityProfile.secondary = secondarySelect?.value || '';
-      this.acuityProfile.tertiary = tertiarySelect?.value || '';
-      const additional = Array.from(questionContainer.querySelectorAll('input[type="checkbox"]'))
-        .filter(input => input.checked)
-        .map(input => input.value)
-        .filter(id => ![this.acuityProfile.primary, this.acuityProfile.secondary, this.acuityProfile.tertiary].includes(id));
-      this.acuityProfile.additional = additional;
-      this.saveProgress();
-    };
-
-    [primarySelect, secondarySelect, tertiarySelect].forEach(select => {
-      if (!select) return;
-      select.addEventListener('change', updateSelections);
-    });
-
-    questionContainer.querySelectorAll('input[type="checkbox"]').forEach(input => {
-      input.addEventListener('change', updateSelections);
+    APTITUDE_ACUITY_DOMAINS.forEach(domain => {
+      const slider = document.getElementById(`acuity-${domain.id}`);
+      const valueSpan = document.getElementById(`acuity-val-${domain.id}`);
+      if (slider && valueSpan) {
+        slider.oninput = () => {
+          valueSpan.textContent = slider.value;
+          this.acuityProfile = this.acuityProfile || { scores: {} };
+          this.acuityProfile.scores = this.acuityProfile.scores || {};
+          this.acuityProfile.scores[domain.id] = parseInt(slider.value, 10);
+          this.saveProgress();
+        };
+      }
     });
 
     this.updateNavButtons();
+    setTimeout(() => questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }
 
   validateAcuitySelections() {
-    const { primary, secondary, tertiary } = this.acuityProfile;
-    if (!primary || !secondary || !tertiary) {
-      ErrorHandler.showUserError('Please select primary, secondary, and tertiary acuity domains.');
-      return false;
-    }
-    const selected = [primary, secondary, tertiary];
-    if (new Set(selected).size !== selected.length) {
-      ErrorHandler.showUserError('Acuity domains must be unique across primary, secondary, and tertiary.');
-      return false;
-    }
     return true;
+  }
+
+  deriveAcuityRankFromScores() {
+    let scores = this.acuityProfile?.scores || {};
+    if (Object.keys(scores).length === 0 && this.acuityProfile?.primary) {
+      scores = {};
+      const p = this.acuityProfile.primary, s = this.acuityProfile.secondary, t = this.acuityProfile.tertiary;
+      const add = new Set(this.acuityProfile.additional || []);
+      APTITUDE_ACUITY_DOMAINS.forEach(d => {
+        if (d.id === p) scores[d.id] = 8;
+        else if (d.id === s) scores[d.id] = 6;
+        else if (d.id === t) scores[d.id] = 5;
+        else if (add.has(d.id)) scores[d.id] = 4;
+        else scores[d.id] = 3;
+      });
+    }
+    const sorted = APTITUDE_ACUITY_DOMAINS.map(d => ({ id: d.id, score: scores[d.id] !== undefined ? scores[d.id] : 5 }))
+      .sort((a, b) => b.score - a.score);
+    return {
+      primary: sorted[0]?.id || '',
+      secondary: sorted[1]?.id || '',
+      tertiary: sorted[2]?.id || '',
+      additional: sorted.slice(3).filter(x => x.score >= 5).map(x => x.id)
+    };
   }
 
   scoreDimensions() {
@@ -463,7 +451,8 @@ export class OutlierAptitudeEngine {
 
   completeAssessment() {
     let dimensionScores = this.scoreDimensions();
-    dimensionScores = this.applyAcuityWeighting(dimensionScores, this.acuityProfile);
+    const acuityRank = this.deriveAcuityRankFromScores();
+    dimensionScores = this.applyAcuityWeighting(dimensionScores, acuityRank);
     const projection = this.buildMarketProjection(dimensionScores);
     const sortedDims = APTITUDE_DIMENSIONS
       .map(dim => ({ ...dim, score: dimensionScores[dim.id] || 0 }))
@@ -473,7 +462,7 @@ export class OutlierAptitudeEngine {
       timestamp: new Date().toISOString(),
       earlyInputs: this.earlyInputs || this.getEmptyAnalysisData().earlyInputs,
       dimensionScores,
-      acuityProfile: { ...this.acuityProfile },
+      acuityProfile: { scores: this.acuityProfile?.scores || {}, ...this.deriveAcuityRankFromScores() },
       topDimensions: sortedDims.slice(0, 4),
       projection,
       validationPrompts: VALIDATION_PROMPTS
@@ -532,13 +521,9 @@ export class OutlierAptitudeEngine {
     APTITUDE_QUESTIONS.forEach(question => {
       this.answers[question.id] = Math.floor(Math.random() * 5) + 1;
     });
-    const domainIds = APTITUDE_ACUITY_DOMAINS.map(domain => domain.id);
-    this.acuityProfile = {
-      primary: domainIds[0],
-      secondary: domainIds[1] || '',
-      tertiary: domainIds[2] || '',
-      additional: domainIds.slice(3, 5)
-    };
+    const scores = {};
+    APTITUDE_ACUITY_DOMAINS.forEach((d, i) => { scores[d.id] = Math.min(10, Math.max(0, 4 + Math.floor(Math.random() * 5))); });
+    this.acuityProfile = { scores };
     this.completeAssessment();
   }
 
