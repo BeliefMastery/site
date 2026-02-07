@@ -164,19 +164,45 @@ export const AGE_RANGES = [
   { id: '65+', label: '65+' }
 ];
 
+// Work experience industries — mutually exclusive, no overlap. Maps to career sectors.
 export const INDUSTRY_OPTIONS = [
-  { id: 'technology', label: 'Technology & Engineering' },
-  { id: 'healthcare', label: 'Healthcare & Life Sciences' },
-  { id: 'business', label: 'Business & Finance' },
-  { id: 'education', label: 'Education & Research' },
-  { id: 'creative', label: 'Creative & Media' },
-  { id: 'legal', label: 'Legal & Public Service' },
-  { id: 'trades', label: 'Trades & Technical Services' },
-  { id: 'hospitality', label: 'Hospitality & Personal Services' },
-  { id: 'sales', label: 'Sales & Customer Relations' },
-  { id: 'agriculture', label: 'Agriculture & Environmental' },
-  { id: 'other', label: 'Other / Mixed' }
+  { id: 'tech_software', label: 'Software, IT & Data' },
+  { id: 'tech_engineering', label: 'Hardware, Systems & Engineering' },
+  { id: 'healthcare_clinical', label: 'Clinical Healthcare (nursing, medicine, therapy)' },
+  { id: 'healthcare_allied', label: 'Allied Health (lab, imaging, technicians)' },
+  { id: 'healthcare_social', label: 'Social Work, Foster Care & Community Services' },
+  { id: 'business_corporate', label: 'Corporate & Finance' },
+  { id: 'business_consulting', label: 'Consulting & Strategy' },
+  { id: 'business_operations', label: 'Operations, HR & Supply Chain' },
+  { id: 'education_schools', label: 'K–12 & Higher Education' },
+  { id: 'education_training', label: 'Training & Instructional Design' },
+  { id: 'creative_design', label: 'Design & Visual Arts' },
+  { id: 'creative_content', label: 'Content, Writing & Media Production' },
+  { id: 'legal_law', label: 'Legal & Compliance' },
+  { id: 'legal_public', label: 'Public Policy & Law Enforcement' },
+  { id: 'trades_construction', label: 'Construction & Skilled Trades' },
+  { id: 'trades_manufacturing', label: 'Manufacturing & Industrial' },
+  { id: 'hospitality_food', label: 'Food, Beverage & Culinary' },
+  { id: 'hospitality_wellness', label: 'Wellness, Personal Care & Events' },
+  { id: 'sales_b2b', label: 'B2B Sales & Account Management' },
+  { id: 'sales_retail', label: 'Retail & Customer-Facing' },
+  { id: 'agriculture_env', label: 'Agriculture, Conservation & Environmental' },
+  { id: 'other', label: 'Other or Mixed' }
 ];
+
+// Map industry id → career sector for relevance matching
+export const INDUSTRY_TO_SECTOR = {
+  tech_software: 'technology', tech_engineering: 'technology',
+  healthcare_clinical: 'healthcare', healthcare_allied: 'healthcare', healthcare_social: 'legal',
+  business_corporate: 'business', business_consulting: 'business', business_operations: 'business',
+  education_schools: 'education', education_training: 'education',
+  creative_design: 'creative', creative_content: 'creative',
+  legal_law: 'legal', legal_public: 'legal',
+  trades_construction: 'trades', trades_manufacturing: 'trades',
+  hospitality_food: 'hospitality', hospitality_wellness: 'hospitality',
+  sales_b2b: 'sales', sales_retail: 'sales',
+  agriculture_env: 'agriculture', other: 'other'
+};
 
 // Qualification order for comparison (higher index = higher level)
 export const QUALIFICATION_ORDER = ['none', 'certificate', 'associates', 'bachelors', 'masters', 'doctorate', 'md', 'jd'];
@@ -428,98 +454,8 @@ export const APTITUDE_QUESTIONS = [
   }
 ];
 
-// automationResistanceScore: 0-1 scale for AGI/ASI vulnerability (higher = more resistant)
-// sector: matches INDUSTRY_OPTIONS.id; educationMin: matches QUALIFICATION_LEVELS.id; archetypeFit: archetype names from ARCHETYPE_OPTIONS
-export const MARKET_PROJECTION_MATRIX = [
-  {
-    id: 'renewable_tech',
-    name: 'Renewable Energy Technician',
-    sector: 'trades',
-    educationMin: 'certificate',
-    archetypeFit: ['Delta Male', 'Sigma Male', 'Beta Male'],
-    growth: 'High',
-    automationResistance: 'High',
-    automationResistanceScore: 0.85,
-    aptitudes: { diagnostics: 0.8, field: 0.9, technical: 0.7, organization: 0.5 }
-  },
-  {
-    id: 'ev_infrastructure',
-    name: 'EV Infrastructure Specialist',
-    sector: 'technology',
-    educationMin: 'bachelors',
-    archetypeFit: ['Gamma Male', 'Delta Male', 'Sigma Male'],
-    growth: 'High',
-    automationResistance: 'Medium-High',
-    automationResistanceScore: 0.72,
-    aptitudes: { technical: 0.9, diagnostics: 0.7, field: 0.6, systems: 0.6 }
-  },
-  {
-    id: 'mechatronics',
-    name: 'Mechatronics / Smart Manufacturing',
-    sector: 'technology',
-    educationMin: 'bachelors',
-    archetypeFit: ['Gamma Male', 'Delta Male', 'Beta Male'],
-    growth: 'High',
-    automationResistance: 'Medium-High',
-    automationResistanceScore: 0.70,
-    aptitudes: { technical: 0.9, systems: 0.8, diagnostics: 0.7, organization: 0.6 }
-  },
-  {
-    id: 'healthcare_tech',
-    name: 'Healthcare / Biomedical Technician',
-    sector: 'healthcare',
-    educationMin: 'associates',
-    archetypeFit: ['Beta Male', 'Beta-Iota Male', 'Delta-Mu Male'],
-    growth: 'High',
-    automationResistance: 'High',
-    automationResistanceScore: 0.80,
-    aptitudes: { technical: 0.7, diagnostics: 0.7, eq: 0.7, organization: 0.6 }
-  },
-  {
-    id: 'automation_integrator',
-    name: 'Automation & Systems Integrator',
-    sector: 'technology',
-    educationMin: 'bachelors',
-    archetypeFit: ['Gamma Male', 'Sigma Male', 'Alpha Male'],
-    growth: 'High',
-    automationResistance: 'Medium',
-    automationResistanceScore: 0.55,
-    aptitudes: { systems: 0.9, technical: 0.8, diagnostics: 0.6, management: 0.5 }
-  },
-  {
-    id: 'field_ops_lead',
-    name: 'Field Operations Lead',
-    sector: 'trades',
-    educationMin: 'certificate',
-    archetypeFit: ['Alpha-Xi Male', 'Delta Male', 'Alpha Male'],
-    growth: 'Medium-High',
-    automationResistance: 'High',
-    automationResistanceScore: 0.82,
-    aptitudes: { field: 0.8, organization: 0.8, management: 0.7, eq: 0.5 }
-  },
-  {
-    id: 'r_and_d_technician',
-    name: 'Applied R&D Technician',
-    sector: 'technology',
-    educationMin: 'bachelors',
-    archetypeFit: ['Gamma Male', 'Sigma Male', 'Gamma-Nu Male'],
-    growth: 'Medium',
-    automationResistance: 'Medium',
-    automationResistanceScore: 0.58,
-    aptitudes: { scientific: 0.8, creativity: 0.7, technical: 0.7, systems: 0.5 }
-  },
-  {
-    id: 'productivity_engineer',
-    name: 'Productivity / Process Engineer',
-    sector: 'business',
-    educationMin: 'bachelors',
-    archetypeFit: ['Beta Male', 'Gamma Male', 'Sigma-Kappa Male'],
-    growth: 'Medium',
-    automationResistance: 'Medium',
-    automationResistanceScore: 0.55,
-    aptitudes: { organization: 0.9, systems: 0.8, diagnostics: 0.6, management: 0.5 }
-  }
-];
+// Full 180-career matrix loaded from outlier-aptitude-careers.js
+export { MARKET_PROJECTION_MATRIX } from './outlier-aptitude-careers.js';
 
 export const VALIDATION_PROMPTS = [
   'Which tasks do people already rely on you for, without being asked?',

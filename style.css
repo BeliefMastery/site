@@ -3065,6 +3065,30 @@ figure.headline-book a {
     margin-bottom: .5rem;
 }
 
+/* Career fit by sector (outlier-aptitude) */
+.career-fit-by-sector {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.career-fit-by-sector .sector-group {
+    border-left: 3px solid var(--border-subtle);
+    padding-left: 1rem;
+    margin-left: 0;
+}
+.career-fit-by-sector .sector-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--brand);
+    margin: 0 0 0.5rem 0;
+}
+.career-fit-by-sector .career-fit-list {
+    margin-top: 0.25rem;
+}
+.career-fit-by-sector .career-fit-list li {
+    margin-bottom: 0.4rem;
+}
+
 /* ========== FORM STYLES (Character Sheet & Forms) ========== */
 
 .form-group {

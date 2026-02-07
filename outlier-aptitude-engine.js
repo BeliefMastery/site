@@ -5,7 +5,7 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 import { exportJSON, downloadFile } from './shared/export-utils.js';
 
 let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATION_PROMPTS, APTITUDE_ACUITY_DOMAINS;
-let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS, QUALIFICATION_ORDER;
+let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS, INDUSTRY_TO_SECTOR, QUALIFICATION_ORDER;
 
 export class OutlierAptitudeEngine {
   constructor() {
@@ -64,6 +64,7 @@ export class OutlierAptitudeEngine {
     QUALIFICATION_LEVELS = module.QUALIFICATION_LEVELS || [];
     AGE_RANGES = module.AGE_RANGES || [];
     INDUSTRY_OPTIONS = module.INDUSTRY_OPTIONS || [];
+    INDUSTRY_TO_SECTOR = module.INDUSTRY_TO_SECTOR || {};
     QUALIFICATION_ORDER = module.QUALIFICATION_ORDER || [];
   }
 
@@ -79,6 +80,12 @@ export class OutlierAptitudeEngine {
 
     const resetBtn = document.getElementById('clearCacheBtn');
     if (resetBtn) resetBtn.addEventListener('click', () => this.resetAssessment());
+
+    const abandonBtn = document.getElementById('abandonAssessment');
+    if (abandonBtn) abandonBtn.addEventListener('click', () => this.abandonAssessment());
+
+    const abandonResultsBtn = document.getElementById('abandonAssessmentResults');
+    if (abandonResultsBtn) abandonResultsBtn.addEventListener('click', () => this.abandonAssessment());
 
     const prevBtn = document.getElementById('prevQuestion');
     const nextBtn = document.getElementById('nextQuestion');
@@ -445,14 +452,17 @@ export class OutlierAptitudeEngine {
     const early = this.earlyInputs || {};
     const qualOrder = QUALIFICATION_ORDER || [];
     const userQualIdx = qualOrder.indexOf(early.qualification);
-    const userIndustries = new Set(early.industries || []);
+    const userIndustrySectors = new Set((early.industries || []).map(id => INDUSTRY_TO_SECTOR[id] || id));
     const userArchetypes = new Set((early.archetypes || []).map(a => String(a).trim()));
 
     return MARKET_PROJECTION_MATRIX.map(role => {
-      let fit = Object.entries(role.aptitudes).reduce((sum, [dimId, weight]) => {
-        return sum + (dimensionScores[dimId] || 0) * weight;
-      }, 0);
-      const baseFit = fit;
+      let rawFit = 0;
+      let weightSum = 0;
+      Object.entries(role.aptitudes || {}).forEach(([dimId, weight]) => {
+        rawFit += (dimensionScores[dimId] || 0) * weight;
+        weightSum += weight;
+      });
+      let fit = weightSum > 0 ? rawFit / weightSum : 0;
 
       if (role.educationMin && early.qualification) {
         const reqIdx = qualOrder.indexOf(role.educationMin);
@@ -465,11 +475,27 @@ export class OutlierAptitudeEngine {
         const matches = role.archetypeFit.filter(a => userArchetypes.has(a)).length;
         if (matches) fit *= (1 + matches * 0.08);
       }
-      if (role.sector && userIndustries.has(role.sector)) {
+      if (role.sector && userIndustrySectors.has(role.sector)) {
         fit *= 1.1;
       }
-      return { ...role, fitScore: Math.min(1, fit), baseFit };
-    }).sort((a, b) => b.fitScore - a.fitScore).slice(0, 5);
+      return { ...role, fitScore: Math.min(1, fit) };
+    }).sort((a, b) => b.fitScore - a.fitScore);
+  }
+
+  formatSectorLabel(sector) {
+    const labels = { technology: 'Technology & Engineering', healthcare: 'Healthcare & Life Sciences', business: 'Business & Finance', education: 'Education & Research', creative: 'Creative & Media', legal: 'Legal, Public Service & Social Work', trades: 'Trades & Technical', hospitality: 'Hospitality & Personal Services', sales: 'Sales & Customer Relations', agriculture: 'Agriculture & Environmental', other: 'Other' };
+    return labels[sector] || sector;
+  }
+
+  groupProjectionBySector(projection) {
+    const bySector = {};
+    (projection || []).forEach(role => {
+      const s = role.sector || 'other';
+      if (!bySector[s]) bySector[s] = [];
+      bySector[s].push(role);
+    });
+    const order = ['technology', 'healthcare', 'legal', 'business', 'education', 'creative', 'trades', 'hospitality', 'sales', 'agriculture', 'other'];
+    return order.filter(s => bySector[s]?.length).map(s => ({ sector: s, careers: bySector[s] }));
   }
 
   completeAssessment() {
@@ -496,7 +522,7 @@ export class OutlierAptitudeEngine {
   }
 
   getVulnerabilityWarnings() {
-    const projection = this.analysisData?.projection || [];
+    const projection = (this.analysisData?.projection || []).slice(0, 25);
     const high = projection.filter(r => (r.automationResistanceScore || 0) < 0.5);
     const medium = projection.filter(r => {
       const s = r.automationResistanceScore || 0;
@@ -514,6 +540,18 @@ export class OutlierAptitudeEngine {
       lines.push(`<p><strong>Lower vulnerability:</strong> ${low.map(r => SecurityUtils.sanitizeHTML(r.name)).join(', ')} — strong interpersonal, creative, or physical elements; resistant to near-term automation.</p>`);
     }
     return lines.length ? lines.join('') : '<p>No specific vulnerability warnings for your top matches.</p>';
+  }
+
+  formatCareerRelevance(role) {
+    const growthPhrase = role.growth ? `${role.growth} growth industry` : '';
+    const autoPhrase = role.automationResistance ? `${role.automationResistance} automation resistance` : '';
+    const fit = role.fitScore ?? 0;
+    let fitPhrase = 'Worth exploring';
+    if (fit >= 0.7) fitPhrase = 'Strong fit for you';
+    else if (fit >= 0.5) fitPhrase = 'Moderate fit for you';
+    else if (fit >= 0.35) fitPhrase = 'Potential fit';
+    const parts = [growthPhrase, autoPhrase].filter(Boolean);
+    return `${parts.join('. ')}. ${fitPhrase}.`;
   }
 
   getRecommendedCourseOfAction() {
@@ -536,6 +574,35 @@ export class OutlierAptitudeEngine {
     const actions = this.getRecommendedCourseOfAction();
     resultsContainer.innerHTML = `
       <div class="panel panel-outline-accent">
+        <h3 class="panel-title">Market Projection Matrix — Career Guidance &amp; Fit</h3>
+        <p class="form-help">Careers below show your relevance across sectors (technical, foster care, trades, etc.). Fit reflects aptitude, archetype, qualification, and industry alignment.</p>
+        <div class="career-fit-by-sector">
+          ${this.groupProjectionBySector(this.analysisData.projection).map(({ sector, careers }) => `
+            <div class="sector-group">
+              <h4 class="sector-name">${SecurityUtils.sanitizeHTML(this.formatSectorLabel(sector))}</h4>
+              <ul class="feature-list career-fit-list">
+                ${careers.map(role => `
+                  <li><strong>${SecurityUtils.sanitizeHTML(role.name)}</strong>: ${SecurityUtils.sanitizeHTML(this.formatCareerRelevance(role))}</li>
+                `).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="panel panel-outline" style="border-left: 3px solid var(--color-warning, #c9a227);">
+        <h3 class="panel-title">Industry &amp; Skillset Vulnerability (AGI/ASI)</h3>
+        <div class="vulnerability-content">${vulnHtml}</div>
+      </div>
+      <div class="panel panel-outline-accent">
+        <h3 class="panel-title">Recommended Course of Action</h3>
+        <ul class="feature-list action-list">
+          <li><strong>Immediate (0–6 months):</strong> ${SecurityUtils.sanitizeHTML(actions.immediate)}</li>
+          <li><strong>Short-term (6–18 months):</strong> ${SecurityUtils.sanitizeHTML(actions.shortTerm)}</li>
+          <li><strong>Medium-term (18–36 months):</strong> ${SecurityUtils.sanitizeHTML(actions.mediumTerm)}</li>
+          <li><strong>Ongoing:</strong> ${SecurityUtils.sanitizeHTML(actions.ongoing)}</li>
+        </ul>
+      </div>
+      <div class="panel panel-outline">
         <h3 class="panel-title">Top Aptitude Signals</h3>
         <ul class="feature-list">
           ${this.analysisData.topDimensions.map(dim => `
@@ -552,27 +619,6 @@ export class OutlierAptitudeEngine {
           ${this.analysisData.acuityProfile?.additional?.length ? `<li><strong>Additional:</strong> ${this.analysisData.acuityProfile.additional.map(id => SecurityUtils.sanitizeHTML(this.getAcuityLabel(id))).join(', ')}</li>` : ''}
         </ul>
       </div>
-      <div class="panel panel-outline">
-        <h3 class="panel-title">Market Projection Matrix</h3>
-        <ul class="feature-list">
-          ${this.analysisData.projection.map(role => `
-            <li><strong>${SecurityUtils.sanitizeHTML(role.name)}</strong> — Fit ${(role.fitScore * 100).toFixed(0)}% | Growth: ${role.growth} | Automation Resistance: ${role.automationResistance}</li>
-          `).join('')}
-        </ul>
-      </div>
-      <div class="panel panel-outline" style="border-left: 3px solid var(--color-warning, #c9a227);">
-        <h3 class="panel-title">Industry &amp; Skillset Vulnerability (AGI/ASI)</h3>
-        <div class="vulnerability-content">${vulnHtml}</div>
-      </div>
-      <div class="panel panel-outline-accent">
-        <h3 class="panel-title">Recommended Course of Action</h3>
-        <ul class="feature-list action-list">
-          <li><strong>Immediate (0–6 months):</strong> ${SecurityUtils.sanitizeHTML(actions.immediate)}</li>
-          <li><strong>Short-term (6–18 months):</strong> ${SecurityUtils.sanitizeHTML(actions.shortTerm)}</li>
-          <li><strong>Medium-term (18–36 months):</strong> ${SecurityUtils.sanitizeHTML(actions.mediumTerm)}</li>
-          <li><strong>Ongoing:</strong> ${SecurityUtils.sanitizeHTML(actions.ongoing)}</li>
-        </ul>
-      </div>
       <div class="panel panel-outline-accent">
         <h3 class="panel-title">Validation Prompts</h3>
         <ul class="feature-list">
@@ -587,7 +633,7 @@ export class OutlierAptitudeEngine {
       archetypes: (ARCHETYPE_OPTIONS || []).slice(0, 2),
       ageRange: '25-34',
       qualification: 'bachelors',
-      industries: ['technology', 'business']
+      industries: ['tech_software', 'business_corporate']
     };
     this.analysisData.earlyInputs = this.earlyInputs;
     APTITUDE_QUESTIONS.forEach(question => {
@@ -655,6 +701,12 @@ export class OutlierAptitudeEngine {
       }
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
+    }
+  }
+
+  abandonAssessment() {
+    if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      this.resetAssessment();
     }
   }
 

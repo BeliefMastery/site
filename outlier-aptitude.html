@@ -27,6 +27,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <link rel="modulepreload" href="./outlier-aptitude-engine.js">
+  <link rel="modulepreload" href="./outlier-aptitude-careers.js">
   <link rel="modulepreload" href="./shared/data-loader.js">
   <link rel="modulepreload" href="./shared/debug-reporter.js">
   <link rel="modulepreload" href="./shared/utils.js">
@@ -138,6 +139,9 @@
           <button class="btn btn-secondary" id="prevQuestion">Previous</button>
           <button class="btn btn-primary" id="nextQuestion">Next</button>
         </div>
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">❌ Abandon / Restart</button>
+        </div>
       </section>
 
       <section class="results-section" id="resultsSection">
@@ -146,6 +150,9 @@
         <div class="action-buttons">
           <button class="btn btn-secondary" id="exportJSON">Export JSON</button>
           <button class="btn btn-secondary" id="exportCSV">Export CSV</button>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="abandonAssessmentResults">❌ Abandon / Restart</button>
         </div>
       </section>
     </div>
