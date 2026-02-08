@@ -1436,14 +1436,14 @@ export class NeedsDependencyEngine {
       chainParts.push(SecurityUtils.sanitizeHTML(surfaceNeed));
     }
     chainParts.push(...deeperNeeds);
-    const chainText = chainParts.filter(Boolean).join(' → ');
+    const chainText = chainParts.filter(Boolean).join(' ← ');
 
     return `
       <div class="need-chain-section">
         <h2>Need Chain Analysis</h2>
         <div class="need-chain-visualization">
           <p>This chain traces why the loop formed: the surface need shows how the pattern tries to cope, while the deeper needs reveal the underlying reason the loop exists.</p>
-          ${chainText ? `<p><strong>Need Chain (Loop → Root):</strong> ${chainText}</p>` : ''}
+          ${chainText ? `<p><strong>Need Chain (Loop ← Root):</strong> ${chainText}</p>` : ''}
           <p><strong>Root Need Focus:</strong> ${SecurityUtils.sanitizeHTML(rootNeed)}</p>
           ${rootCandidates.length > 0 ? `
             <p><strong>Root Need Candidates:</strong> ${rootCandidates.map(n => SecurityUtils.sanitizeHTML(n)).join(', ')}</p>
