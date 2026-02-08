@@ -13,6 +13,7 @@ let NEEDS_VOCABULARY, VICES_VOCABULARY;
 let DEPENDENCY_LOOPS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
 let PATTERN_NEEDS_MAPPING, NEED_COMPULSION_AVERSION_MAPPING, VICE_NEEDS_MAPPING;
 let PATTERNS_COMPENDIUM, NEEDS_GLOSSARY, VICES_GLOSSARY;
+let getLoopActionsForNeed, getRootActionsForNeed;
 
 /**
  * Needs Dependency Engine - Identifies dependency loops through 4-phase assessment
@@ -157,6 +158,13 @@ export class NeedsDependencyEngine {
         'Vices Glossary'
       );
       VICES_GLOSSARY = vicesGlossaryModule.VICES_GLOSSARY;
+
+      const needActionsModule = await loadDataModule(
+        './needs-dependency-data/need-actions.js',
+        'Need Actions'
+      );
+      getLoopActionsForNeed = needActionsModule.getLoopActionsForNeed;
+      getRootActionsForNeed = needActionsModule.getRootActionsForNeed;
 
       this.debugReporter.recordSection('Phase 1', PHASE_1_QUESTIONS?.length || 0);
     } catch (error) {
@@ -1455,30 +1463,38 @@ export class NeedsDependencyEngine {
   }
 
   renderRecommendations() {
-    if (!this.analysisData.recommendations || this.analysisData.recommendations.length === 0) return '';
-    
-    const highPriority = this.analysisData.recommendations.filter(r => r.priority === 'high');
-    const mediumPriority = this.analysisData.recommendations.filter(r => r.priority === 'medium');
-    
+    const uniqueChain = this.getUniqueNeedChain();
+    const loopNeed = uniqueChain[0]?.need || this.surfaceNeed || this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) || 'the surface need';
+    const rootNeed = uniqueChain.length > 0 ? uniqueChain[uniqueChain.length - 1].need : loopNeed;
+    const loopActions = (typeof getLoopActionsForNeed === 'function' ? getLoopActionsForNeed(loopNeed) : []) || [];
+    const rootActions = (typeof getRootActionsForNeed === 'function' ? getRootActionsForNeed(rootNeed) : []) || [];
+
     return `
-      <div class="recommendations-section">
+      <div class="recommendations-section action-strategies-section">
         <h2>Action Strategies</h2>
-        ${highPriority.length > 0 ? `
-          <div class="priority-group panel-accent-left high">
-            <h3>High Priority</h3>
-            <ul>
-              ${highPriority.map(rec => `<li><strong>${rec.title}:</strong> ${rec.description}</li>`).join('')}
+        <p class="form-help">Two complementary approaches: address the loop need to restore immanent authorship and reduce draining dependencies, compulsions, or aversions; and address the deepest root need to resolve the cascade at its source.</p>
+
+        <div class="action-strategy strategy-loop">
+          <h3>1. Addressing the loop need: ${SecurityUtils.sanitizeHTML(loopNeed)}</h3>
+          <p><strong>Goal:</strong> Restore immanent authorship and resolve draining external dependencies, compulsions, or aversions.</p>
+          <p>Rather than continuing to react when the loop triggers, these actions help you reclaim choice and reduce the grip of the pattern.</p>
+          ${loopActions.length > 0 ? `
+            <ul class="action-list">
+              ${loopActions.slice(0, 4).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}
             </ul>
-          </div>
-        ` : ''}
-        ${mediumPriority.length > 0 ? `
-          <div class="priority-group panel-brand-left medium">
-            <h3>Medium Priority</h3>
-            <ul>
-              ${mediumPriority.map(rec => `<li><strong>${rec.title}:</strong> ${rec.description}</li>`).join('')}
+          ` : ''}
+        </div>
+
+        <div class="action-strategy strategy-root">
+          <h3>2. Addressing the deepest root need: ${SecurityUtils.sanitizeHTML(rootNeed)}</h3>
+          <p><strong>Goal:</strong> Prevent the cascading needs that cause the loop to exist in the first place.</p>
+          <p>Rather than responding only where the problem occurs (treating the symptom), consciously adapt your lifestyle to fulfil the root need independently. This resolves the entire need cascade and ends the loop—or at least creates the freedom to develop resilience and capacity to meet the dependency need unto yourself.</p>
+          ${rootActions.length > 0 ? `
+            <ul class="action-list">
+              ${rootActions.slice(0, 4).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}
             </ul>
-          </div>
-        ` : ''}
+          ` : ''}
+        </div>
       </div>
     `;
   }

@@ -2604,6 +2604,35 @@ figure.headline-book a {
     margin-left: 1.5rem;
 }
 
+/* Action Strategies (needs-dependency) */
+.action-strategies-section .action-strategy {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--border-subtle);
+}
+.action-strategies-section .strategy-loop {
+    border-left-color: var(--accent);
+    background: var(--accent-panel);
+}
+.action-strategies-section .strategy-root {
+    border-left-color: var(--brand);
+    background: var(--brand-panel);
+}
+.action-strategies-section .action-strategy h3 {
+    margin-top: 0;
+    color: var(--brand);
+    font-size: 1.1rem;
+}
+.action-strategies-section .action-strategy p {
+    margin: 0.5rem 0;
+    color: var(--muted);
+}
+.action-strategies-section .action-list {
+    margin: 0.75rem 0 0 1.25rem;
+    padding-left: 1rem;
+}
+
 .closure-content ul {
     margin-left: 1.5rem;
 }
@@ -2969,6 +2998,37 @@ figure.headline-book a {
 .remediation-item {
     border-left-color: var(--accent);
     background: var(--accent-panel);
+}
+
+/* Channel Course of Action & Remediative Gestalt */
+.channel-course-of-action,
+.channel-remediative-gestalt {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+}
+.channel-course-of-action h4,
+.channel-remediative-gestalt h4 {
+    margin-top: 0;
+    color: var(--brand);
+}
+.remediation-tier {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--border-subtle);
+}
+.remediation-tier-light { border-left-color: var(--accent); }
+.remediation-tier-medium { border-left-color: var(--color-warning, #c9a227); }
+.remediation-tier-heavy { border-left-color: var(--muted); }
+.remediation-tier h5 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    color: var(--brand);
+}
+.remediation-tier .tier-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0 0 0.5rem 0;
 }
 
 /* Spectrum Bar (Coaching Results) */
