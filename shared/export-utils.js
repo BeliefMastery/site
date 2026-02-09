@@ -83,6 +83,16 @@ function buildExecutiveHighlights(data) {
     highlights.push(`Primary pattern: ${data.primaryPattern}`);
   }
 
+  if (data.primaryLoop) {
+    highlights.push(`Primary dependency loop: ${data.primaryLoop}`);
+    if (data.needChainDisplay) {
+      highlights.push(`Need chain (Loop ← Root): ${data.needChainDisplay}`);
+    }
+    if (data.firstLinkInChain) {
+      highlights.push(`First link in chain (immanent focus): ${data.firstLinkInChain}`);
+    }
+  }
+
   return highlights;
 }
 
@@ -648,104 +658,78 @@ function generateTemperamentExport(data) {
   return csv;
 }
 
+function formatAnswerForExport(answer) {
+  if (answer == null || answer === '') return 'Not answered';
+  if (typeof answer === 'object') {
+    if (answer.mapsTo && answer.mapsTo.need) return answer.mapsTo.need;
+    if (answer.text) return answer.text;
+    if (Array.isArray(answer)) return answer.map(a => formatAnswerForExport(a)).join('; ');
+    return JSON.stringify(answer);
+  }
+  return String(answer);
+}
+
 function generateNeedsDependencyExport(data) {
-  let csv = '=== NEEDS DEPENDENCY LOOP DETERMINATOR DATA ===\n';
+  let csv = '=== NEEDS DEPENDENCY LOOP DETERMINATOR DATA (4-Phase Architecture) ===\n';
   
-  // Include ALL questions with their answers
+  // Include ALL questions with their answers (4-phase structure)
   if (data.questionSequence && data.questionSequence.length > 0) {
     csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
-    csv += 'Question ID,Question Text,Answer (0-10),Stage,Category,Maps to Need,Maps to Vice\n';
+    csv += 'Question ID,Question Text,Answer,Phase,Loop\n';
     data.questionSequence.forEach(q => {
-      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
-      const questionText = q.question || q.questionText || '';
-      const mapsToNeed = (q.mapsToNeed || []).join('; ');
-      const mapsToVice = (q.mapsToVice || []).join('; ');
-      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.stage || ''}","${q.category || ''}","${mapsToNeed.replace(/"/g, '""')}","${mapsToVice.replace(/"/g, '""')}"\n`;
+      const rawAnswer = q.answer !== undefined ? q.answer : (data.allAnswers && data.allAnswers[q.id]);
+      const answer = formatAnswerForExport(rawAnswer);
+      const questionText = (q.question || q.questionText || '').replace(/"/g, '""');
+      csv += `"${q.id}","${questionText}","${String(answer).replace(/"/g, '""')}",${q.phase || ''},"${(q.loop || '').replace(/"/g, '""')}"\n`;
     });
   }
   
-  // Include any additional answers not in questionSequence (legacy support)
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    const questionIds = new Set();
-    if (data.questionSequence) {
-      data.questionSequence.forEach(q => questionIds.add(q.id));
-    }
-    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
-    if (missingAnswers.length > 0) {
-      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
-      csv += 'Question ID,Answer (0-10)\n';
-      missingAnswers.forEach(([id, answer]) => {
-        csv += `"${id}",${answer}\n`;
-      });
-    }
-  }
-  
-  // Primary Dependency Loop
+  // Primary Dependency Loop (4-phase: primaryLoop is string, loopScores has details)
   if (data.primaryLoop) {
     csv += '\n=== PRIMARY DEPENDENCY LOOP ===\n';
-    csv += `Loop Type: ${data.primaryLoop.type || 'Not specified'}\n`;
-    csv += `Loop Strength: ${data.primaryLoop.strength.toFixed(1)}/10\n`;
-    if (data.primaryLoop.surfaceExperience) {
-      csv += `Surface Experience: "${data.primaryLoop.surfaceExperience.replace(/"/g, '""')}"\n`;
-      csv += `Surface Score: ${data.primaryLoop.surfaceScore.toFixed(1)}\n`;
-    }
-    if (data.primaryLoop.vice) {
-      csv += `Vice: ${data.primaryLoop.vice}\n`;
-      csv += `Vice Score: ${data.primaryLoop.viceScore.toFixed(1)}\n`;
-    }
-    if (data.primaryLoop.needsChain && data.primaryLoop.needsChain.length > 0) {
-      csv += '\nNeeds Chain:\n';
-      csv += 'Position,Need,Score,Category,Depth\n';
-      data.primaryLoop.needsChain.forEach((need, index) => {
-        csv += `${index + 1},"${need.need.replace(/"/g, '""')}",${need.score.toFixed(1)},"${need.category}","${need.depth || 'surface'}"\n`;
-      });
-    }
-    if (data.primaryLoop.vices && data.primaryLoop.vices.length > 0) {
-      csv += '\nRelated Vices:\n';
-      csv += 'Vice,Score,Category\n';
-      data.primaryLoop.vices.forEach(vice => {
-        csv += `"${vice.vice.replace(/"/g, '""')}",${vice.score.toFixed(1)},"${vice.category}"\n`;
-      });
-    }
-    if (data.primaryLoop.dependencyPatterns && data.primaryLoop.dependencyPatterns.length > 0) {
-      csv += '\nDependency Patterns:\n';
-      csv += 'Pattern,Score,Type\n';
-      data.primaryLoop.dependencyPatterns.forEach(pattern => {
-        csv += `"${pattern.pattern.replace(/"/g, '""')}",${pattern.score.toFixed(1)},"${pattern.type}"\n`;
-      });
-    }
+    const scores = data.loopScores && data.loopScores[data.primaryLoop];
+    const totalScore = scores && typeof scores.totalScore === 'number' ? scores.totalScore.toFixed(1) : 'N/A';
+    csv += `Loop Type: ${data.primaryLoop}\n`;
+    csv += `Confidence: ${totalScore}/10\n`;
   }
   
-  // All Identified Loops
-  if (data.identifiedLoops && data.identifiedLoops.length > 0) {
-    csv += '\n=== ALL IDENTIFIED LOOPS ===\n';
-    csv += 'Loop ID,Type,Strength,Surface Experience,Vice,Needs Count\n';
-    data.identifiedLoops.forEach(loop => {
-      csv += `"${loop.id}","${loop.type}",${loop.strength.toFixed(1)},"${(loop.surfaceExperience || '').replace(/"/g, '""')}","${loop.vice || ''}",${loop.needsChain ? loop.needsChain.length : 0}\n`;
+  // Secondary Loops
+  if (data.secondaryLoops && data.secondaryLoops.length > 0) {
+    csv += '\n=== SECONDARY LOOPS ===\n';
+    csv += data.secondaryLoops.join(', ') + '\n';
+  }
+  
+  // Need Chain (Loop ← Root)
+  const needChain = data.needChain || data.phase3Results?.needChain || [];
+  if (needChain.length > 0) {
+    csv += '\n=== NEED CHAIN (Loop ← Root) ===\n';
+    if (data.needChainDisplay) {
+      csv += `Chain: ${data.needChainDisplay}\n`;
+    }
+    csv += 'Position,Need,Deeper Options\n';
+    needChain.forEach((entry, index) => {
+      const need = (entry.need || entry).toString().replace(/"/g, '""');
+      const deeper = Array.isArray(entry.deeper) ? entry.deeper.join('; ') : '';
+      csv += `${index + 1},"${need}","${deeper.replace(/"/g, '""')}"\n`;
     });
   }
   
-  // Top Unmet Needs
-  if (data.needs && Object.keys(data.needs).length > 0) {
-    csv += '\n=== TOP UNMET NEEDS ===\n';
-    csv += 'Need,Average Score,Category,Question Count,Total Score\n';
-    const topNeeds = Object.entries(data.needs)
-      .map(([key, needData]) => ({ key, ...needData }))
-      .sort((a, b) => b.averageScore - a.averageScore);
-    topNeeds.forEach(need => {
-      csv += `"${need.name.replace(/"/g, '""')}",${need.averageScore.toFixed(1)},${need.category || 'Unknown'},${need.questionCount},${need.score.toFixed(1)}\n`;
-    });
+  // First Link in Chain (action-strategy recommendation)
+  if (data.firstLinkInChain) {
+    csv += '\n=== FIRST LINK IN CHAIN (Immanent Focus) ===\n';
+    csv += `Seek and achieve: ${data.firstLinkInChain}\n`;
   }
   
-  // Top Vice Expressions
-  if (data.vices && Object.keys(data.vices).length > 0) {
-    csv += '\n=== TOP VICE EXPRESSIONS ===\n';
-    csv += 'Vice,Average Score,Category,Question Count,Total Score\n';
-    const topVices = Object.entries(data.vices)
-      .map(([key, viceData]) => ({ key, ...viceData }))
-      .sort((a, b) => b.averageScore - a.averageScore);
-    topVices.forEach(vice => {
-      csv += `"${vice.name.replace(/"/g, '""')}",${vice.averageScore.toFixed(1)},${vice.category || 'Unknown'},${vice.questionCount},${vice.score.toFixed(1)}\n`;
+  // Loop Scores (all loops)
+  if (data.loopScores && typeof data.loopScores === 'object') {
+    csv += '\n=== LOOP SCORES ===\n';
+    csv += 'Loop,Total Score,Compulsion,Aversion,Need Chain Depth\n';
+    Object.entries(data.loopScores).forEach(([loop, s]) => {
+      const total = s && typeof s.totalScore === 'number' ? s.totalScore.toFixed(1) : '';
+      const comp = s && typeof s.compulsionScore === 'number' ? s.compulsionScore.toFixed(1) : '';
+      const av = s && typeof s.aversionScore === 'number' ? s.aversionScore.toFixed(1) : '';
+      const depth = s && typeof s.needChainDepth === 'number' ? s.needChainDepth : '';
+      csv += `"${loop}",${total},${comp},${av},${depth}\n`;
     });
   }
   
@@ -754,7 +738,9 @@ function generateNeedsDependencyExport(data) {
     csv += '\n=== RECOMMENDATIONS ===\n';
     csv += 'Priority,Title,Description\n';
     data.recommendations.forEach(rec => {
-      csv += `${rec.priority},"${rec.title.replace(/"/g, '""')}","${rec.description.replace(/"/g, '""')}"\n`;
+      const title = (rec.title || '').replace(/"/g, '""');
+      const desc = (rec.description || '').replace(/"/g, '""');
+      csv += `${rec.priority || ''},"${title}","${desc}"\n`;
     });
   }
   
