@@ -1234,6 +1234,50 @@ export class ChannelsEngine {
       
       html += '</div>';
     }
+
+    // Recommended Course of Action
+    const actions = this.getRecommendedCourseOfAction();
+    html += '<div class="panel panel-outline-accent channel-course-of-action">';
+    html += '<h4>Recommended Course of Action</h4>';
+    html += '<ul class="feature-list action-list">';
+    html += `<li><strong>Immediate (1–2 weeks):</strong> ${SecurityUtils.sanitizeHTML(actions.immediate)}</li>`;
+    html += `<li><strong>Short-term (1–3 months):</strong> ${SecurityUtils.sanitizeHTML(actions.shortTerm)}</li>`;
+    html += `<li><strong>Medium-term (3–6 months):</strong> ${SecurityUtils.sanitizeHTML(actions.mediumTerm)}</li>`;
+    html += `<li><strong>Ongoing:</strong> ${SecurityUtils.sanitizeHTML(actions.ongoing)}</li>`;
+    html += '</ul></div>';
+
+    // Remediative Gestalt — Multi-tier (light, medium, heavy)
+    const tiers = this.getRemediativeGestaltTiers();
+    if (tiers.light.length || tiers.medium.length || tiers.heavy.length) {
+      html += '<div class="panel panel-outline channel-remediative-gestalt">';
+      html += '<h4>Remediative Gestalt — Actions by Difficulty</h4>';
+      html += '<p class="form-help">Restore flow with actions matched to your capacity. Start with light, build toward medium and heavy as readiness allows.</p>';
+      if (tiers.light.length) {
+        html += '<div class="remediation-tier remediation-tier-light">';
+        html += '<h5>Light difficulty</h5>';
+        html += '<p class="tier-desc">Low-commitment, daily micro-practices you can start immediately.</p>';
+        html += '<ul class="feature-list">';
+        tiers.light.forEach(item => { html += `<li>${SecurityUtils.sanitizeHTML(item)}</li>`; });
+        html += '</ul></div>';
+      }
+      if (tiers.medium.length) {
+        html += '<div class="remediation-tier remediation-tier-medium">';
+        html += '<h5>Medium difficulty</h5>';
+        html += '<p class="tier-desc">Structured practice requiring regular commitment and integration.</p>';
+        html += '<ul class="feature-list">';
+        tiers.medium.forEach(item => { html += `<li>${SecurityUtils.sanitizeHTML(item)}</li>`; });
+        html += '</ul></div>';
+      }
+      if (tiers.heavy.length) {
+        html += '<div class="remediation-tier remediation-tier-heavy">';
+        html += '<h5>Heavy difficulty</h5>';
+        html += '<p class="tier-desc">Deep, intensive work; consider support (therapy, guide, retreat) when ready.</p>';
+        html += '<ul class="feature-list">';
+        tiers.heavy.forEach(item => { html += `<li>${SecurityUtils.sanitizeHTML(item)}</li>`; });
+        html += '</ul></div>';
+      }
+      html += '</div>';
+    }
     
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, html);
@@ -1261,6 +1305,59 @@ export class ChannelsEngine {
         : [];
 
     return primaryList.filter(Boolean).slice(0, 5);
+  }
+
+  getRemediationForChannel(channelId) {
+    let remediation = REMEDIATION_STRATEGIES[channelId];
+    if (!remediation && channelId) {
+      const [from, to] = channelId.split('_');
+      if (from && to) remediation = REMEDIATION_STRATEGIES[`${to}_${from}`];
+    }
+    return remediation;
+  }
+
+  getRecommendedCourseOfAction() {
+    const channels = this.analysisData.finalChannels || [];
+    const channelNames = channels.slice(0, 2).map(c => c.channel?.name || '').filter(Boolean);
+    const primary = channelNames[0] || 'your priority channel';
+    const secondary = channelNames[1] || 'other identified channels';
+
+    return {
+      immediate: channels.length ? `Start with light-difficulty actions for ${primary}: integrate one small practice into your daily routine within the next 1–2 weeks.` : 'Once you complete a full assessment and identify channel blockages, start with light-difficulty actions: integrate one small practice into your daily routine within 1–2 weeks.',
+      shortTerm: channels.length ? `Build consistency with light practices, then introduce medium-difficulty remediative actions for ${primary} over the next 1–3 months.` : 'Build consistency with light practices, then introduce medium-difficulty remediative actions over 1–3 months.',
+      mediumTerm: channels.length ? `Expand remediation to ${secondary}. Consider structured support (e.g. breathwork, somatic work, or creative practice) for deeper integration.` : 'Consider structured support (breathwork, somatic work, creative practice) for deeper integration.',
+      ongoing: `Maintain flow restoration as an ongoing practice. Reassess channel blockages periodically; adjust remediation tier (light/medium/heavy) based on progress and capacity.`
+    };
+  }
+
+  getRemediativeGestaltTiers() {
+    const channels = this.analysisData.finalChannels || [];
+    const light = new Set();
+    const medium = new Set();
+    const heavy = new Set();
+
+    channels.forEach(channelData => {
+      const remediation = this.getRemediationForChannel(channelData.id);
+      if (!remediation) return;
+      const tiers = remediation.difficultyTiers;
+      if (tiers) {
+        (tiers.light || []).forEach(item => light.add(item));
+        (tiers.medium || []).forEach(item => medium.add(item));
+        (tiers.heavy || []).forEach(item => heavy.add(item));
+      } else {
+        const fallback = remediation.strategies || remediation.practices || [];
+        const arr = Array.isArray(fallback) ? fallback : [];
+        arr.slice(0, 2).forEach(item => light.add(item));
+        arr.slice(2, 4).forEach(item => medium.add(item));
+        arr.slice(4).forEach(item => heavy.add(item));
+      }
+    });
+
+    return {
+      light: Array.from(light).filter(Boolean),
+      medium: Array.from(medium).filter(Boolean),
+      heavy: Array.from(heavy).filter(Boolean)
+    };
   }
 
   exportAnalysis(format = 'json') {

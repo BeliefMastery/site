@@ -2628,9 +2628,20 @@ figure.headline-book a {
     margin: 0.5rem 0;
     color: var(--muted);
 }
-.action-strategies-section .action-list {
+.action-strategies-section .action-list,
+.action-strategies-section .approach-list {
     margin: 0.75rem 0 0 1.25rem;
     padding-left: 1rem;
+}
+.action-strategies-section .approach-list li {
+    margin-bottom: 0.75rem;
+}
+.action-strategies-section .cascade-explanation {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
 }
 
 .closure-content ul {

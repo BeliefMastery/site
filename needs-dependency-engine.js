@@ -1462,23 +1462,62 @@ export class NeedsDependencyEngine {
     `;
   }
 
+  titleCaseNeed(needStr) {
+    return String(needStr || '').replace(/\b\w/g, c => c.toUpperCase()).trim() || '—';
+  }
+
+  buildCascadeExplanation(chainFromRootToLoop) {
+    if (!chainFromRootToLoop || chainFromRootToLoop.length < 2) return '';
+    const parts = chainFromRootToLoop.map(n => this.titleCaseNeed(n));
+    const root = parts[0];
+    const loop = parts[parts.length - 1];
+    if (parts.length === 2) {
+      return `The unmet need for ${root} may be an internal or external condition—which in these immediate conditions manifests as an unmet need for ${loop}.`;
+    }
+    const mid = parts.slice(1, -1);
+    let s = `The unmet need for ${root} may be an internal or external condition—has a negative impact upon ${mid[0]}, which becomes a compulsion or aversion`;
+    for (let i = 1; i < mid.length - 1; i++) {
+      s += `—which causes a compulsion towards, or inability to achieve, ${mid[i]}`;
+    }
+    if (mid.length > 1) {
+      s += `—which leads to an obsession with or loss of ${mid[mid.length - 1]}`;
+    }
+    s += `—which in these immediate conditions manifests as an unmet need for ${loop}.`;
+    return s;
+  }
+
   renderRecommendations() {
     const uniqueChain = this.getUniqueNeedChain();
-    const loopNeed = uniqueChain[0]?.need || this.surfaceNeed || this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) || 'the surface need';
+    const loopNeed = this.surfaceNeed || this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) || uniqueChain[0]?.need || 'the surface need';
+    const firstStageOfChain = uniqueChain.length > 1 ? uniqueChain[1].need : null;
     const rootNeed = uniqueChain.length > 0 ? uniqueChain[uniqueChain.length - 1].need : loopNeed;
+    const chainFromRootToLoop = uniqueChain.length > 0 ? uniqueChain.map(n => n.need).reverse() : [rootNeed, loopNeed];
+    const cascadeExplanation = this.buildCascadeExplanation(chainFromRootToLoop);
+
     const loopActions = (typeof getLoopActionsForNeed === 'function' ? getLoopActionsForNeed(loopNeed) : []) || [];
     const rootActions = (typeof getRootActionsForNeed === 'function' ? getRootActionsForNeed(rootNeed) : []) || [];
+
+    const loopNeedDisplay = this.titleCaseNeed(loopNeed);
+    const firstStageDisplay = firstStageOfChain ? this.titleCaseNeed(firstStageOfChain) : null;
+    const rootNeedDisplay = this.titleCaseNeed(rootNeed);
 
     return `
       <div class="recommendations-section action-strategies-section">
         <h2>Action Strategies</h2>
-        <p class="form-help">Two complementary approaches: address the loop need to restore immanent authorship and reduce draining dependencies, compulsions, or aversions; and address the deepest root need to resolve the cascade at its source.</p>
+        <p class="form-help">Two complementary approaches: address the loop need (the need identified as the loop itself) to restore immanent authorship; and address the deepest root need to resolve the cascade at its source.</p>
 
         <div class="action-strategy strategy-loop">
-          <h3>1. Addressing the loop need: ${SecurityUtils.sanitizeHTML(loopNeed)}</h3>
+          <h3>1. Addressing the loop need: ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}</h3>
           <p><strong>Goal:</strong> Restore immanent authorship and resolve draining external dependencies, compulsions, or aversions.</p>
-          <p>Rather than continuing to react when the loop triggers, these actions help you reclaim choice and reduce the grip of the pattern.</p>
+          <p><strong>First step—consciously address and disclose the primary dependency.</strong> The loop is what presents in the situation and is often mistaken for the root. Addressing it is absolutely necessary: a ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} loop reflects an unhealthy dynamic around ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}—for example, taking others' ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, taking too much ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} away from others, or some other variation. This must be resolved. The primary dependency is the visible and consequential issue: it causes a draining impact—depletion in others, their withdrawal, or compulsive attendance to undesired situations—depending on whether it manifests as a compulsion or aversion. However, addressing the loop only mitigates in the moment. The resolution comes from tracing to the root to stop the systemic construction of the dynamic.</p>
+          <p>This need can be resolved by disclosing it to yourself and others—gaining conscious consent for external resourcing—and taking conscious, deliberate action to restore agency.</p>
+          <p><strong>Two-fold approach (address BOTH the primary dependency and the first link in the chain):</strong></p>
+          <ul class="approach-list">
+            <li><strong>First:</strong> By disclosing, people make efforts to establish ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, or the dependent individual consciously overrides whatever has put them in that situation so they can navigate to another space in which they can find ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}.</li>
+            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek and achieve the next stage in the chain—in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the next stage in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
+          </ul>
           ${loopActions.length > 0 ? `
+            <p><strong>Practical actions:</strong></p>
             <ul class="action-list">
               ${loopActions.slice(0, 4).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}
             </ul>
@@ -1486,10 +1525,13 @@ export class NeedsDependencyEngine {
         </div>
 
         <div class="action-strategy strategy-root">
-          <h3>2. Addressing the deepest root need: ${SecurityUtils.sanitizeHTML(rootNeed)}</h3>
+          <h3>2. Addressing the deepest root need: ${SecurityUtils.sanitizeHTML(rootNeedDisplay)}</h3>
           <p><strong>Goal:</strong> Prevent the cascading needs that cause the loop to exist in the first place.</p>
-          <p>Rather than responding only where the problem occurs (treating the symptom), consciously adapt your lifestyle to fulfil the root need independently. This resolves the entire need cascade and ends the loop—or at least creates the freedom to develop resilience and capacity to meet the dependency need unto yourself.</p>
+          <p>Rather than responding only where the problem occurs (treating the symptom), consciously adapt your lifestyle to fulfil the root need independently. This is the deepest core need that governs the pattern.</p>
+          ${cascadeExplanation ? `<p class="cascade-explanation"><strong>How the chain works:</strong> ${SecurityUtils.sanitizeHTML(cascadeExplanation)}</p>` : ''}
+          <p>Consciously meeting the root need resolves the entire need cascade and ends the loop—or at least creates the freedom to develop resilience and capacity to meet the dependency need unto yourself.</p>
           ${rootActions.length > 0 ? `
+            <p><strong>Practical actions:</strong></p>
             <ul class="action-list">
               ${rootActions.slice(0, 4).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}
             </ul>
