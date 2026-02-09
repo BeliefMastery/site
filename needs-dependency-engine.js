@@ -1685,8 +1685,21 @@ export class NeedsDependencyEngine {
   }
 
   exportAnalysis(format) {
+    const uniqueChain = this.getUniqueNeedChain();
+    const loopNeedRaw = this.analysisData.primaryLoop ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) : null;
+    const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
+    const needChainDisplay = chainParts.filter(Boolean).join(' ← ');
+    const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
+    const firstLinkInChain = chainParts.find(part => {
+      const p = String(part || '').toLowerCase().trim();
+      return p && p !== loopNorm;
+    }) ?? null;
+
     const exportData = {
       ...this.analysisData,
+      needChain: this.needChain,
+      needChainDisplay,
+      firstLinkInChain,
       exportDate: new Date().toISOString(),
       systemType: 'needs-dependency-v2',
       systemName: 'Needs Dependency Loop Determinator (4-Phase Architecture)'
@@ -1702,8 +1715,20 @@ export class NeedsDependencyEngine {
   }
 
   exportExecutiveBrief() {
+    const uniqueChain = this.getUniqueNeedChain();
+    const loopNeedRaw = this.analysisData.primaryLoop ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) : null;
+    const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
+    const needChainDisplay = chainParts.filter(Boolean).join(' ← ');
+    const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
+    const firstLinkInChain = chainParts.find(part => {
+      const p = String(part || '').toLowerCase().trim();
+      return p && p !== loopNorm;
+    }) ?? null;
     const exportData = {
       ...this.analysisData,
+      needChain: this.needChain,
+      needChainDisplay,
+      firstLinkInChain,
       exportDate: new Date().toISOString(),
       systemType: 'needs-dependency-v2',
       systemName: 'Needs Dependency Loop Determinator (4-Phase Architecture)'
