@@ -1531,7 +1531,7 @@ export class NeedsDependencyEngine {
           <p><strong>Two-fold approach (address BOTH the primary dependency and the first link in the chain):</strong></p>
           <ul class="approach-list">
             <li><strong>First:</strong> By disclosing, people make efforts to establish ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, or the dependent individual consciously overrides whatever has put them in that situation so they can navigate to another space in which they can find ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}.</li>
-            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek and achieve the first link in the chain—in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the first link in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
+            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek to address the next link in the chain - in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the first link in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
           </ul>
           ${loopActions.length > 0 ? `
             <p><strong>Practical actions:</strong></p>
