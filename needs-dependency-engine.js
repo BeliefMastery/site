@@ -1422,6 +1422,24 @@ export class NeedsDependencyEngine {
     return unique;
   }
 
+  /** Prevent loop need from appearing twice; the loop is the surface manifestation and must not recur in the chain. */
+  getDeduplicatedChainParts(loopNeedRaw, uniqueChain) {
+    const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
+    const surfaceNeed = uniqueChain[0]?.need || null;
+    const surfaceNorm = String(surfaceNeed || '').toLowerCase().trim();
+    const parts = [];
+    if (loopNeedRaw) parts.push(SecurityUtils.sanitizeHTML(loopNeedRaw));
+    if (surfaceNeed && (!loopNeedRaw || surfaceNorm !== loopNorm)) {
+      parts.push(SecurityUtils.sanitizeHTML(surfaceNeed));
+    }
+    uniqueChain.slice(1).forEach(entry => {
+      const n = String(entry?.need || '').trim();
+      const norm = n.toLowerCase();
+      if (norm && norm !== loopNorm) parts.push(SecurityUtils.sanitizeHTML(n));
+    });
+    return parts;
+  }
+
   renderNeedChain() {
     if (this.needChain.length === 0) return '';
     const uniqueChain = this.getUniqueNeedChain();
@@ -1429,21 +1447,13 @@ export class NeedsDependencyEngine {
       ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop)
       : null;
     const surfaceNeed = uniqueChain[0]?.need || 'Unknown';
-    const deeperNeeds = uniqueChain.slice(1).map(n => SecurityUtils.sanitizeHTML(n.need || '')).filter(Boolean);
     const rootNeed = uniqueChain.length > 0 ? uniqueChain[uniqueChain.length - 1].need : surfaceNeed;
     const rawRootCandidates = this.needChain[this.needChain.length - 1]?.deeper || [];
     const rootCandidates = rawRootCandidates
       .map(need => String(need))
       .filter(need => !uniqueChain.map(n => String(n.need).toLowerCase().trim()).includes(String(need).toLowerCase().trim()));
     
-    const chainParts = [];
-    if (loopNeedRaw) {
-      chainParts.push(SecurityUtils.sanitizeHTML(loopNeedRaw));
-    }
-    if (surfaceNeed && (!loopNeedRaw || String(loopNeedRaw).toLowerCase().trim() !== String(surfaceNeed).toLowerCase().trim())) {
-      chainParts.push(SecurityUtils.sanitizeHTML(surfaceNeed));
-    }
-    chainParts.push(...deeperNeeds);
+    const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
     const chainText = chainParts.filter(Boolean).join(' ← ');
 
     return `
@@ -1488,8 +1498,15 @@ export class NeedsDependencyEngine {
 
   renderRecommendations() {
     const uniqueChain = this.getUniqueNeedChain();
-    const loopNeed = this.surfaceNeed || this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) || uniqueChain[0]?.need || 'the surface need';
-    const firstStageOfChain = uniqueChain.length > 1 ? uniqueChain[1].need : null;
+    const loopNeedRaw = this.analysisData.primaryLoop ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) : null;
+    const loopNeed = this.surfaceNeed || loopNeedRaw || uniqueChain[0]?.need || 'the surface need';
+    const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
+    const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
+    // First link = first need in chain that is not the loop need (the one directly after the dependency when loop is prepended)
+    const firstStageOfChain = chainParts.find(part => {
+      const p = String(part || '').toLowerCase().trim();
+      return p && p !== loopNorm;
+    }) ?? null;
     const rootNeed = uniqueChain.length > 0 ? uniqueChain[uniqueChain.length - 1].need : loopNeed;
     const chainFromRootToLoop = uniqueChain.length > 0 ? uniqueChain.map(n => n.need).reverse() : [rootNeed, loopNeed];
     const cascadeExplanation = this.buildCascadeExplanation(chainFromRootToLoop);
@@ -1514,7 +1531,7 @@ export class NeedsDependencyEngine {
           <p><strong>Two-fold approach (address BOTH the primary dependency and the first link in the chain):</strong></p>
           <ul class="approach-list">
             <li><strong>First:</strong> By disclosing, people make efforts to establish ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, or the dependent individual consciously overrides whatever has put them in that situation so they can navigate to another space in which they can find ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}.</li>
-            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek and achieve the next stage in the chain—in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the next stage in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
+            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek and achieve the first link in the chain—in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the first link in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
           </ul>
           ${loopActions.length > 0 ? `
             <p><strong>Practical actions:</strong></p>
