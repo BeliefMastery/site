@@ -232,7 +232,7 @@ export class AttractionEngine {
       const opts = q.options || [1, 3, 5, 7, 10];
       const optsHtml = opts.map(v => {
         const label = this.buildOptionLabel(q, v);
-        return `<label class="option-label"><input type="radio" name="${SecurityUtils.sanitizeHTML(q.id)}" value="${v}" required><span class="option-content"><span class="option-value">${v}</span><span class="option-text">${SecurityUtils.sanitizeHTML(label)}</span></span></label>`;
+        return `<label class="option-label"><input type="radio" name="${SecurityUtils.sanitizeHTML(q.id)}" value="${v}" required><span class="option-content"><span class="option-text">${SecurityUtils.sanitizeHTML(label)}</span></span></label>`;
       }).join('');
       const subcat = phase.subcategories?.[q.subcategory]?.label || q.subcategory;
       html += `<div class="question-block" data-question-index="${idx}" data-phase="${phaseName}" style="${idx === 0 ? '' : 'display:none'}">
