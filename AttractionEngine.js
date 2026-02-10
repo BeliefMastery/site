@@ -1,18 +1,15 @@
 /**
- * ATTRACTION ASSESSMENT ENGINE
+ * ATTRACTION ASSESSMENT ENGINE v2.0
  * 
- * A sophisticated multi-phase assessment system for evaluating attraction dynamics
- * based on evolutionary psychology, red-pill frameworks, and behavioral patterns.
- * 
- * Structure:
- * - Gender-specific assessment paths (Male/Female)
- * - Three-cluster evaluation system per gender
- * - Behavioral pattern analysis
- * - Weighted scoring with cross-cluster synthesis
- * - Comprehensive reporting with actionable insights
+ * Enhanced with:
+ * - Sexual Market Value (SMV) relative positioning
+ * - Market segmentation (Keepers, Sleepers, Sweepers)
+ * - Age-adjusted expectations and filtering
+ * - Categorical preference modifiers
+ * - @hoe_math framework integration (Delta Hot Index, Levels, Value Disparity)
  * 
  * @author Warwick Marshall
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 export class AttractionEngine {
@@ -20,41 +17,205 @@ export class AttractionEngine {
     this.currentGender = null;
     this.currentPhase = 0;
     this.responses = {};
+    this.preferences = {};
     this.scores = {};
+    this.smv = {};
     this.initialized = false;
     
-    console.log('AttractionEngine constructor called');
+    console.log('AttractionEngine v2.0 constructor called');
     
     this.init();
   }
 
   init() {
-    console.log('Initializing AttractionEngine...');
+    console.log('Initializing AttractionEngine v2.0...');
     this.initialized = true;
     console.log('AttractionEngine initialized:', this.initialized);
   }
 
   /**
    * ========================================================================
-   * MALE ASSESSMENT QUESTIONS
+   * MARKET PREFERENCE CONFIGURATION
+   * ========================================================================
+   */
+  getPreferenceQuestions(gender) {
+    if (gender === 'male') {
+      return {
+        title: "Market Preference Configuration",
+        subtitle: "Define Your Mate Selection Criteria",
+        description: "These preferences help calibrate your assessment to the specific market segment you're targeting.",
+        questions: [
+          {
+            id: 'age',
+            text: 'What is your current age?',
+            type: 'number',
+            min: 18,
+            max: 80,
+            required: true
+          },
+          {
+            id: 'target_age_min',
+            text: 'Minimum age of desired partner?',
+            type: 'number',
+            min: 18,
+            max: 80,
+            required: true
+          },
+          {
+            id: 'target_age_max',
+            text: 'Maximum age of desired partner?',
+            type: 'number',
+            min: 18,
+            max: 80,
+            required: true
+          },
+          {
+            id: 'physical_standards',
+            text: 'How important are physical attractiveness standards (face, body, fitness)?',
+            type: 'scale',
+            options: [
+              { value: 1, label: 'Not important - Personality and compatibility matter most' },
+              { value: 3, label: 'Somewhat important - Basic attraction threshold' },
+              { value: 5, label: 'Very important - Strong physical attraction required' },
+              { value: 7, label: 'Extremely important - Top tier looks are essential' }
+            ]
+          },
+          {
+            id: 'fertility_priority',
+            text: 'How important is fertility/ability to have children?',
+            type: 'scale',
+            options: [
+              { value: 1, label: 'Not important - Not seeking children' },
+              { value: 3, label: 'Somewhat important - Open to possibility' },
+              { value: 5, label: 'Very important - Definitely want children' },
+              { value: 7, label: 'Critical - Primary relationship purpose' }
+            ]
+          },
+          {
+            id: 'career_expectations',
+            text: 'What are your expectations for her career/productivity?',
+            type: 'scale',
+            options: [
+              { value: 1, label: 'Prefer full homemaker/traditional role' },
+              { value: 3, label: 'Flexible - either career or home focused' },
+              { value: 5, label: 'Prefer she has career but family comes first' },
+              { value: 7, label: 'Want ambitious career woman/high earner' }
+            ]
+          },
+          {
+            id: 'relationship_goal',
+            text: 'Primary relationship goal?',
+            type: 'select',
+            options: [
+              { value: 'casual', label: 'Casual dating / Short-term' },
+              { value: 'ltr', label: 'Long-term relationship' },
+              { value: 'marriage', label: 'Marriage / Life partnership' },
+              { value: 'family', label: 'Marriage + Children' }
+            ]
+          }
+        ]
+      };
+    } else {
+      return {
+        title: "Market Preference Configuration",
+        subtitle: "Define Your Mate Selection Criteria",
+        description: "These preferences help calibrate your assessment to the specific market segment you're targeting.",
+        questions: [
+          {
+            id: 'age',
+            text: 'What is your current age?',
+            type: 'number',
+            min: 18,
+            max: 80,
+            required: true
+          },
+          {
+            id: 'target_age_min',
+            text: 'Minimum age of desired partner?',
+            type: 'number',
+            min: 18,
+            max: 80,
+            required: true
+          },
+          {
+            id: 'target_age_max',
+            text: 'Maximum age of desired partner?',
+            type: 'number',
+            min: 18,
+            max: 80,
+            required: true
+          },
+          {
+            id: 'height_requirement',
+            text: 'Minimum height requirement for partner?',
+            type: 'scale',
+            options: [
+              { value: 1, label: 'No requirement - Height doesn\'t matter' },
+              { value: 3, label: 'Prefer taller than me' },
+              { value: 5, label: 'Must be 5\'10" (178cm) or taller' },
+              { value: 7, label: 'Must be 6\'0" (183cm) or taller' },
+              { value: 10, label: 'Must be 6\'2" (188cm)+ only' }
+            ]
+          },
+          {
+            id: 'income_requirement',
+            text: 'Minimum income/wealth requirement?',
+            type: 'scale',
+            options: [
+              { value: 1, label: 'Not important - Character matters most' },
+              { value: 3, label: 'Must be self-sufficient/stable job' },
+              { value: 5, label: 'Must earn above average ($75k+)' },
+              { value: 7, label: 'Must be high earner ($150k+)' },
+              { value: 10, label: 'Must be wealthy ($250k+)' }
+            ]
+          },
+          {
+            id: 'status_requirement',
+            text: 'How important is social status/prestige?',
+            type: 'scale',
+            options: [
+              { value: 1, label: 'Not important - Character over status' },
+              { value: 3, label: 'Prefer some social standing' },
+              { value: 5, label: 'Want respected professional/leader' },
+              { value: 7, label: 'Need high status/influential man' }
+            ]
+          },
+          {
+            id: 'relationship_goal',
+            text: 'Primary relationship goal?',
+            type: 'select',
+            options: [
+              { value: 'casual', label: 'Casual dating / Short-term' },
+              { value: 'ltr', label: 'Long-term relationship' },
+              { value: 'marriage', label: 'Marriage / Life partnership' },
+              { value: 'family', label: 'Marriage + Children' }
+            ]
+          }
+        ]
+      };
+    }
+  }
+
+  /**
+   * ========================================================================
+   * MALE ASSESSMENT QUESTIONS (Same as before but optimized)
    * ========================================================================
    */
   getMaleQuestions() {
     return {
-      // PHASE 1: Coalition Rank (3C's) - Male-Male Hierarchy
       coalitionRank: {
         title: "Coalition Rank Assessment",
         subtitle: "Male-Male Hierarchy Determinants (3C's)",
         description: "This phase evaluates your standing among male peers through courage, control, and competence.",
         questions: [
-          // COURAGE - Risk tolerance under threat
+          // COURAGE
           {
             id: 'courage_1',
             cluster: 'coalitionRank',
             subcategory: 'courage',
             text: 'When faced with physical confrontation or danger, how do you typically respond?',
             type: 'scale',
-            weight: 1.2,
+            weight: 1.0,
             options: [
               { value: 1, label: 'I avoid confrontation at all costs and retreat immediately' },
               { value: 3, label: 'I assess the situation carefully and only engage when necessary' },
@@ -78,30 +239,15 @@ export class AttractionEngine {
               { value: 10, label: 'Regularly - I thrive on calculated risk-taking and bold moves' }
             ]
           },
-          {
-            id: 'courage_3',
-            cluster: 'coalitionRank',
-            subcategory: 'courage',
-            text: 'When you see injustice or someone being mistreated, what do you do?',
-            type: 'scale',
-            weight: 1.1,
-            options: [
-              { value: 1, label: 'I look away and avoid getting involved' },
-              { value: 3, label: 'I feel bad but rarely act on it' },
-              { value: 5, label: 'I sometimes speak up depending on the situation' },
-              { value: 7, label: 'I usually intervene verbally or seek help' },
-              { value: 10, label: 'I consistently intervene directly to protect or defend others' }
-            ]
-          },
           
-          // CONTROL - Mastery over impulses and stress
+          // CONTROL
           {
             id: 'control_1',
             cluster: 'coalitionRank',
             subcategory: 'control',
             text: 'How well do you maintain composure during high-stress situations?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'I frequently lose my temper or become overwhelmed' },
               { value: 3, label: 'I struggle to stay calm but eventually regain control' },
@@ -116,7 +262,7 @@ export class AttractionEngine {
             subcategory: 'control',
             text: 'How consistent are you with your personal discipline (fitness, diet, sleep, work routine)?',
             type: 'scale',
-            weight: 1.2,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Very inconsistent - I struggle with basic routines' },
               { value: 3, label: 'Somewhat inconsistent - I have good weeks and bad weeks' },
@@ -125,30 +271,15 @@ export class AttractionEngine {
               { value: 10, label: 'Extremely disciplined - My routines are non-negotiable' }
             ]
           },
-          {
-            id: 'control_3',
-            cluster: 'coalitionRank',
-            subcategory: 'control',
-            text: 'When provoked or insulted, how do you typically react?',
-            type: 'scale',
-            weight: 1.1,
-            options: [
-              { value: 1, label: 'I react emotionally and impulsively' },
-              { value: 3, label: 'I get upset but try to control my reaction' },
-              { value: 5, label: 'I pause before responding but may still show emotion' },
-              { value: 7, label: 'I respond calmly and strategically' },
-              { value: 10, label: 'I remain completely unfazed and use it to my advantage' }
-            ]
-          },
           
-          // COMPETENCE - Ability to solve problems and secure resources
+          // COMPETENCE
           {
             id: 'competence_1',
             cluster: 'coalitionRank',
             subcategory: 'competence',
             text: 'How effectively can you solve complex problems in unfamiliar domains?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'I struggle and usually need extensive help' },
               { value: 3, label: 'I can solve simple problems but need guidance for complex ones' },
@@ -163,7 +294,7 @@ export class AttractionEngine {
             subcategory: 'competence',
             text: 'How would you rate your ability to generate and secure resources (income, assets, opportunities)?',
             type: 'scale',
-            weight: 1.4,
+            weight: 1.0,
             options: [
               { value: 1, label: 'I struggle financially and depend on others' },
               { value: 3, label: 'I meet basic needs but have little surplus' },
@@ -171,39 +302,23 @@ export class AttractionEngine {
               { value: 7, label: 'I generate strong income and accumulate resources steadily' },
               { value: 10, label: 'I create significant wealth and multiple income streams' }
             ]
-          },
-          {
-            id: 'competence_3',
-            cluster: 'coalitionRank',
-            subcategory: 'competence',
-            text: 'When other men seek advice or help, how often do they come to you?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Rarely or never - I\'m usually the one seeking help' },
-              { value: 3, label: 'Occasionally for basic things' },
-              { value: 5, label: 'Regularly for specific areas of expertise' },
-              { value: 7, label: 'Frequently across multiple domains' },
-              { value: 10, label: 'Constantly - I\'m a go-to resource and mentor' }
-            ]
           }
         ]
       },
 
-      // PHASE 2: Reproductive Confidence (4P's) - Female Selection Criteria
       reproductiveConfidence: {
         title: "Reproductive Confidence Assessment",
         subtitle: "Female Selection Criteria (4P's)",
-        description: "This phase evaluates traits that women assess for long-term mate selection and genetic legacy.",
+        description: "This phase evaluates traits that women assess for long-term mate selection.",
         questions: [
-          // PERSPICACITY - Acute perception of threats/opportunities
+          // PERSPICACITY
           {
             id: 'perspicacity_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'perspicacity',
             text: 'How quickly do you identify potential threats or dangers in your environment?',
             type: 'scale',
-            weight: 1.2,
+            weight: 1.0,
             options: [
               { value: 1, label: 'I often miss warning signs until it\'s too late' },
               { value: 3, label: 'I notice some threats but not consistently' },
@@ -212,30 +327,15 @@ export class AttractionEngine {
               { value: 10, label: 'I have exceptional situational awareness and foresight' }
             ]
           },
-          {
-            id: 'perspicacity_2',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'perspicacity',
-            text: 'How effectively do you read social dynamics and identify opportunities?',
-            type: 'scale',
-            weight: 1.1,
-            options: [
-              { value: 1, label: 'I\'m often oblivious to social undercurrents' },
-              { value: 3, label: 'I notice obvious social patterns but miss subtleties' },
-              { value: 5, label: 'I read most social situations reasonably well' },
-              { value: 7, label: 'I quickly assess social hierarchies and opportunities' },
-              { value: 10, label: 'I have exceptional social intelligence and strategic insight' }
-            ]
-          },
           
-          // PROTECTOR - Physical defense capacity and intent
+          // PROTECTOR
           {
             id: 'protector_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'protector',
             text: 'How capable are you of physically protecting someone from harm?',
             type: 'scale',
-            weight: 1.4,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Not capable - I would likely be a liability' },
               { value: 3, label: 'Limited capability - I could help but not lead' },
@@ -244,30 +344,15 @@ export class AttractionEngine {
               { value: 10, label: 'Expert level - Combat/martial arts training, always ready' }
             ]
           },
-          {
-            id: 'protector_2',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'protector',
-            text: 'How seriously do you take your responsibility to protect those under your care?',
-            type: 'scale',
-            weight: 1.3,
-            options: [
-              { value: 1, label: 'I rarely think about protection responsibilities' },
-              { value: 3, label: 'I acknowledge it but don\'t actively prepare' },
-              { value: 5, label: 'I take it seriously and make basic preparations' },
-              { value: 7, label: 'I prioritize it highly and train/prepare regularly' },
-              { value: 10, label: 'It\'s a core identity - I\'m always prepared and vigilant' }
-            ]
-          },
           
-          // PROVIDER - Consistent resource generation
+          // PROVIDER
           {
             id: 'provider_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'provider',
             text: 'How stable and consistent is your income/resource generation?',
             type: 'scale',
-            weight: 1.5,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Unstable - Frequent gaps or dependency on others' },
               { value: 3, label: 'Inconsistent - Variable income, occasional struggles' },
@@ -282,7 +367,7 @@ export class AttractionEngine {
             subcategory: 'provider',
             text: 'If you had to support a family tomorrow, how prepared are you?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Not at all - I struggle to support myself' },
               { value: 3, label: 'Minimally - I could barely manage' },
@@ -292,14 +377,14 @@ export class AttractionEngine {
             ]
           },
           
-          // PARENTAL INVESTOR - Willingness and competence in offspring rearing
+          // PARENTAL INVESTOR
           {
             id: 'parental_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'parentalInvestor',
             text: 'How committed are you to the idea of being an active, involved father?',
             type: 'scale',
-            weight: 1.2,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Not interested or committed to fatherhood' },
               { value: 3, label: 'Open to it but uncertain about involvement level' },
@@ -307,39 +392,23 @@ export class AttractionEngine {
               { value: 7, label: 'Committed to being highly involved and present' },
               { value: 10, label: 'Passionate about fatherhood as a core life purpose' }
             ]
-          },
-          {
-            id: 'parental_2',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'parentalInvestor',
-            text: 'How well do you interact with and relate to children?',
-            type: 'scale',
-            weight: 1.0,
-            options: [
-              { value: 1, label: 'Poorly - I avoid children and feel uncomfortable' },
-              { value: 3, label: 'Awkwardly - I can manage but prefer not to' },
-              { value: 5, label: 'Adequately - I\'m fine with children in small doses' },
-              { value: 7, label: 'Well - I enjoy spending time with and teaching children' },
-              { value: 10, label: 'Naturally - Children gravitate to me and I mentor them' }
-            ]
           }
         ]
       },
 
-      // PHASE 3: Axis of Attraction - Display Signals
       axisOfAttraction: {
         title: "Axis of Attraction Assessment",
         subtitle: "Display Signals",
         description: "This phase evaluates the immediate signals you display that attract or repel potential mates.",
         questions: [
-          // PERFORMANCE/STATUS SIGNALS
+          // STATUS
           {
             id: 'status_1',
             cluster: 'axisOfAttraction',
             subcategory: 'performanceStatus',
             text: 'How would you rate your current social status and influence?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Low - Little influence or recognition' },
               { value: 3, label: 'Below average - Some friends but minimal influence' },
@@ -352,56 +421,26 @@ export class AttractionEngine {
             id: 'status_2',
             cluster: 'axisOfAttraction',
             subcategory: 'performanceStatus',
-            text: 'How productive and accomplished are you in your primary pursuits?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Minimal productivity or achievement' },
-              { value: 3, label: 'Below average - Struggling to make progress' },
-              { value: 5, label: 'Average - Steady progress and moderate success' },
-              { value: 7, label: 'High - Consistent achievements and recognition' },
-              { value: 10, label: 'Exceptional - Top performer with significant accomplishments' }
-            ]
-          },
-          {
-            id: 'status_3',
-            cluster: 'axisOfAttraction',
-            subcategory: 'performanceStatus',
-            text: 'How generous are you with resources, time, and expertise?',
+            text: 'What is your current annual income?',
             type: 'scale',
             weight: 1.0,
             options: [
-              { value: 1, label: 'Not generous - I rarely share or help others' },
-              { value: 3, label: 'Selectively generous - Only with close friends/family' },
-              { value: 5, label: 'Moderately generous - I help when asked' },
-              { value: 7, label: 'Very generous - I actively look for ways to help' },
-              { value: 10, label: 'Exceptionally generous - Giving is core to my identity' }
-            ]
-          },
-          {
-            id: 'status_4',
-            cluster: 'axisOfAttraction',
-            subcategory: 'performanceStatus',
-            text: 'What is your current financial capacity to "fluff the nest" (home quality, lifestyle, experiences)?',
-            type: 'scale',
-            weight: 1.4,
-            options: [
-              { value: 1, label: 'Minimal - Struggling with basics' },
-              { value: 3, label: 'Limited - Can afford modest living' },
-              { value: 5, label: 'Comfortable - Can provide quality living' },
-              { value: 7, label: 'Affluent - Can provide excellent lifestyle' },
-              { value: 10, label: 'Wealthy - Can provide luxury and abundance' }
+              { value: 1, label: 'Under $30,000' },
+              { value: 3, label: '$30,000 - $60,000' },
+              { value: 5, label: '$60,000 - $100,000' },
+              { value: 7, label: '$100,000 - $200,000' },
+              { value: 10, label: 'Over $200,000' }
             ]
           },
           
-          // PHYSICAL/GENETIC SIGNALS
+          // PHYSICAL
           {
             id: 'physical_1',
             cluster: 'axisOfAttraction',
             subcategory: 'physicalGenetic',
             text: 'How would you honestly rate your physical attractiveness (face, build, overall aesthetics)?',
             type: 'scale',
-            weight: 1.4,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Below average - Significant aesthetic limitations' },
               { value: 3, label: 'Slightly below average' },
@@ -416,7 +455,7 @@ export class AttractionEngine {
             subcategory: 'physicalGenetic',
             text: 'How would you rate your fitness, strength, and physical capability?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Poor - Sedentary, weak, out of shape' },
               { value: 3, label: 'Below average - Limited fitness' },
@@ -429,30 +468,15 @@ export class AttractionEngine {
             id: 'physical_3',
             cluster: 'axisOfAttraction',
             subcategory: 'physicalGenetic',
-            text: 'How well do you maintain your grooming, style, and overall presentation?',
+            text: 'What is your height?',
             type: 'scale',
-            weight: 1.1,
+            weight: 1.0,
             options: [
-              { value: 1, label: 'Poorly - Neglected appearance' },
-              { value: 3, label: 'Basic - Minimal effort in presentation' },
-              { value: 5, label: 'Adequate - Clean and presentable' },
-              { value: 7, label: 'Well-groomed - Intentional style and care' },
-              { value: 10, label: 'Impeccable - Exceptional attention to presentation' }
-            ]
-          },
-          {
-            id: 'physical_4',
-            cluster: 'axisOfAttraction',
-            subcategory: 'physicalGenetic',
-            text: 'How would you rate your overall health and vitality (energy, resilience, longevity indicators)?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Poor - Chronic health issues, low energy' },
-              { value: 3, label: 'Below average - Frequent illness or fatigue' },
-              { value: 5, label: 'Average - Generally healthy' },
-              { value: 7, label: 'Excellent - High energy, rarely sick' },
-              { value: 10, label: 'Optimal - Peak health, exceptional vitality' }
+              { value: 1, label: 'Under 5\'6" (168cm)' },
+              { value: 3, label: '5\'6" - 5\'8" (168-173cm)' },
+              { value: 5, label: '5\'9" - 5\'11" (175-180cm)' },
+              { value: 7, label: '6\'0" - 6\'2" (183-188cm)' },
+              { value: 10, label: 'Over 6\'2" (188cm)' }
             ]
           }
         ]
@@ -462,72 +486,41 @@ export class AttractionEngine {
 
   /**
    * ========================================================================
-   * FEMALE ASSESSMENT QUESTIONS
+   * FEMALE ASSESSMENT QUESTIONS (Optimized)
    * ========================================================================
    */
   getFemaleQuestions() {
     return {
-      // PHASE 1: Coalition Rank (3S's) - Female-Female Hierarchy
       coalitionRank: {
         title: "Coalition Rank Assessment",
         subtitle: "Female-Female Hierarchy Determinants (3S's)",
-        description: "This phase evaluates your standing among female peers through social influence, selectivity, and status signaling.",
+        description: "This phase evaluates your standing among female peers.",
         questions: [
-          // SOCIAL INFLUENCE - Control over perceptions and alliances
+          // SOCIAL INFLUENCE
           {
             id: 'social_1',
             cluster: 'coalitionRank',
             subcategory: 'socialInfluence',
             text: 'How much influence do you have over social narratives and group opinions?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
-              { value: 1, label: 'Minimal - I\'m often excluded or ignored in social settings' },
+              { value: 1, label: 'Minimal - I\'m often excluded or ignored' },
               { value: 3, label: 'Limited - I participate but rarely shape conversations' },
               { value: 5, label: 'Moderate - People listen to me and sometimes follow my lead' },
-              { value: 7, label: 'Significant - I regularly influence group decisions and opinions' },
+              { value: 7, label: 'Significant - I regularly influence group decisions' },
               { value: 10, label: 'Dominant - I\'m a social leader who shapes perceptions' }
             ]
           },
-          {
-            id: 'social_2',
-            cluster: 'coalitionRank',
-            subcategory: 'socialInfluence',
-            text: 'How effectively can you build and maintain beneficial alliances?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Poorly - I struggle to form or keep alliances' },
-              { value: 3, label: 'Limited - I have a few unstable relationships' },
-              { value: 5, label: 'Adequately - I maintain a small, stable social circle' },
-              { value: 7, label: 'Well - I build strong networks across multiple groups' },
-              { value: 10, label: 'Masterfully - I create and leverage powerful alliances' }
-            ]
-          },
-          {
-            id: 'social_3',
-            cluster: 'coalitionRank',
-            subcategory: 'socialInfluence',
-            text: 'How often do other women seek your advice or validation?',
-            type: 'scale',
-            weight: 1.1,
-            options: [
-              { value: 1, label: 'Rarely - I\'m usually seeking others\' input' },
-              { value: 3, label: 'Occasionally - Sometimes for basic things' },
-              { value: 5, label: 'Regularly - Friends often ask my opinion' },
-              { value: 7, label: 'Frequently - I\'m a trusted advisor to many' },
-              { value: 10, label: 'Constantly - I\'m seen as a wisdom source and mentor' }
-            ]
-          },
           
-          // SELECTIVITY & MATE GUARDING - Ability to attract and retain top males
+          // SELECTIVITY
           {
             id: 'selectivity_1',
             cluster: 'coalitionRank',
             subcategory: 'selectivity',
             text: 'How successful are you at attracting high-quality male attention?',
             type: 'scale',
-            weight: 1.4,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Unsuccessful - I receive little quality male attention' },
               { value: 3, label: 'Limited - Occasional interest from average men' },
@@ -536,45 +529,15 @@ export class AttractionEngine {
               { value: 10, label: 'Exceptional - Top-tier men actively pursue me' }
             ]
           },
-          {
-            id: 'selectivity_2',
-            cluster: 'coalitionRank',
-            subcategory: 'selectivity',
-            text: 'How effectively can you maintain a high-value man\'s interest long-term?',
-            type: 'scale',
-            weight: 1.3,
-            options: [
-              { value: 1, label: 'Poorly - Men lose interest quickly' },
-              { value: 3, label: 'Limited - Struggle to keep quality men engaged' },
-              { value: 5, label: 'Adequately - Can maintain interest with effort' },
-              { value: 7, label: 'Well - High-value men stay committed' },
-              { value: 10, label: 'Masterfully - Men become deeply invested and loyal' }
-            ]
-          },
-          {
-            id: 'selectivity_3',
-            cluster: 'coalitionRank',
-            subcategory: 'selectivity',
-            text: 'How well do you defend against female rivals and maintain your position?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Poorly - Often undermined by other women' },
-              { value: 3, label: 'Limited - Some vulnerability to rivals' },
-              { value: 5, label: 'Adequately - Can hold my ground most of the time' },
-              { value: 7, label: 'Well - Effectively neutralize competitive threats' },
-              { value: 10, label: 'Dominantly - Other women defer to me' }
-            ]
-          },
           
-          // STATUS SIGNALING - Strategic display without triggering sabotage
+          // STATUS SIGNALING
           {
             id: 'status_signal_1',
             cluster: 'coalitionRank',
             subcategory: 'statusSignaling',
             text: 'How well do you display your value without triggering jealousy or sabotage?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Poorly - Either invisible or create resentment' },
               { value: 3, label: 'Limited - Struggle to balance visibility and backlash' },
@@ -582,39 +545,23 @@ export class AttractionEngine {
               { value: 7, label: 'Skillfully - Project value while maintaining alliances' },
               { value: 10, label: 'Masterfully - Command respect without creating enemies' }
             ]
-          },
-          {
-            id: 'status_signal_2',
-            cluster: 'coalitionRank',
-            subcategory: 'statusSignaling',
-            text: 'How strategic are you in managing your reputation and social image?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Not strategic - My reputation suffers from neglect' },
-              { value: 3, label: 'Minimally - I react to reputation issues defensively' },
-              { value: 5, label: 'Moderately - I maintain a decent public image' },
-              { value: 7, label: 'Highly - I actively curate and protect my reputation' },
-              { value: 10, label: 'Expertly - I control my narrative across all contexts' }
-            ]
           }
         ]
       },
 
-      // PHASE 2: Reproductive Confidence - Male Selection Criteria
       reproductiveConfidence: {
         title: "Reproductive Confidence Assessment",
         subtitle: "Male Selection Criteria",
-        description: "This phase evaluates traits that men assess for long-term investment and commitment.",
+        description: "This phase evaluates traits that men assess for long-term investment.",
         questions: [
-          // PATERNITY CERTAINTY - Signals of loyalty and exclusivity
+          // PATERNITY CERTAINTY
           {
             id: 'paternity_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'paternityCertainty',
             text: 'How loyal and faithful are you in committed relationships?',
             type: 'scale',
-            weight: 1.5,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Poor history - Multiple infidelities or betrayals' },
               { value: 3, label: 'Questionable - Emotional affairs or boundary violations' },
@@ -627,41 +574,27 @@ export class AttractionEngine {
             id: 'paternity_2',
             cluster: 'reproductiveConfidence',
             subcategory: 'paternityCertainty',
-            text: 'How transparent and honest are you about your past and present?',
+            text: 'How many sexual/romantic partners have you had?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
+            reverseScore: true,
             options: [
-              { value: 1, label: 'Very secretive - Hide significant information' },
-              { value: 3, label: 'Selectively honest - Conceal some important details' },
-              { value: 5, label: 'Generally honest with occasional omissions' },
-              { value: 7, label: 'Very transparent - Open about almost everything' },
-              { value: 10, label: 'Completely honest - Full disclosure is my standard' }
-            ]
-          },
-          {
-            id: 'paternity_3',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'paternityCertainty',
-            text: 'How exclusive is your attention when in a committed relationship?',
-            type: 'scale',
-            weight: 1.4,
-            options: [
-              { value: 1, label: 'Non-exclusive - I maintain multiple romantic interests' },
-              { value: 3, label: 'Mostly exclusive but keep options open' },
-              { value: 5, label: 'Exclusive with occasional wandering attention' },
-              { value: 7, label: 'Fully exclusive - No romantic attention to others' },
-              { value: 10, label: 'Completely devoted - Partner is my sole focus' }
+              { value: 10, label: '20+ partners' },
+              { value: 7, label: '10-19 partners' },
+              { value: 5, label: '5-9 partners' },
+              { value: 3, label: '2-4 partners' },
+              { value: 1, label: '0-1 partners' }
             ]
           },
           
-          // NURTURING STANDARD - Alignment with mother imprint
+          // NURTURING
           {
             id: 'nurture_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'nurturingStandard',
             text: 'How warm, caring, and nurturing are you toward a partner?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Cold - I rarely show affection or care' },
               { value: 3, label: 'Limited - Some warmth but generally distant' },
@@ -670,45 +603,15 @@ export class AttractionEngine {
               { value: 10, label: 'Exceptionally nurturing - Caregiving is natural to me' }
             ]
           },
-          {
-            id: 'nurture_2',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'nurturingStandard',
-            text: 'How would you rate your domestic skills (cooking, homemaking, creating comfort)?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Very poor - I lack basic domestic capabilities' },
-              { value: 3, label: 'Limited - Can manage basics but not well' },
-              { value: 5, label: 'Adequate - Competent in essential domestic tasks' },
-              { value: 7, label: 'Skilled - I create a quality home environment' },
-              { value: 10, label: 'Exceptional - Domestic excellence is my strength' }
-            ]
-          },
-          {
-            id: 'nurture_3',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'nurturingStandard',
-            text: 'How naturally do you provide emotional support and comfort?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Poorly - I struggle with emotional support' },
-              { value: 3, label: 'Limited - I try but it doesn\'t come naturally' },
-              { value: 5, label: 'Adequately - I provide decent emotional support' },
-              { value: 7, label: 'Well - I\'m naturally good at emotional nurturing' },
-              { value: 10, label: 'Exceptionally - Emotional support is my gift' }
-            ]
-          },
           
-          // COLLABORATIVE TRUST EFFICIENCY - Low-conflict cooperation
+          // COLLABORATIVE TRUST
           {
             id: 'collab_1',
             cluster: 'reproductiveConfidence',
             subcategory: 'collaborativeTrust',
             text: 'How well do you cooperate with a partner without creating drama or conflict?',
             type: 'scale',
-            weight: 1.4,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Poorly - Constant conflict and drama' },
               { value: 3, label: 'Limited - Frequent disagreements and tension' },
@@ -716,54 +619,23 @@ export class AttractionEngine {
               { value: 7, label: 'Well - Low conflict, high cooperation' },
               { value: 10, label: 'Seamlessly - We work together like a unified team' }
             ]
-          },
-          {
-            id: 'collab_2',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'collaborativeTrust',
-            text: 'How efficiently can you resolve disagreements without waste (time, energy, goodwill)?',
-            type: 'scale',
-            weight: 1.3,
-            options: [
-              { value: 1, label: 'Very inefficient - Conflicts drag on endlessly' },
-              { value: 3, label: 'Limited - Resolution is slow and draining' },
-              { value: 5, label: 'Adequate - Eventually resolve but with some waste' },
-              { value: 7, label: 'Efficient - Quick resolution with minimal damage' },
-              { value: 10, label: 'Highly efficient - Conflicts resolve quickly and cleanly' }
-            ]
-          },
-          {
-            id: 'collab_3',
-            cluster: 'reproductiveConfidence',
-            subcategory: 'collaborativeTrust',
-            text: 'How trustworthy are you with shared resources and joint decisions?',
-            type: 'scale',
-            weight: 1.4,
-            options: [
-              { value: 1, label: 'Untrustworthy - History of mismanagement or betrayal' },
-              { value: 3, label: 'Questionable - Some trust violations' },
-              { value: 5, label: 'Generally trustworthy with occasional lapses' },
-              { value: 7, label: 'Very trustworthy - Reliable steward of shared interests' },
-              { value: 10, label: 'Completely trustworthy - Perfect track record' }
-            ]
           }
         ]
       },
 
-      // PHASE 3: Axis of Attraction - Male Mate Choice Filters
       axisOfAttraction: {
         title: "Axis of Attraction Assessment",
         subtitle: "Male Mate Choice Filters",
-        description: "This phase evaluates the fertility signals and stability indicators you display.",
+        description: "This phase evaluates fertility signals and stability indicators.",
         questions: [
-          // FERTILITY & HEALTH CUES (Hot)
+          // FERTILITY (Hot)
           {
             id: 'fertility_1',
             cluster: 'axisOfAttraction',
             subcategory: 'fertility',
             text: 'How would you honestly rate your physical attractiveness and feminine beauty?',
             type: 'scale',
-            weight: 1.5,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Below average - Significant aesthetic limitations' },
               { value: 3, label: 'Slightly below average' },
@@ -778,7 +650,7 @@ export class AttractionEngine {
             subcategory: 'fertility',
             text: 'How favorable is your waist-hip ratio and overall body composition?',
             type: 'scale',
-            weight: 1.4,
+            weight: 1.0,
             options: [
               { value: 1, label: 'Unfavorable - Significantly out of optimal range' },
               { value: 3, label: 'Below average - Not ideal proportions' },
@@ -791,88 +663,42 @@ export class AttractionEngine {
             id: 'fertility_3',
             cluster: 'axisOfAttraction',
             subcategory: 'fertility',
-            text: 'How healthy are your skin, hair, and overall physical vitality?',
+            text: 'What is your age?',
             type: 'scale',
-            weight: 1.3,
+            weight: 1.0,
             options: [
-              { value: 1, label: 'Poor - Visible health issues' },
-              { value: 3, label: 'Below average - Some health concerns' },
-              { value: 5, label: 'Average - Generally healthy appearance' },
-              { value: 7, label: 'Excellent - Glowing health and vitality' },
-              { value: 10, label: 'Radiant - Exceptional health markers' }
-            ]
-          },
-          {
-            id: 'fertility_4',
-            cluster: 'axisOfAttraction',
-            subcategory: 'fertility',
-            text: 'How well do you maintain your appearance, grooming, and feminine presentation?',
-            type: 'scale',
-            weight: 1.2,
-            options: [
-              { value: 1, label: 'Poorly - Neglected appearance' },
-              { value: 3, label: 'Minimal - Basic hygiene only' },
-              { value: 5, label: 'Adequate - Clean and presentable' },
-              { value: 7, label: 'Well-maintained - Intentional feminine style' },
-              { value: 10, label: 'Impeccable - Exceptional attention to beauty' }
-            ]
-          },
-          {
-            id: 'fertility_5',
-            cluster: 'axisOfAttraction',
-            subcategory: 'fertility',
-            text: 'What is your age relative to peak fertility (early 20s = highest)?',
-            type: 'scale',
-            weight: 1.6,
-            options: [
-              { value: 1, label: '40+ years old' },
-              { value: 3, label: '35-39 years old' },
+              { value: 1, label: '45+ years old' },
+              { value: 3, label: '35-44 years old' },
               { value: 5, label: '30-34 years old' },
               { value: 7, label: '25-29 years old' },
               { value: 10, label: '18-24 years old' }
             ]
           },
           
-          // RISK COST INDICATORS (Crazy)
+          // RISK/CRAZY
           {
             id: 'risk_1',
             cluster: 'axisOfAttraction',
             subcategory: 'riskCost',
             text: 'How emotionally stable and predictable are you?',
             type: 'scale',
-            weight: 1.5,
-            reverseScore: true, // Lower instability = better score
+            weight: 1.0,
+            reverseScore: true,
             options: [
-              { value: 10, label: 'Very unstable - Frequent emotional crises and volatility' },
-              { value: 7, label: 'Somewhat unstable - Regular mood swings and drama' },
-              { value: 5, label: 'Moderately stable - Occasional emotional episodes' },
-              { value: 3, label: 'Quite stable - Rare emotional disruptions' },
-              { value: 1, label: 'Very stable - Consistently calm and predictable' }
+              { value: 10, label: 'Very unstable - Frequent emotional crises' },
+              { value: 7, label: 'Somewhat unstable - Regular mood swings' },
+              { value: 5, label: 'Moderately stable - Occasional episodes' },
+              { value: 3, label: 'Quite stable - Rare disruptions' },
+              { value: 1, label: 'Very stable - Consistently calm' }
             ]
           },
           {
             id: 'risk_2',
             cluster: 'axisOfAttraction',
             subcategory: 'riskCost',
-            text: 'How high is your partner count (sexual and romantic)?',
-            type: 'scale',
-            weight: 1.4,
-            reverseScore: true,
-            options: [
-              { value: 10, label: '20+ partners' },
-              { value: 7, label: '10-19 partners' },
-              { value: 5, label: '5-9 partners' },
-              { value: 3, label: '2-4 partners' },
-              { value: 1, label: '0-1 partners' }
-            ]
-          },
-          {
-            id: 'risk_3',
-            cluster: 'axisOfAttraction',
-            subcategory: 'riskCost',
             text: 'How present are red flags (substance abuse, mental health issues, destructive patterns)?',
             type: 'scale',
-            weight: 1.5,
+            weight: 1.0,
             reverseScore: true,
             options: [
               { value: 10, label: 'Multiple severe red flags' },
@@ -880,22 +706,6 @@ export class AttractionEngine {
               { value: 5, label: 'A few minor red flags' },
               { value: 3, label: 'Very few, manageable issues' },
               { value: 1, label: 'No significant red flags' }
-            ]
-          },
-          {
-            id: 'risk_4',
-            cluster: 'axisOfAttraction',
-            subcategory: 'riskCost',
-            text: 'How likely are you to create conflict, drama, or sabotage in relationships?',
-            type: 'scale',
-            weight: 1.4,
-            reverseScore: true,
-            options: [
-              { value: 10, label: 'Very high - I often create drama and conflict' },
-              { value: 7, label: 'High - Regular relationship turbulence' },
-              { value: 5, label: 'Moderate - Occasional drama' },
-              { value: 3, label: 'Low - Rare conflicts' },
-              { value: 1, label: 'Very low - I actively avoid and resolve conflicts' }
             ]
           }
         ]
@@ -911,7 +721,6 @@ export class AttractionEngine {
   startAssessment() {
     console.log('startAssessment called');
     
-    // Hide intro, show gender selection
     const intro = document.getElementById('introSection');
     const assessment = document.getElementById('assessmentSection');
     
@@ -950,7 +759,6 @@ export class AttractionEngine {
       </div>
     `;
 
-    // Add event listeners
     document.querySelectorAll('.gender-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const gender = e.currentTarget.dataset.gender;
@@ -962,9 +770,93 @@ export class AttractionEngine {
   selectGender(gender) {
     console.log('Gender selected:', gender);
     this.currentGender = gender;
-    this.currentPhase = 0;
+    this.currentPhase = -1; // Start with preferences
     this.responses = {};
+    this.preferences = {};
     
+    this.showPreferencesForm();
+  }
+
+  showPreferencesForm() {
+    const prefQuestions = this.getPreferenceQuestions(this.currentGender);
+    const container = document.getElementById('questionContainer');
+    if (!container) return;
+
+    let html = `
+      <div class="phase-intro">
+        <h2>${prefQuestions.title}</h2>
+        <h3 class="phase-subtitle">${prefQuestions.subtitle}</h3>
+        <p class="phase-description">${prefQuestions.description}</p>
+
+        <form id="preferencesForm" class="preferences-form">
+    `;
+
+    prefQuestions.questions.forEach(q => {
+      html += `<div class="form-group">`;
+      html += `<label class="form-label">${q.text}</label>`;
+      
+      if (q.type === 'number') {
+        html += `<input type="number" id="${q.id}" name="${q.id}" min="${q.min}" max="${q.max}" ${q.required ? 'required' : ''} class="form-input">`;
+      } else if (q.type === 'select') {
+        html += `<select id="${q.id}" name="${q.id}" class="form-select">`;
+        q.options.forEach(opt => {
+          html += `<option value="${opt.value}">${opt.label}</option>`;
+        });
+        html += `</select>`;
+      } else if (q.type === 'scale') {
+        html += `<div class="options-container">`;
+        q.options.forEach(opt => {
+          html += `
+            <label class="option-label">
+              <input type="radio" name="${q.id}" value="${opt.value}" required>
+              <span class="option-content">
+                <span class="option-text">${opt.label}</span>
+              </span>
+            </label>
+          `;
+        });
+        html += `</div>`;
+      }
+      
+      html += `</div>`;
+    });
+
+    html += `
+          <button type="button" class="btn btn-primary btn-large" id="submitPreferences">Continue to Assessment</button>
+        </form>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    document.getElementById('submitPreferences').addEventListener('click', () => {
+      this.capturePreferences();
+    });
+  }
+
+  capturePreferences() {
+    const form = document.getElementById('preferencesForm');
+    const formData = new FormData(form);
+    
+    // Validate
+    let valid = true;
+    formData.forEach((value, key) => {
+      if (!value) valid = false;
+    });
+
+    if (!valid) {
+      alert('Please complete all preference fields');
+      return;
+    }
+
+    // Store preferences
+    formData.forEach((value, key) => {
+      this.preferences[key] = isNaN(value) ? value : parseFloat(value);
+    });
+
+    console.log('Preferences captured:', this.preferences);
+    
+    this.currentPhase = 0;
     this.showPhaseIntro();
   }
 
@@ -1038,7 +930,6 @@ export class AttractionEngine {
               <label class="option-label">
                 <input type="radio" name="${q.id}" value="${opt.value}" required>
                 <span class="option-content">
-                  <span class="option-value">${opt.value}/10</span>
                   <span class="option-text">${opt.label}</span>
                 </span>
               </label>
@@ -1097,11 +988,9 @@ export class AttractionEngine {
       return;
     }
 
-    // Save response
     const questionId = input.name;
     this.responses[questionId] = parseInt(input.value);
 
-    // Move to next question
     currentBlock.style.display = 'none';
     this.currentQuestionIndex++;
     
@@ -1148,11 +1037,9 @@ export class AttractionEngine {
       return;
     }
 
-    // Save final response
     const questionId = input.name;
     this.responses[questionId] = parseInt(input.value);
 
-    // Move to next phase or generate report
     const questions = this.currentGender === 'male' ? this.getMaleQuestions() : this.getFemaleQuestions();
     const phases = Object.keys(questions);
 
@@ -1167,118 +1054,318 @@ export class AttractionEngine {
 
   /**
    * ========================================================================
-   * SCORING AND ANALYSIS ENGINE
+   * SMV CALCULATION ENGINE (Enhanced with hoe_math logic)
    * ========================================================================
    */
   calculateAndShowResults() {
     console.log('Calculating results...');
     console.log('Responses:', this.responses);
+    console.log('Preferences:', this.preferences);
 
-    const scores = this.calculateScores();
-    console.log('Calculated scores:', scores);
+    const scores = this.calculateSMV();
+    console.log('Calculated SMV:', scores);
 
     this.displayResults(scores);
   }
 
-  calculateScores() {
+  calculateSMV() {
     const questions = this.currentGender === 'male' ? this.getMaleQuestions() : this.getFemaleQuestions();
-    const scores = {
-      overall: 0,
+    
+    // Raw score calculation
+    const rawScores = {
       clusters: {},
-      subcategories: {},
-      rawData: {}
+      subcategories: {}
     };
 
-    // Initialize structure
-    Object.keys(questions).forEach(clusterName => {
-      scores.clusters[clusterName] = { weighted: 0, raw: 0, count: 0 };
-      scores.subcategories[clusterName] = {};
-    });
-
-    // Calculate scores
+    // Calculate raw averages
     Object.keys(questions).forEach(clusterName => {
       const phase = questions[clusterName];
+      rawScores.clusters[clusterName] = [];
+      rawScores.subcategories[clusterName] = {};
       
       phase.questions.forEach(q => {
         const response = this.responses[q.id];
         if (response === undefined) return;
 
-        // Apply reverse scoring if needed
         const actualValue = q.reverseScore ? (11 - response) : response;
-        const weightedValue = actualValue * (q.weight || 1.0);
-
-        // Initialize subcategory if needed
-        if (!scores.subcategories[clusterName][q.subcategory]) {
-          scores.subcategories[clusterName][q.subcategory] = {
-            weighted: 0,
-            raw: 0,
-            count: 0,
-            questions: []
-          };
+        
+        if (!rawScores.subcategories[clusterName][q.subcategory]) {
+          rawScores.subcategories[clusterName][q.subcategory] = [];
         }
-
-        // Add to subcategory
-        scores.subcategories[clusterName][q.subcategory].weighted += weightedValue;
-        scores.subcategories[clusterName][q.subcategory].raw += actualValue;
-        scores.subcategories[clusterName][q.subcategory].count++;
-        scores.subcategories[clusterName][q.subcategory].questions.push({
-          id: q.id,
-          text: q.text,
-          response: response,
-          actualValue: actualValue,
-          weight: q.weight
-        });
-
-        // Add to cluster
-        scores.clusters[clusterName].weighted += weightedValue;
-        scores.clusters[clusterName].raw += actualValue;
-        scores.clusters[clusterName].count++;
-
-        // Store raw response
-        scores.rawData[q.id] = {
-          response: response,
-          actualValue: actualValue,
-          weighted: weightedValue,
-          cluster: clusterName,
-          subcategory: q.subcategory
-        };
+        
+        rawScores.subcategories[clusterName][q.subcategory].push(actualValue);
+        rawScores.clusters[clusterName].push(actualValue);
       });
     });
 
-    // Calculate averages
-    Object.keys(scores.clusters).forEach(clusterName => {
-      const cluster = scores.clusters[clusterName];
-      cluster.average = cluster.count > 0 ? cluster.raw / cluster.count : 0;
-      cluster.weightedAverage = cluster.count > 0 ? cluster.weighted / cluster.count : 0;
+    // Calculate percentile-based SMV
+    const smv = {
+      overall: 0,
+      clusters: {},
+      subcategories: {},
+      marketPosition: '',
+      targetMarket: {},
+      delusionIndex: 0,
+      levelClassification: '',
+      recommendation: ''
+    };
 
-      Object.keys(scores.subcategories[clusterName]).forEach(subcatName => {
-        const subcat = scores.subcategories[clusterName][subcatName];
-        subcat.average = subcat.count > 0 ? subcat.raw / subcat.count : 0;
-        subcat.weightedAverage = subcat.count > 0 ? subcat.weighted / subcat.count : 0;
+    // Convert raw scores to percentiles (0-100 scale)
+    Object.keys(rawScores.clusters).forEach(cluster => {
+      const avg = rawScores.clusters[cluster].reduce((a,b) => a+b, 0) / rawScores.clusters[cluster].length;
+      smv.clusters[cluster] = this.scoreToPercentile(avg);
+      
+      smv.subcategories[cluster] = {};
+      Object.keys(rawScores.subcategories[cluster]).forEach(subcat => {
+        const subAvg = rawScores.subcategories[cluster][subcat].reduce((a,b) => a+b, 0) / rawScores.subcategories[cluster][subcat].length;
+        smv.subcategories[cluster][subcat] = this.scoreToPercentile(subAvg);
       });
     });
 
-    // Calculate overall score (weighted average of clusters)
-    const clusterAverages = Object.values(scores.clusters).map(c => c.weightedAverage);
-    scores.overall = clusterAverages.reduce((a, b) => a + b, 0) / clusterAverages.length;
+    // Overall SMV (weighted by cluster importance)
+    if (this.currentGender === 'male') {
+      smv.overall = (
+        smv.clusters.coalitionRank * 0.25 +
+        smv.clusters.reproductiveConfidence * 0.35 +
+        smv.clusters.axisOfAttraction * 0.40
+      );
+    } else {
+      smv.overall = (
+        smv.clusters.coalitionRank * 0.20 +
+        smv.clusters.reproductiveConfidence * 0.30 +
+        smv.clusters.axisOfAttraction * 0.50
+      );
+    }
 
-    // Add percentile rankings (approximate)
-    scores.percentile = this.calculatePercentile(scores.overall);
+    // Market classification (Keeper/Sleeper/Sweeper zones)
+    smv.marketPosition = this.classifyMarketPosition(smv.overall, this.currentGender);
+    
+    // Developmental Level (hoe_math Levels framework)
+    smv.levelClassification = this.classifyDevelopmentalLevel(smv);
+    
+    // Calculate Delusion Index
+    smv.delusionIndex = this.calculateDelusionIndex(smv);
+    smv.targetMarket = this.analyzeTargetMarket(smv);
+    
+    // Strategic recommendations
+    smv.recommendation = this.generateRecommendation(smv);
+    
+    // Store raw responses for detailed analysis
+    smv.rawResponses = this.responses;
+    smv.preferences = this.preferences;
 
-    return scores;
+    return smv;
   }
 
-  calculatePercentile(score) {
-    // Approximate percentile based on score
-    // Assumes normal distribution with mean=5.5, sd=2
-    if (score >= 9) return 95;
-    if (score >= 8) return 85;
-    if (score >= 7) return 70;
-    if (score >= 6) return 55;
-    if (score >= 5) return 40;
-    if (score >= 4) return 25;
-    if (score >= 3) return 15;
-    return 5;
+  scoreToPercentile(score) {
+    // Convert 1-10 scale to 0-100 percentile
+    // Using a normal distribution approximation
+    const normalized = (score - 1) / 9; // 0 to 1
+    
+    // Apply sigmoid for more realistic distribution
+    const sigmoid = 1 / (1 + Math.exp(-6 * (normalized - 0.5)));
+    return sigmoid * 100;
+  }
+
+  classifyMarketPosition(smv, gender) {
+    if (gender === 'male') {
+      if (smv >= 80) return 'Top Tier Keeper (Top 20%)';
+      if (smv >= 60) return 'Keeper Material (Above Average)';
+      if (smv >= 40) return 'Sleeper Zone (Average)';
+      if (smv >= 20) return 'Sweeper Territory (Below Average)';
+      return 'Bottom Quintile (Significant Development Needed)';
+    } else {
+      if (smv >= 80) return 'Top Tier (High Mate Value)';
+      if (smv >= 60) return 'Above Average (Strong Options)';
+      if (smv >= 40) return 'Average (Decent Options)';
+      if (smv >= 20) return 'Below Average (Limited Options)';
+      return 'Bottom Quintile (Significant Development Needed)';
+    }
+  }
+
+  classifyDevelopmentalLevel(smv) {
+    // Based on hoe_math's Levels framework
+    const coalitionScore = smv.clusters.coalitionRank || 0;
+    const reproScore = smv.clusters.reproductiveConfidence || 0;
+    
+    const avgMaturity = (coalitionScore + reproScore) / 2;
+    
+    if (avgMaturity >= 80) return 'Integral/Holistic (High Integration)';
+    if (avgMaturity >= 65) return 'Achievement-Oriented (Rational/Strategic)';
+    if (avgMaturity >= 50) return 'Conformist (Rule-Following)';
+    if (avgMaturity >= 35) return 'Egocentric (Reactive/Impulsive)';
+    return 'Survival Mode (Basic Needs Focus)';
+  }
+
+  calculateDelusionIndex(smv) {
+    // Compare self-perception vs preference standards
+    const prefs = this.preferences;
+    
+    if (this.currentGender === 'male') {
+      // If seeking much younger women while being average/below
+      const ageDelta = prefs.age - prefs.target_age_max;
+      const physicalStandards = prefs.physical_standards || 3;
+      
+      let delusionScore = 0;
+      
+      // Age delusion
+      if (ageDelta > 10 && smv.overall < 70) delusionScore += 20;
+      if (ageDelta > 15 && smv.overall < 60) delusionScore += 30;
+      
+      // Physical standards delusion
+      if (physicalStandards >= 5 && smv.clusters.axisOfAttraction < 60) delusionScore += 25;
+      if (physicalStandards >= 7 && smv.clusters.axisOfAttraction < 70) delusionScore += 35;
+      
+      return Math.min(delusionScore, 100);
+      
+    } else {
+      // Female delusion calculator
+      const heightReq = prefs.height_requirement || 1;
+      const incomeReq = prefs.income_requirement || 1;
+      const statusReq = prefs.status_requirement || 1;
+      
+      let delusionScore = 0;
+      
+      // Height requirements
+      if (heightReq >= 7 && smv.overall < 70) delusionScore += 25; // 6ft+ requirement
+      if (heightReq >= 10 && smv.overall < 80) delusionScore += 40; // 6'2"+ requirement
+      
+      // Income requirements
+      if (incomeReq >= 7 && smv.overall < 70) delusionScore += 25; // $150k+ requirement
+      if (incomeReq >= 10 && smv.overall < 80) delusionScore += 40; // $250k+ requirement
+      
+      // Status requirements
+      if (statusReq >= 7 && smv.overall < 65) delusionScore += 20;
+      
+      // Age penalty (older women with high standards)
+      const age = prefs.age || 25;
+      if (age > 30 && (heightReq >= 7 || incomeReq >= 7)) delusionScore += 15;
+      if (age > 35 && (heightReq >= 7 || incomeReq >= 7)) delusionScore += 25;
+      
+      return Math.min(delusionScore, 100);
+    }
+  }
+
+  analyzeTargetMarket(smv) {
+    // Determine realistic target market
+    const market = {
+      realistic: '',
+      aspirational: '',
+      settling: '',
+      statistics: ''
+    };
+
+    if (this.currentGender === 'male') {
+      if (smv.overall >= 80) {
+        market.realistic = 'Top 20-30% of women (7-9/10 range)';
+        market.aspirational = 'Top 10% of women possible';
+      } else if (smv.overall >= 60) {
+        market.realistic = 'Top 40-60% of women (5-7/10 range)';
+        market.aspirational = 'Top 30% with optimization';
+      } else if (smv.overall >= 40) {
+        market.realistic = 'Average to below average women (4-6/10 range)';
+        market.aspirational = 'Top 50% with significant improvement';
+      } else {
+        market.realistic = 'Bottom 40% of women';
+        market.aspirational = 'Average women with major self-improvement';
+      }
+    } else {
+      if (smv.overall >= 80) {
+        market.realistic = 'Top 10-20% of men (High earners, fit, 6ft+)';
+        market.aspirational = 'Top 5% men accessible';
+      } else if (smv.overall >= 60) {
+        market.realistic = 'Top 30-50% of men (Above average earners, decent looks)';
+        market.aspirational = 'Top 20% with optimization';
+      } else if (smv.overall >= 40) {
+        market.realistic = 'Average men (median income, average looks)';
+        market.aspirational = 'Above average men possible';
+      } else {
+        market.realistic = 'Below average men';
+        market.aspirational = 'Average men with improvement';
+      }
+    }
+
+    return market;
+  }
+
+  generateRecommendation(smv) {
+    const recs = {
+      priority: '',
+      tactical: [],
+      strategic: '',
+      warning: ''
+    };
+
+    if (this.currentGender === 'male') {
+      if (smv.overall < 40) {
+        recs.priority = 'CRITICAL DEVELOPMENT NEEDED';
+        recs.tactical = [
+          'Focus on income/provider capability immediately',
+          'Start fitness regimen - minimum 3x/week strength training',
+          'Develop one high-value skill or credential',
+          'Lower short-term standards to build experience'
+        ];
+        recs.strategic = 'Your SMV is below average. Focus on fundamentals before pursuing high-value women.';
+      } else if (smv.overall < 60) {
+        recs.priority = 'Optimization Phase';
+        recs.tactical = [
+          'Maximize earning potential in current career',
+          'Build visible status markers (style, car, residence)',
+          'Expand social proof and networks',
+          'Improve physical presentation'
+        ];
+        recs.strategic = 'You have average SMV. Strategic improvements can move you into keeper territory for quality women.';
+      } else {
+        recs.priority = 'Refinement and Leverage';
+        recs.tactical = [
+          'Leverage high SMV for mate selection',
+          'Be selective - you have options',
+          'Maintain edge through continued development',
+          'Consider long-term strategy (marriage/family timing)'
+        ];
+        recs.strategic = 'You have strong SMV. Focus on finding the right match rather than improvement.';
+      }
+
+      if (smv.delusionIndex > 50) {
+        recs.warning = 'WARNING: Your standards significantly exceed your current market value. Adjust expectations or commit to major self-improvement.';
+      }
+
+    } else {
+      if (smv.overall < 40) {
+        recs.priority = 'CRITICAL DEVELOPMENT NEEDED';
+        recs.tactical = [
+          'Physical optimization is paramount (fitness, beauty routine)',
+          'Reduce risk indicators (drama, instability)',
+          'Develop nurturing and cooperative skills',
+          'Lower standards to realistic range for current SMV'
+        ];
+        recs.strategic = 'Your SMV is below average. Without improvement, high-value men will not commit long-term.';
+      } else if (smv.overall < 60) {
+        recs.priority = 'Optimization Phase';
+        recs.tactical = [
+          'Maximize physical attractiveness (fitness, style, grooming)',
+          'Develop feminine nurturing traits',
+          'Minimize drama and conflict patterns',
+          'Build cooperative partnership skills'
+        ];
+        recs.strategic = 'You have average SMV. Improvements can access above-average men for commitment.';
+      } else {
+        recs.priority = 'Leverage and Selection';
+        recs.tactical = [
+          'Be selective for commitment - you have options',
+          'Vet for provider, protector, parental capacity',
+          'Maintain SMV through health and beauty',
+          'Act while SMV is high (age is a factor)'
+        ];
+        recs.strategic = 'You have strong SMV. Focus on selecting the right high-value man for long-term commitment.';
+      }
+
+      if (smv.delusionIndex > 50) {
+        recs.warning = 'WARNING: Your standards (height/income/status) significantly exceed your current market value. The math suggests you\'re pursuing the top 1-5% of men while being in a lower percentile yourself. Either adjust standards or dramatically improve your SMV.';
+      }
+    }
+
+    return recs;
   }
 
   /**
@@ -1286,77 +1373,68 @@ export class AttractionEngine {
    * RESULTS DISPLAY
    * ========================================================================
    */
-  displayResults(scores) {
+  displayResults(smv) {
     const container = document.getElementById('questionContainer');
     const resultsSection = document.getElementById('resultsSection');
     
     if (container) container.style.display = 'none';
     if (resultsSection) resultsSection.style.display = 'block';
 
-    this.renderResultsDashboard(scores);
-    this.renderDetailedAnalysis(scores);
-    this.renderActionableInsights(scores);
+    this.renderSMVDashboard(smv);
+    this.renderMarketAnalysis(smv);
+    this.renderRecommendations(smv);
 
-    // Setup export handlers
-    this.setupExportHandlers(scores);
-
-    // Scroll to results
+    this.setupExportHandlers(smv);
     window.scrollTo(0, 0);
   }
 
-  renderResultsDashboard(scores) {
+  renderSMVDashboard(smv) {
     const container = document.getElementById('resultsContent');
     if (!container) return;
 
-    const questions = this.currentGender === 'male' ? this.getMaleQuestions() : this.getFemaleQuestions();
-    
     let html = `
       <div class="results-dashboard">
         <div class="results-header">
-          <h2>Your Attraction Profile</h2>
-          <p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} Assessment Results</p>
+          <h2>Your Sexual Market Value Profile</h2>
+          <p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} SMV Assessment</p>
         </div>
 
         <div class="overall-score-card">
           <div class="score-display">
-            <div class="score-number">${scores.overall.toFixed(1)}</div>
-            <div class="score-label">Overall Attraction Score</div>
-            <div class="score-percentile">~${scores.percentile}th Percentile</div>
+            <div class="score-number">${Math.round(smv.overall)}</div>
+            <div class="score-label">SMV Percentile</div>
+            <div class="score-percentile">${smv.marketPosition}</div>
           </div>
           <div class="score-interpretation">
-            ${this.getOverallInterpretation(scores.overall, this.currentGender)}
+            <p>${this.getSMVInterpretation(smv.overall, this.currentGender)}</p>
           </div>
         </div>
 
+        ${smv.delusionIndex > 30 ? `
+          <div class="delusion-warning">
+            <h3>⚠️ Delusion Index: ${Math.round(smv.delusionIndex)}%</h3>
+            <p>${this.getDelusionWarning(smv.delusionIndex, this.currentGender)}</p>
+          </div>
+        ` : ''}
+
+        <div class="level-classification">
+          <h3>Developmental Level</h3>
+          <p><strong>${smv.levelClassification}</strong></p>
+          <p class="level-description">${this.getLevelDescription(smv.levelClassification)}</p>
+        </div>
+
         <div class="cluster-scores">
-          <h3>Cluster Breakdown</h3>
-          ${Object.keys(questions).map((clusterName, index) => {
-            const phase = questions[clusterName];
-            const cluster = scores.clusters[clusterName];
+          <h3>SMV Component Breakdown</h3>
+          ${Object.keys(smv.clusters).map(clusterName => {
+            const score = smv.clusters[clusterName];
             return `
               <div class="cluster-card">
                 <div class="cluster-header">
-                  <h4>${phase.title}</h4>
-                  <span class="cluster-score">${cluster.weightedAverage.toFixed(1)}/10</span>
+                  <h4>${this.formatClusterName(clusterName)}</h4>
+                  <span class="cluster-score">${Math.round(score)}th Percentile</span>
                 </div>
                 <div class="cluster-bar">
-                  <div class="cluster-bar-fill" style="width: ${cluster.weightedAverage * 10}%; background: ${this.getScoreColor(cluster.weightedAverage)}"></div>
-                </div>
-                <p class="cluster-description">${this.getClusterInterpretation(clusterName, cluster.weightedAverage, this.currentGender)}</p>
-                
-                <div class="subcategory-scores">
-                  ${Object.keys(scores.subcategories[clusterName]).map(subcatName => {
-                    const subcat = scores.subcategories[clusterName][subcatName];
-                    return `
-                      <div class="subcategory-row">
-                        <span class="subcat-name">${this.formatSubcategory(subcatName)}</span>
-                        <span class="subcat-score">${subcat.weightedAverage.toFixed(1)}</span>
-                        <div class="subcat-bar">
-                          <div class="subcat-bar-fill" style="width: ${subcat.weightedAverage * 10}%; background: ${this.getScoreColor(subcat.weightedAverage)}"></div>
-                        </div>
-                      </div>
-                    `;
-                  }).join('')}
+                  <div class="cluster-bar-fill" style="width: ${score}%; background: ${this.getPercentileColor(score)}"></div>
                 </div>
               </div>
             `;
@@ -1368,126 +1446,29 @@ export class AttractionEngine {
     container.innerHTML = html;
   }
 
-  getScoreColor(score) {
-    if (score >= 8) return '#2ecc71'; // Excellent - Green
-    if (score >= 6) return '#3498db'; // Good - Blue
-    if (score >= 4) return '#f39c12'; // Average - Orange
-    return '#e74c3c'; // Needs work - Red
-  }
-
-  getOverallInterpretation(score, gender) {
-    if (score >= 8.5) {
-      return `<p><strong>Exceptional.</strong> You possess strong attraction fundamentals across all dimensions. You're likely highly successful in ${gender === 'male' ? 'securing female interest and maintaining high status among males' : 'attracting quality male attention and maintaining strong social positioning'}.</p>`;
-    } else if (score >= 7) {
-      return `<p><strong>Strong.</strong> You have solid attraction fundamentals with room for optimization. You're above average in ${gender === 'male' ? 'both male hierarchies and female selection criteria' : 'both securing commitment and social positioning'}.</p>`;
-    } else if (score >= 5.5) {
-      return `<p><strong>Average.</strong> You have decent attraction fundamentals but significant room for improvement. Focus on strengthening your weakest clusters for better results.</p>`;
-    } else if (score >= 4) {
-      return `<p><strong>Below Average.</strong> You face challenges in attraction dynamics. This assessment identifies specific areas requiring urgent attention and development.</p>`;
-    } else {
-      return `<p><strong>Needs Significant Work.</strong> Multiple critical deficiencies require immediate attention. Use the detailed analysis below to prioritize your development path.</p>`;
-    }
-  }
-
-  getClusterInterpretation(clusterName, score, gender) {
-    const interpretations = {
-      male: {
-        coalitionRank: {
-          high: "You command strong respect among men through demonstrated courage, self-control, and competence. Other males recognize your capability and are likely to ally with or defer to you.",
-          mid: "You maintain reasonable standing among male peers but lack dominance. Building courage, discipline, and problem-solving capacity will elevate your position.",
-          low: "You struggle for respect in male hierarchies. This limits your access to resources, alliances, and ultimately, female selection. Focus on building courage and competence."
-        },
-        reproductiveConfidence: {
-          high: "You strongly signal provider, protector, and parental investment capacity. Women seeking long-term commitment will perceive you as high-value for genetic legacy.",
-          mid: "You show moderate potential as a long-term mate but lack compelling signals in one or more P dimensions. Strengthen your weakest areas to improve female evaluation.",
-          low: "Women will hesitate to invest long-term due to weak signals of protection, provision, or parental capacity. This severely limits relationship depth and commitment."
-        },
-        axisOfAttraction: {
-          high: "You display strong initial attraction signals through status, resources, and physical presentation. You likely generate significant female interest on first impression.",
-          mid: "Your display signals are adequate but not compelling. Improving physical fitness, status, or wealth presentation will significantly boost initial attraction.",
-          low: "Weak display signals limit initial female interest. Without strong first impressions, you never get the chance to demonstrate deeper value. Prioritize visible improvements."
-        }
-      },
-      female: {
-        coalitionRank: {
-          high: "You wield significant influence among women and successfully navigate female social hierarchies. You defend your position against rivals and command respect.",
-          mid: "You maintain stable social positioning but lack dominance. Building stronger alliances and more strategic status signaling will elevate your position.",
-          low: "You struggle in female social hierarchies, making you vulnerable to sabotage and limiting your ability to retain high-value male attention."
-        },
-        reproductiveConfidence: {
-          high: "You strongly signal loyalty, nurturing capacity, and collaborative partnership. Men seeking long-term commitment will perceive you as low-risk, high-reward.",
-          mid: "You show moderate potential as a long-term partner but raise some concerns. Addressing loyalty signals or nurturing capacity will improve male commitment.",
-          low: "Men will hesitate to commit resources long-term due to concerns about loyalty, collaboration, or nurturing. This limits relationship stability and male investment."
-        },
-        axisOfAttraction: {
-          high: "You display strong fertility signals and minimal risk indicators. Men find you highly attractive for both short-term and long-term consideration.",
-          mid: "Your attraction signals are mixed - good fertility markers but some risk flags, or vice versa. Optimizing both dimensions will significantly improve male interest.",
-          low: "Weak fertility signals and/or high risk indicators severely limit male attraction. Physical optimization and stability are critical priorities."
-        }
-      }
-    };
-
-    const genderMaps = interpretations[gender];
-    if (!genderMaps || !genderMaps[clusterName]) return '';
-
-    const cluster = genderMaps[clusterName];
-    if (score >= 7) return cluster.high;
-    if (score >= 5) return cluster.mid;
-    return cluster.low;
-  }
-
-  renderDetailedAnalysis(scores) {
+  renderMarketAnalysis(smv) {
     const container = document.getElementById('resultsContent');
     if (!container) return;
 
-    // Find strengths and weaknesses
-    const allSubcats = [];
-    Object.keys(scores.subcategories).forEach(clusterName => {
-      Object.keys(scores.subcategories[clusterName]).forEach(subcatName => {
-        const subcat = scores.subcategories[clusterName][subcatName];
-        allSubcats.push({
-          cluster: clusterName,
-          subcategory: subcatName,
-          score: subcat.weightedAverage,
-          label: this.formatSubcategory(subcatName)
-        });
-      });
-    });
-
-    allSubcats.sort((a, b) => b.score - a.score);
-    const strengths = allSubcats.slice(0, 3);
-    const weaknesses = allSubcats.slice(-3).reverse();
-
     const analysisHtml = `
-      <div class="detailed-analysis">
-        <h3>Detailed Analysis</h3>
+      <div class="market-analysis">
+        <h3>Market Position Analysis</h3>
         
-        <div class="strength-weakness-grid">
-          <div class="strength-column">
-            <h4>Top Strengths</h4>
-            ${strengths.map(s => `
-              <div class="strength-item">
-                <div class="sw-header">
-                  <span class="sw-label">${s.label}</span>
-                  <span class="sw-score" style="color: ${this.getScoreColor(s.score)}">${s.score.toFixed(1)}/10</span>
-                </div>
-                <p class="sw-description">${this.getSubcategoryGuidance(s.subcategory, s.score, this.currentGender, true)}</p>
-              </div>
-            `).join('')}
+        <div class="market-grid">
+          <div class="market-card">
+            <h4>Realistic Target Market</h4>
+            <p>${smv.targetMarket.realistic}</p>
           </div>
+          
+          <div class="market-card">
+            <h4>Aspirational (With Improvement)</h4>
+            <p>${smv.targetMarket.aspirational}</p>
+          </div>
+        </div>
 
-          <div class="weakness-column">
-            <h4>Priority Development Areas</h4>
-            ${weaknesses.map(w => `
-              <div class="weakness-item">
-                <div class="sw-header">
-                  <span class="sw-label">${w.label}</span>
-                  <span class="sw-score" style="color: ${this.getScoreColor(w.score)}">${w.score.toFixed(1)}/10</span>
-                </div>
-                <p class="sw-description">${this.getSubcategoryGuidance(w.subcategory, w.score, this.currentGender, false)}</p>
-              </div>
-            `).join('')}
-          </div>
+        <div class="preferences-analysis">
+          <h4>Your Stated Preferences vs Market Reality</h4>
+          ${this.renderPreferencesAnalysis(smv)}
         </div>
       </div>
     `;
@@ -1495,94 +1476,116 @@ export class AttractionEngine {
     container.insertAdjacentHTML('beforeend', analysisHtml);
   }
 
-  getSubcategoryGuidance(subcategory, score, gender, isStrength) {
-    // This would be a large mapping of specific guidance for each subcategory
-    // For brevity, providing a template approach
-    if (isStrength) {
-      return `This is a key strength. Continue to develop and leverage this advantage in your attraction strategy.`;
+  renderPreferencesAnalysis(smv) {
+    const prefs = this.preferences;
+    let html = '<ul class="analysis-list">';
+
+    if (this.currentGender === 'male') {
+      const ageGap = prefs.age - prefs.target_age_max;
+      if (ageGap > 10) {
+        html += `<li class="warning">You're seeking women significantly younger (${ageGap}+ year gap). This requires top-tier SMV (80+). Your SMV: ${Math.round(smv.overall)}</li>`;
+      }
+      if (prefs.physical_standards >= 5 && smv.overall < 60) {
+        html += `<li class="warning">Your physical standards are high but your Axis of Attraction score is moderate. Consider improving or adjusting standards.</li>`;
+      }
     } else {
-      return `This area requires development. Focus here to see significant improvement in overall attraction dynamics.`;
+      if (prefs.height_requirement >= 7) {
+        html += `<li class="warning">6ft+ height requirement eliminates ~85% of men. Your SMV of ${Math.round(smv.overall)} may not access this tier consistently.</li>`;
+      }
+      if (prefs.income_requirement >= 7) {
+        html += `<li class="warning">$150k+ income requirement targets top ~10% of male earners. Your SMV: ${Math.round(smv.overall)} percentile.</li>`;
+      }
+      const age = prefs.age;
+      if (age > 30 && (prefs.height_requirement >= 7 || prefs.income_requirement >= 7)) {
+        html += `<li class="critical">At age ${age} with high standards, you're competing against younger women for top-tier men. Time sensitivity is critical.</li>`;
+      }
     }
+
+    html += '</ul>';
+    return html;
   }
 
-  renderActionableInsights(scores) {
+  renderRecommendations(smv) {
     const container = document.getElementById('resultsContent');
     if (!container) return;
 
-    const insights = this.generateActionableInsights(scores, this.currentGender);
+    const rec = smv.recommendation;
 
-    const insightsHtml = `
-      <div class="actionable-insights">
-        <h3>Actionable Development Path</h3>
-        <p class="insights-intro">Based on your assessment, here are prioritized actions to improve your attraction profile:</p>
+    const recHtml = `
+      <div class="recommendations">
+        <h3>Strategic Recommendations</h3>
+        
+        <div class="priority-box ${rec.priority.includes('CRITICAL') ? 'critical' : 'normal'}">
+          <h4>${rec.priority}</h4>
+          <p>${rec.strategic}</p>
+        </div>
 
-        <div class="insights-grid">
-          ${insights.map((insight, index) => `
-            <div class="insight-card priority-${insight.priority}">
-              <div class="insight-header">
-                <span class="insight-number">${index + 1}</span>
-                <span class="insight-priority">${insight.priority} Priority</span>
-              </div>
-              <h4>${insight.title}</h4>
-              <p class="insight-why"><strong>Why:</strong> ${insight.rationale}</p>
-              <div class="insight-actions">
-                <strong>Actions:</strong>
-                <ul>
-                  ${insight.actions.map(action => `<li>${action}</li>`).join('')}
-                </ul>
-              </div>
-            </div>
-          `).join('')}
+        ${rec.warning ? `
+          <div class="warning-box">
+            <strong>⚠️ Reality Check:</strong>
+            <p>${rec.warning}</p>
+          </div>
+        ` : ''}
+
+        <div class="tactical-actions">
+          <h4>Immediate Actions</h4>
+          <ol>
+            ${rec.tactical.map(action => `<li>${action}</li>`).join('')}
+          </ol>
         </div>
       </div>
     `;
 
-    container.insertAdjacentHTML('beforeend', insightsHtml);
+    container.insertAdjacentHTML('beforeend', recHtml);
   }
 
-  generateActionableInsights(scores, gender) {
-    // Generate prioritized insights based on scores
-    const insights = [];
-
-    // Analyze clusters and subcategories to find critical gaps
-    Object.keys(scores.subcategories).forEach(clusterName => {
-      Object.keys(scores.subcategories[clusterName]).forEach(subcatName => {
-        const subcat = scores.subcategories[clusterName][subcatName];
-        if (subcat.weightedAverage < 5) {
-          // Critical area
-          insights.push(this.getInsightForSubcategory(clusterName, subcatName, subcat.weightedAverage, gender, 'Critical'));
-        } else if (subcat.weightedAverage < 7) {
-          // Important area
-          insights.push(this.getInsightForSubcategory(clusterName, subcatName, subcat.weightedAverage, gender, 'High'));
-        }
-      });
-    });
-
-    // Sort by priority and score (lowest first within priority)
-    insights.sort((a, b) => {
-      const priorityOrder = { 'Critical': 1, 'High': 2, 'Medium': 3 };
-      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      }
-      return a.score - b.score;
-    });
-
-    return insights.slice(0, 5); // Top 5 insights
-  }
-
-  getInsightForSubcategory(cluster, subcategory, score, gender, priority) {
-    // Template insight - in production, this would be a comprehensive mapping
-    return {
-      priority: priority,
-      score: score,
-      title: `Improve ${this.formatSubcategory(subcategory)}`,
-      rationale: `This dimension scores ${score.toFixed(1)}/10, significantly limiting your overall attraction profile.`,
-      actions: [
-        'Specific action 1 based on subcategory',
-        'Specific action 2 based on subcategory',
-        'Specific action 3 based on subcategory'
-      ]
+  formatClusterName(name) {
+    const map = {
+      coalitionRank: 'Coalition Rank',
+      reproductiveConfidence: 'Reproductive Confidence',
+      axisOfAttraction: 'Axis of Attraction'
     };
+    return map[name] || name;
+  }
+
+  getPercentileColor(percentile) {
+    if (percentile >= 80) return '#2ecc71';
+    if (percentile >= 60) return '#3498db';
+    if (percentile >= 40) return '#f39c12';
+    return '#e74c3c';
+  }
+
+  getSMVInterpretation(smv, gender) {
+    if (smv >= 80) {
+      return `You are in the top quintile of ${gender === 'male' ? 'men' : 'women'}. You have significant options and leverage in the mating market.`;
+    } else if (smv >= 60) {
+      return `You are above average. With strategic optimization, you can access high-quality partners.`;
+    } else if (smv >= 40) {
+      return `You are in the average range. Focused improvement in key areas will significantly expand your options.`;
+    } else {
+      return `You are below average. Significant development is needed to access quality partners. Focus on fundamentals.`;
+    }
+  }
+
+  getDelusionWarning(index, gender) {
+    if (index >= 70) {
+      return 'SEVERE MISMATCH: Your expectations are dramatically out of alignment with your market value. You are likely chasing the top 1-5% while not being in that tier yourself. This will result in persistent rejection and frustration.';
+    } else if (index >= 50) {
+      return 'SIGNIFICANT MISMATCH: Your standards exceed your current market position. Either commit to major self-improvement or adjust expectations to realistic ranges.';
+    } else {
+      return 'MODERATE MISMATCH: Some recalibration needed between standards and market position.';
+    }
+  }
+
+  getLevelDescription(level) {
+    const descriptions = {
+      'Integral/Holistic (High Integration)': 'You demonstrate meta-cognitive awareness and can navigate complex social dynamics with maturity.',
+      'Achievement-Oriented (Rational/Strategic)': 'You operate strategically and understand market dynamics rationally.',
+      'Conformist (Rule-Following)': 'You follow social scripts but may lack strategic independence.',
+      'Egocentric (Reactive/Impulsive)': 'You operate primarily from ego and immediate gratification.',
+      'Survival Mode (Basic Needs Focus)': 'You are focused on basic survival and security.'
+    };
+    return descriptions[level] || '';
   }
 
   /**
@@ -1590,104 +1593,96 @@ export class AttractionEngine {
    * EXPORT FUNCTIONALITY
    * ========================================================================
    */
-  setupExportHandlers(scores) {
+  setupExportHandlers(smv) {
     const jsonBtn = document.getElementById('exportJSON');
     const csvBtn = document.getElementById('exportCSV');
     const briefBtn = document.getElementById('exportExecutiveBrief');
     const newBtn = document.getElementById('newAssessment');
 
-    if (jsonBtn) {
-      jsonBtn.addEventListener('click', () => this.exportJSON(scores));
-    }
-    if (csvBtn) {
-      csvBtn.addEventListener('click', () => this.exportCSV(scores));
-    }
-    if (briefBtn) {
-      briefBtn.addEventListener('click', () => this.exportExecutiveBrief(scores));
-    }
-    if (newBtn) {
-      newBtn.addEventListener('click', () => this.resetAssessment());
-    }
+    if (jsonBtn) jsonBtn.addEventListener('click', () => this.exportJSON(smv));
+    if (csvBtn) csvBtn.addEventListener('click', () => this.exportCSV(smv));
+    if (briefBtn) briefBtn.addEventListener('click', () => this.exportBrief(smv));
+    if (newBtn) newBtn.addEventListener('click', () => this.resetAssessment());
   }
 
-  exportJSON(scores) {
+  exportJSON(smv) {
     const data = {
       gender: this.currentGender,
       timestamp: new Date().toISOString(),
+      preferences: this.preferences,
       responses: this.responses,
-      scores: scores
+      smv: smv
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `attraction-assessment-${this.currentGender}-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `smv-assessment-${this.currentGender}-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
   }
 
-  exportCSV(scores) {
-    let csv = 'Category,Subcategory,Score,Interpretation\n';
+  exportCSV(smv) {
+    let csv = 'Metric,Value\n';
+    csv += `Overall SMV,${Math.round(smv.overall)}\n`;
+    csv += `Market Position,${smv.marketPosition}\n`;
+    csv += `Delusion Index,${Math.round(smv.delusionIndex)}\n`;
+    csv += `Level,${smv.levelClassification}\n`;
     
-    Object.keys(scores.subcategories).forEach(clusterName => {
-      Object.keys(scores.subcategories[clusterName]).forEach(subcatName => {
-        const subcat = scores.subcategories[clusterName][subcatName];
-        csv += `"${clusterName}","${subcatName}",${subcat.weightedAverage.toFixed(2)},"${this.getScoreLabel(subcat.weightedAverage)}"\n`;
-      });
+    Object.keys(smv.clusters).forEach(cluster => {
+      csv += `${this.formatClusterName(cluster)},${Math.round(smv.clusters[cluster])}\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `attraction-assessment-${this.currentGender}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `smv-report-${this.currentGender}-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
   }
 
-  exportExecutiveBrief(scores) {
-    // Generate a comprehensive PDF-style text report
-    let brief = `ATTRACTION ASSESSMENT - EXECUTIVE BRIEF\n`;
+  exportBrief(smv) {
+    let brief = `SEXUAL MARKET VALUE ASSESSMENT\n`;
     brief += `${'='.repeat(80)}\n\n`;
-    brief += `Assessment Date: ${new Date().toISOString().split('T')[0]}\n`;
+    brief += `Date: ${new Date().toISOString().split('T')[0]}\n`;
     brief += `Gender: ${this.currentGender.toUpperCase()}\n`;
-    brief += `Overall Score: ${scores.overall.toFixed(1)}/10 (~${scores.percentile}th percentile)\n\n`;
+    brief += `Overall SMV: ${Math.round(smv.overall)}th Percentile\n`;
+    brief += `Market Position: ${smv.marketPosition}\n`;
+    brief += `Developmental Level: ${smv.levelClassification}\n\n`;
 
-    brief += `EXECUTIVE SUMMARY\n`;
-    brief += `${'-'.repeat(80)}\n`;
-    brief += this.getOverallInterpretation(scores.overall, this.currentGender).replace(/<[^>]*>/g, '') + '\n\n';
+    if (smv.delusionIndex > 30) {
+      brief += `⚠️ DELUSION INDEX: ${Math.round(smv.delusionIndex)}%\n`;
+      brief += `${this.getDelusionWarning(smv.delusionIndex, this.currentGender)}\n\n`;
+    }
 
-    brief += `CLUSTER ANALYSIS\n`;
+    brief += `STRATEGIC ASSESSMENT\n`;
     brief += `${'-'.repeat(80)}\n`;
-    Object.keys(scores.clusters).forEach(clusterName => {
-      const cluster = scores.clusters[clusterName];
-      brief += `\n${clusterName.toUpperCase()}: ${cluster.weightedAverage.toFixed(1)}/10\n`;
-      brief += this.getClusterInterpretation(clusterName, cluster.weightedAverage, this.currentGender).replace(/<[^>]*>/g, '') + '\n';
+    brief += `${smv.recommendation.strategic}\n\n`;
+
+    brief += `PRIORITY: ${smv.recommendation.priority}\n\n`;
+
+    brief += `IMMEDIATE ACTIONS:\n`;
+    smv.recommendation.tactical.forEach((action, i) => {
+      brief += `${i + 1}. ${action}\n`;
     });
 
     const blob = new Blob([brief], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `attraction-brief-${this.currentGender}-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `smv-brief-${this.currentGender}-${new Date().toISOString().split('T')[0]}.txt`;
     a.click();
   }
 
-  getScoreLabel(score) {
-    if (score >= 8) return 'Excellent';
-    if (score >= 6) return 'Good';
-    if (score >= 4) return 'Average';
-    return 'Needs Development';
-  }
-
   resetAssessment() {
-    // Reset all state
     this.currentGender = null;
     this.currentPhase = 0;
     this.responses = {};
+    this.preferences = {};
     this.scores = {};
+    this.smv = {};
     this.currentQuestionIndex = 0;
 
-    // Hide results, show intro
     const intro = document.getElementById('introSection');
     const assessment = document.getElementById('assessmentSection');
     const results = document.getElementById('resultsSection');
@@ -1700,5 +1695,4 @@ export class AttractionEngine {
   }
 }
 
-// Auto-initialize
-console.log('attraction-engine.js loaded');
+console.log('AttractionEngine v2.0 loaded');
