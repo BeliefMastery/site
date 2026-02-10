@@ -790,6 +790,7 @@ header.site-header {
 .channels-container,
 .coaching-container,
 .needs-dependency-container,
+.attraction-container,
 .spectrum-container,
 .paradigm-container,
 .relationship-container,
@@ -2552,6 +2553,50 @@ figure.headline-book a {
     border-radius: var(--radius);
     padding: 1.5rem;
     box-shadow: var(--shadow);
+}
+
+/* Sovereign Assessment Engine — matrix cards */
+.sea-matrices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.sea-matrix-card {
+    background: var(--glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.sea-matrix-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.sea-matrix-card .matrix-subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.sea-matrix-card .matrix-scores {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.sea-matrix-card .matrix-quadrant {
+    margin-bottom: 0.5rem;
+}
+
+.sea-matrix-card .matrix-description {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 0;
 }
 
 .loop-header {

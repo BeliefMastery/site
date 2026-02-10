@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Warwick Marshall">
-  <meta name="keywords" content="Warwick Marshall, Golden Bay, New Zealand, Belief Mastery, Sovereign of Mind">
+  <meta name="author" content="Warwick Marshall">
+  <meta name="keywords" content="Warwick Marshall, Golden Bay, New Zealand, Belief Mastery, Sovereign of Mind, Sovereign Assessment Engine">
   <meta name="geo.placename" content="Golden Bay, New Zealand">
   <meta name="geo.region" content="NZ">
-<title>STATUS, SELECTION, ATTRACTION</title>
-  <meta name="description" content="Modern attraction classifier informed by red-pill and esoteric historical references.">
+  <title>Status, Selection, Attraction — Assessment Mapping</title>
+  <meta name="description" content="Map your position across evolutionary clusters—Coalition Rank, Reproductive Confidence, Axis of Attraction. Gender-specific weightings. Percentile SMV, delusion index, market segmentation.">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://beliefmastery.github.io/site/attraction.html">
-  <meta property="og:title" content="STATUS, SELECTION, ATTRACTION">
-  <meta property="og:description" content="Modern Attraction classifier informed by red-pill and esoteric historical references.">
+  <meta property="og:title" content="Status, Selection, Attraction — Assessment Mapping">
+  <meta property="og:description" content="Six-cluster map: male (3C's, 4P's, Axis) and female (3S's, Reproductive Confidence, Axis). Hypergamy and Commitment Securing. Percentile SMV and delusion index.">
   <meta property="og:image" content="https://beliefmastery.github.io/site/images/redpill-cover.jpg">
   
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://beliefmastery.github.io/site/attraction.html">
-  <meta name="twitter:title" content="STATUS, SELECTION, ATTRACTION">
-  <meta name="twitter:description" content="Modern attraction classifier informed by red-pill and esoteric historical references.">
+  <meta name="twitter:title" content="Status, Selection, Attraction — Assessment Mapping">
+  <meta name="twitter:description" content="Six-cluster map: male (3C's, 4P's, Axis) and female (3S's, Reproductive Confidence, Axis). Hypergamy and Commitment Securing. Percentile SMV and delusion index.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/redpill2-cover.jpg">
   
   <!-- CRITICAL: Universal styles MUST load first -->
@@ -29,545 +29,11 @@
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   
-  <!-- Resource hints for performance -->
-  <link rel="modulepreload" href="./AttractionEngine.js">
-  <link rel="modulepreload" href="./shared/data-loader.js">
-  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <!-- Performance: Preload critical resources -->
+  <link rel="modulepreload" href="./attraction-engine.js">
+  <link rel="modulepreload" href="./attraction-data.js">
   <link rel="modulepreload" href="./shared/utils.js">
   <link rel="modulepreload" href="./shared/performance-monitor.js">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <style>
-    /* Additional styles for the attraction assessment */
-    .gender-selection {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 2rem;
-    }
-
-    .gender-buttons {
-      display: grid;
-      gap: 1.5rem;
-      margin: 2rem 0;
-    }
-
-    .gender-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 2rem;
-      text-align: left;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
-    }
-
-    .gender-btn:hover {
-      border-color: rgba(52, 152, 219, 0.5);
-      background: rgba(52, 152, 219, 0.1);
-      transform: translateY(-2px);
-    }
-
-    .gender-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    .gender-label {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .gender-desc {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      line-height: 1.5;
-    }
-
-    .phase-intro {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 2rem;
-    }
-
-    .phase-progress {
-      margin-bottom: 2rem;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 0.5rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #3498db, #2ecc71);
-      transition: width 0.5s ease;
-    }
-
-    .progress-text {
-      text-align: center;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-
-    .phase-subtitle {
-      color: #3498db;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .phase-description {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-
-    .phase-info {
-      background: rgba(52, 152, 219, 0.1);
-      border-left: 3px solid #3498db;
-      padding: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .phase-questions {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 2rem;
-    }
-
-    .phase-header-mini {
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .phase-header-mini h3 {
-      margin-bottom: 0.5rem;
-    }
-
-    .question-progress {
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-
-    .question-block {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .question-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .question-number {
-      font-weight: 600;
-      color: #3498db;
-    }
-
-    .question-category {
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-
-    .question-text {
-      font-size: 1.2rem;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-
-    .options-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .option-label {
-      display: block;
-      padding: 1rem;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .option-label:hover {
-      border-color: rgba(52, 152, 219, 0.5);
-      background: rgba(52, 152, 219, 0.05);
-    }
-
-    .option-label input[type="radio"] {
-      display: none;
-    }
-
-    .option-label input[type="radio"]:checked + .option-content {
-      color: #3498db;
-    }
-
-    .option-label:has(input[type="radio"]:checked) {
-      border-color: #3498db;
-      background: rgba(52, 152, 219, 0.1);
-    }
-
-    .option-content {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .option-value {
-      font-weight: 700;
-      color: #3498db;
-      min-width: 50px;
-    }
-
-    .option-text {
-      flex: 1;
-      line-height: 1.5;
-    }
-
-    .question-nav {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 2rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .results-dashboard {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 2rem;
-    }
-
-    .results-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .results-subtitle {
-      font-size: 1.2rem;
-      opacity: 0.8;
-      margin-top: 0.5rem;
-    }
-
-    .overall-score-card {
-      background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(46, 204, 113, 0.2));
-      border-radius: 12px;
-      padding: 3rem;
-      margin-bottom: 3rem;
-      text-align: center;
-    }
-
-    .score-display {
-      margin-bottom: 2rem;
-    }
-
-    .score-number {
-      font-size: 5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #3498db, #2ecc71);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .score-label {
-      font-size: 1.2rem;
-      opacity: 0.8;
-      margin-top: 0.5rem;
-    }
-
-    .score-percentile {
-      font-size: 1rem;
-      color: #3498db;
-      margin-top: 0.5rem;
-    }
-
-    .score-interpretation {
-      max-width: 700px;
-      margin: 0 auto;
-      font-size: 1.1rem;
-      line-height: 1.8;
-    }
-
-    .cluster-scores {
-      margin-bottom: 3rem;
-    }
-
-    .cluster-card {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .cluster-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .cluster-header h4 {
-      margin: 0;
-    }
-
-    .cluster-score {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #3498db;
-    }
-
-    .cluster-bar {
-      width: 100%;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-
-    .cluster-bar-fill {
-      height: 100%;
-      transition: width 0.8s ease;
-      border-radius: 6px;
-    }
-
-    .cluster-description {
-      font-size: 1rem;
-      line-height: 1.6;
-      opacity: 0.9;
-      margin-bottom: 1.5rem;
-    }
-
-    .subcategory-scores {
-      display: grid;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .subcategory-row {
-      display: grid;
-      grid-template-columns: 1fr auto 200px;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .subcat-name {
-      font-size: 0.9rem;
-    }
-
-    .subcat-score {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .subcat-bar {
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .subcat-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.5s ease;
-    }
-
-    .detailed-analysis {
-      margin-bottom: 3rem;
-    }
-
-    .strength-weakness-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    @media (max-width: 768px) {
-      .strength-weakness-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .strength-column,
-    .weakness-column {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      padding: 2rem;
-    }
-
-    .strength-column h4 {
-      color: #2ecc71;
-      margin-bottom: 1.5rem;
-    }
-
-    .weakness-column h4 {
-      color: #e74c3c;
-      margin-bottom: 1.5rem;
-    }
-
-    .strength-item,
-    .weakness-item {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .strength-item:last-child,
-    .weakness-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .sw-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-
-    .sw-label {
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-
-    .sw-score {
-      font-weight: 700;
-    }
-
-    .sw-description {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      opacity: 0.9;
-    }
-
-    .actionable-insights {
-      margin-bottom: 3rem;
-    }
-
-    .insights-intro {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-    }
-
-    .insights-grid {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    .insight-card {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      padding: 2rem;
-      border-left: 4px solid;
-    }
-
-    .insight-card.priority-Critical {
-      border-left-color: #e74c3c;
-    }
-
-    .insight-card.priority-High {
-      border-left-color: #f39c12;
-    }
-
-    .insight-card.priority-Medium {
-      border-left-color: #3498db;
-    }
-
-    .insight-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .insight-number {
-      background: rgba(52, 152, 219, 0.2);
-      color: #3498db;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-
-    .insight-priority {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .priority-Critical .insight-priority {
-      color: #e74c3c;
-    }
-
-    .priority-High .insight-priority {
-      color: #f39c12;
-    }
-
-    .priority-Medium .insight-priority {
-      color: #3498db;
-    }
-
-    .insight-card h4 {
-      margin-bottom: 1rem;
-    }
-
-    .insight-why {
-      margin-bottom: 1rem;
-      opacity: 0.9;
-    }
-
-    .insight-actions ul {
-      margin-top: 0.5rem;
-      margin-left: 1.5rem;
-    }
-
-    .insight-actions li {
-      margin-bottom: 0.5rem;
-      line-height: 1.5;
-    }
-
-    .export-section {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-top: 3rem;
-    }
-
-    .export-section h3 {
-      margin-bottom: 1rem;
-    }
-
-    .export-section p {
-      margin-bottom: 1.5rem;
-      opacity: 0.9;
-    }
-  </style>
 </head>
 <body>
 
@@ -595,24 +61,24 @@
         <li role="none" class="nav-dropdown">
           <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
           <ul class="dropdown-menu" role="menu">
-  <li role="none" class="dropdown-group group-neutral"><a role="menuitem" href="tools.html">All Tools</a></li>
-  <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
-  <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
-  <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
-  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="relationship.html">Relationships</a></li>
-  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
-  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
-  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="attraction.html">STATUS, SELECTION, ATTRACTION</a></li>
-  <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a></li>
-  <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
-  <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
-  <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity</a></li>
-  <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
-  <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
-  <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="entities.html">Will Anomaly Mapping</a></li>
+            <li role="none" class="dropdown-group group-neutral"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+            <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="relationship.html">Relationships</a></li>
+            <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
+            <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
+            <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="attraction.html">Status, Selection, Attraction</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="entities.html">Will Anomaly Mapping</a></li>
             <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="outlier-aptitude.html">Aptitude Mapping</a></li>
-  <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
-</ul>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+          </ul>
         </li>
         <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
       </ul>
@@ -620,24 +86,21 @@
   </header>
 
   <main>
-    <!-- Universal Tool Container -->
-    <div class="Attraction-container">
+    <div class="needs-dependency-container attraction-container">
       
-      <!-- Hero Image Section -->
       <div class="hero-image">
-        <img src="./images/redpill-cover.jpg" alt="STATUS, SELECTION, ATTRACTION" class="hero-img">
+        <img src="./images/redpill-cover.jpg" alt="Sovereign Assessment Engine" class="hero-img">
       </div>
       
-      <!-- Intro Section -->
       <section class="intro-section" id="introSection">
-        <h2 class="section-title-btn">STATUS, SELECTION, ATTRACTION</h2>
+        <h2 class="section-title-btn">Status, Selection, Attraction — Quick Reference Map</h2>
+        
         <p class="lead-text">
-          Find better dating success with attraction management 
+          Male and female archetypes shaped by evolutionary and anthropological pressure. Three undercurrents organize the field: Coalition Rank, Reproductive Confidence, and Axis of Attraction. A six-cluster map—three male, three female—that exposes leverage, not identity.
         </p>
         
-        <p>This honest and confronting assessment system identifies your strengths and weaknesses - supporting your direct confrontation and optimization.</p>
+        <p><strong>Gender-specific assessment.</strong> You must select male or female; weightings and biases differ significantly. The engine produces percentile SMV (0–100), market segmentation (Keeper/Sleeper/Sweeper), delusion index, and strategic recommendations informed by your preferences vs. reality.</p>
 
-        <!-- Extended Explanation Toggle -->
         <div class="extended-explanation-toggle" id="extendedExplanationToggle">
           <div class="extended-explanation-toggle-text">
             <span>Extended Explanation</span>
@@ -648,60 +111,33 @@
           <div class="content-section">
             <div class="ack-box">
               <p>
-                <strong>Descriptive Framework:</strong> This assessment uses a three-cluster evolutionary psychology framework to analyze attraction dynamics. Based on red-pill theory and behavioral science, it evaluates how your traits signal value in mating markets through Coalition Rank, Reproductive Confidence, and Axis of Attraction dimensions.
+                <strong>Three Undercurrents:</strong> Coalition Rank (intrasex standing among peers); Reproductive Confidence (deep calculation of childrearing demand—women filter for provision and protection, men for loyalty, nurture, and collaborative trust); Axis of Attraction (the display filter—immediate signals that invite or deny deeper evaluation). Together they form the scaffolding of status, selection, and attraction.
               </p>
             </div>
             
-            <p><strong>This multi-tier assessment identifies your attraction profile through three comprehensive phases:</strong></p>
-            
-            <h4>Male Assessment Path:</h4>
+            <p><strong>Male clusters (3):</strong></p>
             <ul class="feature-list">
-              <li><strong>Phase 1 - Coalition Rank (3C's):</strong> Evaluates your standing among male peers through Courage, Control, and Competence - determining your access to resources and alliances.</li>
-              <li><strong>Phase 2 - Reproductive Confidence (4P's):</strong> Assesses Perspicacity, Protector capacity, Provider capability, and Parental Investment - traits women evaluate for long-term mate selection.</li>
-              <li><strong>Phase 3 - Axis of Attraction:</strong> Measures Performance/Status Signals (wealth, productivity, generosity) and Physical/Genetic Signals (aesthetics, fitness, vitality) that create immediate draw.</li>
+              <li><strong>Coalition Rank (3C&rsquo;s):</strong> Courage, Control, Competence—male–male hierarchy determinants.</li>
+              <li><strong>Reproductive Confidence (4P&rsquo;s):</strong> Perspicacity, Protector, Provider, Parental Investor—female selection criteria.</li>
+              <li><strong>Axis of Attraction:</strong> Performance/Status signals and Physical/Genetic signals—immediate draw in mating markets.</li>
             </ul>
-
-            <h4>Female Assessment Path:</h4>
+            <p><strong>Female clusters (3):</strong></p>
             <ul class="feature-list">
-              <li><strong>Phase 1 - Coalition Rank (3S's):</strong> Evaluates Social Influence, Selectivity & Mate Guarding Success, and Status Signaling - determining your position in female hierarchies.</li>
-              <li><strong>Phase 2 - Reproductive Confidence:</strong> Assesses Paternity Certainty signals, Nurturing Standard, and Collaborative Trust Efficiency - traits men evaluate for long-term investment.</li>
-              <li><strong>Phase 3 - Axis of Attraction:</strong> Measures Fertility & Health Cues (youth, beauty, vitality) and Risk Cost Indicators (stability, loyalty, drama risk) that influence male mate choice.</li>
+              <li><strong>Coalition Rank (3S&rsquo;s):</strong> Social Influence, Selectivity &amp; Mate Guarding Success, Status Signaling—female–female hierarchy.</li>
+              <li><strong>Reproductive Confidence:</strong> Paternity Certainty, Nurturing Standard, Collaborative Trust Efficiency—male selection criteria.</li>
+              <li><strong>Axis of Attraction:</strong> Fertility &amp; Health cues vs. Risk Cost indicators—short-term and long-term male filter.</li>
             </ul>
-
-            <h3>Detailed Features</h3>
-            <ul class="feature-list">
-              <li>25+ behavioral questions per gender with weighted scoring</li>
-              <li>Multi-dimensional cluster analysis across evolutionary pressure points</li>
-              <li>Percentile rankings and comparative positioning</li>
-              <li>Detailed strengths and weaknesses identification</li>
-              <li>Prioritized actionable development recommendations</li>
-              <li>Export capabilities for personal tracking and AI coaching integration</li>
-            </ul>
-            <p class="form-help">Based on modern red-pill attraction taxonomy with behavioral focus.</p>
-            
-            <div class="ack-box">
-              <p>
-                <strong>Note:</strong> This assessment uses gendered behavioral patterns. While archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex; this assessment is more directly linked to sex and reproductive viability - backed up by statistical trends and biological essentialist theory.
-              </p>
-            </div>
+            <p><strong>Integrative principles:</strong> Hypergamy (female mate-selection aggregate) seeks upward convergence. Commitment Securing (male mate-investment counter-algorithm) seeks stability convergence.</p>
+            <p class="form-help">This does not prescribe identity; it exposes leverage. States are time-sensitive. Movement is possible.</p>
           </div>
         </div>
 
         <div class="content-section">
           <div class="ack-box">
-            <p><strong>Sovereignty Through-Line:</strong> This engine strengthens self-authorship, consent, and structural clarity. It is designed to increase agency, not dependence.</p>
-          </div>
-          <div class="ack-box">
-            <h4>Methodology</h4>
-            <ul class="feature-list">
-              <li><strong>Belief Mastery:</strong> Belief architecture, pattern recognition, calibrated change.</li>
-              <li><strong>Sovereign of Mind:</strong> Sovereignty, consent, and authorship in decision-making.</li>
-              <li><strong>Distortion Codex:</strong> Distortion detection, reality testing, and corrective clarity.</li>
-            </ul>
+            <p><strong>Market-aware mapping:</strong> The engine uses percentile-based SMV, delusion index (mismatch between your standards and your position), and Keeper/Sleeper/Sweeper segmentation. Mapping creates agency; sorting creates shame.</p>
           </div>
         </div>
 
-        <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
           <div class="disclaimer-acknowledgement-text">
             <span>Disclaimer</span>
@@ -710,48 +146,70 @@
 
         <section class="disclaimer-section" id="disclaimerSection">
           <div class="ack-box">
-            <p><strong>This is a descriptive tool, not a diagnostic or predictive instrument.</strong> Results reflect behavioral patterns and social role alignment, not fixed identity or mandates.</p>
+            <p><strong>This is a descriptive tool, not a diagnostic or predictive instrument.</strong> Results reflect current configuration—not fixed identity or mandates.</p>
           </div>
-        
-        <p class="form-help"><strong>Non-therapeutic disclaimer:</strong> This tool supports sovereignty-aligned self-inquiry and is not therapy, medical, or legal advice.</p>
-      </section>
+          <p class="form-help"><strong>Non-therapeutic disclaimer:</strong> This tool supports sovereignty-aligned self-inquiry and is not therapy, medical, or legal advice.</p>
+        </section>
       </section>
 
-      <!-- Assessment Action Section -->
       <section class="content-section" id="actionButtonsSection">
         <div class="action-buttons">
-          <button class="btn btn-primary btn-large" id="startAssessment">Begin Attraction Assessment</button>
+          <button class="btn btn-secondary" id="generateSampleReport">Generate Sample Report</button>
+          <button class="btn btn-primary" id="startAssessment">Begin Status, Selection, Attraction Assessment</button>
         </div>
       </section>
 
-      <!-- Assessment Section (hidden by default) -->
-      <section class="content-section" id="assessmentSection" style="display: none;">
-        <div id="questionContainer">
-          <!-- Questions populated by JavaScript -->
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="instructions-toggle" id="instructionsToggle">
+          <div class="instructions-toggle-text">
+            <span>❓ How to Use This Assessment</span>
+          </div>
+        </div>
+        
+        <div class="instructions-panel" id="instructionsPanel">
+          <h3>❓ How to Use This Assessment</h3>
+          <div class="instructions-content">
+            <p class="scale-guide"><strong>Scale (1–10):</strong></p>
+            <ul class="scale-list">
+              <li><strong>1–3:</strong> Low—rarely or not at all</li>
+              <li><strong>4–6:</strong> Moderate—sometimes or partially</li>
+              <li><strong>7–10:</strong> High—often or consistently</li>
+            </ul>
+            <p class="guidelines"><strong>Guidelines:</strong> Answer based on your current experience. States are time-sensitive—not identity. Be honest; movement is possible.</p>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p id="progressLabel" class="progress-text">Question 1 of 36</p>
+        
+        <div id="questionContainer"></div>
+        
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion" disabled>Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">❌ Abandon / Restart</button>
         </div>
       </section>
 
-      <!-- Results Section (hidden by default) -->
-      <section class="content-section" id="resultsSection" style="display: none;">
-        <div id="resultsContent">
-          <!-- Results populated by JavaScript -->
-        </div>
+      <section class="results-section" id="resultsSection">
+        <h2>Status, Selection, Attraction Profile</h2>
+        <div id="resultsContainer"></div>
         
         <div class="export-section">
           <h3>Export Your Analysis</h3>
-          <p>
-            Export your STATUS, SELECTION, ATTRACTION results in JSON or CSV format for integration with your personal AI coaching agent or for personal reference.
-          </p>
+          <p>Export your Status, Selection, Attraction results for reference or AI coaching integration.</p>
           <div class="action-buttons">
-            <button class="btn btn-primary" id="exportJSON">Export JSON</button>
-            <button class="btn btn-primary" id="exportCSV">Export CSV</button>
+            <button class="btn btn-primary" id="exportAnalysisJson">📥 Export (JSON)</button>
+            <button class="btn btn-primary" id="exportAnalysisCsv">📥 Export (CSV)</button>
             <button class="btn btn-secondary" id="exportExecutiveBrief">Export Executive Brief</button>
-            <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
+            <button class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
           </div>
         </div>
-        
-        <!-- Debug Report Container -->
-        <div id="debug-report"></div>
       </section>
     </div>
   </main>
@@ -761,95 +219,19 @@
   </footer>
 
   <script type="module">
-    // Import performance monitoring
     import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
-    
-    // Initialize performance monitoring
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        initializePerformanceMonitoring();
-      });
+      document.addEventListener('DOMContentLoaded', () => initializePerformanceMonitoring());
     } else {
       initializePerformanceMonitoring();
     }
-    
-    // Debug logging
-    console.log('=== ATTRACTION ASSESSMENT DEBUG ===');
-    console.log('Document ready state:', document.readyState);
-    console.log('Script execution started');
-    
-    // Import the engine class
-    import { AttractionEngine } from './AttractionEngine.js';
-    console.log('AttractionEngine imported:', typeof AttractionEngine);
-    
-    // Show debug report if enabled
-    if (window.location.search.includes('debug=true')) {
-      const debugContainer = document.getElementById('debug-report');
-      if (debugContainer) {
-        debugContainer.style.display = 'block';
-      }
-    }
-    
-    // Initialize assessment
-    function initializeAssessment() {
-      console.log('=== INITIALIZING ASSESSMENT ===');
-      
-      const startBtn = document.getElementById('startAssessment');
-      console.log('Start button element:', startBtn);
-      
-      if (!startBtn) {
-        console.error('❌ START BUTTON NOT FOUND IN DOM!');
-        return;
-      }
-      
-      // Create engine instance
-      console.log('Creating AttractionEngine instance...');
-      window.AttractionEngine = new AttractionEngine();
-      console.log('Engine instance created:', window.AttractionEngine);
-      
-      // Add event listener
-      startBtn.addEventListener('click', function(e) {
-        console.log('✅ CLICK EVENT FIRED');
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (window.AttractionEngine) {
-          console.log('Calling startAssessment...');
-          try {
-            window.AttractionEngine.startAssessment();
-            console.log('startAssessment called successfully');
-          } catch (error) {
-            console.error('Error calling startAssessment:', error);
-          }
-        } else {
-          console.error('❌ Engine not found on window object');
-        }
-      });
-      
-      console.log('=== INITIALIZATION COMPLETE ===');
-    }
-    
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => initializeAssessment(), 100);
-      });
-    } else {
-      setTimeout(() => initializeAssessment(), 100);
-    }
-    
-    // Backup initialization
-    setTimeout(() => {
-      if (!window.AttractionEngine) {
-        console.warn('Engine not initialized after 1 second, retrying...');
-        initializeAssessment();
-      }
-    }, 1000);
   </script>
+
+  <script src="./shared/background.js"></script>
+  <script type="module" src="attraction-engine.js"></script>
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Toggle helper for explanation/disclaimer panels
       const setupToggle = (btnId, panelId) => {
         const btn = document.getElementById(btnId);
         const panel = document.getElementById(panelId);
@@ -863,8 +245,8 @@
 
       setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
       setupToggle('disclaimerToggle', 'disclaimerSection');
+      setupToggle('instructionsToggle', 'instructionsPanel');
 
-      // Hamburger menu toggle
       const hamburger = document.querySelector('.hamburger');
       const nav = document.querySelector('#top-nav');
       if (hamburger && nav) {
@@ -875,37 +257,27 @@
         });
       }
 
-      // Dropdown menu toggle
       const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
       if (dropdownToggles.length) {
         dropdownToggles.forEach(toggle => {
-          toggle.addEventListener('click', (e) => {
+          toggle.addEventListener('click', function(e) {
             e.preventDefault();
             const dropdown = toggle.closest('.nav-dropdown');
             if (dropdown) {
               document.querySelectorAll('.nav-dropdown').forEach(dd => {
-                if (dd !== dropdown) {
-                  dd.classList.remove('active');
-                }
+                if (dd !== dropdown) dd.classList.remove('active');
               });
               dropdown.classList.toggle('active');
             }
           });
         });
-
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', function(e) {
           if (!e.target.closest('.nav-dropdown')) {
-            document.querySelectorAll('.nav-dropdown').forEach(dd => {
-              dd.classList.remove('active');
-            });
+            document.querySelectorAll('.nav-dropdown').forEach(dd => dd.classList.remove('active'));
           }
         });
       }
     });
   </script>
-  
-  <!-- Universal background JavaScript -->
-  <script src="./shared/background.js"></script>
-
 </body>
 </html>

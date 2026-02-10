@@ -16,6 +16,7 @@ const FRAMEWORK_MAP = {
   temperament: ['Belief Mastery', 'Sovereign of Mind'],
   'temperament-analysis': ['Belief Mastery', 'Sovereign of Mind'],
   'needs-dependency': ['Belief Mastery', 'Sovereign of Mind'],
+  attraction: ['Belief Mastery', 'Sovereign of Mind'],
   archetype: ['Belief Mastery', 'Sovereign of Mind'],
   'archetype-analysis': ['Belief Mastery', 'Sovereign of Mind']
 };
@@ -91,6 +92,29 @@ function buildExecutiveHighlights(data) {
     if (data.firstLinkInChain) {
       highlights.push(`First link in chain (immanent focus): ${data.firstLinkInChain}`);
     }
+  }
+
+  if (data.quadrants && typeof data.quadrants === 'object') {
+    Object.entries(data.quadrants).forEach(([layerId, q]) => {
+      if (q && q.label) highlights.push(`Sovereign Assessment ${layerId}: ${q.label}`);
+    });
+  }
+
+  // Status, Selection, Attraction (SMV) specific
+  if (typeof data.overall === 'number') {
+    highlights.push(`SMV Percentile: ${Math.round(data.overall)} (${data.marketPosition || ''})`);
+  }
+  if (typeof data.delusionIndex === 'number' && data.delusionIndex > 30) {
+    highlights.push(`Delusion Index: ${Math.round(data.delusionIndex)}% — expectations vs reality mismatch`);
+  }
+  if (data.levelClassification) {
+    highlights.push(`Developmental Level: ${data.levelClassification}`);
+  }
+  if (data.clusters && typeof data.clusters === 'object') {
+    const clusterNames = { coalitionRank: 'Coalition Rank', reproductiveConfidence: 'Reproductive Confidence', axisOfAttraction: 'Axis of Attraction' };
+    Object.entries(data.clusters).forEach(([k, v]) => {
+      if (typeof v === 'number') highlights.push(`${clusterNames[k] || k}: ${Math.round(v)}th percentile`);
+    });
   }
 
   return highlights;
