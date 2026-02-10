@@ -5119,6 +5119,76 @@ img {
     margin: 0 auto;
 }
 
+/* Attraction: Bad Boy/Good Guy & Keeper-Sweeper placement */
+.results-dashboard .grid-placement {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+}
+
+.results-dashboard .grid-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.results-dashboard .grid-detail {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+}
+
+/* Attraction: subcategory breakdown with weakest highlight */
+.results-dashboard .subcategory-breakdown {
+    margin: 2rem 0;
+}
+
+.results-dashboard .cluster-subcategory-block {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+}
+
+.results-dashboard .subcategory-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin: 0.5rem 0;
+}
+
+.results-dashboard .subcategory-row.weakest {
+    background: rgba(230, 76, 60, 0.1);
+    padding: 0.35rem 0.5rem;
+    margin: 0.5rem -0.5rem;
+    border-radius: 4px;
+}
+
+.results-dashboard .sub-label {
+    flex: 1 1 200px;
+}
+
+.results-dashboard .sub-score {
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.results-dashboard .sub-bar {
+    flex: 1 1 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.results-dashboard .sub-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
 .results-title {
     color: var(--brand);
     margin-top: 0;

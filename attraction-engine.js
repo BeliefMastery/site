@@ -17,7 +17,9 @@ import {
   MALE_CLUSTER_WEIGHTS,
   FEMALE_CLUSTER_WEIGHTS,
   MARKET_SEGMENTS,
-  DEVELOPMENTAL_LEVELS
+  DEVELOPMENTAL_LEVELS,
+  BAD_BOY_GOOD_GUY_GRID,
+  KEEPER_SWEEPER_CHART
 } from './attraction-data.js';
 
 export class AttractionEngine {
@@ -363,10 +365,13 @@ export class AttractionEngine {
 
     smv.overall = Object.keys(weights).reduce((sum, k) => sum + (smv.clusters[k] || 0) * (weights[k] || 0), 0);
     smv.marketPosition = this.classifyMarketPosition(smv.overall);
+    smv.weakestSubcategories = this.identifyWeakestSubcategories(smv);
     smv.levelClassification = this.classifyDevelopmentalLevel(smv);
     smv.delusionIndex = this.calculateDelusionIndex(smv);
     smv.targetMarket = this.analyzeTargetMarket(smv);
     smv.recommendation = this.generateRecommendation(smv);
+    if (this.currentGender === 'male') smv.badBoyGoodGuy = this.placeBadBoyGoodGuy(smv);
+    else smv.keeperSweeper = this.placeKeeperSweeper(smv);
     smv.rawResponses = { ...this.responses };
     smv.preferences = { ...this.preferences };
     return smv;
@@ -376,6 +381,35 @@ export class AttractionEngine {
     const segs = this.currentGender === 'male' ? MARKET_SEGMENTS.map(s => ({ ...s, label: s.label })) : MARKET_SEGMENTS.map(s => ({ ...s, label: s.femaleLabel }));
     for (const s of segs) if (smv >= s.min) return s.label;
     return segs[segs.length - 1].label;
+  }
+
+  identifyWeakestSubcategories(smv) {
+    const weakest = {};
+    const subLabels = { courage: 'Courage', control: 'Control', competence: 'Competence', perspicacity: 'Perspicacity', protector: 'Protector', provider: 'Provider', parentalInvestor: 'Parental Investor', performanceStatus: 'Performance/Status', physicalGenetic: 'Physical/Genetic', socialInfluence: 'Social Influence', selectivity: 'Selectivity & Mate Guarding', statusSignaling: 'Status Signaling', paternityCertainty: 'Paternity Certainty', nurturingStandard: 'Nurturing Standard', collaborativeTrust: 'Collaborative Trust', fertility: 'Fertility & Health', riskCost: 'Risk Cost', personality: 'Personality', factorsHidden: 'Factors Hidden' };
+    Object.keys(smv.subcategories || {}).forEach(clusterId => {
+      const subs = smv.subcategories[clusterId];
+      if (!subs || !Object.keys(subs).length) return;
+      const entries = Object.entries(subs).map(([k, v]) => ({ id: k, score: v }));
+      entries.sort((a, b) => a.score - b.score);
+      if (entries[0]) weakest[clusterId] = { id: entries[0].id, label: subLabels[entries[0].id] || entries[0].id, score: entries[0].score };
+    });
+    return weakest;
+  }
+
+  placeBadBoyGoodGuy(smv) {
+    const goodGuy = smv.clusters?.reproductiveConfidence ?? 50;
+    const badBoy = smv.clusters?.axisOfAttraction ?? 50;
+    const gLevel = goodGuy >= 70 ? 'hi' : goodGuy >= 40 ? 'mid' : 'lo';
+    const bLevel = badBoy >= 70 ? 'hi' : badBoy >= 40 ? 'mid' : 'lo';
+    const labels = { hi_hi: 'Friend zone', hi_mid: 'Husband zone', hi_lo: 'Prince Charming (Ideal LT)', mid_hi: 'Gold Digger Ick', mid_mid: 'Settling', mid_lo: 'Good', lo_hi: 'Bad Boy (Ideal ST)', lo_mid: 'Mistake', lo_lo: 'Ghost / Creep' };
+    return { goodGuyPercentile: Math.round(goodGuy), badBoyPercentile: Math.round(badBoy), label: labels[`${gLevel}_${bLevel}`] || 'Mid', goodGuyLevel: gLevel, badBoyLevel: bLevel };
+  }
+
+  placeKeeperSweeper(smv) {
+    const overall = smv.overall;
+    if (overall >= 80) return { segment: 'keepers', label: 'Keepers', desc: 'My one and only', investment: 'More Investment' };
+    if (overall >= 40) return { segment: 'sleepers', label: 'Sleepers', desc: 'I dunno where I\'m gonna be in 3 weeks, ya know?' };
+    return { segment: 'sweepers', label: 'Sweepers', desc: '(Under the rug)', investment: 'LESS Investment' };
   }
 
   classifyDevelopmentalLevel(smv) {
@@ -430,15 +464,20 @@ export class AttractionEngine {
 
   generateRecommendation(smv) {
     const r = { priority: '', tactical: [], strategic: '', warning: '' };
+    const weakest = smv.weakestSubcategories || {};
     if (this.currentGender === 'male') {
       if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.tactical = ['Focus on income/provider capability', 'Start fitness regimen 3x/week', 'Develop one high-value skill', 'Lower short-term standards to build experience']; r.strategic = 'SMV below average. Focus on fundamentals before pursuing high-value women.'; }
       else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.tactical = ['Maximize earning potential', 'Build visible status markers', 'Expand social proof', 'Improve physical presentation']; r.strategic = 'Average SMV. Strategic improvements can move you into keeper territory.'; }
       else { r.priority = 'Refinement and Leverage'; r.tactical = ['Leverage high SMV for mate selection', 'Be selective', 'Maintain edge', 'Consider long-term strategy']; r.strategic = 'Strong SMV. Focus on finding the right match.'; }
+      if (weakest.coalitionRank) r.tactical.unshift(`Weakest 3C: ${weakest.coalitionRank.label} — address to increase male-male rank`);
+      if (weakest.reproductiveConfidence) r.tactical.unshift(`Weakest 4P: ${weakest.reproductiveConfidence.label} — focus to improve procreate/nest willingness`);
       if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards significantly exceed your market value. Adjust expectations or commit to major self-improvement.';
     } else {
       if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.tactical = ['Physical optimization paramount', 'Reduce risk indicators', 'Develop nurturing/cooperative skills', 'Lower standards to realistic range']; r.strategic = 'SMV below average. Without improvement, high-value men will not commit long-term.'; }
       else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.tactical = ['Maximize physical attractiveness', 'Develop feminine nurturing traits', 'Minimize drama/conflict', 'Build cooperative partnership skills']; r.strategic = 'Average SMV. Improvements can access above-average men.'; }
       else { r.priority = 'Leverage and Selection'; r.tactical = ['Be selective for commitment', 'Vet for provider, protector, parental capacity', 'Maintain SMV through health/beauty', 'Act while SMV is high']; r.strategic = 'Strong SMV. Focus on selecting the right high-value man.'; }
+      if (weakest.coalitionRank) r.tactical.unshift(`Weakest 3S: ${weakest.coalitionRank.label} — address to increase female-female rank`);
+      if (weakest.reproductiveConfidence) r.tactical.unshift(`Weakest Reproductive: ${weakest.reproductiveConfidence.label} — improves male commitment willingness`);
       if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards (height/income/status) significantly exceed your market value. Adjust standards or dramatically improve SMV.';
     }
     return r;
@@ -449,6 +488,23 @@ export class AttractionEngine {
     if (!container) return;
     const s = this.smv;
     const rec = s.recommendation || {};
+    const subLabels = { courage: 'Courage', control: 'Control', competence: 'Competence', perspicacity: 'Perspicacity', protector: 'Protector', provider: 'Provider', parentalInvestor: 'Parental Investor', performanceStatus: 'Performance/Status', physicalGenetic: 'Physical/Genetic', socialInfluence: 'Social Influence', selectivity: 'Selectivity & Mate Guarding', statusSignaling: 'Status Signaling', paternityCertainty: 'Paternity Certainty', nurturingStandard: 'Nurturing Standard', collaborativeTrust: 'Collaborative Trust', fertility: 'Fertility & Health', riskCost: 'Risk Cost', personality: 'Personality', factorsHidden: 'Factors Hidden' };
+
+    const subcategoryBlock = Object.keys(s.subcategories || {}).map(clusterId => {
+      const subs = s.subcategories[clusterId];
+      const weakest = s.weakestSubcategories?.[clusterId];
+      const subHtml = Object.entries(subs).map(([subId, score]) => {
+        const isWeak = weakest && weakest.id === subId;
+        return `<div class="subcategory-row ${isWeak ? 'weakest' : ''}"><span class="sub-label">${subLabels[subId] || subId}${isWeak ? ' (Weakest — address to increase rank)' : ''}</span><span class="sub-score">${Math.round(score)}th %</span><div class="sub-bar"><div class="sub-bar-fill" style="width:${score}%;background:${this.getPercentileColor(score)}"></div></div></div>`;
+      }).join('');
+      return `<div class="cluster-subcategory-block"><h4>${this.formatClusterName(clusterId)}</h4>${subHtml}</div>`;
+    }).join('');
+
+    const gridBlock = this.currentGender === 'male' && s.badBoyGoodGuy
+      ? `<div class="grid-placement"><h3>Bad Boy / Good Guy Grid Position</h3><p class="grid-label"><strong>${s.badBoyGoodGuy.label}</strong></p><p class="grid-detail">Good Guy (4P's): ${s.badBoyGoodGuy.goodGuyPercentile}th % — Reproductive Confidence / Willingness to Nest</p><p class="grid-detail">Bad Boy (Axis): ${s.badBoyGoodGuy.badBoyPercentile}th % — Attraction Signals / Initiation Appeal</p></div>`
+      : this.currentGender === 'female' && s.keeperSweeper
+        ? `<div class="grid-placement"><h3>Keeper-Sweeper Chart Position</h3><p class="grid-label"><strong>${s.keeperSweeper.label}</strong>${s.keeperSweeper.investment ? ` — ${s.keeperSweeper.investment}` : ''}</p><p class="grid-detail">${s.keeperSweeper.desc || ''}</p></div>`
+        : '';
 
     let html = `
       <div class="results-dashboard">
@@ -457,11 +513,13 @@ export class AttractionEngine {
           <div class="score-display"><div class="score-number">${Math.round(s.overall)}</div><div class="score-label">SMV Percentile</div><div class="score-percentile">${s.marketPosition}</div></div>
           <div class="score-interpretation"><p>${this.getSMVInterpretation(s.overall)}</p></div>
         </div>
+        ${gridBlock}
         ${s.delusionIndex > 30 ? `<div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div>` : ''}
         <div class="level-classification"><h3>Developmental Level</h3><p><strong>${s.levelClassification}</strong></p></div>
-        <div class="cluster-scores"><h3>SMV Component Breakdown</h3>
+        <div class="cluster-scores"><h3>Cluster Breakdown (averaged per subcategory)</h3>
         ${Object.keys(s.clusters || {}).map(k => `<div class="cluster-card"><div class="cluster-header"><h4>${this.formatClusterName(k)}</h4><span class="cluster-score">${Math.round(s.clusters[k])}th Percentile</span></div><div class="cluster-bar"><div class="cluster-bar-fill" style="width:${s.clusters[k]}%;background:${this.getPercentileColor(s.clusters[k])}"></div></div></div>`).join('')}
         </div>
+        <div class="subcategory-breakdown"><h3>Subcategory Averages & Weakest Points</h3>${subcategoryBlock}</div>
         <div class="market-analysis"><h3>Market Position Analysis</h3><div class="market-grid"><div class="market-card"><h4>Realistic Target</h4><p>${s.targetMarket?.realistic || ''}</p></div><div class="market-card"><h4>Aspirational</h4><p>${s.targetMarket?.aspirational || ''}</p></div></div></div>
         <div class="recommendations"><h3>Strategic Recommendations</h3><div class="priority-box ${rec.priority?.includes('CRITICAL') ? 'critical' : 'normal'}"><h4>${rec.priority || ''}</h4><p>${rec.strategic || ''}</p></div>
         ${rec.warning ? `<div class="warning-box"><strong>⚠️ Reality Check:</strong><p>${rec.warning}</p></div>` : ''}
