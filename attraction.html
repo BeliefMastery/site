@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Warwick Marshall">
+  <meta name="keywords" content="Warwick Marshall, Golden Bay, New Zealand, Belief Mastery, Sovereign of Mind">
+  <meta name="geo.placename" content="Golden Bay, New Zealand">
+  <meta name="geo.region" content="NZ">
+<title>STATUS, SELECTION, ATTRACTION</title>
+  <meta name="description" content="Modern attraction classifier informed by red-pill and esoteric historical references.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/attraction.html">
+  <meta property="og:title" content="STATUS, SELECTION, ATTRACTION">
+  <meta property="og:description" content="Modern Attraction classifier informed by red-pill and esoteric historical references.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/redpill-cover.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/attraction.html">
+  <meta name="twitter:title" content="STATUS, SELECTION, ATTRACTION">
+  <meta name="twitter:description" content="Modern attraction classifier informed by red-pill and esoteric historical references.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/redpill2-cover.jpg">
+  
+  <!-- CRITICAL: Universal styles MUST load first -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./shared/background.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Resource hints for performance -->
+  <link rel="modulepreload" href="./attraction-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+</head>
+<body>
+
+  <!-- Cosmic background (from universal system) -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+  <li role="none" class="dropdown-group group-neutral"><a role="menuitem" href="tools.html">All Tools</a></li>
+  <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+  <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+  <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="relationship.html">Relationships</a></li>
+  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="temperament.html">Polarity Position Mapping</a></li>
+  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="archetype.html">Modern Archetype Identification</a></li>
+  <li role="none" class="dropdown-group group-relational"><a role="menuitem" href="attraction.html">STATUS, SELECTION, ATTRACTION</a></li>
+  <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a></li>
+  <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+  <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+  <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity</a></li>
+  <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+  <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+  <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="entities.html">Will Anomaly Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="outlier-aptitude.html">Aptitude Mapping</a></li>
+  <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+</ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Universal Tool Container (matches diagnosis.html structure) -->
+    <div class="Attraction-container">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/redpill-cover.jpg" alt="STATUS, SELECTION, ATTRACTION" class="hero-img">
+      </div>
+      
+      <!-- Intro Section -->
+      <section class="intro-section" id="introSection">
+        <h2 class="section-title-btn">STATUS, SELECTION, ATTRACTION</h2>
+        <p class="lead-text">
+          Find better dating success with attraction management 
+        </p>
+        
+        <p>This honest and confronting assessment system identifies your strengths and weaknesses - supporting your direct confrontation and optimization.</p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
+        </div>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <div class="ack-box">
+              <p>
+                <strong>Descriptive Framework:</strong>[TO BE COMPLETED]
+              </p>
+            </div>
+            
+            <p><strong>This multi-tier assessment system identifies your [TO BE COMPLETED] through [TO BE COMPLETED] phases:</strong></p>
+            <ul class="feature-list">
+              <li><strong>Phase 1 - [TO BE COMPLETED]:</strong>[TO BE COMPLETED]</li>
+              <li><strong>Phase 2 - [TO BE COMPLETED]:</strong>[TO BE COMPLETED]</li>
+              <li><strong>Phase 3 - [TO BE COMPLETED]:</strong>[TO BE COMPLETED]</li>
+              <li><strong>Phase etc...:</strong>[TO BE COMPLETED]</li>
+            </ul>
+            <h3>Detailed Features</h3>
+            <ul class="feature-list">
+              <li>[TO BE COMPLETED]</li>
+            </ul>
+            <p class="form-help">Based on modern red-pill attraction taxonomy with behavioral focus.</p>
+            
+            <div class="ack-box">
+              <p>
+                <strong>Note:</strong> This assessment uses gendered behavioral patterns. While archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex; this assessment is more directly linked to sex and reproductive viability - backed up my statistical trends and biological essentialist theory.
+              </p>
+            </div>
+          </div>
+        </div>        <div class="content-section">
+          <div class="ack-box">
+            <p><strong>Sovereignty Through-Line:</strong> This engine strengthens self-authorship, consent, and structural clarity. It is designed to increase agency, not dependence.</p>
+          </div>
+          <div class="ack-box">
+            <h4>Methodology</h4>
+            <ul class="feature-list">
+              <li><strong>Belief Mastery:</strong> Belief architecture, pattern recognition, calibrated change.</li>
+              <li><strong>Sovereign of Mind:</strong> Sovereignty, consent, and authorship in decision-making.</li>
+              <li><strong>Distortion Codex:</strong> Distortion detection, reality testing, and corrective clarity.</li>
+            </ul>
+          </div>
+        </div>
+
+
+        <!-- Disclaimer Toggle -->
+        <div class="disclaimer-acknowledgement" id="disclaimerToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>Disclaimer</span>
+          </div>
+        </div>
+
+        <section class="disclaimer-section" id="disclaimerSection">
+          <div class="ack-box">
+            <p><strong>This is a descriptive tool, not a diagnostic or predictive instrument.</strong> Results reflect behavioral patterns and social role alignment, not fixed identity or mandates.</p>
+          </div>
+        
+        <p class="form-help"><strong>Non-therapeutic disclaimer:</strong> This tool supports sovereignty-aligned self-inquiry and is not therapy, medical, or legal advice.</p>
+      </section>
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section" id="actionButtonsSection">
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="generateSampleReport">Generate Sample Report</button>
+          <button class="btn btn-secondary" id="resumeAssessment">Resume Last Assessment</button>
+          <button class="btn btn-primary" id="startAssessment">Begin Modern Attraction Assessment</button>
+        </div>
+      </section>
+
+      <!-- Questionnaire Section (hidden by default, shown via JS) -->
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-text">
+          <span id="questionCounter"></span>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion">Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">Abandon Assessment</button>
+        </div>
+      </section>
+
+      <!-- Results Section (hidden by default) -->
+      <section class="results-section" id="resultsContainer">
+        <div id="resultsContent">
+          <!-- Results populated by JavaScript -->
+        </div>
+        <div class="export-section">
+          <h3>Export Your Analysis</h3>
+          <p>
+            Export your STATUS, SELECTION, ATTRACTION results in JSON or CSV format for integration with your personal AI coaching agent or for personal reference.
+          </p>
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="exportJSON">Export JSON</button>
+            <button class="btn btn-primary" id="exportCSV">Export CSV</button>
+            <button class="btn btn-secondary" id="exportExecutiveBrief">Export Executive Brief</button>
+            <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
+          </div>
+        </div>
+        <!-- Debug Report Container -->
+        <div id="debug-report"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+    // Import performance monitoring
+    import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
+    
+    // Initialize performance monitoring
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initializePerformanceMonitoring();
+      });
+    } else {
+      initializePerformanceMonitoring();
+    }
+    
+    // Debug logging
+    console.log('=== Attraction ASSESSMENT DEBUG ===');
+    console.log('Document ready state:', document.readyState);
+    console.log('Script execution started');
+    
+    // Import the engine class
+    import { AttractionEngine } from './Attraction-engine.js';
+    console.log('AttractionEngine imported:', typeof AttractionEngine);
+    
+    // Show debug report if enabled
+    if (window.location.search.includes('debug=true')) {
+      const debugContainer = document.getElementById('debug-report');
+      if (debugContainer) {
+        debugContainer.style.display = 'block';
+      }
+    }
+    
+    // Initialize assessment
+    function initializeAssessment() {
+      console.log('=== INITIALIZING ASSESSMENT ===');
+      
+      const startBtn = document.getElementById('startAssessment');
+      console.log('Start button element:', startBtn);
+      
+      if (!startBtn) {
+        console.error('❌ START BUTTON NOT FOUND IN DOM!');
+        return;
+      }
+      
+      // Create engine instance
+      console.log('Creating AttractionEngine instance...');
+      window.AttractionEngine = new AttractionEngine();
+      console.log('Engine instance created:', window.AttractionEngine);
+      
+      // Add event listener
+      startBtn.addEventListener('click', function(e) {
+        console.log('✅ CLICK EVENT FIRED');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (window.AttractionEngine) {
+          console.log('Calling startAssessment...');
+          try {
+            window.AttractionEngine.startAssessment();
+            console.log('startAssessment called successfully');
+          } catch (error) {
+            console.error('Error calling startAssessment:', error);
+          }
+        } else {
+          console.error('❌ Engine not found on window object');
+        }
+      });
+      
+      console.log('=== INITIALIZATION COMPLETE ===');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => initializeAssessment(), 100);
+      });
+    } else {
+      setTimeout(() => initializeAssessment(), 100);
+    }
+    
+    // Backup initialization
+    setTimeout(() => {
+      if (!window.AttractionEngine) {
+        console.warn('Engine not initialized after 1 second, retrying...');
+        initializeAssessment();
+      }
+    }, 1000);
+  </script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle helper for explanation/disclaimer panels
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+      setupToggle('disclaimerToggle', 'disclaimerSection');
+
+      // Hamburger menu toggle
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      if (hamburger && nav) {
+        hamburger.addEventListener('click', () => {
+          const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', !isExpanded);
+          nav.classList.toggle('active');
+        });
+      }
+
+      // Dropdown menu toggle
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      if (dropdownToggles.length) {
+        dropdownToggles.forEach(toggle => {
+          toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dropdown = toggle.closest('.nav-dropdown');
+            if (dropdown) {
+              document.querySelectorAll('.nav-dropdown').forEach(dd => {
+                if (dd !== dropdown) {
+                  dd.classList.remove('active');
+                }
+              });
+              dropdown.classList.toggle('active');
+            }
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.nav-dropdown')) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              dd.classList.remove('active');
+            });
+          }
+        });
+      }
+    });
+  </script>
+  
+  <!-- Universal background JavaScript -->
+  <script src="./shared/background.js"></script>
+
+</body>
+</html>
