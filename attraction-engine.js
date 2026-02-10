@@ -121,12 +121,26 @@ export class AttractionEngine {
     this.showPreferencesForm();
   }
 
+  /** Default verbal labels for 1–10 scale when question has no optionLabels */
+  static DEFAULT_SCALE_LABELS = {
+    1: 'Very low / Rarely',
+    2: 'Low–moderate',
+    3: 'Low / Occasionally',
+    4: 'Moderate–low',
+    5: 'Moderate / Sometimes',
+    6: 'Moderate–high',
+    7: 'High / Often',
+    8: 'High–very high',
+    9: 'Very high',
+    10: 'Very high / Consistently'
+  };
+
   buildOptionLabel(q, val) {
     if (q.optionLabels && Array.isArray(q.optionLabels)) {
       const idx = (q.options || []).indexOf(val);
       return q.optionLabels[idx] !== undefined ? q.optionLabels[idx] : String(val);
     }
-    return String(val);
+    return AttractionEngine.DEFAULT_SCALE_LABELS[val] ?? String(val);
   }
 
   showPreferencesForm() {
