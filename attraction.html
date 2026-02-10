@@ -30,13 +30,544 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   
   <!-- Resource hints for performance -->
-  <link rel="modulepreload" href="./attraction-engine.js">
+  <link rel="modulepreload" href="./AttractionEngine.js">
   <link rel="modulepreload" href="./shared/data-loader.js">
   <link rel="modulepreload" href="./shared/debug-reporter.js">
   <link rel="modulepreload" href="./shared/utils.js">
   <link rel="modulepreload" href="./shared/performance-monitor.js">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+  <style>
+    /* Additional styles for the attraction assessment */
+    .gender-selection {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .gender-buttons {
+      display: grid;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .gender-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 2rem;
+      text-align: left;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .gender-btn:hover {
+      border-color: rgba(52, 152, 219, 0.5);
+      background: rgba(52, 152, 219, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .gender-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .gender-label {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .gender-desc {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .phase-intro {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .phase-progress {
+      margin-bottom: 2rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3498db, #2ecc71);
+      transition: width 0.5s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .phase-subtitle {
+      color: #3498db;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .phase-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .phase-info {
+      background: rgba(52, 152, 219, 0.1);
+      border-left: 3px solid #3498db;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .phase-questions {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .phase-header-mini {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .phase-header-mini h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .question-progress {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .question-block {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .question-number {
+      font-weight: 600;
+      color: #3498db;
+    }
+
+    .question-category {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .option-label {
+      display: block;
+      padding: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .option-label:hover {
+      border-color: rgba(52, 152, 219, 0.5);
+      background: rgba(52, 152, 219, 0.05);
+    }
+
+    .option-label input[type="radio"] {
+      display: none;
+    }
+
+    .option-label input[type="radio"]:checked + .option-content {
+      color: #3498db;
+    }
+
+    .option-label:has(input[type="radio"]:checked) {
+      border-color: #3498db;
+      background: rgba(52, 152, 219, 0.1);
+    }
+
+    .option-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .option-value {
+      font-weight: 700;
+      color: #3498db;
+      min-width: 50px;
+    }
+
+    .option-text {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .question-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .results-dashboard {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .results-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    .overall-score-card {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(46, 204, 113, 0.2));
+      border-radius: 12px;
+      padding: 3rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .score-display {
+      margin-bottom: 2rem;
+    }
+
+    .score-number {
+      font-size: 5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3498db, #2ecc71);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .score-label {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    .score-percentile {
+      font-size: 1rem;
+      color: #3498db;
+      margin-top: 0.5rem;
+    }
+
+    .score-interpretation {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .cluster-scores {
+      margin-bottom: 3rem;
+    }
+
+    .cluster-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cluster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .cluster-header h4 {
+      margin: 0;
+    }
+
+    .cluster-score {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #3498db;
+    }
+
+    .cluster-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .cluster-bar-fill {
+      height: 100%;
+      transition: width 0.8s ease;
+      border-radius: 6px;
+    }
+
+    .cluster-description {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .subcategory-scores {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .subcategory-row {
+      display: grid;
+      grid-template-columns: 1fr auto 200px;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .subcat-name {
+      font-size: 0.9rem;
+    }
+
+    .subcat-score {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .subcat-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .subcat-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .detailed-analysis {
+      margin-bottom: 3rem;
+    }
+
+    .strength-weakness-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .strength-weakness-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .strength-column,
+    .weakness-column {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .strength-column h4 {
+      color: #2ecc71;
+      margin-bottom: 1.5rem;
+    }
+
+    .weakness-column h4 {
+      color: #e74c3c;
+      margin-bottom: 1.5rem;
+    }
+
+    .strength-item,
+    .weakness-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .strength-item:last-child,
+    .weakness-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .sw-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .sw-label {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .sw-score {
+      font-weight: 700;
+    }
+
+    .sw-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .actionable-insights {
+      margin-bottom: 3rem;
+    }
+
+    .insights-intro {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .insights-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .insight-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 2rem;
+      border-left: 4px solid;
+    }
+
+    .insight-card.priority-Critical {
+      border-left-color: #e74c3c;
+    }
+
+    .insight-card.priority-High {
+      border-left-color: #f39c12;
+    }
+
+    .insight-card.priority-Medium {
+      border-left-color: #3498db;
+    }
+
+    .insight-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .insight-number {
+      background: rgba(52, 152, 219, 0.2);
+      color: #3498db;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .insight-priority {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .priority-Critical .insight-priority {
+      color: #e74c3c;
+    }
+
+    .priority-High .insight-priority {
+      color: #f39c12;
+    }
+
+    .priority-Medium .insight-priority {
+      color: #3498db;
+    }
+
+    .insight-card h4 {
+      margin-bottom: 1rem;
+    }
+
+    .insight-why {
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .insight-actions ul {
+      margin-top: 0.5rem;
+      margin-left: 1.5rem;
+    }
+
+    .insight-actions li {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .export-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+
+    .export-section h3 {
+      margin-bottom: 1rem;
+    }
+
+    .export-section p {
+      margin-bottom: 1.5rem;
+      opacity: 0.9;
+    }
+  </style>
 </head>
 <body>
 
@@ -89,7 +620,7 @@
   </header>
 
   <main>
-    <!-- Universal Tool Container (matches diagnosis.html structure) -->
+    <!-- Universal Tool Container -->
     <div class="Attraction-container">
       
       <!-- Hero Image Section -->
@@ -117,30 +648,46 @@
           <div class="content-section">
             <div class="ack-box">
               <p>
-                <strong>Descriptive Framework:</strong>[TO BE COMPLETED]
+                <strong>Descriptive Framework:</strong> This assessment uses a three-cluster evolutionary psychology framework to analyze attraction dynamics. Based on red-pill theory and behavioral science, it evaluates how your traits signal value in mating markets through Coalition Rank, Reproductive Confidence, and Axis of Attraction dimensions.
               </p>
             </div>
             
-            <p><strong>This multi-tier assessment system identifies your [TO BE COMPLETED] through [TO BE COMPLETED] phases:</strong></p>
+            <p><strong>This multi-tier assessment identifies your attraction profile through three comprehensive phases:</strong></p>
+            
+            <h4>Male Assessment Path:</h4>
             <ul class="feature-list">
-              <li><strong>Phase 1 - [TO BE COMPLETED]:</strong>[TO BE COMPLETED]</li>
-              <li><strong>Phase 2 - [TO BE COMPLETED]:</strong>[TO BE COMPLETED]</li>
-              <li><strong>Phase 3 - [TO BE COMPLETED]:</strong>[TO BE COMPLETED]</li>
-              <li><strong>Phase etc...:</strong>[TO BE COMPLETED]</li>
+              <li><strong>Phase 1 - Coalition Rank (3C's):</strong> Evaluates your standing among male peers through Courage, Control, and Competence - determining your access to resources and alliances.</li>
+              <li><strong>Phase 2 - Reproductive Confidence (4P's):</strong> Assesses Perspicacity, Protector capacity, Provider capability, and Parental Investment - traits women evaluate for long-term mate selection.</li>
+              <li><strong>Phase 3 - Axis of Attraction:</strong> Measures Performance/Status Signals (wealth, productivity, generosity) and Physical/Genetic Signals (aesthetics, fitness, vitality) that create immediate draw.</li>
             </ul>
+
+            <h4>Female Assessment Path:</h4>
+            <ul class="feature-list">
+              <li><strong>Phase 1 - Coalition Rank (3S's):</strong> Evaluates Social Influence, Selectivity & Mate Guarding Success, and Status Signaling - determining your position in female hierarchies.</li>
+              <li><strong>Phase 2 - Reproductive Confidence:</strong> Assesses Paternity Certainty signals, Nurturing Standard, and Collaborative Trust Efficiency - traits men evaluate for long-term investment.</li>
+              <li><strong>Phase 3 - Axis of Attraction:</strong> Measures Fertility & Health Cues (youth, beauty, vitality) and Risk Cost Indicators (stability, loyalty, drama risk) that influence male mate choice.</li>
+            </ul>
+
             <h3>Detailed Features</h3>
             <ul class="feature-list">
-              <li>[TO BE COMPLETED]</li>
+              <li>25+ behavioral questions per gender with weighted scoring</li>
+              <li>Multi-dimensional cluster analysis across evolutionary pressure points</li>
+              <li>Percentile rankings and comparative positioning</li>
+              <li>Detailed strengths and weaknesses identification</li>
+              <li>Prioritized actionable development recommendations</li>
+              <li>Export capabilities for personal tracking and AI coaching integration</li>
             </ul>
             <p class="form-help">Based on modern red-pill attraction taxonomy with behavioral focus.</p>
             
             <div class="ack-box">
               <p>
-                <strong>Note:</strong> This assessment uses gendered behavioral patterns. While archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex; this assessment is more directly linked to sex and reproductive viability - backed up my statistical trends and biological essentialist theory.
+                <strong>Note:</strong> This assessment uses gendered behavioral patterns. While archetypes apply regardless of gender identity, focusing on behavioral patterns and social roles rather than biological sex; this assessment is more directly linked to sex and reproductive viability - backed up by statistical trends and biological essentialist theory.
               </p>
             </div>
           </div>
-        </div>        <div class="content-section">
+        </div>
+
+        <div class="content-section">
           <div class="ack-box">
             <p><strong>Sovereignty Through-Line:</strong> This engine strengthens self-authorship, consent, and structural clarity. It is designed to increase agency, not dependence.</p>
           </div>
@@ -153,7 +700,6 @@
             </ul>
           </div>
         </div>
-
 
         <!-- Disclaimer Toggle -->
         <div class="disclaimer-acknowledgement" id="disclaimerToggle">
@@ -171,40 +717,26 @@
       </section>
       </section>
 
-      <!-- Assessment Selection Section -->
+      <!-- Assessment Action Section -->
       <section class="content-section" id="actionButtonsSection">
         <div class="action-buttons">
-          <button class="btn btn-secondary" id="generateSampleReport">Generate Sample Report</button>
-          <button class="btn btn-secondary" id="resumeAssessment">Resume Last Assessment</button>
-          <button class="btn btn-primary" id="startAssessment">Begin Modern Attraction Assessment</button>
+          <button class="btn btn-primary btn-large" id="startAssessment">Begin Attraction Assessment</button>
         </div>
       </section>
 
-      <!-- Questionnaire Section (hidden by default, shown via JS) -->
-      <section class="questionnaire-section" id="questionnaireSection">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressBar"></div>
-        </div>
-        <div class="progress-text">
-          <span id="questionCounter"></span>
-        </div>
+      <!-- Assessment Section (hidden by default) -->
+      <section class="content-section" id="assessmentSection" style="display: none;">
         <div id="questionContainer">
           <!-- Questions populated by JavaScript -->
-        </div>
-        <div class="navigation-buttons">
-          <button class="btn btn-secondary" id="prevQuestion">Previous</button>
-          <button class="btn btn-primary" id="nextQuestion">Next</button>
-        </div>
-        <div class="abandon-link">
-          <button class="btn btn-secondary" id="abandonAssessment">Abandon Assessment</button>
         </div>
       </section>
 
       <!-- Results Section (hidden by default) -->
-      <section class="results-section" id="resultsContainer">
+      <section class="content-section" id="resultsSection" style="display: none;">
         <div id="resultsContent">
           <!-- Results populated by JavaScript -->
         </div>
+        
         <div class="export-section">
           <h3>Export Your Analysis</h3>
           <p>
@@ -217,6 +749,7 @@
             <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
           </div>
         </div>
+        
         <!-- Debug Report Container -->
         <div id="debug-report"></div>
       </section>
@@ -241,12 +774,12 @@
     }
     
     // Debug logging
-    console.log('=== Attraction ASSESSMENT DEBUG ===');
+    console.log('=== ATTRACTION ASSESSMENT DEBUG ===');
     console.log('Document ready state:', document.readyState);
     console.log('Script execution started');
     
     // Import the engine class
-    import { AttractionEngine } from './Attraction-engine.js';
+    import { AttractionEngine } from './AttractionEngine.js';
     console.log('AttractionEngine imported:', typeof AttractionEngine);
     
     // Show debug report if enabled
