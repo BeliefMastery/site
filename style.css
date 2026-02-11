@@ -1783,7 +1783,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     border-radius: var(--radius);
     padding: 1.5rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .index-tools-card::before {
@@ -1810,7 +1810,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     justify-content: center;
     padding: 0.125rem;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
@@ -1818,7 +1818,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 .index-tools-grid-item:hover {
     background: rgba(255, 215, 0, 0.08);
     box-shadow: 0 0 16px var(--glow-accent);
-    z-index: 5;
+    z-index: 100;
 }
 
 .index-tools-grid-item img {
@@ -1831,7 +1831,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 }
 
 .index-tools-grid-item:hover img {
-    transform: scale(2);
+    transform: scale(2.5);
     opacity: 0.95;
 }
 
