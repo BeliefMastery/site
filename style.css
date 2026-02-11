@@ -5119,6 +5119,109 @@ img {
     margin: 0 auto;
 }
 
+/* Report sections — clear division */
+.results-dashboard .report-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.results-dashboard .report-section:last-of-type {
+    border-bottom: none;
+}
+
+.results-dashboard .report-section-title {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 1rem 0;
+}
+
+/* Executive at-a-glance summary */
+.results-dashboard .attraction-exec-summary {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+}
+
+.results-dashboard .attraction-exec-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.results-dashboard .attraction-badge {
+    flex: 1 1 140px;
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    border: 2px solid;
+    text-align: center;
+}
+
+.results-dashboard .attraction-badge-label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+}
+
+.results-dashboard .attraction-badge-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.results-dashboard .attraction-badge-unit {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.results-dashboard .attraction-badge-desc {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+}
+
+.results-dashboard .attraction-result-badge,
+.results-dashboard .attraction-overall-badge,
+.results-dashboard .attraction-level-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0.5rem 0 0;
+    background: var(--brand);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.results-dashboard .attraction-result-badge .attraction-result-badge-label,
+.results-dashboard .attraction-overall-badge .attraction-badge-label,
+.results-dashboard .attraction-level-badge .attraction-result-badge-label {
+    display: inline;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.8rem;
+}
+
+.results-dashboard .attraction-result-badge .attraction-result-badge-value,
+.results-dashboard .attraction-overall-badge .attraction-badge-value,
+.results-dashboard .attraction-level-badge .attraction-result-badge-value {
+    font-weight: 600;
+    margin-left: 0.35rem;
+}
+
+.results-dashboard .attraction-metric-badge {
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
 /* Attraction: Bad Boy/Good Guy & Keeper-Sweeper placement */
 .results-dashboard .grid-placement {
     background: rgba(255, 255, 255, 0.05);
@@ -5187,6 +5290,46 @@ img {
 .results-dashboard .sub-bar-fill {
     height: 100%;
     border-radius: 3px;
+}
+
+/* Weakest subcategory targeted guidance */
+.results-dashboard .weakest-guidance {
+    margin: 1.5rem 0;
+}
+
+.results-dashboard .guidance-block {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--accent, #6b9fff);
+}
+
+.results-dashboard .guidance-block h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.results-dashboard .guidance-cluster {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 0.9em;
+}
+
+.results-dashboard .guidance-meaning {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.results-dashboard .guidance-actions {
+    margin: 0.75rem 0 0.35rem 0;
+    font-size: 0.95rem;
+}
+
+.results-dashboard .guidance-block ol {
+    margin: 0.25rem 0 0 1.25rem;
+    padding: 0;
 }
 
 .results-title {

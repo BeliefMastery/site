@@ -385,7 +385,7 @@ export class AttractionEngine {
 
   identifyWeakestSubcategories(smv) {
     const weakest = {};
-    const subLabels = { courage: 'Courage', control: 'Control', competence: 'Competence', perspicacity: 'Perspicacity', protector: 'Protector', provider: 'Provider', parentalInvestor: 'Parental Investor', performanceStatus: 'Performance/Status', physicalGenetic: 'Physical/Genetic', socialInfluence: 'Social Influence', selectivity: 'Selectivity & Mate Guarding', statusSignaling: 'Status Signaling', paternityCertainty: 'Paternity Certainty', nurturingStandard: 'Nurturing Standard', collaborativeTrust: 'Collaborative Trust', fertility: 'Fertility & Health', riskCost: 'Risk Cost', personality: 'Personality', factorsHidden: 'Factors Hidden' };
+    const subLabels = { courage: 'Courage', control: 'Control', competence: 'Competence', perspicacity: 'Perspicacity', protector: 'Protector', provider: 'Provider', parentalInvestor: 'Parental Investor', performanceStatus: 'Performance/Status (Wealth)', physicalGenetic: 'Physical/Genetic', humour: 'Humour', socialInfluence: 'Social Influence', selectivity: 'Selectivity & Mate Guarding', statusSignaling: 'Status Signaling', paternityCertainty: 'Paternity Certainty', nurturingStandard: 'Nurturing Standard', collaborativeTrust: 'Collaborative Trust', fertility: 'Fertility & Health', riskCost: 'Risk Cost', personality: 'Personality', factorsHidden: 'Factors Hidden' };
     Object.keys(smv.subcategories || {}).forEach(clusterId => {
       const subs = smv.subcategories[clusterId];
       if (!subs || !Object.keys(subs).length) return;
@@ -462,24 +462,73 @@ export class AttractionEngine {
     return m;
   }
 
+  /** Targeted guidance for each weakest subcategory: what it means and how to achieve it */
+  getWeakestSubcategoryGuidance(subId, clusterId) {
+    const g = {
+      courage: { meaning: 'Courage is risk tolerance under threat: standing ground, stepping into conflict, taking calculated risks. It drives male–male hierarchy and ally access.', actions: ['Practice de-escalation first, then escalation when needed — get comfortable in low-stakes conflict', 'Take one calculated risk per month (career, social, physical) and debrief afterwards', 'Train a contact sport or martial art to raise baseline confidence under pressure'] },
+      control: { meaning: 'Control is mastery over impulses and stress: composure, discipline, emotional regulation. It signals reliability and coalition leadership.', actions: ['Establish one non-negotiable daily routine (sleep, training, or work block)', 'Use a 10-second pause before responding when stressed', 'Track one discipline metric (e.g. workouts/week) and maintain for 90 days'] },
+      competence: { meaning: 'Competence is the ability to solve problems and secure resources under pressure. It determines whether others rely on you.', actions: ['Pick one high-value skill and reach demonstrable competence (certification or portfolio)', 'Volunteer to own one complex problem at work or in a group', 'Build a 3–6 month financial buffer to prove resource security'] },
+      perspicacity: { meaning: 'Perspicacity is acute perception of threats and opportunities. Women filter for men who notice risk and opportunity early.', actions: ['Practice situational awareness: scan exits, body language, and outliers in every environment', 'Debrief decisions with a trusted peer to spot blind spots', 'Read one book per quarter on negotiation, body language, or threat assessment'] },
+      protector: { meaning: 'Protector capacity is physical defense and intent to defend. It underlies female mate choice for long-term security.', actions: ['Invest in baseline physical capability: strength, cardio, and one self-defense skill', 'Role-play protective scenarios (verbal and physical) so you respond instead of freeze', 'Signal protector intent through consistent presence and reliability in daily life'] },
+      provider: { meaning: 'Provider capacity is stable resource generation. It predicts whether offspring will be supported to maturity.', actions: ['Increase income or build a second stream — show upward trajectory', 'Create visible proof of provisioning: savings, assets, or documented support history', 'Reduce debt and instability; men who can’t provide are filtered out early'] },
+      parentalInvestor: { meaning: 'Parental Investor signals willingness and competence in offspring rearing. Women filter for men who will stay and invest.', actions: ['Spend time with children (nieces, nephews, friends’ kids) and document it', 'Articulate a clear vision of fatherhood and how you’d structure family life', 'Demonstrate consistency and follow-through in other domains as a proxy for parental reliability'] },
+      performanceStatus: { meaning: 'Performance/Status (wealth = productivity, sharing, social popularity, unique talent) drives initiation attraction and time-to-intimacy. Unique talent (music, sport, craft) signals potential windfall or novelty.', actions: ['Raise visible status: certifications, titles, audience, or social proof', 'Develop or showcase one outstanding talent — music, sport, craft, or expertise', 'Increase generosity: time, introductions, sharing; produce and publish content others can point to'] },
+      physicalGenetic: { meaning: 'Physical/Genetic signals (aesthetics, fitness, grooming, vitality) drive immediate attraction and mating access.', actions: ['Optimise fitness: strength 2–3x/week, conditioning 2x, body composition target', 'Upgrade grooming: skin, hair, teeth, wardrobe — invest in presentation', 'Increase energy and presence: sleep, nutrition, posture, eye contact'] },
+      humour: { meaning: 'Humour is an intelligence signal and drives approachability and attraction. Women are drawn to men who can make them laugh and show quick wit.', actions: ['Study comedic timing and delivery — watch stand-up, practice in low-stakes settings', 'Read widely; humour relies on pattern recognition and surprise', 'Use self-deprecation sparingly; aim for playful observation over put-downs'] },
+      socialInfluence: { meaning: 'Social Influence is control over perceptions and alliances. It determines resource flow and protection in the female network.', actions: ['Identify key nodes in your social graph and deepen those alliances', 'Speak up in group settings; practice shaping narratives and opinions', 'Avoid burning bridges; repair one strained relationship and document the pattern'] },
+      selectivity: { meaning: 'Selectivity & Mate Guarding Success is the ability to attract and retain top male attention against rivals.', actions: ['Raise your standards visibly — decline low-value attention and broadcast selectivity', 'Invest in appearance and presentation where it increases attention quality', 'Reduce availability and increase mystery; scarcity raises perceived value'] },
+      statusSignaling: { meaning: 'Status Signaling is strategic display of beauty, fertility, and alliance without triggering sabotage.', actions: ['Display value incrementally rather than in one competitive burst', 'Build alliances before you shine — secure cover from key women first', 'Avoid overt one-upmanship; use subtle cues (quality, exclusivity, association)'] },
+      paternityCertainty: { meaning: 'Paternity Certainty: men filter for signals of loyalty and exclusivity. High partner count, infidelity history, or opacity about the past raise paternity risk and reduce commitment willingness.', actions: ['Be fully transparent about relationship history when appropriate — no hidden bombs', 'Demonstrate exclusivity through behaviour, not just words', 'Reduce or reframe factors that signal volatility or infidelity risk'] },
+      nurturingStandard: { meaning: 'Nurturing Standard aligns with the male’s early maternal care baseline. Men commit when they see warmth, care, and domestic potential.', actions: ['Practice active listening and emotional attunement in low-stakes settings', 'Demonstrate care through acts of service (food, comfort, support) without overgiving', 'Share examples of nurturing behaviour (family, pets, friends) in conversation'] },
+      collaborativeTrust: { meaning: 'Collaborative Trust Efficiency is the ability to work with a male partner without waste, sabotage, or chronic conflict.', actions: ['Identify one recurring conflict pattern and change your response', 'Reduce drama: pause before escalating, avoid triangulation, address issues directly', 'Demonstrate reliability — follow through on commitments and show up consistently'] },
+      fertility: { meaning: 'Fertility & Health cues (youth, waist–hip ratio, skin, hair, symmetry) drive male initial approach and short-term attraction.', actions: ['Optimise body composition and posture for fertility signalling', 'Invest in skin, hair, and grooming; treat them as non-negotiable', 'Dress to emphasise favourable ratios and health cues'] },
+      riskCost: { meaning: 'Risk Cost indicators (volatility, infidelity risk, sabotage potential) filter men out of long-term investment.', actions: ['Reduce visible red flags: substance use, instability, destructive patterns', 'Increase predictability — stable routine, consistent mood, clear communication', 'Address mental health or trauma if it shows up as volatility or conflict'] },
+      personality: { meaning: 'Personality affects ease of partnership. Men invest when they enjoy your company and feel low friction.', actions: ['Audit one friction point (negativity, criticism, neediness) and reduce it', 'Increase positive interactions: humour, gratitude, shared interests', 'Be easy to be around — low maintenance, flexible, agreeable when it matters'] },
+      factorsHidden: { meaning: 'Hidden factors (secrets, undisclosed past, concealed habits) undermine trust and commitment once discovered.', actions: ['Surface significant secrets before commitment deepens; control the narrative', 'Work through shame or guilt so you’re not carrying hidden weight', 'If disclosure is risky, get support (therapy, trusted friend) to plan timing and framing'] }
+    };
+    return g[subId] || { meaning: `Address ${subId} to improve rank.`, actions: ['Review the questions in this cluster and identify specific improvements'] };
+  }
+
   generateRecommendation(smv) {
-    const r = { priority: '', tactical: [], strategic: '', warning: '' };
+    const r = { priority: '', tactical: [], strategic: '', warning: '', weakestGuidance: [] };
     const weakest = smv.weakestSubcategories || {};
     if (this.currentGender === 'male') {
-      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.tactical = ['Focus on income/provider capability', 'Start fitness regimen 3x/week', 'Develop one high-value skill', 'Lower short-term standards to build experience']; r.strategic = 'SMV below average. Focus on fundamentals before pursuing high-value women.'; }
-      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.tactical = ['Maximize earning potential', 'Build visible status markers', 'Expand social proof', 'Improve physical presentation']; r.strategic = 'Average SMV. Strategic improvements can move you into keeper territory.'; }
-      else { r.priority = 'Refinement and Leverage'; r.tactical = ['Leverage high SMV for mate selection', 'Be selective', 'Maintain edge', 'Consider long-term strategy']; r.strategic = 'Strong SMV. Focus on finding the right match.'; }
-      if (weakest.coalitionRank) r.tactical.unshift(`Weakest 3C: ${weakest.coalitionRank.label} — address to increase male-male rank`);
-      if (weakest.reproductiveConfidence) r.tactical.unshift(`Weakest 4P: ${weakest.reproductiveConfidence.label} — focus to improve procreate/nest willingness`);
+      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.strategic = 'SMV below average. Focus on fundamentals before pursuing high-value women.'; }
+      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.strategic = 'Average SMV. Strategic improvements can move you into keeper territory.'; }
+      else { r.priority = 'Refinement and Leverage'; r.strategic = 'Strong SMV. Focus on finding the right match.'; }
+      if (weakest.coalitionRank) {
+        const guid = this.getWeakestSubcategoryGuidance(weakest.coalitionRank.id, 'coalitionRank');
+        r.weakestGuidance.push({ cluster: '3C\'s (Coalition Rank)', label: weakest.coalitionRank.label, ...guid });
+      }
+      if (weakest.reproductiveConfidence) {
+        const guid = this.getWeakestSubcategoryGuidance(weakest.reproductiveConfidence.id, 'reproductiveConfidence');
+        r.weakestGuidance.push({ cluster: '4P\'s (Reproductive Confidence)', label: weakest.reproductiveConfidence.label, ...guid });
+      }
+      if (weakest.axisOfAttraction) {
+        const guid = this.getWeakestSubcategoryGuidance(weakest.axisOfAttraction.id, 'axisOfAttraction');
+        r.weakestGuidance.push({ cluster: 'Axis of Attraction', label: weakest.axisOfAttraction.label, ...guid });
+      }
       if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards significantly exceed your market value. Adjust expectations or commit to major self-improvement.';
     } else {
-      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.tactical = ['Physical optimization paramount', 'Reduce risk indicators', 'Develop nurturing/cooperative skills', 'Lower standards to realistic range']; r.strategic = 'SMV below average. Without improvement, high-value men will not commit long-term.'; }
-      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.tactical = ['Maximize physical attractiveness', 'Develop feminine nurturing traits', 'Minimize drama/conflict', 'Build cooperative partnership skills']; r.strategic = 'Average SMV. Improvements can access above-average men.'; }
-      else { r.priority = 'Leverage and Selection'; r.tactical = ['Be selective for commitment', 'Vet for provider, protector, parental capacity', 'Maintain SMV through health/beauty', 'Act while SMV is high']; r.strategic = 'Strong SMV. Focus on selecting the right high-value man.'; }
-      if (weakest.coalitionRank) r.tactical.unshift(`Weakest 3S: ${weakest.coalitionRank.label} — address to increase female-female rank`);
-      if (weakest.reproductiveConfidence) r.tactical.unshift(`Weakest Reproductive: ${weakest.reproductiveConfidence.label} — improves male commitment willingness`);
+      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.strategic = 'SMV below average. Without improvement, high-value men will not commit long-term.'; }
+      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.strategic = 'Average SMV. Improvements can access above-average men.'; }
+      else { r.priority = 'Leverage and Selection'; r.strategic = 'Strong SMV. Focus on selecting the right high-value man.'; }
+      if (weakest.coalitionRank) {
+        const guid = this.getWeakestSubcategoryGuidance(weakest.coalitionRank.id, 'coalitionRank');
+        r.weakestGuidance.push({ cluster: '3S\'s (Coalition Rank)', label: weakest.coalitionRank.label, ...guid });
+      }
+      if (weakest.reproductiveConfidence) {
+        const guid = this.getWeakestSubcategoryGuidance(weakest.reproductiveConfidence.id, 'reproductiveConfidence');
+        r.weakestGuidance.push({ cluster: 'Reproductive Confidence', label: weakest.reproductiveConfidence.label, ...guid });
+      }
+      if (weakest.axisOfAttraction) {
+        const guid = this.getWeakestSubcategoryGuidance(weakest.axisOfAttraction.id, 'axisOfAttraction');
+        r.weakestGuidance.push({ cluster: 'Axis of Attraction', label: weakest.axisOfAttraction.label, ...guid });
+      }
       if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards (height/income/status) significantly exceed your market value. Adjust standards or dramatically improve SMV.';
     }
+    r.tactical = r.weakestGuidance.flatMap(w => w.actions);
+    if (r.tactical.length === 0) r.tactical = this.currentGender === 'male' ? ['Maintain current trajectory', 'Continue refining highest-leverage areas'] : ['Maintain SMV through health and presentation', 'Continue vetting for commitment-capable men'];
     return r;
   }
 
@@ -488,7 +537,19 @@ export class AttractionEngine {
     if (!container) return;
     const s = this.smv;
     const rec = s.recommendation || {};
-    const subLabels = { courage: 'Courage', control: 'Control', competence: 'Competence', perspicacity: 'Perspicacity', protector: 'Protector', provider: 'Provider', parentalInvestor: 'Parental Investor', performanceStatus: 'Performance/Status', physicalGenetic: 'Physical/Genetic', socialInfluence: 'Social Influence', selectivity: 'Selectivity & Mate Guarding', statusSignaling: 'Status Signaling', paternityCertainty: 'Paternity Certainty', nurturingStandard: 'Nurturing Standard', collaborativeTrust: 'Collaborative Trust', fertility: 'Fertility & Health', riskCost: 'Risk Cost', personality: 'Personality', factorsHidden: 'Factors Hidden' };
+    const subLabels = { courage: 'Courage', control: 'Control', competence: 'Competence', perspicacity: 'Perspicacity', protector: 'Protector', provider: 'Provider', parentalInvestor: 'Parental Investor', performanceStatus: 'Performance/Status (Wealth)', physicalGenetic: 'Physical/Genetic', humour: 'Humour', socialInfluence: 'Social Influence', selectivity: 'Selectivity & Mate Guarding', statusSignaling: 'Status Signaling', paternityCertainty: 'Paternity Certainty', nurturingStandard: 'Nurturing Standard', collaborativeTrust: 'Collaborative Trust', fertility: 'Fertility & Health', riskCost: 'Risk Cost', personality: 'Personality', factorsHidden: 'Factors Hidden' };
+
+    const peerRank = Math.round(s.clusters?.coalitionRank ?? 0);
+    const reproConf = Math.round(s.clusters?.reproductiveConfidence ?? 0);
+    const attractOpp = Math.round(s.clusters?.axisOfAttraction ?? 0);
+    const execBadges = `
+      <div class="attraction-badge" style="background:${this.getPercentileColor(peerRank)}20;border-color:${this.getPercentileColor(peerRank)}"><span class="attraction-badge-label">Peer Rank</span><span class="attraction-badge-value">${peerRank}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${this.currentGender === 'male' ? 'Male–male hierarchy' : 'Female–female hierarchy'}</span></div>
+      <div class="attraction-badge" style="background:${this.getPercentileColor(reproConf)}20;border-color:${this.getPercentileColor(reproConf)}"><span class="attraction-badge-label">Reproductive Confidence</span><span class="attraction-badge-value">${reproConf}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${this.currentGender === 'male' ? 'Procreate/nest willingness' : 'Male commitment signal'}</span></div>
+      <div class="attraction-badge" style="background:${this.getPercentileColor(attractOpp)}20;border-color:${this.getPercentileColor(attractOpp)}"><span class="attraction-badge-label">Attraction Opportunity</span><span class="attraction-badge-value">${attractOpp}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">Initiation & access</span></div>
+    `;
+
+    const gridLabel = this.currentGender === 'male' && s.badBoyGoodGuy ? s.badBoyGoodGuy.label : this.currentGender === 'female' && s.keeperSweeper ? s.keeperSweeper.label : '';
+    const gridBadge = gridLabel ? `<div class="attraction-result-badge"><span class="attraction-result-badge-label">${this.currentGender === 'male' ? 'Grid Position' : 'Chart Position'}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span></div>` : '';
 
     const subcategoryBlock = Object.keys(s.subcategories || {}).map(clusterId => {
       const subs = s.subcategories[clusterId];
@@ -501,30 +562,44 @@ export class AttractionEngine {
     }).join('');
 
     const gridBlock = this.currentGender === 'male' && s.badBoyGoodGuy
-      ? `<div class="grid-placement"><h3>Bad Boy / Good Guy Grid Position</h3><p class="grid-label"><strong>${s.badBoyGoodGuy.label}</strong></p><p class="grid-detail">Good Guy (4P's): ${s.badBoyGoodGuy.goodGuyPercentile}th % — Reproductive Confidence / Willingness to Nest</p><p class="grid-detail">Bad Boy (Axis): ${s.badBoyGoodGuy.badBoyPercentile}th % — Attraction Signals / Initiation Appeal</p></div>`
+      ? `<section class="report-section"><h2 class="report-section-title">Bad Boy / Good Guy Grid</h2><div class="grid-placement"><p class="grid-label"><strong>${s.badBoyGoodGuy.label}</strong></p><p class="grid-detail">Good Guy (4P's): ${s.badBoyGoodGuy.goodGuyPercentile}th % — Reproductive Confidence / Willingness to Nest</p><p class="grid-detail">Bad Boy (Axis): ${s.badBoyGoodGuy.badBoyPercentile}th % — Attraction Signals / Initiation Appeal</p></div></section>`
       : this.currentGender === 'female' && s.keeperSweeper
-        ? `<div class="grid-placement"><h3>Keeper-Sweeper Chart Position</h3><p class="grid-label"><strong>${s.keeperSweeper.label}</strong>${s.keeperSweeper.investment ? ` — ${s.keeperSweeper.investment}` : ''}</p><p class="grid-detail">${s.keeperSweeper.desc || ''}</p></div>`
+        ? `<section class="report-section"><h2 class="report-section-title">Keeper-Sweeper Chart</h2><div class="grid-placement"><p class="grid-label"><strong>${s.keeperSweeper.label}</strong>${s.keeperSweeper.investment ? ` — ${s.keeperSweeper.investment}` : ''}</p><p class="grid-detail">${s.keeperSweeper.desc || ''}</p></div></section>`
         : '';
 
     let html = `
       <div class="results-dashboard">
         <div class="results-header"><h2>Your Sexual Market Value Profile</h2><p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} SMV Assessment</p></div>
-        <div class="overall-score-card">
-          <div class="score-display"><div class="score-number">${Math.round(s.overall)}</div><div class="score-label">SMV Percentile</div><div class="score-percentile">${s.marketPosition}</div></div>
-          <div class="score-interpretation"><p>${this.getSMVInterpretation(s.overall)}</p></div>
-        </div>
+
+        <section class="report-section attraction-exec-summary">
+          <h2 class="report-section-title">At a Glance</h2>
+          <div class="attraction-exec-badges">${execBadges}</div>
+          ${gridBadge}
+          <div class="attraction-overall-badge"><span class="attraction-badge-label">Overall SMV</span><span class="attraction-badge-value">${Math.round(s.overall)}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${s.marketPosition}</span></div>
+          <div class="attraction-level-badge"><span class="attraction-result-badge-label">Developmental Level</span><span class="attraction-result-badge-value">${s.levelClassification}</span></div>
+        </section>
+
+        ${s.delusionIndex > 30 ? `<section class="report-section"><div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div></section>` : ''}
+
         ${gridBlock}
-        ${s.delusionIndex > 30 ? `<div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div>` : ''}
-        <div class="level-classification"><h3>Developmental Level</h3><p><strong>${s.levelClassification}</strong></p></div>
-        <div class="cluster-scores"><h3>Cluster Breakdown (averaged per subcategory)</h3>
-        ${Object.keys(s.clusters || {}).map(k => `<div class="cluster-card"><div class="cluster-header"><h4>${this.formatClusterName(k)}</h4><span class="cluster-score">${Math.round(s.clusters[k])}th Percentile</span></div><div class="cluster-bar"><div class="cluster-bar-fill" style="width:${s.clusters[k]}%;background:${this.getPercentileColor(s.clusters[k])}"></div></div></div>`).join('')}
-        </div>
-        <div class="subcategory-breakdown"><h3>Subcategory Averages & Weakest Points</h3>${subcategoryBlock}</div>
-        <div class="market-analysis"><h3>Market Position Analysis</h3><div class="market-grid"><div class="market-card"><h4>Realistic Target</h4><p>${s.targetMarket?.realistic || ''}</p></div><div class="market-card"><h4>Aspirational</h4><p>${s.targetMarket?.aspirational || ''}</p></div></div></div>
-        <div class="recommendations"><h3>Strategic Recommendations</h3><div class="priority-box ${rec.priority?.includes('CRITICAL') ? 'critical' : 'normal'}"><h4>${rec.priority || ''}</h4><p>${rec.strategic || ''}</p></div>
+
+        <section class="report-section"><h2 class="report-section-title">Cluster Breakdown</h2>
+        <div class="cluster-scores">
+        ${Object.keys(s.clusters || {}).map(k => `<div class="cluster-card"><div class="cluster-header"><h4>${this.formatClusterName(k)}</h4><span class="cluster-score attraction-metric-badge">${Math.round(s.clusters[k])}th %</span></div><div class="cluster-bar"><div class="cluster-bar-fill" style="width:${s.clusters[k]}%;background:${this.getPercentileColor(s.clusters[k])}"></div></div></div>`).join('')}
+        </div></section>
+
+        <section class="report-section"><h2 class="report-section-title">Subcategory Detail & Weakest Points</h2>
+        <div class="subcategory-breakdown">${subcategoryBlock}</div></section>
+
+        <section class="report-section"><h2 class="report-section-title">Market Position</h2>
+        <div class="market-analysis"><div class="market-grid"><div class="market-card"><h4>Realistic Target</h4><p>${s.targetMarket?.realistic || ''}</p></div><div class="market-card"><h4>Aspirational</h4><p>${s.targetMarket?.aspirational || ''}</p></div></div></div></section>
+
+        <section class="report-section"><h2 class="report-section-title">Strategic Recommendations</h2>
+        <div class="recommendations"><div class="priority-box ${rec.priority?.includes('CRITICAL') ? 'critical' : 'normal'}"><h4>${rec.priority || ''}</h4><p>${rec.strategic || ''}</p></div>
         ${rec.warning ? `<div class="warning-box"><strong>⚠️ Reality Check:</strong><p>${rec.warning}</p></div>` : ''}
+        ${(rec.weakestGuidance || []).length ? `<div class="weakest-guidance"><h4>Targeted Guidance — Weakest Subcategories</h4>${(rec.weakestGuidance || []).map(w => `<div class="guidance-block"><h5>${SecurityUtils.sanitizeHTML(w.label)} <span class="guidance-cluster">(${SecurityUtils.sanitizeHTML(w.cluster)})</span></h5><p class="guidance-meaning"><strong>What it means:</strong> ${SecurityUtils.sanitizeHTML(w.meaning)}</p><p class="guidance-actions"><strong>How to improve:</strong></p><ol>${(w.actions || []).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}</ol></div>`).join('')}</div>` : ''}
         <div class="tactical-actions"><h4>Immediate Actions</h4><ol>${(rec.tactical || []).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}</ol></div>
-        </div>
+        </div></section>
       </div>`;
     container.innerHTML = html;
   }

@@ -80,20 +80,25 @@ const MALE_REPRODUCTIVE_QUESTIONS = [
   { id: 'parental_3', subcategory: 'parentalInvestor', text: 'How much time and energy would you realistically invest in child-rearing?', weight: 1.0, options: OPTS, optionLabels: ['Minimal; prefer to outsource', 'Limited; career comes first', 'Moderate; balanced approach', 'Significant; hands-on father', 'Primary; central to my life'] }
 ];
 
-/** MALE Axis of Attraction — Performance/Status + Physical/Genetic. Initiation attraction, time-to-intimacy, investment requirement. Maps to Bad Boy / Good Guy grid. */
+/** MALE Axis of Attraction — Performance/Status (wealth = productivity, sharing, popularity, unique talent) + Physical/Genetic + Humour. Maps to Bad Boy / Good Guy grid. */
 const MALE_AXIS_QUESTIONS = [
-  // Performance/Status (Wealth, productivity, popularity, status, generosity — fluff the nest, provide, support status elevation)
+  // Performance/Status (Wealth = productivity, sharing, social network popularity, unique/outstanding talent — capacity to fluff the nest, provide, support status)
   { id: 'perf_1', subcategory: 'performanceStatus', text: 'How would you rate your current social status and influence?', weight: 1.0, options: OPTS, optionLabels: ['Low; little influence', 'Below average', 'Average', 'Above average; notable', 'High; significant influence'] },
   { id: 'perf_2', subcategory: 'performanceStatus', text: 'What is your current annual income bracket?', weight: 1.0, options: OPTS, optionLabels: ['Under $30k', '$30k-$60k', '$60k-$100k', '$100k-$200k', 'Over $200k'] },
   { id: 'perf_3', subcategory: 'performanceStatus', text: 'How generous are you with resources (time, money, connections) toward people you care about?', weight: 1.0, options: OPTS, optionLabels: ['Very guarded; rarely share', 'Selective; only close few', 'Moderate; fair when asked', 'Generous; share readily', 'Very generous; invest heavily'] },
   { id: 'perf_4', subcategory: 'performanceStatus', text: 'How productive and output-oriented are you in your work or projects?', weight: 1.0, options: OPTS, optionLabels: ['Low; struggle to produce', 'Below average', 'Average', 'Above average; reliable output', 'High; consistent high output'] },
   { id: 'perf_5', subcategory: 'performanceStatus', text: 'How popular or well-regarded are you in your social and professional circles?', weight: 1.0, options: OPTS, optionLabels: ['Not popular; overlooked', 'Below average', 'Average', 'Well-liked; respected', 'Very popular; sought after'] },
+  { id: 'perf_6', subcategory: 'performanceStatus', text: 'Do you have a unique or outstanding talent (music, sport, craft, invention, expertise) that signals potential windfall or novelty?', weight: 1.0, options: OPTS, optionLabels: ['None; no standout skill', 'One hobby; not notable', 'Moderate; some recognition', 'Strong; admired in niche', 'Outstanding; widely recognised'] },
   // Physical/Genetic (Aesthetics, genetics, virility, fitness, cleanliness — produce and protect healthy offspring)
   { id: 'phys_1', subcategory: 'physicalGenetic', text: 'How would you honestly rate your physical attractiveness (face, build, aesthetics)?', weight: 1.0, options: OPTS, optionLabels: ['Below average', 'Slightly below average', 'Average', 'Above average', 'Top tier'] },
   { id: 'phys_2', subcategory: 'physicalGenetic', text: 'How would you rate your fitness, strength, and physical capability?', weight: 1.0, options: OPTS, optionLabels: ['Poor; sedentary', 'Below average', 'Average', 'Above average; fit', 'Elite; very strong'] },
   { id: 'phys_3', subcategory: 'physicalGenetic', text: 'What is your height bracket?', weight: 1.0, options: OPTS, optionLabels: ['Under 5\'6"', '5\'6"-5\'8"', '5\'9"-5\'11"', '6\'0"-6\'2"', 'Over 6\'2"'] },
   { id: 'phys_4', subcategory: 'physicalGenetic', text: 'How well do you maintain grooming, hygiene, and physical presentation?', weight: 1.0, options: OPTS, optionLabels: ['Poor; inconsistent', 'Below average', 'Average', 'Above average; polished', 'Excellent; always put-together'] },
-  { id: 'phys_5', subcategory: 'physicalGenetic', text: 'How would others describe your energy and vitality?', weight: 1.0, options: OPTS, optionLabels: ['Low; tired or sluggish', 'Below average', 'Average', 'Above average; energetic', 'High; vibrant and vital'] }
+  { id: 'phys_5', subcategory: 'physicalGenetic', text: 'How would others describe your energy and vitality?', weight: 1.0, options: OPTS, optionLabels: ['Low; tired or sluggish', 'Below average', 'Average', 'Above average; energetic', 'High; vibrant and vital'] },
+  // Humour (intelligence indicator; drives attraction and approachability)
+  { id: 'humour_1', subcategory: 'humour', text: 'How easily do you make others laugh in social settings?', weight: 1.0, options: OPTS, optionLabels: ['Rarely; humour doesn\'t come naturally', 'Sometimes; hit and miss', 'Moderately; decent delivery', 'Often; people enjoy my timing', 'Consistently; known for wit'] },
+  { id: 'humour_2', subcategory: 'humour', text: 'How quick are you to spot absurdity, irony, or playful angles in conversation?', weight: 1.0, options: OPTS, optionLabels: ['Slow; often miss it', 'Below average', 'Average; catch some', 'Quick; usually first', 'Very quick; sharp and clever'] },
+  { id: 'humour_3', subcategory: 'humour', text: 'How well do you use humour to put others at ease or defuse tension?', weight: 1.0, options: OPTS, optionLabels: ['Poorly; often misfires', 'Below average', 'Moderately', 'Well; people relax around me', 'Exceptionally; natural icebreaker'] }
 ];
 
 /** FEMALE 3S's — 9 questions (3 per S). Female-female hierarchy; weakest identified. */
@@ -173,11 +178,12 @@ export const MALE_CLUSTERS = {
   axisOfAttraction: {
     id: 'axisOfAttraction',
     title: 'Axis of Attraction',
-    subtitle: 'Performance/Status + Physical/Genetic — Bad Boy / Good Guy Grid',
-    description: 'Wealth, productivity, popularity, status, generosity; aesthetics, genetics, virility, fitness, cleanliness. Drives initiation attraction, time-to-intimacy, investment requirement. Maps to Bad Boy / Good Guy grid.',
+    subtitle: 'Performance/Status + Physical/Genetic + Humour — Bad Boy / Good Guy Grid',
+    description: 'Wealth (productivity, sharing, social popularity, unique talent); aesthetics, virility, fitness; humour as intelligence signal. Drives initiation attraction, time-to-intimacy, investment requirement. Maps to Bad Boy / Good Guy grid.',
     subcategories: {
-      performanceStatus: { label: 'Performance/Status Signals', desc: 'Wealth, productivity, popularity, status, generosity.' },
-      physicalGenetic: { label: 'Physical/Genetic Signals', desc: 'Aesthetics, genetics, virility, fitness, cleanliness.' }
+      performanceStatus: { label: 'Performance/Status (Wealth)', desc: 'Productivity, sharing, social network popularity, unique/outstanding talent.' },
+      physicalGenetic: { label: 'Physical/Genetic Signals', desc: 'Aesthetics, genetics, virility, fitness, cleanliness.' },
+      humour: { label: 'Humour', desc: 'Intelligence indicator; approachability and attraction.' }
     },
     questions: MALE_AXIS_QUESTIONS
   }
