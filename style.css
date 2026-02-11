@@ -313,11 +313,12 @@ main {
 }
 
 .tool-card-thumb {
-    width: 100px;
-    height: 140px;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
     object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
 }
 
