@@ -1771,29 +1771,78 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     }
 }
 
-/* Index tools portal: 6 per row, smaller images, links to tools page sections */
-.index-tools-portal-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 1rem;
+/* Index tools: single card with image grid inside, 6 per row, proportioned images, hover on images */
+.index-tools-card {
+    background: rgba(20, 35, 55, 0.85);
+    border: 2px solid var(--border-medium);
+    box-shadow: var(--shadow-md);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.index-tools-portal-grid .portal-card.portal-card-image img {
-    max-width: 90px;
+.index-tools-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    z-index: 1;
+}
+
+.index-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: center;
+}
+
+.index-tools-grid-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.index-tools-grid-item:hover {
+    background: rgba(255, 215, 0, 0.08);
+    box-shadow: 0 0 16px var(--glow-accent);
+}
+
+.index-tools-grid-item img {
     width: 100%;
+    max-width: 100px;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+    border-radius: 6px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.index-tools-grid-item:hover img {
+    transform: scale(1.06);
+    opacity: 0.95;
 }
 
 @media (max-width: 1023px) {
-    .index-tools-portal-grid {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-    .index-tools-portal-grid .portal-card.portal-card-image img {
-        max-width: 100px;
+    .index-tools-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 640px) {
-    .index-tools-portal-grid {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
+    .index-tools-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+    .index-tools-grid-item img {
+        max-width: 80px;
     }
 }
 
