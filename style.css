@@ -1796,7 +1796,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 .index-tools-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 1.25rem;
+    gap: .5rem;
     align-items: center;
 }
 
@@ -1804,7 +1804,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 0.125rem;
     border-radius: 8px;
     overflow: hidden;
     transition: background-color 0.25s ease, box-shadow 0.25s ease;
