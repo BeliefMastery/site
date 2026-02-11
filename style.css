@@ -1797,6 +1797,13 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     z-index: 1;
 }
 
+#tools,
+#tools .section-inner,
+#tools .index-tools-card,
+.index-tools-grid {
+    overflow: visible;
+}
+
 .index-tools-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
