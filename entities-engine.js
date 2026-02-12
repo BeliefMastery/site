@@ -285,12 +285,8 @@ export class EntitiesEngine {
     });
 
     this.updateNavButtons();
+    setTimeout(() => questionContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }
-
-  // Scroll to question after rendering
-    setTimeout(() => {
-      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
 
   updateNavButtons() {
     const prevBtn = document.getElementById('prevQuestion');

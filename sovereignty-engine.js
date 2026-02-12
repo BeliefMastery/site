@@ -842,13 +842,9 @@ export class SovereigntyEngine {
     // HTML is already sanitized in render methods, but use safeInnerHTML for extra safety
     SecurityUtils.safeInnerHTML(container, html);
     this.updateNavigation();
+    setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }
 
-// Scroll to question after rendering
-    setTimeout(() => {
-      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  
   getSectionExplanation(section) {
     const explanations = {
       1: {

@@ -1056,16 +1056,12 @@ export class DiagnosisEngine {
       this.debugReporter.recordRender('question', renderDuration);
       
       this.logDebug('Rendered question', { questionId: question.id, index: this.currentQuestionIndex });
+      setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     } catch (error) {
       this.debugReporter.logError(error, 'renderCurrentQuestion');
       ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
   }
-
-  // Scroll to question after rendering
-    setTimeout(() => {
-      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
 
   updateProgress() {
     const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
