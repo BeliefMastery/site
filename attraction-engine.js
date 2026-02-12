@@ -549,7 +549,11 @@ export class AttractionEngine {
     `;
 
     const gridLabel = this.currentGender === 'male' && s.badBoyGoodGuy ? s.badBoyGoodGuy.label : this.currentGender === 'female' && s.keeperSweeper ? s.keeperSweeper.label : '';
-    const gridBadge = gridLabel ? `<div class="attraction-result-badge"><span class="attraction-result-badge-label">${this.currentGender === 'male' ? 'Grid Position' : 'Chart Position'}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span></div>` : '';
+    const gridExpl = this.currentGender === 'male' && s.badBoyGoodGuy ? this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy') : this.currentGender === 'female' && s.keeperSweeper ? this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper') : '';
+    const gridBadge = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">${this.currentGender === 'male' ? 'Grid Position' : 'Chart Position'}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
+
+    const smvExpl = 'Sexual Market Value — your relative desirability in the dating/mating market based on evolutionary clusters.';
+    const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
 
     const subcategoryBlock = Object.keys(s.subcategories || {}).map(clusterId => {
       const subs = s.subcategories[clusterId];
@@ -562,9 +566,9 @@ export class AttractionEngine {
     }).join('');
 
     const gridBlock = this.currentGender === 'male' && s.badBoyGoodGuy
-      ? `<section class="report-section"><h2 class="report-section-title">Bad Boy / Good Guy Grid</h2><div class="grid-placement"><p class="grid-label"><strong>${s.badBoyGoodGuy.label}</strong></p><p class="grid-detail">Good Guy (4P's): ${s.badBoyGoodGuy.goodGuyPercentile}th % — Reproductive Confidence / Willingness to Nest</p><p class="grid-detail">Bad Boy (Axis): ${s.badBoyGoodGuy.badBoyPercentile}th % — Attraction Signals / Initiation Appeal</p></div></section>`
+      ? `<section class="report-section"><h2 class="report-section-title">Bad Boy / Good Guy Grid</h2><div class="grid-placement"><p class="grid-label"><strong>${s.badBoyGoodGuy.label}</strong></p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy'))}</p><p class="grid-detail">Good Guy (4P's): ${s.badBoyGoodGuy.goodGuyPercentile}th % — Reproductive Confidence / Willingness to Nest</p><p class="grid-detail">Bad Boy (Axis): ${s.badBoyGoodGuy.badBoyPercentile}th % — Attraction Signals / Initiation Appeal</p></div></section>`
       : this.currentGender === 'female' && s.keeperSweeper
-        ? `<section class="report-section"><h2 class="report-section-title">Keeper-Sweeper Chart</h2><div class="grid-placement"><p class="grid-label"><strong>${s.keeperSweeper.label}</strong>${s.keeperSweeper.investment ? ` — ${s.keeperSweeper.investment}` : ''}</p><p class="grid-detail">${s.keeperSweeper.desc || ''}</p></div></section>`
+        ? `<section class="report-section"><h2 class="report-section-title">Keeper-Sweeper Chart</h2><div class="grid-placement"><p class="grid-label"><strong>${s.keeperSweeper.label}</strong>${s.keeperSweeper.investment ? ` — ${s.keeperSweeper.investment}` : ''}</p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper'))}</p><p class="grid-detail">${s.keeperSweeper.desc || ''}</p></div></section>`
         : '';
 
     let html = `
@@ -575,8 +579,8 @@ export class AttractionEngine {
           <h2 class="report-section-title">At a Glance</h2>
           <div class="attraction-exec-badges">${execBadges}</div>
           ${gridBadge}
-          <div class="attraction-overall-badge"><span class="attraction-badge-label">Overall SMV</span><span class="attraction-badge-value">${Math.round(s.overall)}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${s.marketPosition}</span></div>
-          <div class="attraction-level-badge"><span class="attraction-result-badge-label">Developmental Level</span><span class="attraction-result-badge-value">${s.levelClassification}</span></div>
+          <div class="attraction-overall-badge attraction-badge-with-expl"><span class="attraction-badge-label">Overall SMV</span><span class="attraction-badge-value">${Math.round(s.overall)}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${s.marketPosition}</span><span class="qualification-explanation">${SecurityUtils.sanitizeHTML(smvExpl)}</span></div>
+          <div class="attraction-level-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">Developmental Level</span><span class="attraction-result-badge-value">${s.levelClassification}</span>${levelExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(levelExpl)}</span>` : ''}</div>
         </section>
 
         ${s.delusionIndex > 30 ? `<section class="report-section"><div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div></section>` : ''}
@@ -607,6 +611,37 @@ export class AttractionEngine {
   formatClusterName(id) {
     const map = { coalitionRank: 'Coalition Rank', reproductiveConfidence: 'Reproductive Confidence', axisOfAttraction: 'Axis of Attraction' };
     return map[id] || id;
+  }
+
+  /** Brief explanations for qualifications — respondent may not know the terms */
+  getQualificationExplanation(label, type) {
+    const keeperSweeper = {
+      'Keepers': 'Where you invest for the long term — partners you\'d commit to and prioritise.',
+      'Sleepers': 'The middle zone — you\'re open but not fully committed; options you\'d consider but may not prioritise.',
+      'Sweepers': 'Where you invest less — partners you\'d engage with casually or de-prioritise relative to higher-value options.'
+    };
+    const badBoyGoodGuy = {
+      'Friend zone': 'High commitment signal, high attraction — she values you but doesn\'t feel romantic chemistry.',
+      'Husband zone': 'High commitment signal, moderate attraction — strong long-term partner potential.',
+      'Prince Charming (Ideal LT)': 'High on both — ideal long-term partner: commitment-willing and highly attractive.',
+      'Gold Digger Ick': 'Moderate commitment, high attraction — she may pursue you for status/resources without genuine connection.',
+      'Settling': 'Moderate on both — she\'d accept but isn\'t excited; you\'re "good enough".',
+      'Good': 'Moderate commitment, low attraction — reliable but not exciting.',
+      'Bad Boy (Ideal ST)': 'Low commitment signal, high attraction — exciting short-term; she may not see you as long-term material.',
+      'Mistake': 'Low commitment, moderate attraction — fun but she knows it won\'t last.',
+      'Ghost / Creep': 'Low on both — she\'ll avoid or disengage; seen as low value or threatening.'
+    };
+    const developmentalLevels = {
+      'Integral/Holistic (High Integration)': 'You integrate multiple perspectives and act from a coherent worldview; mature decision-making.',
+      'Achievement-Oriented (Rational/Strategic)': 'You focus on goals, strategy, and rational choice; rule-conscious and achievement-driven.',
+      'Conformist (Rule-Following)': 'You follow social norms and authority; stability and belonging matter more than individual edge.',
+      'Egocentric (Reactive/Impulsive)': 'You react from immediate needs and impulses; short-term gratification over long-term planning.',
+      'Survival Mode (Basic Needs Focus)': 'Focus is on safety, security, and meeting basic needs; little bandwidth for higher-order strategy.'
+    };
+    if (type === 'keeperSweeper') return keeperSweeper[label] || '';
+    if (type === 'badBoyGoodGuy') return badBoyGoodGuy[label] || '';
+    if (type === 'developmentalLevel') return developmentalLevels[label] || '';
+    return '';
   }
 
   getPercentileColor(p) { if (p >= 80) return '#2ecc71'; if (p >= 60) return '#3498db'; if (p >= 40) return '#f39c12'; return '#e74c3c'; }

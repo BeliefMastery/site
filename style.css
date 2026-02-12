@@ -5405,9 +5405,9 @@ img {
     display: inline-block;
     padding: 0.5rem 1rem;
     margin: 0.5rem 0.5rem 0 0;
-    background: var(--brand);
-    color: #fff;
-    border-radius: 20px;
+    background: var(--accent-panel);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
     font-size: 0.9rem;
 }
 
@@ -5415,7 +5415,7 @@ img {
 .results-dashboard .attraction-overall-badge .attraction-badge-label,
 .results-dashboard .attraction-level-badge .attraction-result-badge-label {
     display: inline;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--muted);
     font-size: 0.8rem;
 }
 
@@ -5424,6 +5424,29 @@ img {
 .results-dashboard .attraction-level-badge .attraction-result-badge-value {
     font-weight: 600;
     margin-left: 0.35rem;
+    color: var(--accent);
+}
+
+.results-dashboard .attraction-badge-with-expl {
+    display: inline-block;
+    vertical-align: top;
+    max-width: 320px;
+}
+
+.results-dashboard .qualification-explanation {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+.results-dashboard .qualification-explanation-block {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0.5rem 0 0.75rem;
 }
 
 .results-dashboard .attraction-metric-badge {
