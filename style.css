@@ -3958,25 +3958,36 @@ img {
     a,
     .btn {
         min-height: 48px;
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 1rem;
     }
 
-    /* Better spacing for mobile */
+    /* Minimal buffers for maximum screen real-estate */
     .question-card,
     .card {
-        padding: 1.5rem;
-        margin: 1rem 0;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
     }
     
-/* Minimize section buffers for mobile */
     section {
-        padding: 12px 8px;
-        margin: 8px 0;
+        padding: 8px 6px;
+        margin: 6px 0;
+    }
+
+    .container {
+        padding: 0 6px;
+    }
+
+    .minimal-section {
+        padding: 0.75rem 6px;
+    }
+
+    .section-inner-padded {
+        padding: 0.5rem;
     }
     
     .question-block {
-        padding: 1rem;
-        margin-bottom: 1rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
     }
     
     .tool-container,
@@ -3993,8 +4004,8 @@ img {
     .character-sheet-container,
     .diagnosis-container,
     .sovereignty-container {
-        padding: 1rem;
-        margin: 1rem 0;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
     }
     
     /* Prevent text from being too small */
@@ -4065,7 +4076,7 @@ img {
     .character-sheet-container,
     .temperament-container,
     .main-content {
-        padding: 1rem;
+        padding: 0.75rem;
     }
 
     .intro-section,
@@ -4073,7 +4084,15 @@ img {
     .character-sheet,
     .questionnaire-section,
     .results-section {
-        padding: 1.5rem;
+        padding: 0.75rem;
+    }
+
+    .content-section {
+        padding: 1rem 0;
+    }
+
+    .analysis-modules-grid .card {
+        padding: 0.75rem;
     }
 
     .navigation-buttons,
@@ -4116,13 +4135,45 @@ img {
 
     /* Absolute minimum padding for small phones */
     section {
-        padding: 8px 6px;
-        margin: 6px 0;
+        padding: 6px 4px;
+        margin: 4px 0;
+    }
+
+    .container {
+        padding: 0 4px;
+    }
+
+    .minimal-section {
+        padding: 0.5rem 4px;
+    }
+
+    .question-card,
+    .card {
+        padding: 0.5rem;
+        margin: 0.4rem 0;
+    }
+
+    .tool-container,
+    .manipulation-container,
+    .archetype-container,
+    .channels-container,
+    .coaching-container,
+    .diagnosis-container,
+    .sovereignty-container,
+    .relationship-container,
+    .temperament-container,
+    .character-sheet-container,
+    .paradigm-container,
+    .spectrum-container,
+    .needs-dependency-container,
+    .dependency-container {
+        padding: 0.5rem;
+        margin: 0.4rem 0;
     }
     
     .question-block {
-        padding: 0.75rem;
-        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
     }    
     
     .image-card.tool-card .tool-summary {
@@ -4145,16 +4196,62 @@ img {
     }
 }
 
+/* Tablet: reduced buffers for more screen real-estate */
+@media (max-width: 1024px) {
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 0.75rem;
+    }
+
+    section {
+        padding: 12px 10px;
+        margin: 12px 0;
+    }
+
+    .minimal-section {
+        padding: 1rem 0.75rem;
+    }
+
+    .section-inner-padded {
+        padding: 1rem;
+    }
+
+    .tool-container,
+    .manipulation-container,
+    .archetype-container,
+    .dependency-container,
+    .channels-container,
+    .coaching-container,
+    .needs-dependency-container,
+    .spectrum-container,
+    .paradigm-container,
+    .relationship-container,
+    .temperament-container,
+    .character-sheet-container,
+    .diagnosis-container,
+    .sovereignty-container {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+
+    .card,
+    .question-card {
+        padding: 1rem;
+        margin: 0.75rem 0;
+    }
+}
+
 @media (max-width: 1199px) and (min-width: 821px) {
     .container {
         width: 100%;
         max-width: 100%;
-        padding: 0 1rem;
+        padding: 0 0.75rem;
     }
 
     .main-content {
         max-width: 100%;
-        padding: 2rem 1rem;
+        padding: 1.5rem 0.75rem;
     }
 
     .section-inner,
