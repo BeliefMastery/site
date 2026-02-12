@@ -1432,6 +1432,9 @@ export class RelationshipEngine {
   
   getSelfRegulationStrategies(link) {
     // Extract self-regulation actions from immediate strategies
+    if (!ACTION_STRATEGIES || !link?.point) {
+      return ['Focus on your own responses and boundaries in this area.', 'Practice self-regulation techniques when this strain point is activated.', 'Take responsibility for your part without taking all responsibility.'];
+    }
     const strategies = ACTION_STRATEGIES[link.point];
     if (!strategies || !strategies.immediate) {
       return ['Focus on your own responses and boundaries in this area.', 'Practice self-regulation techniques when this strain point is activated.', 'Take responsibility for your part without taking all responsibility.'];
@@ -1451,6 +1454,9 @@ export class RelationshipEngine {
   
   getRelationalInvitationStrategies(link) {
     // Extract relational invitation actions
+    if (!ACTION_STRATEGIES || !link?.point) {
+      return ['Invite mutual discussion about this area.', 'Create space for both partners to share perspectives.', 'Propose collaborative solutions.'];
+    }
     const strategies = ACTION_STRATEGIES[link.point];
     if (!strategies || !strategies.immediate) {
       return ['Invite mutual discussion about this area.', 'Create space for both partners to share perspectives.', 'Propose collaborative solutions.'];
@@ -1471,6 +1477,9 @@ export class RelationshipEngine {
   
   getStructuralBoundaryStrategies(link) {
     // Extract structural boundary actions
+    if (!ACTION_STRATEGIES || !link?.point) {
+      return ['Establish clear boundaries around this area.', 'Create structure that protects both partners.', 'Define expectations and follow through consistently.'];
+    }
     const strategies = ACTION_STRATEGIES[link.point];
     if (!strategies || !strategies.structural) {
       return ['Establish clear boundaries if this pattern persists.', 'Protect yourself through structural changes if dynamics do not improve.'];
@@ -1490,6 +1499,9 @@ export class RelationshipEngine {
   
   getChangeStrategies(link) {
     // Strategies that aim to improve dynamics
+    if (!ACTION_STRATEGIES || !link?.point) {
+      return ['Work together to improve this area.', 'Focus on mutual understanding and growth.', 'Engage in collaborative problem-solving.'];
+    }
     const strategies = ACTION_STRATEGIES[link.point];
     if (!strategies) {
       return ['Work together to improve this area.', 'Focus on mutual understanding and growth.', 'Engage in collaborative problem-solving.'];
@@ -1509,6 +1521,9 @@ export class RelationshipEngine {
   
   getAcceptanceStrategies(link) {
     // Strategies that reduce harm if dynamics persist
+    if (!ACTION_STRATEGIES || !link?.point) {
+      return ['Accept current limitations and protect yourself accordingly.', 'Establish boundaries to reduce harm if patterns continue.', 'Focus on self-protection if mutual improvement is not possible.'];
+    }
     const strategies = ACTION_STRATEGIES[link.point];
     if (!strategies) {
       return ['Accept current limitations and protect yourself accordingly.', 'Establish boundaries to reduce harm if patterns continue.', 'Focus on self-protection if mutual improvement is not possible.'];
@@ -1598,6 +1613,8 @@ export class RelationshipEngine {
     try {
       const data = this.dataStore.load('progress');
       if (!data) return;
+
+      await this.loadRelationshipData();
 
       if (data.assessmentMode === 'module' || data.activeModuleId || data.analysisData?.assessmentMode === 'module' || data.analysisData?.moduleId) {
         this.dataStore.clear('progress');
