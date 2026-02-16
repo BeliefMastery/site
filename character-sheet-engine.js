@@ -500,13 +500,13 @@ export class CharacterSheetEngine {
    * @returns {boolean} - True if valid
    */
   validateFormData(formData) {
+    const hasMoonAndAscendant = Boolean(
+      String(formData.moonSign || '').trim() && String(formData.ascendantSign || '').trim()
+    );
+
     const requiredFields = [
       { key: 'name', label: 'Character name' },
       { key: 'birthDate', label: 'Birth date' },
-      { key: 'birthTime', label: 'Birth time' },
-      { key: 'timeZone', label: 'Time zone' },
-      { key: 'birthLatitude', label: 'Birth latitude' },
-      { key: 'birthLongitude', label: 'Birth longitude' },
       { key: 'sunSign', label: 'Sun sign' },
       { key: 'moonSign', label: 'Moon sign' },
       { key: 'ascendantSign', label: 'Ascendant (Rising) sign' },
@@ -515,6 +515,15 @@ export class CharacterSheetEngine {
       { key: 'mayanTone', label: 'Mayan Dreamspell tone' },
       { key: 'mayanKin', label: 'Mayan Dreamspell kin' }
     ];
+
+    if (!hasMoonAndAscendant) {
+      requiredFields.push(
+        { key: 'birthTime', label: 'Birth time' },
+        { key: 'timeZone', label: 'Time zone' },
+        { key: 'birthLatitude', label: 'Birth latitude' },
+        { key: 'birthLongitude', label: 'Birth longitude' }
+      );
+    }
 
     requiredFields.forEach((field) => {
       this.setFieldError(field.key, false);
@@ -712,14 +721,14 @@ export class CharacterSheetEngine {
     const characterClass = this.determineClass(astrologyData);
     const backstory = this.generateBackstory(formData, astrologyData, race, characterClass);
     
-    // Generate Proficiencies, Traits, Saving Throws, Skills
+    // Generate Proficiencies, Traits, Saving Throws, Context Bonus Modifiers
     const proficiencies = this.generateProficiencies(astrologyData, characterClass);
     const traits = this.generateTraits(astrologyData);
     const savingThrows = this.generateSavingThrows(baseStats, characterClass);
-    const skills = this.generateSkills(baseStats, astrologyData, characterClass);
+    const contextBonusModifiers = this.generateContextBonusModifiers(astrologyData, characterClass, proficiencies, traits);
     
-    // Generate Class Features
-    const classFeatures = this.generateClassFeatures(astrologyData, characterClass);
+    // Generate Innovative Outcomes (theme-derived from proficiencies, traits, context modifiers)
+    const innovativeOutcomes = this.generateInnovativeOutcomes(astrologyData, characterClass, proficiencies, traits, contextBonusModifiers);
     
     // Generate Flaws
     const flaws = this.generateFlaws(astrologyData);
@@ -733,8 +742,8 @@ export class CharacterSheetEngine {
       proficiencies,
       traits,
       savingThrows,
-      skills,
-      classFeatures,
+      contextBonusModifiers,
+      innovativeOutcomes,
       flaws,
       astrologyData,
       timestamp: new Date().toISOString()
@@ -1047,102 +1056,80 @@ export class CharacterSheetEngine {
     return savingThrows;
   }
 
-  generateSkills(baseStats, astrologyData, characterClass) {
-    const allSkills = [
-      { name: 'Acrobatics', ability: 'dexterity' },
-      { name: 'Animal Handling', ability: 'wisdom' },
-      { name: 'Arcana', ability: 'intelligence' },
-      { name: 'Athletics', ability: 'strength' },
-      { name: 'Deception', ability: 'charisma' },
-      { name: 'History', ability: 'intelligence' },
-      { name: 'Insight', ability: 'wisdom' },
-      { name: 'Intimidation', ability: 'charisma' },
-      { name: 'Investigation', ability: 'intelligence' },
-      { name: 'Medicine', ability: 'wisdom' },
-      { name: 'Nature', ability: 'wisdom' },
-      { name: 'Perception', ability: 'wisdom' },
-      { name: 'Performance', ability: 'charisma' },
-      { name: 'Persuasion', ability: 'charisma' },
-      { name: 'Religion', ability: 'intelligence' },
-      { name: 'Sleight of Hand', ability: 'dexterity' },
-      { name: 'Stealth', ability: 'dexterity' },
-      { name: 'Survival', ability: 'wisdom' }
-    ];
+  generateContextBonusModifiers(astrologyData, characterClass, proficiencies, traits) {
+    const modifiers = [];
     
-    const skills = [];
-    
-    // Determine skill proficiencies based on class and astrology
-    const proficientSkills = this.determineSkillProficiencies(astrologyData, characterClass);
-    
-    allSkills.forEach(skill => {
-      const isProficient = proficientSkills.includes(skill.name);
-      const abilityModifier = baseStats[skill.ability];
-      const proficiencyBonus = isProficient ? 2 : 0;
-      const totalModifier = abilityModifier + proficiencyBonus;
-      
-      skills.push({
-        name: skill.name,
-        ability: skill.ability.charAt(0).toUpperCase() + skill.ability.slice(1),
-        modifier: totalModifier >= 0 ? `+${totalModifier}` : `${totalModifier}`,
-        proficient: isProficient
+    // Each proficiency becomes a context where you receive a bonus
+    (proficiencies || []).forEach((prof, idx) => {
+      const tier = [2, 2, 1, 1, 1][idx % 5];
+      modifiers.push({
+        context: prof,
+        modifier: `+${tier}`,
+        source: 'Proficiency'
       });
     });
     
-    return skills;
-  }
-
-  determineSkillProficiencies(astrologyData, characterClass) {
-    const proficiencies = [];
+    // Traits add context-specific modifiers
+    (traits || []).forEach((trait, idx) => {
+      const mod = trait.modifier || '+1';
+      modifiers.push({
+        context: trait.name,
+        modifier: mod,
+        source: trait.source || 'Trait'
+      });
+    });
     
-    // Class-based skill proficiencies
-    const classSkills = {
-      'Fighter': ['Athletics', 'Intimidation'],
-      'Rogue': ['Acrobatics', 'Deception', 'Stealth', 'Sleight of Hand'],
-      'Barbarian': ['Athletics', 'Intimidation', 'Survival'],
-      'Wizard': ['Arcana', 'History', 'Investigation'],
-      'Cleric': ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion'],
-      'Bard': ['Any 3'],
-      'Paladin': ['Athletics', 'Insight', 'Intimidation', 'Medicine', 'Persuasion', 'Religion'],
-      'Druid': ['Arcana', 'Animal Handling', 'Insight', 'Medicine', 'Nature', 'Perception', 'Religion', 'Survival'],
-      'Monk': ['Acrobatics', 'Athletics', 'History', 'Insight', 'Religion', 'Stealth'],
-      'Ranger': ['Animal Handling', 'Athletics', 'Insight', 'Investigation', 'Nature', 'Perception', 'Stealth', 'Survival']
-    };
-    
-    if (classSkills[characterClass]) {
-      proficiencies.push(...classSkills[characterClass]);
-    }
-    
-    // Astrological skill bonuses
-    if (astrologyData.western.sun?.element === 'Air') {
-      proficiencies.push('Investigation', 'History');
+    // Astrological context bonuses
+    if (astrologyData.western.sun?.element === 'Fire') {
+      modifiers.push({ context: 'Initiative and decisive action', modifier: '+2', source: 'Sun (Fire)' });
     }
     if (astrologyData.western.sun?.element === 'Water') {
-      proficiencies.push('Insight', 'Perception');
+      modifiers.push({ context: 'Empathic listening and emotional attunement', modifier: '+2', source: 'Sun (Water)' });
+    }
+    if (astrologyData.western.sun?.element === 'Air') {
+      modifiers.push({ context: 'Strategic communication and idea synthesis', modifier: '+2', source: 'Sun (Air)' });
+    }
+    if (astrologyData.western.sun?.element === 'Earth') {
+      modifiers.push({ context: 'Operational planning and grounded execution', modifier: '+2', source: 'Sun (Earth)' });
     }
     if (astrologyData.chinese.animal?.name === 'Monkey') {
-      proficiencies.push('Sleight of Hand', 'Acrobatics');
+      modifiers.push({ context: 'Adaptability and quick pivots', modifier: '+1', source: 'Chinese (Monkey)' });
     }
     
-    return [...new Set(proficiencies)];
+    // Dedupe by context
+    const seen = new Set();
+    return modifiers.filter(m => {
+      const key = m.context.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 12);
   }
 
-  generateClassFeatures(astrologyData, characterClass) {
+  generateInnovativeOutcomes(astrologyData, characterClass, proficiencies, traits, contextBonusModifiers) {
     const features = [];
+    const profs = (proficiencies || []).slice(0, 4);
+    const traitNames = (traits || []).map(t => t.name).slice(0, 3);
+    const contextThemes = (contextBonusModifiers || []).map(c => c.context).slice(0, 3);
+    const themePool = [...profs, ...traitNames, ...contextThemes].filter(Boolean);
+    const theme1 = themePool[0] || 'core strengths';
+    const theme2 = themePool[1] || 'natural tendencies';
+    const theme3 = themePool[2] || 'learned capacities';
     
-    // Base class features
-    const baseFeatures = {
+    // Base outcomes by class — descriptions tied to proficiencies, traits, context modifiers
+    const baseOutcomes = {
       'Fighter': [
         {
-          name: 'Fighting Style',
-          description: 'You specialize in a combat discipline that shapes how you handle conflict, defense, and initiative. This style guides your training, posture, and decision-making under pressure.',
+          name: 'Integrated Combat Stance',
+          description: `Your ${theme1} and ${theme2} combine into a disciplined approach to conflict and defense. This stance guides decision-making under pressure and shapes how you take initiative.`,
           frequency: 'Always active',
           influence: 'Self: improves tactical focus and consistency under stress.',
           numericalInfluence: '+1 to initiative decisions',
           effectiveRange: 'Self'
         },
         {
-          name: 'Second Wind',
-          description: 'You can rally and recover in the middle of a challenge, regaining stamina and composure through focused breath and grit.',
+          name: 'Rally and Recover',
+          description: `Drawing on ${theme1} and your capacity for ${theme2}, you can rally in the middle of a challenge—regaining composure through focused breath and grit.`,
           frequency: 'Once per short rest',
           influence: 'Self: restores momentum and steadiness after setbacks.',
           numericalInfluence: '+2 resilience for the next challenge',
@@ -1151,24 +1138,24 @@ export class CharacterSheetEngine {
       ],
       'Rogue': [
         {
-          name: 'Sneak Attack',
-          description: 'You excel at precision strikes that capitalize on distraction or advantage, turning small openings into decisive impact.',
-          frequency: 'Once per turn when advantage is present',
+          name: 'Precision Strike',
+          description: `Your ${theme1} and ${theme2} let you turn small openings into decisive impact—capitalizing on distraction or exposure when it appears.`,
+          frequency: 'Once per turn when conditions align',
           influence: 'Target: amplifies impact when the opponent is distracted or exposed.',
           numericalInfluence: '+3 impact on exposed targets',
           effectiveRange: 'Line of sight'
         },
         {
           name: 'Cunning Action',
-          description: 'Your agility lets you reposition, disengage, or hide with minimal effort, keeping you one step ahead in dynamic situations.',
+          description: `Leveraging ${theme1} and ${theme3}, you reposition, disengage, or adapt with minimal effort—staying one step ahead in dynamic situations.`,
           frequency: 'Once per turn',
           influence: 'Self: increases mobility and escape options in tense moments.',
           numericalInfluence: '+2 mobility for one turn',
           effectiveRange: 'Self'
         },
         {
-          name: 'Thieves\' Cant',
-          description: 'You fluently interpret coded cues and subtext, allowing you to communicate quietly in sensitive environments.',
+          name: 'Covert Coordination',
+          description: `Your ${theme2} and context in ${theme3} let you interpret coded cues and subtext, enabling discreet communication in sensitive environments.`,
           frequency: 'Always active',
           influence: 'Allies: enables discreet coordination and covert signaling.',
           numericalInfluence: '+2 coordination in covert contexts',
@@ -1177,16 +1164,16 @@ export class CharacterSheetEngine {
       ],
       'Barbarian': [
         {
-          name: 'Rage',
-          description: 'You can enter a heightened state of intensity that amplifies your power, focus, and resolve under pressure.',
+          name: 'Focused Intensity',
+          description: `Your ${theme1} and ${theme2} channel into a heightened state that amplifies power, focus, and resolve under pressure.`,
           frequency: 'Twice per long rest',
           influence: 'Self: boosts force, resilience, and single-point focus.',
           numericalInfluence: '+3 strength, +2 resilience while active',
           effectiveRange: 'Self'
         },
         {
-          name: 'Unarmored Defense',
-          description: 'Your instinctive resilience keeps you protected even without external armor, relying on raw endurance and awareness.',
+          name: 'Instinctive Resilience',
+          description: `Drawing on ${theme1} and ${theme3}, your raw endurance and awareness keep you protected even without external support.`,
           frequency: 'Always active',
           influence: 'Self: improves natural durability without added gear.',
           numericalInfluence: '+2 defensive stability',
@@ -1195,16 +1182,16 @@ export class CharacterSheetEngine {
       ],
       'Wizard': [
         {
-          name: 'Spellcasting',
-          description: 'You wield focused knowledge to channel complex effects, relying on intellect, preparation, and disciplined practice.',
+          name: 'Channeled Knowledge',
+          description: `Your ${theme1} and ${theme2} let you wield focused knowledge to channel complex effects—shaping outcomes through intellect and disciplined practice.`,
           frequency: 'Always active',
           influence: 'Targets: can be shaped, supported, or disrupted through learned techniques.',
           numericalInfluence: '+2 to precision on targeted outcomes',
           effectiveRange: 'Line of sight'
         },
         {
-          name: 'Arcane Recovery',
-          description: 'You can restore part of your mental reserves through focused rest and reflection, recovering spent resources.',
+          name: 'Strategic Recovery',
+          description: `Through ${theme3} and focused rest, you restore mental reserves and recover spent resources.`,
           frequency: 'Once per day after a short rest',
           influence: 'Self: restores mental capacity and strategic clarity.',
           numericalInfluence: '+3 focus on next complex task',
@@ -1213,16 +1200,16 @@ export class CharacterSheetEngine {
       ],
       'Cleric': [
         {
-          name: 'Spellcasting',
-          description: 'You channel restorative and protective forces through faith and wisdom, shaping outcomes with spiritual authority.',
+          name: 'Restorative Presence',
+          description: `Your ${theme1} and ${theme2} channel restorative and protective forces—shaping outcomes with wisdom and care for others.`,
           frequency: 'Always active',
           influence: 'Allies: stabilizes, protects, and supports group cohesion.',
           numericalInfluence: '+2 restoration or protection effect',
           effectiveRange: 'Within 15 meters'
         },
         {
-          name: 'Channel Divinity',
-          description: 'You can invoke a powerful surge of sacred energy to heal, protect, or turn the tide in critical moments.',
+          name: 'Sacred Surge',
+          description: `Drawing on ${theme1} and ${theme3}, you invoke a powerful surge to heal, protect, or turn the tide in critical moments.`,
           frequency: 'Once per short rest',
           influence: 'Allies: provides a short, high-impact burst of protection or recovery.',
           numericalInfluence: '+3 recovery or protection burst',
@@ -1231,16 +1218,16 @@ export class CharacterSheetEngine {
       ],
       'Bard': [
         {
-          name: 'Spellcasting',
-          description: 'You weave creative expression into tangible influence, shaping attention, emotion, and momentum with style.',
+          name: 'Expressive Influence',
+          description: `Your ${theme1} and ${theme2} weave creative expression into tangible influence—shaping attention, emotion, and momentum with style.`,
           frequency: 'Always active',
           influence: 'Targets: shifts emotion, morale, or attention through expression.',
           numericalInfluence: '+2 morale shift on engaged targets',
           effectiveRange: 'Within 25 meters'
         },
         {
-          name: 'Bardic Inspiration',
-          description: 'You uplift allies with timely insight or encouragement, granting a burst of confidence and clarity.',
+          name: 'Inspired Uplift',
+          description: `Through ${theme3} and timely insight, you uplift allies with encouragement—granting a burst of confidence and clarity.`,
           frequency: 'Uses equal to Charisma modifier per long rest',
           influence: 'Allies: grants momentum and morale in clutch moments.',
           numericalInfluence: '+3 confidence on next action',
@@ -1249,24 +1236,24 @@ export class CharacterSheetEngine {
       ],
       'Paladin': [
         {
-          name: 'Lay on Hands',
-          description: 'You can deliver restorative support through focused touch, stabilizing allies and restoring strength.',
+          name: 'Restorative Touch',
+          description: `Your ${theme1} and ${theme2} enable restorative support through focused touch—stabilizing allies and restoring strength.`,
           frequency: 'Pool refreshes per long rest',
           influence: 'Allies: direct restorative aid for recovery and stabilization.',
           numericalInfluence: '+4 recovery on contact',
           effectiveRange: 'Touch'
         },
         {
-          name: 'Divine Sense',
-          description: 'You sense hidden corruption or sacred presence, helping you detect subtle threats or alignments.',
+          name: 'Perceptive Sense',
+          description: `Drawing on ${theme3} and intuition, you sense hidden threats or alignments—detecting subtle dangers others miss.`,
           frequency: 'Uses equal to Charisma modifier per long rest',
           influence: 'Self: heightens perception of hidden dangers or intent.',
           numericalInfluence: '+3 clarity on threat detection',
           effectiveRange: 'Within 30 meters'
         },
         {
-          name: 'Aura of Protection',
-          description: 'Allies within 20 meters benefit from your stabilizing presence, gaining a subtle resilience boost.',
+          name: 'Stabilizing Aura',
+          description: `Your ${theme1} and ${theme2} radiate as a stabilizing presence—allies within 20 meters gain subtle resilience.`,
           frequency: 'Always active while conscious',
           influence: 'Allies within 20 meters: gain increased resilience and steadiness.',
           numericalInfluence: '+2 resilience while in aura',
@@ -1275,16 +1262,16 @@ export class CharacterSheetEngine {
       ],
       'Druid': [
         {
-          name: 'Wild Shape',
-          description: 'You can adapt your form to match the environment, enhancing mobility, endurance, or stealth.',
+          name: 'Adaptive Form',
+          description: `Your ${theme1} and ${theme2} let you adapt to the environment—enhancing mobility, endurance, or stealth to fit terrain and threats.`,
           frequency: 'Twice per short rest',
           influence: 'Self: adapts capabilities to fit terrain and threats.',
           numericalInfluence: '+2 mobility and resilience while adapted',
           effectiveRange: 'Self'
         },
         {
-          name: 'Nature\'s Voice',
-          description: 'You interpret natural signs and ecosystems, gaining guidance from patterns in the living world.',
+          name: 'Ecological Awareness',
+          description: `Through ${theme3} and attunement to natural patterns, you interpret signs and ecosystems—gaining guidance from the living world.`,
           frequency: 'Always active',
           influence: 'Self: improves navigation, timing, and ecological awareness.',
           numericalInfluence: '+2 insight on environmental cues',
@@ -1293,16 +1280,16 @@ export class CharacterSheetEngine {
       ],
       'Monk': [
         {
-          name: 'Ki Focus',
-          description: 'You harness disciplined inner energy for bursts of precision, mobility, and defensive clarity.',
+          name: 'Disciplined Focus',
+          description: `Your ${theme1} and ${theme2} harness inner energy for bursts of precision, mobility, and defensive clarity.`,
           frequency: 'Points refresh per short rest',
           influence: 'Self: enhances agility, precision, and defensive control.',
           numericalInfluence: '+2 precision and defense while focused',
           effectiveRange: 'Self'
         },
         {
-          name: 'Deflect Missiles',
-          description: 'You can redirect incoming force with refined timing, minimizing harm and conserving energy.',
+          name: 'Redirected Force',
+          description: `Drawing on ${theme3} and refined timing, you redirect incoming force—minimizing harm and conserving energy.`,
           frequency: 'Once per round as a reaction',
           influence: 'Self: reduces incoming impact and preserves stamina.',
           numericalInfluence: '-3 incoming impact on reaction',
@@ -1311,8 +1298,8 @@ export class CharacterSheetEngine {
       ],
       'Ranger': [
         {
-          name: 'Hunter\'s Focus',
-          description: 'You can mark a priority target or mission, sharpening attention and persistence toward the objective.',
+          name: 'Hunter\'s Mark',
+          description: `Your ${theme1} and ${theme2} let you mark a priority target or mission—sharpening attention and persistence toward the objective.`,
           frequency: 'Once per short rest',
           influence: 'Target: increases tracking accuracy and follow-through.',
           numericalInfluence: '+2 tracking accuracy on marked targets',
@@ -1320,7 +1307,7 @@ export class CharacterSheetEngine {
         },
         {
           name: 'Natural Explorer',
-          description: 'You move efficiently through terrain, noticing subtle signals that others miss.',
+          description: `Through ${theme3} and awareness, you move efficiently through terrain—noticing subtle signals that others miss.`,
           frequency: 'Always active',
           influence: 'Self: improves navigation and environmental awareness.',
           numericalInfluence: '+2 navigation and tracking',
@@ -1329,17 +1316,19 @@ export class CharacterSheetEngine {
       ]
     };
     
-    if (baseFeatures[characterClass]) {
-      baseFeatures[characterClass].forEach((feature) => {
-        features.push({ ...feature });
+    if (baseOutcomes[characterClass]) {
+      baseOutcomes[characterClass].forEach((outcome) => {
+        features.push({ ...outcome });
       });
     }
     
-    // Add astrological class features
+    // Add astrological innovative outcomes (Mayan seal + tone)
     if (astrologyData.mayan.seal) {
+      const sealName = astrologyData.mayan.seal.ability.split(' - ')[0];
+      const sealDesc = astrologyData.mayan.seal.ability;
       features.push({
-        name: astrologyData.mayan.seal.ability.split(' - ')[0],
-        description: astrologyData.mayan.seal.ability,
+        name: sealName,
+        description: `${sealDesc} — Integrated with your proficiencies in ${theme1} and ${theme2}.`,
         frequency: 'At will',
         influence: 'Self/Allies: amplifies natural strengths tied to the seal theme.',
         numericalInfluence: '+2 to theme-aligned actions',
@@ -1348,9 +1337,11 @@ export class CharacterSheetEngine {
     }
     
     if (astrologyData.mayan.tone) {
+      const toneName = astrologyData.mayan.tone.approach.split(' - ')[0];
+      const toneDesc = astrologyData.mayan.tone.approach;
       features.push({
-        name: astrologyData.mayan.tone.approach.split(' - ')[0],
-        description: astrologyData.mayan.tone.approach,
+        name: toneName,
+        description: `${toneDesc} — Shaped by your context in ${theme3} and related traits.`,
         frequency: 'At will',
         influence: 'Self/Allies: shapes approach style and group dynamics.',
         numericalInfluence: '+2 to approach-aligned outcomes',
@@ -1508,7 +1499,29 @@ export class CharacterSheetEngine {
               ${character.savingThrows.map(s => `
                 <tr>
                   <td>${s.name}</td>
-                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')}</strong> <span class="label">advantage roll</span>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
+                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')}</strong>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </section>
+        
+        <section class="context-bonus-modifiers">
+          <h3>Context Bonus Modifiers</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Context</th>
+                <th>Modifier</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(character.contextBonusModifiers || []).map(c => `
+                <tr>
+                  <td>${SecurityUtils.sanitizeHTML(c.context || '')}</td>
+                  <td>${SecurityUtils.sanitizeHTML(c.modifier || '')}</td>
+                  <td>${SecurityUtils.sanitizeHTML(c.source || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1517,27 +1530,7 @@ export class CharacterSheetEngine {
         
         <section class="skills">
           <h3>Skills</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Skill</th>
-                <th>Modifier</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${character.skills.map(s => `
-                <tr>
-                  <td>${s.name}</td>
-                  <td>${s.proficient ? `<strong>${SecurityUtils.sanitizeHTML(s.modifier || '')}</strong> <span class="label">advantage roll</span>` : SecurityUtils.sanitizeHTML(s.modifier || '')}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </section>
-        
-        <section class="class-features">
-          <h3>Class Features</h3>
-          ${character.classFeatures.map(f => `
+          ${(character.innovativeOutcomes || character.classFeatures || []).map(f => `
             <div class="feature-item">
               <h4>${f.name}</h4>
               <p><strong>Frequency:</strong> ${f.frequency}</p>

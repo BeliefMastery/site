@@ -96,7 +96,7 @@
           Transform your astrological profile into a D&D-style character sheet! This fun tool combines Western, Chinese, and Mayan astrology to create a unique roleplay character based on your birth chart.
         </p>
         
-        <p>Your character sheet includes Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Skills, Class Features, and Character Flaws—all derived from your astrological influences.</p>
+        <p>Your character sheet includes Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Context Bonus Modifiers, Skills, and Character Flaws—all derived from your astrological influences.</p>
 
         <div class="action-buttons" style="margin-top: 1.5rem;">
           <button class="btn btn-secondary" id="generateSampleReport">Generate Sample Character</button>
@@ -124,7 +124,7 @@
               <li>Western Astrology: Sun, Moon, and Ascendant signs influence character stats</li>
               <li>Chinese Astrology: Animal and Element determine Race and additional modifiers</li>
               <li>Mayan Astrology: Seal and Tone provide unique abilities and approach styles</li>
-              <li>D&amp;D-style character sheet with Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Skills, Class Features, and Flaws</li>
+              <li>D&amp;D-style character sheet with Race, Class, Base Stats, Proficiencies, Traits, Saving Throws, Context Bonus Modifiers, Skills, and Flaws</li>
               <li>Automatic Sun sign calculation from birth date</li>
               <li>Built-in Moon and Ascendant calculator (birth time, timezone, latitude, longitude)</li>
               <li>Export character sheet as JSON</li>
@@ -153,7 +153,7 @@
           <div class="form-group">
             <label for="birthTime">Birth Time</label>
             <input type="time" id="birthTime" name="birthTime" value="12:00">
-            <small class="form-help">Required for Moon + Ascendant calculations (if not provided manually)</small>
+            <small class="form-help">Required only if Moon and Ascendant are not entered manually</small>
           </div>
 
           <div class="form-group">
@@ -161,19 +161,19 @@
             <select id="timeZone" name="timeZone">
               <option value="">Select a time zone</option>
             </select>
-            <small class="form-help">Includes country codes from the IANA time zone database.</small>
+            <small class="form-help">Required only if calculating Moon and Ascendant from birth data. IANA time zone database.</small>
           </div>
 
           <div class="form-group">
             <label for="birthLatitude">Birth Latitude</label>
             <input type="number" id="birthLatitude" name="birthLatitude" step="0.0001" placeholder="e.g. -33.8688">
-            <small class="form-help">Latitude in decimal degrees (negative for south).</small>
+            <small class="form-help">Required only if calculating Moon and Ascendant. Decimal degrees (negative for south).</small>
           </div>
 
           <div class="form-group">
             <label for="birthLongitude">Birth Longitude</label>
             <input type="number" id="birthLongitude" name="birthLongitude" step="0.0001" placeholder="e.g. 151.2093">
-            <small class="form-help">Longitude in decimal degrees (positive for east, negative for west).</small>
+            <small class="form-help">Required only if calculating Moon and Ascendant. Decimal degrees (positive east, negative west).</small>
           </div>
 
           <div class="form-group">
@@ -219,7 +219,7 @@
               <option value="Aquarius">Aquarius</option>
               <option value="Pisces">Pisces</option>
             </datalist>
-            <small class="form-help">Get from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar calculator</small>
+            <small class="form-help">Enter manually from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a>, or leave blank and use birth time/location to calculate</small>
           </div>
 
           <div class="form-group">
@@ -239,7 +239,7 @@
               <option value="Aquarius">Aquarius</option>
               <option value="Pisces">Pisces</option>
             </datalist>
-            <small class="form-help">Get from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a> or similar calculator (requires birth time and location)</small>
+            <small class="form-help">Enter manually from <a href="https://www.astro.com" target="_blank" rel="noopener">astro.com</a>, or leave blank and use birth time/location to calculate</small>
           </div>
 
           <div class="form-group">
