@@ -1010,11 +1010,13 @@ export class CharacterSheetEngine {
       });
     }
     
-    // Mayan seal ability
+    // Mayan seal ability — use theme keywords (e.g. Spirit & Communication) not system terms
     if (astrologyData.mayan.seal) {
+      const seal = astrologyData.mayan.seal;
+      const themeLabel = seal.theme || seal.name || '';
       traits.push({
-        name: astrologyData.mayan.seal.ability.split(' - ')[0],
-        source: `Mayan Seal (${SecurityUtils.sanitizeHTML(astrologyData.mayan.seal.name || '')})`,
+        name: seal.ability.split(' - ')[0],
+        source: themeLabel ? `${SecurityUtils.sanitizeHTML(themeLabel)} (${SecurityUtils.sanitizeHTML(seal.name || '')})` : SecurityUtils.sanitizeHTML(seal.name || ''),
         modifier: '+2'
       });
     }
@@ -1322,29 +1324,33 @@ export class CharacterSheetEngine {
       });
     }
     
-    // Add astrological innovative outcomes (Mayan seal + tone)
+    // Add astrological innovative outcomes (Mayan seal + tone) — use theme keywords, not system terms
     if (astrologyData.mayan.seal) {
-      const sealName = astrologyData.mayan.seal.ability.split(' - ')[0];
-      const sealDesc = astrologyData.mayan.seal.ability;
+      const seal = astrologyData.mayan.seal;
+      const sealName = seal.ability.split(' - ')[0];
+      const sealDesc = seal.ability;
+      const themeKeywords = seal.theme || 'related strengths';
       features.push({
         name: sealName,
         description: `${sealDesc} — Integrated with your proficiencies in ${theme1} and ${theme2}.`,
         frequency: 'At will',
-        influence: 'Self/Allies: amplifies natural strengths tied to the seal theme.',
-        numericalInfluence: '+2 to theme-aligned actions',
+        influence: `Self/Allies: amplifies natural strengths in ${themeKeywords}.`,
+        numericalInfluence: `+2 to ${themeKeywords} actions`,
         effectiveRange: 'Self or close allies (15 meters)'
       });
     }
     
     if (astrologyData.mayan.tone) {
-      const toneName = astrologyData.mayan.tone.approach.split(' - ')[0];
-      const toneDesc = astrologyData.mayan.tone.approach;
+      const tone = astrologyData.mayan.tone;
+      const toneName = tone.approach.split(' - ')[0];
+      const toneDesc = tone.approach;
+      const themeKeywords = tone.theme || 'related dynamics';
       features.push({
         name: toneName,
         description: `${toneDesc} — Shaped by your context in ${theme3} and related traits.`,
         frequency: 'At will',
-        influence: 'Self/Allies: shapes approach style and group dynamics.',
-        numericalInfluence: '+2 to approach-aligned outcomes',
+        influence: `Self/Allies: shapes approach and group dynamics around ${themeKeywords}.`,
+        numericalInfluence: `+2 to ${themeKeywords} outcomes`,
         effectiveRange: 'Self or team (20 meters)'
       });
     }
@@ -1372,11 +1378,13 @@ export class CharacterSheetEngine {
       });
     }
     
-    // Mayan seal negative modifier
+    // Mayan seal negative modifier — use theme keywords, not system terms
     if (astrologyData.mayan.seal) {
+      const seal = astrologyData.mayan.seal;
+      const themeLabel = seal.theme || seal.name || '';
       flaws.push({
-        name: astrologyData.mayan.seal.negativeModifier.split(' - ')[0],
-        source: `Mayan Seal (${SecurityUtils.sanitizeHTML(astrologyData.mayan.seal.name || '')})`,
+        name: seal.negativeModifier.split(' - ')[0],
+        source: themeLabel ? `${SecurityUtils.sanitizeHTML(themeLabel)} (${SecurityUtils.sanitizeHTML(seal.name || '')})` : SecurityUtils.sanitizeHTML(seal.name || ''),
         modifier: '-2'
       });
     }
