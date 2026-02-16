@@ -11,15 +11,15 @@
 
     <style>
         :root {
-            --primary-blue: #003580; /* Blue from website */
-            --secondary-orange: #f59e0b; /* Vibrant Amber/Sunset Orange */
-            --background-dark: #1e293b; /* Dark coastal slate */
-            --background-card: #ffffff; /* Clean white cards */
-            --text-dark: #1f2937; /* Gray-800 */
-            --green-arrival: #10b981; /* Emerald-500 for success */
-            --red-alert: #ef4444; /* Red-500 for fatal error */
-            --info-status: #3b82f6; /* Blue-500 for "No Arrival" and "Ongoing Stay" */
-            --ongoing-stay-text: #475569; /* Slate-600 for card text */
+            --primary-blue: #003580;
+            --secondary-orange: #f59e0b;
+            --background-dark: #1e293b;
+            --background-card: #ffffff;
+            --text-dark: #1f2937;
+            --green-arrival: #10b981;
+            --red-alert: #ef4444;
+            --info-status: #3b82f6;
+            --ongoing-stay-text: #475569;
         }
 
         body {
@@ -130,10 +130,10 @@
         }
 
         .debug-bar {
-            background: linear-gradient(135deg, var(--background-dark) 0%, #0f172a 100%); /* Matches body background */
+            background: linear-gradient(135deg, var(--background-dark) 0%, #0f172a 100%);
             border-top: 2px solid #e5e7eb;
             font-size: 0.75rem;
-            color: #6b7280; /* Preserved font color */
+            color: #6b7280;
             border-radius: 8px;
             padding: 0.75rem;
         }
@@ -221,7 +221,7 @@
 
         <div class="welcome-card">
             <p class="welcome-message">
-                We’re delighted to host you. Enjoy your stay at Patons Rock Beach Villas, and if you need assistance, please call 
+                We're delighted to host you. Enjoy your stay at Patons Rock Beach Villas, and if you need assistance, please call 
                 <a href="tel:0273563551">027 356 3551</a>. 🏖️
             </p>
         </div>
@@ -235,7 +235,13 @@
         const { DateTime, Settings } = luxon;
         Settings.defaultLocale = "en-NZ";
         const targetTimeZone = "Pacific/Auckland";
-        const proxy = "https://api.allorigins.win/raw?url=";
+
+        // Try multiple CORS proxy services in order
+        const corsProxies = [
+            "https://corsproxy.io/?",
+            "https://api.codetabs.com/v1/proxy?quest=",
+            "https://cors-anywhere.herokuapp.com/"
+        ];
 
         const villaFeeds = {
             villa1: {
@@ -302,11 +308,32 @@
             return dt.toFormat("ccc, dd MMM yyyy");
         }
 
-        async function tryFeed(url, todayNZ) {
+        async function tryFetch(url, timeout = 10000) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+            
             try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const ics = await res.text();
+                const response = await fetch(url, { 
+                    signal: controller.signal,
+                    mode: 'cors'
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                return await response.text();
+            } catch (error) {
+                clearTimeout(timeoutId);
+                throw error;
+            }
+        }
+
+        async function tryFeed(url, todayNZ, proxyPrefix = '') {
+            try {
+                const fullUrl = proxyPrefix ? proxyPrefix + encodeURIComponent(url) : url;
+                const ics = await tryFetch(fullUrl);
                 const blocks = ics.split("BEGIN:VEVENT").slice(1);
 
                 let ongoingStayFound = null;
@@ -346,37 +373,60 @@
             const list = document.getElementById(id);
             list.innerHTML = `<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Loading data...</li>`;
 
-            const attempts = [
-                { name: 'Beds24 (Proxy)', url: proxy + encodeURIComponent(feeds.beds24) },
-                { name: 'Google (Direct)', url: feeds.google },
-                { name: 'Google (Proxy)', url: proxy + encodeURIComponent(feeds.google) }
-            ];
-
             const todayNZ = DateTime.now().setZone(targetTimeZone);
-            let finalResult = { status: 'error', html: "<li class='no-arrival'><i class='fas fa-exclamation-triangle mr-2 text-red-alert'></i> Failed to load data.</li>", debug: `<span class="status-error">✖ Failed All Feeds</span>` };
+            let finalResult = { 
+                status: 'error', 
+                html: "<li class='no-arrival'><i class='fas fa-exclamation-triangle mr-2 text-red-alert'></i> Failed to load data.</li>", 
+                debug: `<span class="status-error">✖ All Feeds Failed</span>` 
+            };
             
-            for (const attempt of attempts) {
-                const result = await tryFeed(attempt.url, todayNZ);
-
+            // Try Google Calendar first with multiple proxies
+            for (const proxy of corsProxies) {
+                const result = await tryFeed(feeds.google, todayNZ, proxy);
+                
                 if (result.status === 'arrival') {
                     list.innerHTML = `<li>${result.html}</li>`;
-                    return `<span class="status-ok">✔ ARRIVAL (${attempt.name})</span>`;
+                    return `<span class="status-ok">✔ ARRIVAL (Google via ${proxy.substring(0, 20)}...)</span>`;
                 } else if (result.status === 'ongoing') {
                     finalResult = {
                         status: 'ongoing',
                         html: result.html,
-                        debug: `<span class="status-no-arrival">✔ ONGOING STAY (${attempt.name})</span>`
+                        debug: `<span class="status-no-arrival">✔ ONGOING (Google via ${proxy.substring(0, 20)}...)</span>`
                     };
+                    break; // Found ongoing stay, no need to try more proxies
                 } else if (result.status === 'no-booking') {
-                    if (finalResult.status === 'error') {
+                    finalResult = {
+                        status: 'no-booking',
+                        html: result.html,
+                        debug: `<span class="status-no-arrival">✔ NO BOOKING (Google via ${proxy.substring(0, 20)}...)</span>`
+                    };
+                    break; // Got successful response showing no booking
+                }
+            }
+
+            // If still error, try Beds24 with proxies
+            if (finalResult.status === 'error') {
+                for (const proxy of corsProxies) {
+                    const result = await tryFeed(feeds.beds24, todayNZ, proxy);
+                    
+                    if (result.status === 'arrival') {
+                        list.innerHTML = `<li>${result.html}</li>`;
+                        return `<span class="status-ok">✔ ARRIVAL (Beds24 via ${proxy.substring(0, 20)}...)</span>`;
+                    } else if (result.status === 'ongoing') {
+                        finalResult = {
+                            status: 'ongoing',
+                            html: result.html,
+                            debug: `<span class="status-no-arrival">✔ ONGOING (Beds24 via ${proxy.substring(0, 20)}...)</span>`
+                        };
+                        break;
+                    } else if (result.status === 'no-booking') {
                         finalResult = {
                             status: 'no-booking',
                             html: result.html,
-                            debug: `<span class="status-no-arrival">✔ NO BOOKING (${attempt.name})</span>`
+                            debug: `<span class="status-no-arrival">✔ NO BOOKING (Beds24 via ${proxy.substring(0, 20)}...)</span>`
                         };
+                        break;
                     }
-                } else if (result.status === 'error') {
-                    console.warn(`${id} - ${attempt.name} failed:`, result.error);
                 }
             }
             
