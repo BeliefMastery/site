@@ -1521,7 +1521,6 @@ export class CharacterSheetEngine {
               <tr>
                 <th>Context</th>
                 <th>Modifier</th>
-                <th>Source</th>
               </tr>
             </thead>
             <tbody>
@@ -1529,7 +1528,6 @@ export class CharacterSheetEngine {
                 <tr>
                   <td>${SecurityUtils.sanitizeHTML(c.context || '')}</td>
                   <td>${SecurityUtils.sanitizeHTML(c.modifier || '')}</td>
-                  <td>${SecurityUtils.sanitizeHTML(c.source || '')}</td>
                 </tr>
               `).join('')}
             </tbody>
