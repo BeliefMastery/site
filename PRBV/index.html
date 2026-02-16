@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patons Rock Villa Arrivals | NZT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700;800&display=swap">
+
+    <style>
+        :root {
+            --primary-blue: #003580;
+            --secondary-orange: #f59e0b;
+            --background-dark: #1e293b;
+            --background-card: #ffffff;
+            --text-dark: #1f2937;
+            --green-arrival: #10b981;
+            --red-alert: #ef4444;
+            --info-status: #3b82f6;
+            --ongoing-stay-text: #475569;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--background-dark) 0%, #0f172a 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background-color: var(--background-card);
+            border-left: 6px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 1.5rem;
+            max-height: 200px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .card-active {
+            transform: scale(1.03) translateY(-8px);
+            border-left: 6px solid var(--secondary-orange);
+            box-shadow: 0 16px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .card:hover {
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .villa-title {
+            color: var(--primary-blue);
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .villa-subtitle {
+            font-size: 1rem;
+            color: var(--ongoing-stay-text);
+            margin-bottom: 0.75rem;
+        }
+
+        .arrival-info {
+            padding: 0.5rem 0;
+        }
+
+        .guest-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--green-arrival);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .date, .check-in {
+            font-size: 0.875rem;
+            color: var(--ongoing-stay-text);
+            display: flex;
+            align-items: center;
+        }
+
+        .check-in {
+            color: var(--secondary-orange);
+            font-weight: 600;
+        }
+
+        .check-in i, .date i, .no-arrival i {
+            margin-right: 0.5rem;
+        }
+
+        .loading-icon {
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .no-arrival {
+            color: var(--info-status);
+            font-style: italic;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-ok {
+            color: var(--green-arrival);
+            font-weight: 700;
+        }
+
+        .status-no-arrival {
+            color: var(--info-status);
+            font-weight: 700;
+        }
+
+        .status-error {
+            color: var(--red-alert);
+            font-weight: 700;
+        }
+
+        .debug-bar {
+            background: linear-gradient(135deg, var(--background-dark) 0%, #0f172a 100%);
+            border-top: 2px solid #e5e7eb;
+            font-size: 0.75rem;
+            color: #6b7280;
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .refresh-btn {
+            background-color: var(--secondary-orange);
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .refresh-btn:hover {
+            background-color: #d97706;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .refresh-btn i {
+            font-size: 0.875rem;
+        }
+
+        .refresh-btn.refreshing i {
+            animation: spin 1s linear infinite;
+        }
+
+        .welcome-card {
+            background: var(--background-card);
+            border-radius: 12px;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0.5rem auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-orange));
+        }
+
+        .welcome-message {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .welcome-message a {
+            color: var(--primary-blue);
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .welcome-message a:hover {
+            color: var(--secondary-orange);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto flex flex-col min-h-screen">
+        <header class="mb-8 text-center bg-white p-6 rounded-xl shadow-lg border-b-4 border-secondary-orange">
+            <h1 class="text-5xl font-extrabold text-primary-blue tracking-tight">
+                Patons Rock Beach Villas
+            </h1>
+            <p class="text-lg font-light text-gray-500 mt-2">Today's Arrivals Summary (New Zealand Time)</p>
+            <p id="current-date" class="text-xl font-bold text-secondary-orange mt-3"></p>
+        </header>
+
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-4 flex-1 justify-items-center">
+            <div id="villa1-card" class="card">
+                <h1 class="villa-title">Villa 1</h1>
+                <ul id="villa1" class="space-y-2">
+                    <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
+                </ul>
+            </div>
+
+            <div id="villa2-card" class="card">
+                <h1 class="villa-title">Villa 2</h1>
+                <ul id="villa2" class="space-y-2">
+                    <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
+                </ul>
+            </div>
+            
+            <div id="villa3-card" class="card">
+                <h1 class="villa-title">Villa 3</h1>
+                <ul id="villa3" class="space-y-2">
+                    <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
+                </ul>
+            </div>
+
+            <div id="villa4-card" class="card">
+                <h1 class="villa-title">Villa 4</h1>
+                <ul id="villa4" class="space-y-2">
+                    <li class="loading flex items-center"><i class="fas fa-spinner loading-icon mr-2"></i> Preparing arrival data...</li>
+                </ul>
+            </div>
+        </main>
+
+        <div class="welcome-card">
+            <p class="welcome-message">
+                We're delighted to host you. Enjoy your stay at Patons Rock Beach Villas, and if you need assistance, please call 
+                <a href="tel:0273563551">027 356 3551</a>. 🏖️
+            </p>
+        </div>
+
+        <footer class="debug-bar mt-4">
+            <p id="debug" class="flex-1">System initializing...</p>
+            <button id="refresh-btn" class="refresh-btn" onclick="manualRefresh()">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh</span>
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        const { DateTime, Settings } = luxon;
+        Settings.defaultLocale = "en-NZ";
+        const targetTimeZone = "Pacific/Auckland";
+
+        // Try multiple CORS proxy services in order
+        const corsProxies = [
+            "https://corsproxy.io/?",
+            "https://api.codetabs.com/v1/proxy?quest=",
+            "https://cors-anywhere.herokuapp.com/"
+        ];
+
+        const villaFeeds = {
+            villa1: {
+                beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318483&token=ea7b37ea5fc562875d2a5196a1a77ed8",
+                google: "https://calendar.google.com/calendar/ical/dg0tk02rn99u5fd9a15ltccp4u6hq464%40import.calendar.google.com/public/basic.ics"
+            },
+            villa2: {
+                beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318484&token=619894678ee80521412a314854aba411",
+                google: "https://calendar.google.com/calendar/ical/u8thu0g7p9eot6ppob2etrr4kun3h47n%40import.calendar.google.com/public/basic.ics"
+            },
+            villa3: {
+                beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318485&token=0dc12d488822f3fb0487273a4d933c84",
+                google: "https://calendar.google.com/calendar/ical/ksclvfhel50fao7ebrmkoan888uhvpo8%40import.calendar.google.com/public/basic.ics"
+            },
+            villa4: {
+                beds24: "https://api.beds24.com/ical/bookings.ics?roomid=318486&token=9634a496cdf402a5c88b5685866a00e8",
+                google: "https://calendar.google.com/calendar/ical/sjrqdsa4n3ril7criqoh5k4ofhehep33%40import.calendar.google.com/public/basic.ics"
+            }
+        };
+
+        function parseICSEvent(block) {
+            const startLine = block.match(/DTSTART(?:;VALUE=DATE)?:(.*)/);
+            const endLine = block.match(/DTEND(?:;VALUE=DATE)?:(.*)/);
+            const summaryLine = block.match(/SUMMARY:(.*)/);
+            if (!startLine || !summaryLine) return null;
+
+            const startRaw = startLine[1].trim();
+            const summary = summaryLine[1].trim();
+            let arrivalDate, endDate;
+
+            const isDateTime = startRaw.includes('T') || startRaw.includes('Z');
+            
+            const parseDate = (raw) => {
+                const year = parseInt(raw.substr(0, 4), 10);
+                const month = parseInt(raw.substr(4, 2), 10);
+                const day = parseInt(raw.substr(6, 2), 10);
+                return DateTime.fromObject({ year, month, day }, { zone: targetTimeZone });
+            };
+
+            if (isDateTime) {
+                arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+                if (endLine) {
+                    endDate = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' }).setZone(targetTimeZone);
+                }
+            } else {
+                arrivalDate = parseDate(startRaw).set({ hour: 14, minute: 0 });
+                if (endLine) {
+                    endDate = parseDate(endLine[1].trim());
+                }
+            }
+            return { summary, arrivalDate, endDate };
+        }
+
+        function isSameDayNZ(dt, today) {
+            return dt.hasSame(today, 'day');
+        }
+
+        function isOngoingStay(startDate, endDate, today) {
+            const todayStart = today.startOf('day');
+            return startDate.startOf('day') <= todayStart && endDate.startOf('day') > todayStart;
+        }
+
+        function formatNZDate(dt) {
+            return dt.toFormat("ccc, dd MMM yyyy");
+        }
+
+        async function tryFetch(url, timeout = 10000) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+            
+            try {
+                const response = await fetch(url, { 
+                    signal: controller.signal,
+                    mode: 'cors'
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                return await response.text();
+            } catch (error) {
+                clearTimeout(timeoutId);
+                throw error;
+            }
+        }
+
+        async function tryFeed(url, todayNZ, proxyPrefix = '') {
+            try {
+                const fullUrl = proxyPrefix ? proxyPrefix + encodeURIComponent(url) : url;
+                const ics = await tryFetch(fullUrl);
+                const blocks = ics.split("BEGIN:VEVENT").slice(1);
+
+                let ongoingStayFound = null;
+
+                for (const block of blocks) {
+                    const event = parseICSEvent(block);
+                    if (!event) continue;
+
+                    if (isSameDayNZ(event.arrivalDate, todayNZ)) {
+                        return { status: 'arrival', html: `<span class="arrival-info">
+                            <span class="guest-name"><i class="fas fa-user-circle mr-2"></i> ${event.summary}</span>
+                            <span class="date"><i class="fas fa-calendar-alt mr-2"></i> ${formatNZDate(event.arrivalDate)}</span>
+                            <span class="check-in"><i class="fas fa-door-open mr-2"></i> Check-in&out: 2PM - 10AM</span>
+                        </span>` };
+                    }
+
+                    if (event.endDate && isOngoingStay(event.arrivalDate, event.endDate, todayNZ)) {
+                        ongoingStayFound = { 
+                            status: 'ongoing', 
+                            html: `<li class='no-arrival'><i class='fas fa-house-user mr-2 text-info-status'></i> Room Occupied (Ongoing Stay)</li>` 
+                        };
+                    }
+                }
+
+                if (ongoingStayFound) {
+                    return ongoingStayFound;
+                }
+
+                return { status: 'no-booking', html: "<li class='no-arrival'><i class='fas fa-calendar-times mr-2 text-info-status'></i> No new check-ins scheduled for today.</li>" };
+                
+            } catch (e) {
+                return { status: 'error', error: e.message };
+            }
+        }
+
+        async function loadVilla(id, feeds) {
+            const list = document.getElementById(id);
+            list.innerHTML = `<li class='loading flex items-center'><i class='fas fa-spinner loading-icon mr-2'></i> Loading data...</li>`;
+
+            const todayNZ = DateTime.now().setZone(targetTimeZone);
+            let finalResult = { 
+                status: 'error', 
+                html: "<li class='no-arrival'><i class='fas fa-exclamation-triangle mr-2 text-red-alert'></i> Failed to load data.</li>", 
+                debug: `<span class="status-error">✖ All Feeds Failed</span>` 
+            };
+            
+            // Try Google Calendar first with multiple proxies
+            for (const proxy of corsProxies) {
+                const result = await tryFeed(feeds.google, todayNZ, proxy);
+                
+                if (result.status === 'arrival') {
+                    list.innerHTML = `<li>${result.html}</li>`;
+                    return `<span class="status-ok">✔ ARRIVAL (Google via ${proxy.substring(0, 20)}...)</span>`;
+                } else if (result.status === 'ongoing') {
+                    finalResult = {
+                        status: 'ongoing',
+                        html: result.html,
+                        debug: `<span class="status-no-arrival">✔ ONGOING (Google via ${proxy.substring(0, 20)}...)</span>`
+                    };
+                    break; // Found ongoing stay, no need to try more proxies
+                } else if (result.status === 'no-booking') {
+                    finalResult = {
+                        status: 'no-booking',
+                        html: result.html,
+                        debug: `<span class="status-no-arrival">✔ NO BOOKING (Google via ${proxy.substring(0, 20)}...)</span>`
+                    };
+                    break; // Got successful response showing no booking
+                }
+            }
+
+            // If still error, try Beds24 with proxies
+            if (finalResult.status === 'error') {
+                for (const proxy of corsProxies) {
+                    const result = await tryFeed(feeds.beds24, todayNZ, proxy);
+                    
+                    if (result.status === 'arrival') {
+                        list.innerHTML = `<li>${result.html}</li>`;
+                        return `<span class="status-ok">✔ ARRIVAL (Beds24 via ${proxy.substring(0, 20)}...)</span>`;
+                    } else if (result.status === 'ongoing') {
+                        finalResult = {
+                            status: 'ongoing',
+                            html: result.html,
+                            debug: `<span class="status-no-arrival">✔ ONGOING (Beds24 via ${proxy.substring(0, 20)}...)</span>`
+                        };
+                        break;
+                    } else if (result.status === 'no-booking') {
+                        finalResult = {
+                            status: 'no-booking',
+                            html: result.html,
+                            debug: `<span class="status-no-arrival">✔ NO BOOKING (Beds24 via ${proxy.substring(0, 20)}...)</span>`
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            list.innerHTML = finalResult.html;
+            return finalResult.debug;
+        }
+
+        async function refreshAll() {
+            const statuses = [];
+            for (const [id, feeds] of Object.entries(villaFeeds)) {
+                const st = await loadVilla(id, feeds);
+                statuses.push(` ${id.replace('villa', 'V')}: ${st}`);
+            }
+
+            const now = DateTime.now().setZone(targetTimeZone).toFormat('HH:mm:ss');
+            document.getElementById("debug").innerHTML =
+                `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
+        }
+
+        async function manualRefresh() {
+            const btn = document.getElementById('refresh-btn');
+            btn.classList.add('refreshing');
+            btn.disabled = true;
+            
+            await refreshAll();
+            
+            setTimeout(() => {
+                btn.classList.remove('refreshing');
+                btn.disabled = false;
+            }, 1000);
+        }
+
+        const cardIds = ['villa1-card', 'villa2-card', 'villa3-card', 'villa4-card'];
+        let currentCardIndex = 0;
+        const cycleInterval = 2000;
+
+        function startCardCycle() {
+            setInterval(() => {
+                const prevCard = document.getElementById(cardIds[currentCardIndex]);
+                if (prevCard) {
+                    prevCard.classList.remove('card-active');
+                }
+
+                currentCardIndex = (currentCardIndex + 1) % cardIds.length;
+
+                const nextCard = document.getElementById(cardIds[currentCardIndex]);
+                if (nextCard) {
+                    nextCard.classList.add('card-active');
+                }
+            }, cycleInterval);
+        }
+
+        window.onload = function () {
+            document.getElementById("current-date").textContent =
+                DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
+            refreshAll();
+            startCardCycle();
+            // Auto-refresh every 45 minutes
+            setInterval(refreshAll, 45 * 60 * 1000);
+        }
+    </script>
+</body>
+</html>
