@@ -136,45 +136,6 @@
             color: #6b7280;
             border-radius: 8px;
             padding: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .refresh-btn {
-            background-color: var(--secondary-orange);
-            color: white;
-            border: none;
-            padding: 0.375rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .refresh-btn:hover {
-            background-color: #d97706;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        .refresh-btn:active {
-            transform: translateY(0);
-        }
-
-        .refresh-btn i {
-            font-size: 0.875rem;
-        }
-
-        .refresh-btn.refreshing i {
-            animation: spin 1s linear infinite;
         }
 
         .welcome-card {
@@ -266,11 +227,7 @@
         </div>
 
         <footer class="debug-bar mt-4">
-            <p id="debug" class="flex-1">System initializing...</p>
-            <button id="refresh-btn" class="refresh-btn" onclick="manualRefresh()">
-                <i class="fas fa-sync-alt"></i>
-                <span>Refresh</span>
-            </button>
+            <p id="debug">System initializing...</p>
         </footer>
     </div>
 
@@ -325,9 +282,15 @@
             };
 
             if (isDateTime) {
-                arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+                // Google Calendar bug: stores NZ times with +13hr offset
+                // Example: 2 PM Feb 17 NZ → stored as 3 AM Feb 18 UTC
+                // Fix: Parse as UTC, then subtract 13 hours to get actual NZ time
+                const utcParsed = DateTime.fromISO(startRaw, { zone: 'utc' });
+                arrivalDate = utcParsed.minus({ hours: 13 }).setZone(targetTimeZone);
+                
                 if (endLine) {
-                    endDate = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' }).setZone(targetTimeZone);
+                    const utcEndParsed = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' });
+                    endDate = utcEndParsed.minus({ hours: 13 }).setZone(targetTimeZone);
                 }
             } else {
                 arrivalDate = parseDate(startRaw).set({ hour: 14, minute: 0 });
@@ -489,19 +452,6 @@
                 `<strong>Last refresh:</strong> ${now} NZT ${statuses.join(' | ')}`;
         }
 
-        async function manualRefresh() {
-            const btn = document.getElementById('refresh-btn');
-            btn.classList.add('refreshing');
-            btn.disabled = true;
-            
-            await refreshAll();
-            
-            setTimeout(() => {
-                btn.classList.remove('refreshing');
-                btn.disabled = false;
-            }, 1000);
-        }
-
         const cardIds = ['villa1-card', 'villa2-card', 'villa3-card', 'villa4-card'];
         let currentCardIndex = 0;
         const cycleInterval = 2000;
@@ -527,8 +477,7 @@
                 DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
             refreshAll();
             startCardCycle();
-            // Auto-refresh every 45 minutes
-            setInterval(refreshAll, 45 * 60 * 1000);
+            setInterval(refreshAll, 10 * 60 * 1000);
         }
     </script>
 </body>
