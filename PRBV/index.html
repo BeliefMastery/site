@@ -138,6 +138,24 @@
             padding: 0.75rem;
         }
 
+        .refresh-btn {
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .refresh-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-btn:hover:not(:disabled) i {
+            transform: rotate(180deg);
+        }
+
+        .refresh-btn span {
+            margin-left: 0.5rem;
+        }
+
         .welcome-card {
             background: var(--background-card);
             border-radius: 12px;
@@ -226,8 +244,12 @@
             </p>
         </div>
 
-        <footer class="debug-bar mt-4">
-            <p id="debug">System initializing...</p>
+        <footer class="debug-bar mt-4 flex items-center justify-between flex-wrap gap-4">
+            <p id="debug" class="flex-1">System initializing...</p>
+            <button id="footer-refresh-btn" class="refresh-btn bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh</span>
+            </button>
         </footer>
     </div>
 
@@ -455,6 +477,8 @@
         const cardIds = ['villa1-card', 'villa2-card', 'villa3-card', 'villa4-card'];
         let currentCardIndex = 0;
         const cycleInterval = 2000;
+        let lastRefreshTime = 0;
+        const REFRESH_COOLDOWN = 2 * 60 * 1000; // 2 minute cooldown for manual refresh
 
         function startCardCycle() {
             setInterval(() => {
@@ -472,12 +496,48 @@
             }, cycleInterval);
         }
 
+        async function handleManualRefresh() {
+            const now = Date.now();
+            const timeSinceLastRefresh = now - lastRefreshTime;
+            const footerBtn = document.getElementById('footer-refresh-btn');
+            
+            if (timeSinceLastRefresh < REFRESH_COOLDOWN) {
+                const remainingSeconds = Math.ceil((REFRESH_COOLDOWN - timeSinceLastRefresh) / 1000);
+                footerBtn.innerHTML = `<i class="fas fa-clock"></i><span>Wait ${remainingSeconds}s</span>`;
+                footerBtn.disabled = true;
+                return;
+            }
+            
+            footerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Refreshing...</span>';
+            footerBtn.disabled = true;
+            
+            await refreshAll();
+            lastRefreshTime = now;
+            
+            footerBtn.innerHTML = '<i class="fas fa-check"></i><span>Refreshed!</span>';
+            
+            setTimeout(() => {
+                footerBtn.innerHTML = '<i class="fas fa-sync-alt"></i><span>Refresh</span>';
+                footerBtn.disabled = false;
+            }, 2000);
+        }
+
+        function initializeRefreshButton() {
+            const footerBtn = document.getElementById('footer-refresh-btn');
+            if (footerBtn) {
+                footerBtn.onclick = handleManualRefresh;
+            }
+        }
+
         window.onload = function () {
             document.getElementById("current-date").textContent =
                 DateTime.now().setZone(targetTimeZone).toFormat('cccc, dd LLLL yyyy');
             refreshAll();
+            lastRefreshTime = Date.now();
             startCardCycle();
-            setInterval(refreshAll, 10 * 60 * 1000);
+            initializeRefreshButton();
+            // Auto-refresh every 60 minutes (conservative rate limiting)
+            setInterval(refreshAll, 60 * 60 * 1000);
         }
     </script>
 </body>
