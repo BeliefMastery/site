@@ -710,7 +710,7 @@ export const PHASE_3_QUESTIONS = [
   },
   {
     id: 'p3_aspiration_4',
-    question: 'Which of these experiences would be the easiest for you to cope with?',
+    question: 'Which of these is your greatest weakness?',
     type: 'forced_choice',
     isAspiration: true,
     options: [
@@ -1159,6 +1159,48 @@ export const PHASE_5_QUESTIONS = {
         { id: 'delta_mu', weight: 1.5 },
         { id: 'beta_nu', weight: 1.3 },
         { id: 'beta', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_provision_dating',
+      question: 'I can comfortably fund dating, gifts, and courtship without financial strain.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Provision: dating & courtship',
+      archetypes: [
+        { id: 'delta', weight: 1.4 },
+        { id: 'beta_nu', weight: 1.2 },
+        { id: 'alpha', weight: 0.9 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_provision_lifestyle',
+      question: 'I can meaningfully contribute to holidays, major expenses, or occasional luxury without stress.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Provision: lifestyle & discretionary',
+      archetypes: [
+        { id: 'delta', weight: 1.5 },
+        { id: 'delta_mu', weight: 1.2 },
+        { id: 'beta_nu', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_m_rc_provision_stability',
+      question: 'My income is stable and sufficient; I have or am building savings, investment, or home equity.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (4Ps)',
+      markerLabel: 'Provision: income consistency & assets',
+      archetypes: [
+        { id: 'delta', weight: 1.6 },
+        { id: 'delta_mu', weight: 1.3 },
+        { id: 'beta_nu', weight: 1.0 }
       ]
     },
     {
