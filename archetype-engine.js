@@ -10,7 +10,7 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let ARCHETYPES, CORE_GROUPS, ARCHETYPE_OPTIMIZATION;
-let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS, PHASE_5_QUESTIONS;
+let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS, PHASE_5_QUESTIONS, RESPECT_CONTEXT_QUESTIONS;
 let SUBTYPE_REFINEMENT_QUESTIONS;
 let ARCHETYPE_SPREAD_MAP;
 
@@ -22,6 +22,7 @@ export class ArchetypeEngine {
     this.iqBracket = null; // IQ bracket for faster funneling
     this.answers = {};
     this.aspirationAnswers = {}; // Track aspiration test responses separately
+    this.respectContextAnswers = {}; // Respect context (social vs business) for bias mitigation
     this.questionSequence = [];
     this.archetypeScores = {};
     this.shuffledOptions = {};
@@ -261,6 +262,7 @@ init() {
       phase4Results: {},
       phase5Results: {},
       aspirationAnalysis: {},
+      respectContext: null,
       primaryArchetype: null,
       secondaryArchetype: null,
       tertiaryArchetype: null,
@@ -310,6 +312,7 @@ init() {
       this.iqBracket = 'unknown';
       this.answers = {};
       this.aspirationAnswers = {};
+      this.respectContextAnswers = {};
       this.initializeScores();
       this.analysisData = this.getEmptyAnalysisData();
       this.analysisData.gender = this.gender;
@@ -521,6 +524,7 @@ showGenderSelection() {
       PHASE_3_QUESTIONS = questionsModule.PHASE_3_QUESTIONS;
       PHASE_4_QUESTIONS = questionsModule.PHASE_4_QUESTIONS;
       PHASE_5_QUESTIONS = questionsModule.PHASE_5_QUESTIONS;
+      RESPECT_CONTEXT_QUESTIONS = questionsModule.RESPECT_CONTEXT_QUESTIONS || [];
 
       const spreadModule = await loadDataModule(
         './archetype-data/archetype-spread.js',
@@ -597,21 +601,24 @@ showGenderSelection() {
   async buildPhase3Sequence() {
     await this.loadArchetypeData();
     
-    // Phase 3: Shadow/Integration Assessment - Keep aspiration questions, filter others
+    // Phase 3: Shadow/Integration Assessment - Keep aspiration and respect-context questions, filter others
     this.currentPhase = 3;
     this.currentQuestionIndex = 0;
-    let questions = [...PHASE_3_QUESTIONS];
-    
-    // Always keep aspiration questions (critical for bias mitigation)
+    let questions = [...(PHASE_3_QUESTIONS || []), ...(RESPECT_CONTEXT_QUESTIONS || [])];
+
+    // Always keep aspiration and respect-context questions (bias mitigation)
     const aspirationQuestions = questions.filter(q => q.isAspiration);
-    const otherQuestions = questions.filter(q => !q.isAspiration);
-    
-    // If IQ bracket known, reduce non-aspiration questions
+    const respectContextQuestions = questions.filter(q => q.isRespectContext);
+    const otherQuestions = questions.filter(q => !q.isAspiration && !q.isRespectContext);
+
+    // If IQ bracket known, reduce non-aspiration, non-respect-context questions
     if (this.iqBracket && this.iqBracket !== 'unknown') {
       const filteredOthers = this.filterQuestionsByIQ(otherQuestions, 6); // Reduce to 6
-      questions = [...aspirationQuestions, ...filteredOthers];
+      questions = [...aspirationQuestions, ...respectContextQuestions, ...filteredOthers];
+    } else {
+      questions = [...aspirationQuestions, ...respectContextQuestions, ...otherQuestions];
     }
-    
+
     this.questionSequence = questions;
     this.debugReporter.recordQuestionCount(questions.length);
     // Shuffle to mitigate order bias
@@ -909,7 +916,9 @@ showGenderSelection() {
   renderLikertQuestion(question, isLocked = false) {
     const currentAnswer = this.answers[question.id];
     const scale = question.scale || 5;
-    const labels = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
+    const labels = Array.isArray(question.likertLabels) && question.likertLabels.length >= scale
+      ? question.likertLabels
+      : ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
     
     let scaleHTML = '';
     for (let i = 1; i <= scale; i++) {
@@ -1068,6 +1077,17 @@ showGenderSelection() {
       selectedIndices: Array.isArray(answerValue) ? answerValue : undefined,
       timestamp: new Date().toISOString()
     };
+
+    // Respect context: store only, do not score as archetype
+    if (this.currentPhase === 3 && question.isRespectContext) {
+      this.respectContextAnswers[question.id] = {
+        value: typeof answerValue === 'number' ? answerValue : (Array.isArray(answerValue) ? answerValue[0] : 0),
+        key: question.respectContextKey,
+        type: question.respectContextType || 'feel'
+      };
+      this.saveProgress();
+      return;
+    }
 
     // Score based on phase
     if (this.currentPhase === 1) {
@@ -1392,7 +1412,18 @@ showGenderSelection() {
         }
       });
     }
-    
+
+    // Apply respect-context adjustments (social vs business) to reduce over-attribution of Alpha when respect is business-only
+    if (this.analysisData.respectContext && this.analysisData.respectContext.adjustments) {
+      const adj = this.analysisData.respectContext.adjustments;
+      Object.keys(this.archetypeScores).forEach(archId => {
+        const baseId = archId.replace(/_female$/, '');
+        const mult = adj[baseId] ?? adj[archId] ?? 1;
+        this.archetypeScores[archId].phase1 *= mult;
+        this.archetypeScores[archId].phase2 *= mult;
+      });
+    }
+
     const baseWeightFactor = 0.95;
     const phaseWeights = {
       phase1: 0.5 * baseWeightFactor,
@@ -1595,9 +1626,83 @@ showGenderSelection() {
       aspirationalTraits: this.identifyAspirationalTraits(),
       timestamp: new Date().toISOString()
     };
-    
+
     // Analyze aspirations for bias mitigation
     this.analysisData.aspirationAnalysis = this.analyzeAspirations();
+
+    // Respect context: social vs business for bias mitigation (e.g. over-attribution of Alpha)
+    const respectContext = this.computeRespectContext();
+    if (respectContext) {
+      this.analysisData.respectContext = respectContext;
+    }
+  }
+
+  computeRespectContext() {
+    const raw = this.respectContextAnswers || {};
+    const getScore = (key, type) => {
+      const entries = Object.values(raw).filter(r => r && r.key === key && (type ? r.type === type : true));
+      if (entries.length === 0) return null;
+      const sum = entries.reduce((s, e) => s + (typeof e.value === 'number' ? e.value : 0), 0);
+      return sum / entries.length;
+    };
+    const socialFeel = getScore('social', 'feel');
+    const socialDeference = getScore('social', 'deference');
+    const businessFeel = getScore('business', 'feel');
+    const businessDeference = getScore('business', 'deference');
+    const socialRespect = socialFeel != null && socialDeference != null
+      ? (socialFeel + socialDeference) / 2
+      : (socialFeel ?? socialDeference);
+    const businessRespect = businessFeel != null && businessDeference != null
+      ? (businessFeel + businessDeference) / 2
+      : (businessFeel ?? businessDeference);
+    if (socialRespect == null && businessRespect == null) return null;
+
+    const band = (v) => (v == null ? 'mid' : v >= 4 ? 'high' : v <= 2 ? 'low' : 'mid');
+    const socialBand = band(socialRespect);
+    const businessBand = band(businessRespect);
+    const pattern = `${socialBand}_${businessBand}`;
+
+    const topBehavioral = Object.keys(this.archetypeScores)
+      .map(archId => ({ id: archId, score: (this.archetypeScores[archId].phase1 || 0) + (this.archetypeScores[archId].phase2 || 0) }))
+      .sort((a, b) => b.score - a.score)[0]?.id;
+    const adjustments = this.calculateRespectContextAdjustments(pattern, topBehavioral);
+
+    return {
+      socialRespect: socialRespect ?? 0,
+      businessRespect: businessRespect ?? 0,
+      pattern,
+      adjustments
+    };
+  }
+
+  calculateRespectContextAdjustments(pattern, topBehavioral) {
+    // Base (canonical) archetype ids only; apply in calculateFinalScores via baseId lookup for gender-specific keys
+    const adj = {};
+    const alphaFamily = ['alpha', 'alpha_xi', 'alpha_rho', 'dark_alpha'];
+    const betaDelta = ['beta', 'beta_nu', 'beta_kappa', 'delta', 'delta_mu'];
+
+    if (pattern === 'low_high') {
+      alphaFamily.forEach(a => { adj[a] = 0.8; });
+      betaDelta.forEach(b => { adj[b] = 1.2; });
+      ['gamma', 'sigma'].forEach(g => { adj[g] = 0.95; });
+      adj['omega'] = 1.05;
+      adj['phi'] = 0.98;
+    } else if (pattern === 'high_low') {
+      adj['alpha'] = 0.92;
+      ['beta', 'sigma', 'gamma'].forEach(b => { adj[b] = 1.1; });
+      adj['delta'] = 0.9;
+      adj['omega'] = 1.05;
+    } else if (pattern === 'high_high') {
+      ['alpha', 'sigma', 'phi'].forEach(a => { adj[a] = 1.03; });
+      adj['beta'] = 0.97;
+      adj['omega'] = 0.97;
+    } else if (pattern === 'low_low') {
+      adj['alpha'] = 0.85;
+      adj['omega'] = 1.1;
+      adj['delta'] = 1.1;
+      adj['sigma'] = 1.05;
+    }
+    return adj;
   }
 
   analyzePhase5Results() {
@@ -2009,6 +2114,7 @@ showGenderSelection() {
             Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
             Results reflect current patterns, not fixed identity.
           </p>
+          ${this.analysisData.respectContext ? '<p style="margin: 1rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Bias mitigation:</strong> Your reported respect in personal vs professional contexts was used to improve accuracy (e.g. to avoid over-attributing leadership archetypes when respect is mainly in professional settings).</p>' : ''}
         </div>
 
         <!-- Primary Archetype -->
@@ -2276,6 +2382,7 @@ showGenderSelection() {
         iqBracket: this.iqBracket,
         answers: this.answers,
         aspirationAnswers: this.aspirationAnswers,
+        respectContextAnswers: this.respectContextAnswers,
         archetypeScores: this.archetypeScores,
         analysisData: this.analysisData
       };
@@ -2302,6 +2409,7 @@ showGenderSelection() {
       this.iqBracket = progress.iqBracket || progress.analysisData?.iqBracket || null;
       this.answers = progress.answers || {};
       this.aspirationAnswers = progress.aspirationAnswers || {};
+      this.respectContextAnswers = progress.respectContextAnswers || {};
       this.archetypeScores = progress.archetypeScores || {};
       this.analysisData = progress.analysisData || this.analysisData;
       
@@ -2360,6 +2468,7 @@ showGenderSelection() {
     this.iqBracket = null;
     this.answers = {};
     this.aspirationAnswers = {};
+    this.respectContextAnswers = {};
     this.questionSequence = [];
     this.initializeScores();
     this.analysisData = {
@@ -2372,6 +2481,7 @@ showGenderSelection() {
       phase4Results: {},
       phase5Results: {},
       aspirationAnalysis: {},
+      respectContext: null,
       primaryArchetype: null,
       secondaryArchetype: null,
       tertiaryArchetype: null,

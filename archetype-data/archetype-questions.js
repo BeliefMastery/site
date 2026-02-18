@@ -818,6 +818,51 @@ export const PHASE_3_QUESTIONS = [
   }
 ];
 
+// Respect context: perceived respect and deference (social vs business) for bias mitigation
+// Clear phrasing; "social leadership" reframed as deference / scenario (who looks to you to decide)
+export const RESPECT_CONTEXT_QUESTIONS = [
+  {
+    id: 'respect_social_feel',
+    question: 'In your personal life — friends, family, people who know you outside work — how much do you feel respected by them?',
+    type: 'likert',
+    scale: 5,
+    isRespectContext: true,
+    respectContextKey: 'social',
+    respectContextType: 'feel',
+    likertLabels: ['Not at all', 'A little', 'Somewhat', 'Quite a bit', 'Very much']
+  },
+  {
+    id: 'respect_business_feel',
+    question: 'At work or in your professional life — colleagues, clients, industry — how much do you feel respected by them?',
+    type: 'likert',
+    scale: 5,
+    isRespectContext: true,
+    respectContextKey: 'business',
+    respectContextType: 'feel',
+    likertLabels: ['Not at all', 'A little', 'Somewhat', 'Quite a bit', 'Very much']
+  },
+  {
+    id: 'respect_social_deference',
+    question: 'When friends or family have to make an important decision, how often do they ask for your view or look to you to help decide?',
+    type: 'likert',
+    scale: 5,
+    isRespectContext: true,
+    respectContextKey: 'social',
+    respectContextType: 'deference',
+    likertLabels: ['Almost never', 'Rarely', 'Sometimes', 'Often', 'Almost always']
+  },
+  {
+    id: 'respect_business_deference',
+    question: 'When colleagues or clients have to make an important decision, how often do they ask for your view or look to you to help decide?',
+    type: 'likert',
+    scale: 5,
+    isRespectContext: true,
+    respectContextKey: 'business',
+    respectContextType: 'deference',
+    likertLabels: ['Almost never', 'Rarely', 'Sometimes', 'Often', 'Almost always']
+  }
+];
+
 // PHASE 4: Validation & Narrative Matching (8-10 narrative vignettes)
 // Purpose: Confirm archetype resonance
 export const PHASE_4_QUESTIONS = [
