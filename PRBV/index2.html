@@ -282,9 +282,15 @@
             };
 
             if (isDateTime) {
-                arrivalDate = DateTime.fromISO(startRaw, { zone: 'utc' }).setZone(targetTimeZone);
+                // Google Calendar bug: stores NZ times with +13hr offset
+                // Example: 2 PM Feb 17 NZ → stored as 3 AM Feb 18 UTC
+                // Fix: Parse as UTC, then subtract 13 hours to get actual NZ time
+                const utcParsed = DateTime.fromISO(startRaw, { zone: 'utc' });
+                arrivalDate = utcParsed.minus({ hours: 13 }).setZone(targetTimeZone);
+                
                 if (endLine) {
-                    endDate = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' }).setZone(targetTimeZone);
+                    const utcEndParsed = DateTime.fromISO(endLine[1].trim(), { zone: 'utc' });
+                    endDate = utcEndParsed.minus({ hours: 13 }).setZone(targetTimeZone);
                 }
             } else {
                 arrivalDate = parseDate(startRaw).set({ hour: 14, minute: 0 });
