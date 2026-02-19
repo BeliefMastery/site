@@ -263,6 +263,7 @@ init() {
       phase5Results: {},
       aspirationAnalysis: {},
       respectContext: null,
+      provisionContext: null,
       primaryArchetype: null,
       secondaryArchetype: null,
       tertiaryArchetype: null,
@@ -1424,6 +1425,17 @@ showGenderSelection() {
       });
     }
 
+    // Apply provision-context adjustments (males): low provision down-weights Alpha, up-weights Beta/Delta so Alpha isn't over-attributed when respondent struggles to provide
+    if (this.gender === 'male' && this.analysisData.provisionContext && this.analysisData.provisionContext.adjustments) {
+      const adj = this.analysisData.provisionContext.adjustments;
+      Object.keys(this.archetypeScores).forEach(archId => {
+        const baseId = archId.replace(/_female$/, '');
+        const mult = adj[baseId] ?? adj[archId] ?? 1;
+        this.archetypeScores[archId].phase1 *= mult;
+        this.archetypeScores[archId].phase2 *= mult;
+      });
+    }
+
     const baseWeightFactor = 0.95;
     const phaseWeights = {
       phase1: 0.5 * baseWeightFactor,
@@ -1749,8 +1761,47 @@ showGenderSelection() {
       topMarkers,
       timestamp: new Date().toISOString()
     };
+
+    // Male provision context: low provision should down-weight Alpha and up-weight Beta/Delta (avoid over-attribution when respondent can't provide)
+    if (this.gender === 'male') {
+      const provisionQuestionIds = ['p5_m_rc_provision_dating', 'p5_m_rc_provision_lifestyle', 'p5_m_rc_provision_stability'];
+      let provisionSum = 0;
+      let provisionCount = 0;
+      provisionQuestionIds.forEach(qId => {
+        const ans = this.answers[qId];
+        if (ans && typeof ans.value === 'number') {
+          provisionSum += ans.value;
+          provisionCount += 1;
+        }
+      });
+      const provisionAverage = provisionCount > 0 ? provisionSum / provisionCount : null;
+      const provisionLevel = provisionAverage == null ? 'unknown' : provisionAverage <= 2.5 ? 'low' : provisionAverage >= 4 ? 'high' : 'mid';
+      if (provisionLevel === 'low') {
+        this.analysisData.provisionContext = {
+          provisionAverage,
+          provisionLevel: 'low',
+          adjustments: {
+            alpha: 0.78,
+            alpha_xi: 0.78,
+            alpha_rho: 0.78,
+            dark_alpha: 0.78,
+            beta: 1.22,
+            beta_nu: 1.22,
+            beta_kappa: 1.18,
+            delta: 1.22,
+            delta_mu: 1.22,
+            gamma: 0.98,
+            sigma: 0.98,
+            omega: 1.05,
+            phi: 0.97
+          }
+        };
+      } else {
+        this.analysisData.provisionContext = provisionAverage != null ? { provisionAverage, provisionLevel } : null;
+      }
+    }
   }
-  
+
   analyzeAspirations() {
     // Collect all aspiration targets from aspiration questions
     const aspirationTargets = [];
@@ -2115,6 +2166,7 @@ showGenderSelection() {
             Results reflect current patterns, not fixed identity.
           </p>
           ${this.analysisData.respectContext ? '<p style="margin: 1rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Bias mitigation:</strong> Your reported respect in personal vs professional contexts was used to improve accuracy (e.g. to avoid over-attributing leadership archetypes when respect is mainly in professional settings).</p>' : ''}
+          ${this.analysisData.provisionContext && this.analysisData.provisionContext.adjustments ? '<p style="margin: 0.5rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Provision context:</strong> Your reported provision level (dating, lifestyle, income/assets) was used to avoid over-attributing high-provider archetypes when provision is limited.</p>' : ''}
         </div>
 
         <!-- Primary Archetype -->
@@ -2482,6 +2534,7 @@ showGenderSelection() {
       phase5Results: {},
       aspirationAnalysis: {},
       respectContext: null,
+      provisionContext: null,
       primaryArchetype: null,
       secondaryArchetype: null,
       tertiaryArchetype: null,
