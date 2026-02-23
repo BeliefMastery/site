@@ -13,6 +13,7 @@ let ARCHETYPES, CORE_GROUPS, ARCHETYPE_OPTIMIZATION;
 let PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS, PHASE_5_QUESTIONS, RESPECT_CONTEXT_QUESTIONS;
 let SUBTYPE_REFINEMENT_QUESTIONS;
 let ARCHETYPE_SPREAD_MAP;
+let BRUTAL_TRUTHS;
 
 export class ArchetypeEngine {
   constructor() {
@@ -532,6 +533,12 @@ showGenderSelection() {
         'Archetype Spread'
       );
       ARCHETYPE_SPREAD_MAP = spreadModule.ARCHETYPE_SPREAD_MAP || {};
+
+      const brutalTruthsModule = await loadDataModule(
+        './archetype-data/BRUTAL-TRUTH.js',
+        'Brutal Truths'
+      );
+      BRUTAL_TRUTHS = brutalTruthsModule.default || {};
 
       this.debugReporter.recordSection('Phase 1', PHASE_1_QUESTIONS?.length || 0);
       this.debugReporter.recordSection('Phase 2', PHASE_2_QUESTIONS?.length || 0);
@@ -2229,11 +2236,11 @@ showGenderSelection() {
             <p style="color: var(--muted); line-height: 1.7; margin: 0;">${SecurityUtils.sanitizeHTML(primaryOptimization)}</p>
           </div>
 
-          ${primary.archetypalNarrative ? `
+          ${(BRUTAL_TRUTHS?.[primary.id]?.narrative || primary.archetypalNarrative) ? `
           <div style="margin-top: 1.5rem; background: rgba(100, 0, 0, 0.15); border-left: 4px solid #cc0000; border-radius: var(--radius); padding: 1.5rem;">
             <h4 style="color: #cc0000; margin-top: 0; margin-bottom: 1rem;">Archetypal Narrative: The Brutal Truth</h4>
             <p style="color: var(--muted); line-height: 1.8; font-size: 1rem; margin: 0; font-style: italic;">
-              ${primary.archetypalNarrative}
+              ${SecurityUtils.sanitizeHTML(BRUTAL_TRUTHS?.[primary.id]?.narrative || primary.archetypalNarrative)}
             </p>
             <p style="color: var(--muted); font-size: 0.85rem; margin-top: 1rem; margin-bottom: 0; line-height: 1.6; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
               <em>Note: This is an archetypal narrative - a generic but honest representation of the typical life pattern for this classification. It reflects common trajectories, not personal destiny. Archetypes describe patterns, not fixed fate. Understanding your pattern is the first step toward conscious change if you choose it.</em>
@@ -2282,9 +2289,9 @@ showGenderSelection() {
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(secondary.socialRole || '')}</p>
           ${secondaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(secondaryParent.name || '')}${secondaryParentSummary ? `: ${SecurityUtils.sanitizeHTML(secondaryParentSummary)}` : ''}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(secondary.description || '')}</p>
-          ${secondary.archetypalNarrative ? `
+          ${(BRUTAL_TRUTHS?.[secondary.id]?.narrative || secondary.archetypalNarrative) ? `
           <div style="margin-top: 1rem; background: rgba(80, 0, 0, 0.12); border-left: 3px solid rgba(180, 40, 40, 0.6); border-radius: var(--radius); padding: 1rem;">
-            <p style="color: var(--muted); line-height: 1.7; font-size: 0.92rem; margin: 0; font-style: italic;">${SecurityUtils.sanitizeHTML(secondary.archetypalNarrative)}</p>
+            <p style="color: var(--muted); line-height: 1.7; font-size: 0.92rem; margin: 0; font-style: italic;">${SecurityUtils.sanitizeHTML(BRUTAL_TRUTHS?.[secondary.id]?.narrative || secondary.archetypalNarrative)}</p>
           </div>` : ''}
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype influences you in specific contexts or situations, complementing your primary archetype.
@@ -2301,9 +2308,9 @@ showGenderSelection() {
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(tertiary.socialRole || '')}</p>
           ${tertiaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(tertiaryParent.name || '')}${tertiaryParentSummary ? `: ${SecurityUtils.sanitizeHTML(tertiaryParentSummary)}` : ''}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(tertiary.description || '')}</p>
-          ${tertiary.archetypalNarrative ? `
+          ${(BRUTAL_TRUTHS?.[tertiary.id]?.narrative || tertiary.archetypalNarrative) ? `
           <div style="margin-top: 1rem; background: rgba(80, 0, 0, 0.08); border-left: 3px solid rgba(160, 40, 40, 0.4); border-radius: var(--radius); padding: 1rem;">
-            <p style="color: var(--muted); line-height: 1.7; font-size: 0.92rem; margin: 0; font-style: italic;">${SecurityUtils.sanitizeHTML(tertiary.archetypalNarrative)}</p>
+            <p style="color: var(--muted); line-height: 1.7; font-size: 0.92rem; margin: 0; font-style: italic;">${SecurityUtils.sanitizeHTML(BRUTAL_TRUTHS?.[tertiary.id]?.narrative || tertiary.archetypalNarrative)}</p>
           </div>` : ''}
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype may emerge under stress, represent aspirational qualities, or appear in specific life domains.
