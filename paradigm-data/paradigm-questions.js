@@ -120,15 +120,15 @@ export const PHASE_1_QUESTIONS = {
   god: [
     {
       id: 'p1_god_literal',
-      question: 'Do you experience God as a literal being/entity?',
+      question: 'How do you relate to God or the divine — which of these comes closest to your current position?',
       type: 'binary',
       options: [
         {
-          text: 'Yes - God is a literal being, entity, or presence',
+          text: 'As a subject — God is an independent presence, being, or consciousness that can be related to directly',
           mapsTo: { literalGod: true, likelyPerspectives: ['relational', 'unifying'], weight: 3 }
         },
         {
-          text: 'No - God is not a literal being or entity',
+          text: 'As a process or principle — God refers to a force, function, pattern, or construct rather than a discrete subject',
           mapsTo: { literalGod: false, likelyPerspectives: ['logical', 'biological', 'social', 'emergent'], weight: 2 }
         }
       ],
@@ -169,15 +169,15 @@ export const PHASE_1_QUESTIONS = {
     },
     {
       id: 'p1_god_consciousness',
-      question: 'Do you believe consciousness survives physical death?',
+      question: 'Is consciousness, in your view, produced by the physical body — or does it extend beyond it?',
       type: 'binary',
       options: [
         {
-          text: 'Yes - Consciousness continues beyond physical death',
+          text: 'It extends beyond — consciousness is not fully reducible to brain or body',
           mapsTo: { afterlife: true, likelyPerspectives: ['unifying', 'relational', 'mystical'], weight: 2 }
         },
         {
-          text: 'No - Consciousness ends with physical death',
+          text: 'It is produced by the body — consciousness is a biological function that ends with the organism',
           mapsTo: { afterlife: false, likelyPerspectives: ['biological', 'logical', 'social'], weight: 2 }
         }
       ],
@@ -185,24 +185,24 @@ export const PHASE_1_QUESTIONS = {
     },
     {
       id: 'p1_god_truth',
-      question: 'Which dimensions of truth do you actively engage with? (Select all that apply)',
+      question: 'Which of these modes of understanding do you actively engage with? (Select all that apply)',
       type: 'multiselect',
       maxSelections: 3,
       options: [
         {
-          text: 'Literal/factual - What actually happened, what is real',
+          text: 'Empirical/factual — evidence, reason, and verifiable claims about what is real',
           mapsTo: { dimension: 'literal', weight: 1 }
         },
         {
-          text: 'Symbolic/metaphorical - What it represents, what it means',
+          text: 'Symbolic/metaphorical — meaning, narrative, and what things represent beyond their surface',
           mapsTo: { dimension: 'symbolic', weight: 1 }
         },
         {
-          text: 'Historical/esoteric - Hidden patterns, traditional knowledge',
+          text: 'Esoteric/traditional — hidden structures, lineages, and transmitted knowledge',
           mapsTo: { dimension: 'esoteric', weight: 1 }
         },
         {
-          text: 'Mystical/experiential - Direct experience, transcendent states',
+          text: 'Mystical/experiential — direct encounter, altered states, and non-conceptual knowing',
           mapsTo: { dimension: 'mystical', weight: 1 }
         }
       ],
@@ -340,7 +340,7 @@ export const PHASE_2_QUESTIONS = {
     dimensions: [
       {
         id: 'p2_dimension_literal',
-        question: 'How important is literal, factual truth in your understanding of "The Good Life"?',
+        question: 'How important is empirical or practical grounding — concrete outcomes, evidence, and measurable results — in your understanding of "The Good Life"?',
         type: 'scaled',
         scale: { min: 1, max: 7, labels: { 1: 'Not important', 4: 'Moderately important', 7: 'Extremely important' } },
         mapsTo: { dimension: 'literal', category: 'good_life' },
@@ -377,9 +377,9 @@ export const PHASE_2_QUESTIONS = {
     literal: [
       {
         id: 'p2_god_literal_presence',
-        question: 'If you experience God as a literal being, describe the frequency of these experiences:',
+        question: 'How frequently do you have a direct sense of God or the divine as a present subject — not just as a concept?',
         type: 'scaled',
-        scale: { min: 1, max: 7, labels: { 1: 'Never', 4: 'Occasionally', 7: 'Daily awareness' } },
+        scale: { min: 1, max: 7, labels: { 1: 'Never or rarely', 4: 'Occasionally', 7: 'Daily or constant awareness' } },
         mapsTo: { perspective: 'relational', dimension: 'literal', weight: 2 },
         category: 'god_depth',
         conditional: { literalGod: true }
@@ -427,7 +427,7 @@ export const PHASE_2_QUESTIONS = {
     dimensions: [
       {
         id: 'p2_god_dimension_literal',
-        question: 'How important is literal, factual truth in your understanding of God?',
+        question: 'How important is empirical or rational grounding — evidence, logic, and verifiable claims — in your understanding of God?',
         type: 'scaled',
         scale: { min: 1, max: 7, labels: { 1: 'Not important', 4: 'Moderately important', 7: 'Extremely important' } },
         mapsTo: { dimension: 'literal', category: 'god' },
@@ -503,10 +503,10 @@ export const PHASE_3_QUESTIONS = {
       type: 'multiselect',
       maxSelections: 3,
       options: [
-        { text: 'Literal dimension - What actually constitutes a good life', mapsTo: { gap: 'literal' } },
-        { text: 'Symbolic dimension - What it all means', mapsTo: { gap: 'symbolic' } },
-        { text: 'Esoteric dimension - Historical and traditional wisdom', mapsTo: { gap: 'esoteric' } },
-        { text: 'Mystical dimension - Direct experience and presence', mapsTo: { gap: 'mystical' } },
+        { text: 'Empirical dimension — what practically and concretely constitutes a good life', mapsTo: { gap: 'literal' } },
+        { text: 'Symbolic dimension — what your life narrative and choices represent or mean', mapsTo: { gap: 'symbolic' } },
+        { text: 'Esoteric dimension — how traditional or transmitted wisdom applies to your life', mapsTo: { gap: 'esoteric' } },
+        { text: 'Mystical dimension — direct experience, presence, and non-conceptual knowing', mapsTo: { gap: 'mystical' } },
         { text: 'No significant gaps', mapsTo: { gap: 'none' } }
       ],
       category: 'integration'
@@ -551,10 +551,10 @@ export const PHASE_3_QUESTIONS = {
       type: 'multiselect',
       maxSelections: 3,
       options: [
-        { text: 'Literal dimension - What God actually is', mapsTo: { gap: 'literal' } },
-        { text: 'Symbolic dimension - What God represents', mapsTo: { gap: 'symbolic' } },
-        { text: 'Esoteric dimension - Historical and traditional perspectives', mapsTo: { gap: 'esoteric' } },
-        { text: 'Mystical dimension - Direct experience of the divine', mapsTo: { gap: 'mystical' } },
+        { text: 'Empirical dimension — the ontological status of God; what God actually is or is not', mapsTo: { gap: 'literal' } },
+        { text: 'Symbolic dimension — what God represents in your inner life and meaning-making', mapsTo: { gap: 'symbolic' } },
+        { text: 'Esoteric dimension — historical, traditional, and transmitted perspectives on the divine', mapsTo: { gap: 'esoteric' } },
+        { text: 'Mystical dimension — direct, non-conceptual encounter with the divine', mapsTo: { gap: 'mystical' } },
         { text: 'No significant gaps', mapsTo: { gap: 'none' } }
       ],
       category: 'integration'
