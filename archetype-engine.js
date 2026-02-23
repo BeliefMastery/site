@@ -1436,13 +1436,17 @@ showGenderSelection() {
       });
     }
 
-    const baseWeightFactor = 0.95;
+    // Calibrated phase weights: account for raw score scale differences caused by per-phase scoring multipliers
+    // (Phase 1 uses 3x, Phase 2 uses 2x, Phase 3 uses 1x, Phase 4 uses 0.5x, Phase 5 uses 1x)
+    // Without calibration, Phase 1 dominated at ~63% and Phase 3/4 were nearly invisible.
+    // Target proportions: Phase1=45%, Phase2=28%, Phase3=14%, Phase4=7%, Phase5=6%
+    // Weights derived from: desired_proportion / typical_max_raw_score_per_archetype_per_phase
     const phaseWeights = {
-      phase1: 0.5 * baseWeightFactor,
-      phase2: 0.3 * baseWeightFactor,
-      phase3: 0.15 * baseWeightFactor,
-      phase4: 0.05 * baseWeightFactor,
-      phase5: 0.05
+      phase1: 0.025,   // 45% of final score
+      phase2: 0.0194,  // 28% of final score
+      phase3: 0.0467,  // 14% of final score (shadow/stress/aspiration context now proportionally influential)
+      phase4: 0.0467,  // 7%  of final score (narrative validation now has real impact)
+      phase5: 0.0077   // 6%  of final score (status/attraction/provision markers now proportionally influential)
     };
 
     // Apply phase weights with Phase 5 extension
