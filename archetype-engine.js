@@ -1436,18 +1436,32 @@ showGenderSelection() {
       });
     }
 
-    // Calibrated phase weights: account for raw score scale differences caused by per-phase scoring multipliers
-    // (Phase 1 uses 3x, Phase 2 uses 2x, Phase 3 uses 1x, Phase 4 uses 0.5x, Phase 5 uses 1x)
-    // Without calibration, Phase 1 dominated at ~63% and Phase 3/4 were nearly invisible.
-    // Target proportions: Phase1=45%, Phase2=28%, Phase3=14%, Phase4=7%, Phase5=6%
-    // Weights derived from: desired_proportion / typical_max_raw_score_per_archetype_per_phase
-    const phaseWeights = {
-      phase1: 0.025,   // 45% of final score
-      phase2: 0.0194,  // 28% of final score
-      phase3: 0.0467,  // 14% of final score (shadow/stress/aspiration context now proportionally influential)
-      phase4: 0.0467,  // 7%  of final score (narrative validation now has real impact)
-      phase5: 0.0077   // 6%  of final score (status/attraction/provision markers now proportionally influential)
-    };
+    // Gender-split calibrated phase weights.
+    // Weights derived from: desired_proportion / typical_max_raw_score_per_archetype_per_phase,
+    // accounting for per-scoring multipliers (Phase1=3x, Phase2=2x, Phase3=1x, Phase4=0.5x, Phase5=1x).
+    //
+    // Male targets:  Phase1=45%, Phase2=28%, Phase3=14%, Phase4=7%, Phase5=6%
+    //   Phase 5 includes provision-gradation questions (dating/lifestyle/assets) — modest weight.
+    //
+    // Female targets: Phase1=42%, Phase2=28%, Phase3=14%, Phase4=7%, Phase5=9%
+    //   Phase 5 now includes maternal identity + instinct + nesting + child-rearing impulse questions,
+    //   making it a key discriminator between archetypes (beta_rho/delta vs sigma/gamma_feminist).
+    //   Phase 1 reduced slightly to give Phase 5 proportionally more influence for females.
+    const phaseWeights = this.gender === 'female'
+      ? {
+          phase1: 0.0233,  // 42% — slightly less first-impression dominance
+          phase2: 0.0194,  // 28%
+          phase3: 0.0467,  // 14%
+          phase4: 0.0467,  //  7%
+          phase5: 0.0115   //  9% — maternal/child-rearing questions make Phase 5 highly discriminating
+        }
+      : {
+          phase1: 0.025,   // 45%
+          phase2: 0.0194,  // 28%
+          phase3: 0.0467,  // 14%
+          phase4: 0.0467,  //  7%
+          phase5: 0.0077   //  6%
+        };
 
     // Apply phase weights with Phase 5 extension
     Object.keys(this.archetypeScores).forEach(archId => {

@@ -1344,6 +1344,62 @@ export const PHASE_5_QUESTIONS = {
         { id: 'delta', weight: 1.0 },
         { id: 'beta', weight: 0.8 }
       ]
+    },
+    {
+      id: 'p5_f_rc_maternal_identity',
+      question: 'Having children and being a mother is a meaningful part of how I see my life or future.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Maternal Identity',
+      archetypes: [
+        { id: 'beta_rho', weight: 1.6 },
+        { id: 'delta', weight: 1.4 },
+        { id: 'beta', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_f_rc_maternal_instinct',
+      question: 'When I am around young children, I naturally take on a nurturing, protective role without being asked.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Maternal Instinct',
+      archetypes: [
+        { id: 'beta_rho', weight: 1.5 },
+        { id: 'delta_mu', weight: 1.3 },
+        { id: 'delta', weight: 1.1 }
+      ]
+    },
+    {
+      id: 'p5_f_rc_nesting',
+      question: 'Creating a stable, warm home environment is a genuine priority for me, not just a convenience.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Nesting & Home Orientation',
+      archetypes: [
+        { id: 'delta', weight: 1.5 },
+        { id: 'beta_nu', weight: 1.3 },
+        { id: 'beta_rho', weight: 1.1 }
+      ]
+    },
+    {
+      id: 'p5_f_rc_maternal_impulse',
+      question: 'I feel a genuine pull toward caring for and raising children that feels instinctive, not just socially expected.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'reproductive_confidence',
+      clusterLabel: 'Reproductive Confidence (Male Selection Criteria)',
+      markerLabel: 'Child-Rearing Impulse',
+      archetypes: [
+        { id: 'beta_rho', weight: 1.6 },
+        { id: 'delta_mu', weight: 1.3 },
+        { id: 'delta', weight: 1.0 }
+      ]
     }
   ]
 };
