@@ -352,5 +352,40 @@ export const TEMPERAMENT_DIMENSIONS = {
         poleLabels: { low: 'Own steady presence', high: 'Pick up and respond to group tone' }
       }
     ]
+  },
+
+  aesthetic_orientation: {
+    name: 'Aesthetic Orientation',
+    description: 'Approach to physical self-presentation — structured, disciplined, and goal-directed vs. intuitive, expressive, and flow-based',
+    questions: [
+      {
+        id: 'aes_1',
+        question: 'When it comes to your physical presentation — how you dress, groom, and carry yourself — which feels more natural: following a deliberate, consistent approach with specific standards, or dressing and styling according to how you feel on a given day?',
+        masculineWeight: 1.0,
+        feminineWeight: -0.8,
+        poleLabels: { low: 'Styling according to how I feel on the day', high: 'Deliberate, consistent approach with standards' }
+      },
+      {
+        id: 'aes_2',
+        question: 'If you decided to improve your fitness or physical appearance, which approach would feel more like you: building a structured programme with specific targets and milestones, or moving your body and caring for yourself in ways that feel enjoyable and natural in the moment?',
+        masculineWeight: 1.0,
+        feminineWeight: -0.7,
+        poleLabels: { low: 'Moving in ways that feel enjoyable and natural', high: 'Structured programme with targets and milestones' }
+      },
+      {
+        id: 'aes_3',
+        question: 'When you change your aesthetic — new style, new fitness phase, new look — is that change typically the result of a deliberate decision and plan, or does it tend to emerge naturally as your mood, circumstances, or interests shift?',
+        masculineWeight: -0.8,
+        feminineWeight: 1.0,
+        poleLabels: { low: 'Deliberate decision and plan', high: 'Emerges naturally as mood and interests shift' }
+      },
+      {
+        id: 'aes_4',
+        question: 'Which description feels closer to how you actually approach your appearance: "I have a consistent standard I maintain regardless of how I feel" or "my presentation reflects my inner state and changes with it"?',
+        masculineWeight: 0.9,
+        feminineWeight: -0.9,
+        poleLabels: { low: 'Presentation reflects inner state and changes with it', high: 'Consistent standard maintained regardless of mood' }
+      }
+    ]
   }
 };

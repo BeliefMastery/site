@@ -14,35 +14,49 @@ export const TEMPERAMENT_SCORING = {
   },
   
   // Dimension weights (some dimensions are more indicative than others)
+  // Recalibration notes:
+  //   Core behavioral: raised shame_and_fear to 1.2 (primary threat-response axis),
+  //     provision_and_nurture to 1.2 (highly discriminating), independence_and_interdependence
+  //     to 1.1 (maps directly to attachment/autonomy axis), stability_and_movement to 1.0
+  //     (movement-seeking is a clear feminine polarity signal).
+  //     control_and_flow lowered from 1.2 to 1.0 (overlaps with direction_and_structure).
+  //   Intimate/attraction modules: modest reductions (1.3→1.2, 1.2→1.1, 1.1→1.0) to
+  //     prevent the 10 intimate dimensions dominating over the 10 core behavioral ones.
+  //   New: aesthetic_orientation at 1.1 — bridges temperament and archetype aesthetic capital.
   dimensionWeights: {
-    direction_and_structure: 1.2,
-    provision_and_nurture: 1.1,
-    focus_and_expression: 1.0,
-    certainty_and_clarity: 0.9,
-    shame_and_fear: 1.0,
-    achievement_and_connection: 1.1,
-    control_and_flow: 1.2,
-    independence_and_interdependence: 1.0,
-    logic_and_intuition: 0.9,
-    stability_and_movement: 0.9,
-    preferred_dynamics: 1.3,  // Intimate dynamics are highly indicative
-    emotional_responses: 1.2,
-    satisfaction_and_preference: 1.3,
-    positions_and_preferences: 1.1,
-    arousal_and_responsiveness: 1.2,
-    status_and_rank: 1.0,
-    selection_criteria: 1.1,
-    attraction_signals: 1.0,
-    hypergamy_and_choice: 1.0,
-    responsiveness_patterns: 1.2
+    // Core behavioral dimensions
+    direction_and_structure: 1.2,       // foundational agency/structure axis — hold
+    provision_and_nurture: 1.2,         // raised: highly discriminating for polarity
+    focus_and_expression: 1.0,          // hold
+    certainty_and_clarity: 0.9,         // hold — context-variable
+    shame_and_fear: 1.2,                // raised: primary masculine/feminine threat-response axis
+    achievement_and_connection: 1.1,    // hold
+    control_and_flow: 1.0,              // lowered: overlaps with direction_and_structure
+    independence_and_interdependence: 1.1, // raised: maps to attachment/autonomy axis
+    logic_and_intuition: 0.9,           // hold — cognitive style, not pure polarity
+    stability_and_movement: 1.0,        // raised: movement-seeking is a clear feminine signal
+    aesthetic_orientation: 1.1,         // new: structured/disciplined vs intuitive/expressive
+    // Intimate dynamics and attraction-responsiveness modules
+    // (reduced modestly to prevent 10 intimate dims dominating 10 core behavioral dims)
+    preferred_dynamics: 1.2,            // lowered from 1.3 — still most indicative intimate signal
+    emotional_responses: 1.1,           // lowered from 1.2
+    satisfaction_and_preference: 1.2,   // lowered from 1.3
+    positions_and_preferences: 1.0,     // lowered from 1.1 — behavioural, not temperament-foundational
+    arousal_and_responsiveness: 1.1,    // lowered from 1.2
+    status_and_rank: 1.0,               // hold
+    selection_criteria: 1.1,            // hold — gender-swap logic already handles this
+    attraction_signals: 1.0,            // hold
+    hypergamy_and_choice: 1.0,          // hold
+    responsiveness_patterns: 1.1        // lowered from 1.2
   },
   
   // Variation indicators - dimensions where variation is expected and common
   expectedVariation: [
-    'logic_and_intuition',  // Many people have both
-    'achievement_and_connection',  // Can value both
-    'certainty_and_clarity',  // Different needs at different times
-    'satisfaction_and_preference'  // Can enjoy both giving and receiving
+    'logic_and_intuition',        // Many people have both
+    'achievement_and_connection', // Can value both
+    'certainty_and_clarity',      // Different needs at different times
+    'satisfaction_and_preference', // Can enjoy both giving and receiving
+    'aesthetic_orientation'       // Approach to self-presentation varies widely
   ],
   
   // Interpretation guide
