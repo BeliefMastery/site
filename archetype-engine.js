@@ -1447,18 +1447,22 @@ showGenderSelection() {
     //   Phase 5 now includes maternal identity + instinct + nesting + child-rearing impulse questions,
     //   making it a key discriminator between archetypes (beta_rho/delta vs sigma/gamma_feminist).
     //   Phase 1 reduced slightly to give Phase 5 proportionally more influence for females.
+    // Phase 3 now has 16 non-aspiration behavioral questions (up from 10 after adding 6 temperament
+    // indicators), so p3raw rises from 5 to 8 — weight drops from 0.0467 to 0.0175 to hold 14%.
+    // Female Phase 5 now has 14 questions (up from 12 after adding aesthetic + career identity),
+    // so p5raw_female rises from 7.8 to ~8.4 — weight adjusts to 0.0107 to hold 9%.
     const phaseWeights = this.gender === 'female'
       ? {
-          phase1: 0.0233,  // 42% — slightly less first-impression dominance
+          phase1: 0.0233,  // 42%
           phase2: 0.0194,  // 28%
-          phase3: 0.0467,  // 14%
+          phase3: 0.0175,  // 14% — recalibrated for 16 behavioral qs (p3raw ≈ 8)
           phase4: 0.0467,  //  7%
-          phase5: 0.0115   //  9% — maternal/child-rearing questions make Phase 5 highly discriminating
+          phase5: 0.0107   //  9% — recalibrated for 14 female Phase 5 qs (p5raw ≈ 8.4)
         }
       : {
           phase1: 0.025,   // 45%
           phase2: 0.0194,  // 28%
-          phase3: 0.0467,  // 14%
+          phase3: 0.0175,  // 14% — recalibrated for 16 behavioral qs (p3raw ≈ 8)
           phase4: 0.0467,  //  7%
           phase5: 0.0077   //  6%
         };

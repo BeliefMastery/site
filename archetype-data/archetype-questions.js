@@ -815,6 +815,83 @@ export const PHASE_3_QUESTIONS = [
       { text: 'Destructive rebellion', archetypes: ['dark_sigma_zeta'], weight: 2, isShadow: true },
       { text: 'Destructive consumption', archetypes: ['dark_omega'], weight: 2, isShadow: true }
     ]
+  },
+
+  // TEMPERAMENT INDICATORS: 6 questions probing the underlying processing and orientation
+  // dimensions that differentiate archetypes with similar behavioral outputs.
+  // Covers: shame vs fear, emotional contagion, processing mode,
+  // achievement drive, risk posture, and attachment orientation.
+  {
+    id: 'p3_t1',
+    question: 'After a serious falling-out with someone who matters to you, what lingers longest?',
+    type: 'forced_choice',
+    options: [
+      { text: 'The thought that they now see me as weak or incompetent', archetypes: ['alpha'], weight: 2 },
+      { text: 'The worry that the relationship is damaged or I might lose them', archetypes: ['beta', 'omega'], weight: 2 },
+      { text: 'Whether I acted with integrity and stayed true to my values', archetypes: ['delta'], weight: 2 },
+      { text: 'The intellectual frustration that it was never resolved clearly', archetypes: ['gamma'], weight: 2 },
+      { text: 'Not much — I process it and move on independently', archetypes: ['sigma', 'phi'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_t2',
+    question: 'When you walk into a room carrying high emotional tension, your state:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Shifts quickly — I absorb whatever energy is already in the room', archetypes: ['beta', 'omega'], weight: 2 },
+      { text: 'Stays unchanged — I observe the dynamics without being pulled in', archetypes: ['alpha', 'sigma'], weight: 2 },
+      { text: 'Engages analytically — I read the situation without being affected', archetypes: ['gamma', 'sigma'], weight: 2 },
+      { text: 'Responds with an impulse to stabilise or take charge of what I\'m sensing', archetypes: ['alpha', 'delta'], weight: 2 },
+      { text: 'Senses undercurrents deeply but processes them privately and internally', archetypes: ['phi', 'gamma'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_t3',
+    question: 'Before committing to a major decision, your natural approach is to:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Map it out clearly — steps, risks, and what success looks like', archetypes: ['alpha', 'delta'], weight: 2 },
+      { text: 'Sit with it until clarity emerges on its own', archetypes: ['sigma', 'phi'], weight: 2 },
+      { text: 'Research and analyse until you understand the underlying logic fully', archetypes: ['gamma'], weight: 2 },
+      { text: 'Consult trusted people and weigh their input before moving', archetypes: ['beta', 'delta'], weight: 2 },
+      { text: 'Start moving and let structure emerge through action', archetypes: ['alpha', 'sigma'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_t4',
+    question: 'When you reflect on how your life is going, you measure success primarily by:',
+    type: 'forced_choice',
+    options: [
+      { text: 'How I\'m doing relative to my peers and competitors', archetypes: ['alpha', 'gamma'], weight: 2 },
+      { text: 'Whether the people closest to me are genuinely thriving', archetypes: ['beta', 'delta'], weight: 2 },
+      { text: 'Whether I\'ve mastered what I care most about', archetypes: ['gamma', 'delta'], weight: 2 },
+      { text: 'Whether I\'ve kept my freedom and lived on my own terms', archetypes: ['sigma', 'phi'], weight: 2 },
+      { text: 'Whether I\'m respected and seen as capable by people I value', archetypes: ['alpha', 'delta'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_t5',
+    question: 'When a high-upside opportunity appears with real uncertainty, your instinct is to:',
+    type: 'forced_choice',
+    options: [
+      { text: 'Move decisively — bold action is how results are created', archetypes: ['alpha'], weight: 2 },
+      { text: 'Analyse thoroughly — understand fully before committing', archetypes: ['gamma', 'delta'], weight: 2 },
+      { text: 'Find the approach with the lowest downside first', archetypes: ['delta', 'beta'], weight: 2 },
+      { text: 'Follow your gut if it feels right — that\'s enough signal', archetypes: ['sigma', 'phi'], weight: 2 },
+      { text: 'Seek input or validation from others before deciding', archetypes: ['beta', 'omega'], weight: 2 }
+    ]
+  },
+  {
+    id: 'p3_t6',
+    question: 'In close relationships, the pattern you most recognise in yourself is:',
+    type: 'forced_choice',
+    options: [
+      { text: 'I give freely but don\'t rely on others for my emotional stability', archetypes: ['alpha', 'sigma'], weight: 2 },
+      { text: 'I value closeness but feel uneasy when connection feels inconsistent', archetypes: ['beta', 'omega'], weight: 2 },
+      { text: 'I enjoy connection but guard my autonomy — real closeness is rare and earned', archetypes: ['sigma', 'gamma'], weight: 2 },
+      { text: 'I invest deeply and take others\' wellbeing as my personal responsibility', archetypes: ['beta', 'delta'], weight: 2 },
+      { text: 'I connect in ways that are hard to define — bonds form on different terms to most', archetypes: ['phi', 'gamma'], weight: 2 }
+    ]
   }
 ];
 
@@ -1399,6 +1476,34 @@ export const PHASE_5_QUESTIONS = {
         { id: 'beta_rho', weight: 1.6 },
         { id: 'delta_mu', weight: 1.3 },
         { id: 'delta', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_f_id_aesthetic',
+      question: 'My approach to appearance, fitness, and physical self-expression is structured, disciplined, and goal-oriented.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'identity_expression',
+      clusterLabel: 'Identity & Self-Expression',
+      markerLabel: 'Aesthetic Structure vs Flow',
+      likertLabels: ['Intuitive / go with flow', 'Mostly relaxed', 'Mixed', 'Mostly structured', 'Disciplined and goal-driven'],
+      archetypes: [
+        { id: 'alpha', weight: 1.4 },
+        { id: 'gamma_pi', weight: 1.2 }
+      ]
+    },
+    {
+      id: 'p5_f_id_career',
+      question: 'My career, professional ambitions, or intellectual work are central to how I define myself.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'identity_expression',
+      clusterLabel: 'Identity & Self-Expression',
+      markerLabel: 'Career / Achievement as Identity',
+      likertLabels: ['Not at all', 'A little', 'Somewhat', 'Quite a bit', 'Very much so'],
+      archetypes: [
+        { id: 'gamma', weight: 1.5 },
+        { id: 'alpha', weight: 1.2 }
       ]
     }
   ]
