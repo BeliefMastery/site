@@ -298,67 +298,9 @@
         });
       }
       
-      // Debug panel functionality
-      const debugToggle = document.getElementById('debugToggle');
-      const debugPanel = document.getElementById('debugPanel');
-      const debugClose = document.getElementById('debugClose');
-      const debugClear = document.getElementById('debugClear');
-      const debugLog = document.getElementById('debugLog');
-      
-      if (debugToggle && debugPanel) {
-        debugToggle.addEventListener('click', function() {
-          debugPanel.classList.toggle('active');
-        });
-        
-        if (debugClose) {
-          debugClose.addEventListener('click', function() {
-            debugPanel.classList.remove('active');
-          });
-        }
-        
-        if (debugClear && debugLog) {
-          debugClear.addEventListener('click', function() {
-            debugLog.innerHTML = '';
-            if (window.paradigmEngine) {
-              window.paradigmEngine.debugLog = [];
-            }
-          });
-        }
-      }
-      
-      // Debug mode keyboard shortcut
-      document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-          e.preventDefault();
-          if (window.paradigmEngine) {
-            window.paradigmEngine.debugMode = !window.paradigmEngine.debugMode;
-            console.log('Debug mode:', window.paradigmEngine.debugMode ? 'ENABLED' : 'DISABLED');
-            if (window.paradigmEngine.debugMode) {
-              debugPanel.classList.add('active');
-            }
-          }
-        }
-      });
     });
   </script>
 
-  <!-- Debug Panel -->
-  <button class="debug-toggle" id="debugToggle" title="Toggle Debug Panel (Ctrl+D to enable debug mode)">🐛</button>
-  <div class="debug-panel" id="debugPanel">
-    <div class="debug-header">
-      <h3>Debug Log</h3>
-      <div>
-        <button class="debug-toggle" id="debugClear">Clear</button>
-        <button class="debug-toggle" id="debugClose">×</button>
-      </div>
-    </div>
-    <div class="debug-log" id="debugLog">
-      <!-- Debug entries populated here -->
-    </div>
-    <div class="debug-footer">
-      Press Ctrl+D (Cmd+D on Mac) to toggle debug mode
-    </div>
-  </div>
 
 </body>
 </html>

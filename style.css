@@ -2891,6 +2891,7 @@ figure.headline-book a {
 .three-point-options,
 .binary-unsure-options,
 .frequency-options,
+.binary-options,
 .scenario-options,
 .multiselect-options,
 .need-chain-options {
@@ -2904,6 +2905,7 @@ figure.headline-book a {
 .three-point-option,
 .binary-unsure-option,
 .frequency-option,
+.binary-option,
 .scenario-option,
 .multiselect-option,
 .need-chain-option {
@@ -2921,6 +2923,7 @@ figure.headline-book a {
 .three-point-option:hover,
 .binary-unsure-option:hover,
 .frequency-option:hover,
+.binary-option:hover,
 .scenario-option:hover,
 .multiselect-option:hover,
 .need-chain-option:hover {
@@ -2934,6 +2937,7 @@ figure.headline-book a {
 .three-point-option.selected,
 .binary-unsure-option.selected,
 .frequency-option.selected,
+.binary-option.selected,
 .scenario-option.selected,
 .multiselect-option.selected,
 .need-chain-option.selected {
@@ -2963,6 +2967,7 @@ figure.headline-book a {
 .three-point-option input[type="radio"],
 .binary-unsure-option input[type="radio"],
 .frequency-option input[type="radio"],
+.binary-option input[type="radio"],
 .scenario-option input[type="radio"],
 .need-chain-option input[type="radio"] {
     margin-right: 0.75rem;
