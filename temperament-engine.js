@@ -1089,6 +1089,48 @@ export class TemperamentEngine {
   }
 
   /**
+   * Convert a normalised dimension score (0–1) into a plain-English statement
+   * relative to the gender-specific norm dot, using exponential distance scaling.
+   */
+  getDimensionLabel(normalizedDimScore, reportedGender, maleTrend, femaleTrend) {
+    if (reportedGender !== 'man' && reportedGender !== 'woman') {
+      // Neutral fallback — no reference point available
+      const pos = normalizedDimScore;
+      if (pos > 0.65) return 'Sits toward the more structured, directive end of this dimension.';
+      if (pos < 0.35) return 'Sits toward the more fluid, receptive end of this dimension.';
+      return 'Sits near the midpoint of this dimension.';
+    }
+
+    const ref = reportedGender === 'man' ? maleTrend : femaleTrend;
+    const genderLabel = reportedGender === 'man' ? 'men' : 'women';
+    const delta = normalizedDimScore - ref; // positive = masculine side, negative = feminine side
+
+    const intensity = 1 - Math.exp(-Math.abs(delta) / 0.15);
+
+    const nearThreshold = 0.20;
+    if (Math.abs(delta) < 0.04) {
+      return `Closely matches the typical expression for ${genderLabel} in this dimension.`;
+    }
+
+    let adverb;
+    if (intensity < nearThreshold) {
+      adverb = 'slightly';
+    } else if (intensity < 0.55) {
+      adverb = 'moderately';
+    } else if (intensity < 0.80) {
+      adverb = 'notably';
+    } else {
+      adverb = 'markedly';
+    }
+
+    if (delta > 0) {
+      return `${adverb.charAt(0).toUpperCase() + adverb.slice(1)} more structured and directive than the average ${reportedGender === 'man' ? 'man' : 'woman'} in this dimension.`;
+    } else {
+      return `${adverb.charAt(0).toUpperCase() + adverb.slice(1)} more fluid and receptive than the average ${reportedGender === 'man' ? 'man' : 'woman'} in this dimension.`;
+    }
+  }
+
+  /**
    * Render assessment results
    */
   async renderResults() {
@@ -1210,7 +1252,7 @@ export class TemperamentEngine {
             <div class="dimension-marker" style="left: ${normalizedDimScore * 100}%;"></div>
           </div>
           <p class="dimension-score-text">
-            Masculine: ${(score.masculine * 100).toFixed(0)}% | Feminine: ${(score.feminine * 100).toFixed(0)}% | Net: ${(netScore * 100).toFixed(0)}%
+            ${this.getDimensionLabel(normalizedDimScore, reportedGender, maleTrend, femaleTrend)}
           </p>
           ${selectionCriteriaNote}
         </div>
