@@ -91,7 +91,7 @@ export const ARCHETYPES = {
     motivations: ['harmony', 'care', 'purity', 'connection'],
     stressResponse: 'Withdraws, becomes more passive, seeks safety',
     growthEdge: 'Developing wisdom, learning healthy boundaries',
-    archetypalNarrative: 'You stay gentle to avoid conflict, but people mistake softness for weakness. You give more than you receive and call it love, while others learn they can take without consequence. You often end up protected rather than chosen, safe rather than respected. The truth: your innocence attracts caretakers, not equals.',
+    archetypalNarrative: 'You are emotionally available in a way most men are not, and women find that useful without finding it attractive. They come to you to be heard, supported, and restored — then return to the men they actually desire. Your gentleness is real, but it signals low threat and low status, and desire requires neither of those things. You give your emotional labour freely and receive gratitude, not attraction. The truth: you are the man women appreciate and do not choose, needed for what you offer and overlooked for who you are.',
     parentType: 'beta'
   },
   beta_nu: {
@@ -103,7 +103,7 @@ export const ARCHETYPES = {
     motivations: ['stability', 'tradition', 'security', 'belonging'],
     stressResponse: 'Clings to tradition, becomes more rigid',
     growthEdge: 'Embracing change, developing flexibility',
-    archetypalNarrative: 'You build a stable life, but it is built on caution and fear of loss. You become predictable and slowly lose the spark that once made you feel alive. Others lean on your reliability while you quietly accept a life of routine. The truth: you protect stability at the cost of vitality.',
+    archetypalNarrative: 'You accepted the traditional deal: provide, commit, stay loyal, and a woman will choose you. She did. But the deal was about security, not desire, and you have always sensed the difference. You are respected for your reliability and maintained for your provision. Whether you are genuinely wanted is a question you have learned not to ask. Your children have a stable father and your partner has a dependable man — but the fire that should be there is managed down to a warmth that feels safer than honest. The truth: you built the structure she needed and quietly wonder if she would have chosen differently given another option.',
     parentType: 'beta'
   },
   beta_kappa: {
@@ -258,7 +258,7 @@ export const ARCHETYPES = {
     reproductiveSuccess: 'low', // Usually misses out on reproduction due to independence and isolation; values autonomy over social connection
     reproductiveDescription: 'Typically misses out on reproduction. Independence, isolation, and operating outside social hierarchies limit mate access. Values autonomy and self-reliance over reproductive opportunities.',
     // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
-    archetypalNarrative: 'You chose independence over connection, and now you have it. You operate outside social hierarchies, valuing your autonomy above all else. This freedom comes at the cost of reproduction - you miss out because you refuse to play the mating game, to compete for status, to compromise your independence for partnership. You may rationalize this as "choosing freedom," but the reality is you chose isolation over reproduction. As you age alone, you may find your independence less satisfying than you imagined. Your genes end with you. The truth: you prioritized autonomy and achieved it completely - you answer to no one, belong nowhere, and reproduce with no one. Freedom without legacy, independence without continuation.',
+    archetypalNarrative: 'You operate outside the hierarchy, and women use hierarchy to read male value. Without rank they cannot place you, so most don\'t try. Your independence is real, but it makes you illegible in the market where it matters. You tell yourself you refuse to perform for approval, and that is true - but the cost is that the women who would have chosen you never got enough signal to do so. You age with your autonomy intact and your potential largely unclaimed. The truth: you stayed outside the game because you found it beneath you, and the game distributed its rewards to men who played.',
     explanation: 'The Sigma archetype represents independent, self-sufficient behavioral patterns that operate outside traditional social hierarchies. The term "Sigma" refers to autonomous positioning and behavioral tendencies toward self-reliance, not a ranking system.'
   },
   sigma_kappa: {
@@ -317,7 +317,7 @@ export const ARCHETYPES = {
     reproductiveSuccess: 'low', // Usually misses out on reproduction due to social disconnection and passivity
     reproductiveDescription: 'Typically misses out on reproduction. Social disconnection, passivity, and low social power prevent mate access. Lack of assertiveness and social skills limit reproductive opportunities.',
     // Archetypal Narrative - The brutal truth of this archetype's typical life pattern
-    archetypalNarrative: 'You are at the bottom of the social hierarchy. You lack the charisma of Alpha, the reliability of Delta, even the resentment-fueled persistence of Beta. You watch from the sidelines as others achieve what you cannot. Reproduction largely eludes you - your passivity, social disconnection, and lack of assertiveness prevent you from competing. You may rationalize this with various coping mechanisms, but the truth is clear: you have lost the reproductive game before it even began. Your genes likely end with you. As you age alone, you may become bitter about opportunities missed, or you may retreat further into isolation. The truth: you are the social reject, the one who doesn\'t compete, can\'t win, and won\'t reproduce. The system has sorted you to the bottom, and there you remain.',
+    archetypalNarrative: 'You have withdrawn from the social competition and told yourself it was a choice. It wasn\'t. Your passivity, social disconnection, and difficulty with assertiveness mean that you don\'t register as a viable option to the people you want. You watch others achieve connection and status that feel inaccessible to you, and over time the watching becomes your identity. Bitterness and retreat reinforce each other. The pattern is not fixed - but it does not change without confrontation. The truth: you are not losing because the game is rigged, you are losing because you are not playing, and every year outside the arena makes re-entry harder.',
     explanation: 'The Omega archetype represents passive, socially disconnected behavioral patterns. The term "Omega" refers to social positioning and behavioral tendencies toward isolation or withdrawal, not a judgment of worth. This pattern may reflect current circumstances rather than fixed identity.'
   },
   dark_omega: {
@@ -345,7 +345,7 @@ export const ARCHETYPES = {
     stressResponse: 'Maintains equanimity, responds with wisdom',
     growthEdge: 'Continuing integration, serving others',
     isRare: true,
-    archetypalNarrative: 'You live beyond the game, but the game still lives around you. People project sainthood onto you and then resent you for not saving them. You may be at peace, but you often walk alone because few can meet you there. The truth: transcendence costs you ordinary belonging.',
+    archetypalNarrative: 'You have moved beyond the status hierarchy, and that costs you more than you expected. Women calibrate male worth through rank, dominance signals, and social proof — you offer none of these, and most cannot read what you are instead. Men respect you but do not follow you, because you are not competing. You have peace, but peace does not distribute the rewards the hierarchy distributes. Other men accumulate while you transcend, and transcendence does not build a family or a legacy by itself. The truth: you won the inner game and opted out of the outer one, and the outer one kept going without you.',
     explanation: 'The Phi archetype represents transcendent, fully integrated behavioral patterns that operate beyond typical social hierarchies. The term "Phi" refers to a state of integration and transcendence, representing someone who has moved beyond typical archetypal patterns into a more integrated expression.'
   },
 
@@ -365,7 +365,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Hera (Queen, Power)',
     tarotCard: 'The Empress',
     socialProportion: 3.0,
-    archetypalNarrative: 'You are pursued constantly, but few people see you beyond your value. You can select almost anyone, yet real loyalty is rare because everyone wants a piece of you. Your power is beauty and standards, and your vulnerability is being reduced to them. The truth: you are desired by many and truly known by few.',
+    archetypalNarrative: 'You are pursued constantly, but your power has an expiry window that most women in your position do not acknowledge until it is closing. Right now you can select — but selection is not the same as genuine bond, and the men circling you want access, not depth. Your standards protect you and your time is finite. The women who convert peak mate value into a lasting partnership do so deliberately and early. The ones who wait for perfect while managing options tend to find the field has changed by the time they are ready to commit. The truth: you are desired by many, truly known by few, and the window to exchange that desire for something real is shorter than it feels.',
     explanation: 'The Alpha Female archetype represents high social value and desirability. This archetype naturally attracts attention and sets standards in social contexts. The term refers to social positioning and behavioral patterns related to attractiveness and social value, not a ranking of worth.'
   },
   alpha_xi_female: {
@@ -398,7 +398,7 @@ export const ARCHETYPES = {
     vedicEquivalent: 'Sita (Virtue, Devotion)',
     greekPantheon: 'Penelope (Fidelity)',
     tarotCard: 'Two of Cups',
-    archetypalNarrative: 'You give loyalty freely and hope it will be honored. Your devotion attracts protectors, but it can also attract men who want a servant. You keep the bond alive even when it is not safe. The truth: your purity can become the chain that binds you.'
+    archetypalNarrative: 'Your loyalty and devotion are rare, and the wrong men know it. You give commitment before it has been earned because bonding feels more important than vetting, and men who want a deeply loyal woman without deserving one find you first. You maintain the bond long past the point where it should have ended because leaving feels like failure to you. The men who would actually honour your devotion rarely get through to you because you are already given. The truth: your greatest quality is your greatest vulnerability — you give loyalty freely, and not everyone who receives it deserves it.'
   },
   alpha_iota_female: {
     id: 'alpha_iota_female',
@@ -448,7 +448,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Echo (Unreciprocated Love)',
     tarotCard: 'Five of Pentacles',
     socialProportion: 20.0,
-    archetypalNarrative: 'You secure survival through relationships, but the price is pride. You accept uneven deals and call it stability, then resent the imbalance. Your partners sense the hunger beneath your affection. The truth: you are chosen for convenience, not desire.',
+    archetypalNarrative: 'Security felt urgent, and you moved toward it faster than you moved toward what you actually wanted. You accepted a bond that was adequate before confirming it was chosen — by him, and by you. The relationship functions, but you sometimes notice that it was built on availability and need rather than genuine selection. You are dependable in it, and so is he, and neither of you is fully lit up by the other. The resentment that accumulates is not about what he does wrong — it is about what you quietly know you traded away. The truth: you chose safety over desire and are now loyal to a life that does not quite fit.',
     explanation: 'The Beta Female archetype represents resource-seeking and security-focused behavioral patterns. This archetype prioritizes survival and stability, often through relationships. The term refers to social positioning and behavioral tendencies, not a ranking of value.'
   },
   beta_nu_female: {
@@ -465,7 +465,7 @@ export const ARCHETYPES = {
     vedicEquivalent: 'Savitri (Loyalty, Sacrifice)',
     greekPantheon: 'Hestia (Home, Duty)',
     tarotCard: 'The Hierophant',
-    archetypalNarrative: 'You build the home and keep it running, but you fade into the background. You trade personal ambition for family stability and get taken for granted. Your loyalty keeps the structure intact while your identity dissolves. The truth: you become the foundation everyone stands on and no one sees.'
+    archetypalNarrative: 'You committed to the traditional role and gave it everything. The home is well kept, the family is stable, and your loyalty is beyond question. But somewhere along the way your role consumed your identity, and the woman your partner first found desirable has been entirely replaced by the woman who manages the household. He is grateful; he is not lit up. You feel it but do not know how to reclaim what slowly disappeared. The truth: you became so completely the dutiful partner that the part of you he was once drawn to has gone invisible inside the role.'
   },
   beta_kappa_female: {
     id: 'beta_kappa_female',
@@ -515,7 +515,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Hecate (Mysticism)',
     tarotCard: 'The Magician',
     socialProportion: 8.0,
-    archetypalNarrative: 'You are intelligent and different, and it makes connection hard. You sense the shallowness around you and become critical, then isolated. You want a partner who can meet your mind, and you rarely find one. The truth: you choose intellect over intimacy and pay for it with loneliness.',
+    archetypalNarrative: 'You are intelligent and perceptive, and your standards for partnership are high and specific. Most men who approach you cannot meet them, and the ones who could are often put off by your critical edge before they get close enough to try. You end up surrounded by men who admire you from a distance and partners who feel assessed rather than wanted. You analyse the patterns in your relationships accurately and change almost nothing as a result. The truth: you can see exactly what is wrong with every man you meet and cannot see what you are doing that keeps the right ones from staying.',
     explanation: 'The Gamma Female archetype represents intellectual independence and non-conformity. This archetype values authenticity and knowledge over social acceptance. The term refers to behavioral patterns of intellectual rebellion and independence.'
   },
   gamma_theta_female: {
@@ -548,7 +548,7 @@ export const ARCHETYPES = {
     vedicEquivalent: 'Tara (Compassion, Wisdom)',
     greekPantheon: 'Athena (Wisdom, Strategy)',
     tarotCard: 'Nine of Swords',
-    archetypalNarrative: 'You prioritize career and independence, then wake up angry at the cost. You are competent and accomplished, but intimacy feels like a trade you no longer know how to make. You blame the world for the gap, but the gap was chosen. The truth: you built success and sacrificed softness.'
+    archetypalNarrative: 'You optimised for achievement during the years when your options in partnership were at their widest, and you told yourself that the relationship piece could wait. It could — but not indefinitely. The men who would have been most compatible with you were forming bonds with women who were available when you were not. Your competence and independence are real, but they signal low need, and men who want to be genuinely needed move elsewhere. You wake up accomplished, self-sufficient, and quietly aware that the window you assumed was always open has been narrowing for years. The truth: you chose the right strategy for your career and the wrong timing for everything else.'
   },
   dark_gamma_female: {
     id: 'dark_gamma_female',
@@ -582,7 +582,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Demeter (Harvest)',
     tarotCard: 'Ten of Pentacles',
     socialProportion: 10.0,
-    archetypalNarrative: 'You create comfort and stability, but you become the background of everyone else’s life. Your care keeps the household alive, and your own needs get pushed aside. You receive gratitude but not desire. The truth: you are valued for what you provide, not who you are.',
+    archetypalNarrative: 'You are warm, competent, and deeply reliable — and that reliability has become your entire relational identity. Your partner is grateful for what you create, but gratitude and desire are not the same thing, and you sense the gap. You have made yourself so functionally indispensable that there is no space left to be a woman he pursues. You became the home instead of the person he comes home to. The truth: you gave your care so completely that your desirability disappeared into it, and now you are a fixture in a life that runs on what you do rather than who you are.',
     explanation: 'The Delta Female archetype represents nurturing and supportive behavioral patterns focused on home and family. This archetype creates warmth and stability for others, often prioritizing the needs of others over self.'
   },
   delta_mu_female: {
@@ -633,7 +633,7 @@ export const ARCHETYPES = {
     greekPantheon: 'Artemis (Huntress)',
     tarotCard: 'The Fool',
     socialProportion: 3.0,
-    archetypalNarrative: 'You are independent and admired, but intimacy remains optional and therefore fragile. You keep your freedom by keeping people at arm’s length, then complain about the distance. You are hard to catch and easy to lose. The truth: your autonomy protects you from dependence and from depth.',
+    archetypalNarrative: 'Your independence is genuine and it works — right up until the level where real partnership requires something you have not practised giving. The men you attract most easily want you as an experience. The men capable of genuine depth read your self-sufficiency as a closed door and do not push through it. You win the early game with ease and find the later game strange and unfamiliar. The truth: your autonomy is your greatest asset and the reason the deepest bonds stay just out of reach.',
     explanation: 'The Sigma Female archetype represents independence and autonomy. This archetype maintains high value through self-sufficiency and freedom from dependency. The term refers to behavioral patterns of independence and elusiveness.'
   },
   sigma_feminist_female: {
