@@ -2282,6 +2282,10 @@ showGenderSelection() {
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(secondary.socialRole || '')}</p>
           ${secondaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(secondaryParent.name || '')}${secondaryParentSummary ? `: ${SecurityUtils.sanitizeHTML(secondaryParentSummary)}` : ''}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(secondary.description || '')}</p>
+          ${secondary.archetypalNarrative ? `
+          <div style="margin-top: 1rem; background: rgba(80, 0, 0, 0.12); border-left: 3px solid rgba(180, 40, 40, 0.6); border-radius: var(--radius); padding: 1rem;">
+            <p style="color: var(--muted); line-height: 1.7; font-size: 0.92rem; margin: 0; font-style: italic;">${SecurityUtils.sanitizeHTML(secondary.archetypalNarrative)}</p>
+          </div>` : ''}
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype influences you in specific contexts or situations, complementing your primary archetype.
           </p>
@@ -2297,6 +2301,10 @@ showGenderSelection() {
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;"><strong>Social Role:</strong> ${SecurityUtils.sanitizeHTML(tertiary.socialRole || '')}</p>
           ${tertiaryParent ? `<p style="color: var(--muted); margin: 0.5rem 0 1rem; line-height: 1.7;"><strong>Subtype of:</strong> ${SecurityUtils.sanitizeHTML(tertiaryParent.name || '')}${tertiaryParentSummary ? `: ${SecurityUtils.sanitizeHTML(tertiaryParentSummary)}` : ''}</p>` : ''}
           <p style="color: var(--muted); margin: 1rem 0; line-height: 1.7;">${SecurityUtils.sanitizeHTML(tertiary.description || '')}</p>
+          ${tertiary.archetypalNarrative ? `
+          <div style="margin-top: 1rem; background: rgba(80, 0, 0, 0.08); border-left: 3px solid rgba(160, 40, 40, 0.4); border-radius: var(--radius); padding: 1rem;">
+            <p style="color: var(--muted); line-height: 1.7; font-size: 0.92rem; margin: 0; font-style: italic;">${SecurityUtils.sanitizeHTML(tertiary.archetypalNarrative)}</p>
+          </div>` : ''}
           <p style="color: var(--muted); margin-top: 1rem; font-style: italic; font-size: 0.9rem;">
             This archetype may emerge under stress, represent aspirational qualities, or appear in specific life domains.
           </p>
