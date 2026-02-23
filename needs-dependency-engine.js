@@ -10,7 +10,7 @@ import { EngineUIController } from './shared/engine-ui-controller.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
-let DEPENDENCY_LOOPS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
+let DEPENDENCY_LOOPS, LOOP_GROUPS, PHASE_0_QUESTIONS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
 let PATTERN_NEEDS_MAPPING, NEED_COMPULSION_AVERSION_MAPPING, VICE_NEEDS_MAPPING;
 let PATTERNS_COMPENDIUM, NEEDS_GLOSSARY, VICES_GLOSSARY;
 let getLoopActionsForNeed, getRootActionsForNeed;
@@ -23,11 +23,12 @@ export class NeedsDependencyEngine {
    * Initialize the needs dependency engine
    */
   constructor() {
-    this.currentPhase = 1;
+    this.currentPhase = 0;
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
     this.identifiedLoops = []; // Top 3 loops from Phase 1
+    this.activeFamilyLoops = []; // Loops scoped by Phase 0 gateway
     this.needChain = []; // For Phase 3
     this.surfaceNeed = null;
     this.surfaceNeedCategoryKey = null;
@@ -102,6 +103,8 @@ export class NeedsDependencyEngine {
         'Dependency Loop Questions'
       );
       DEPENDENCY_LOOPS = loopQuestionsModule.DEPENDENCY_LOOPS;
+      LOOP_GROUPS = loopQuestionsModule.LOOP_GROUPS;
+      PHASE_0_QUESTIONS = loopQuestionsModule.PHASE_0_QUESTIONS;
       PHASE_1_QUESTIONS = loopQuestionsModule.PHASE_1_QUESTIONS;
       PHASE_2_QUESTIONS = loopQuestionsModule.PHASE_2_QUESTIONS;
       PHASE_3_QUESTIONS = loopQuestionsModule.PHASE_3_QUESTIONS;
@@ -175,14 +178,16 @@ export class NeedsDependencyEngine {
   }
 
   /**
-   * Build Phase 1 question sequence
-   * @returns {Promise<void>}
+   * Build Phase 0 + Phase 1 question sequence.
+   * Phase 0 is the category gate (2 questions). After it completes,
+   * processPhase0Results() scopes activeFamilyLoops before Phase 1 scoring.
    */
   async buildPhase1Sequence() {
     await this.loadNeedsDependencyData();
-    
+
     try {
-      this.questionSequence = [...PHASE_1_QUESTIONS];
+      // Prepend Phase 0 gateway questions followed by Phase 1 symptom questions
+      this.questionSequence = [...PHASE_0_QUESTIONS, ...PHASE_1_QUESTIONS];
       this.currentPhase = 1;
       this.currentQuestionIndex = 0;
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
@@ -193,20 +198,51 @@ export class NeedsDependencyEngine {
   }
 
   /**
+   * Resolve the active family loops from Phase 0 gateway answers.
+   * Merges families from both gateway questions, deduplicates, and stores
+   * the result in this.activeFamilyLoops for Phase 1 scoring.
+   */
+  processPhase0Results() {
+    const activeFamilies = new Set();
+
+    if (PHASE_0_QUESTIONS) {
+      PHASE_0_QUESTIONS.forEach(question => {
+        const answer = this.answers[question.id];
+        if (answer && answer.mapsTo && Array.isArray(answer.mapsTo.families)) {
+          answer.mapsTo.families.forEach(f => activeFamilies.add(f));
+        }
+      });
+    }
+
+    // Collect loops for all active families; fall back to all loops if gate unanswered
+    if (activeFamilies.size > 0 && LOOP_GROUPS) {
+      const loops = [];
+      activeFamilies.forEach(family => {
+        if (LOOP_GROUPS[family]) loops.push(...LOOP_GROUPS[family]);
+      });
+      this.activeFamilyLoops = [...new Set(loops)];
+    } else {
+      this.activeFamilyLoops = [...DEPENDENCY_LOOPS];
+    }
+  }
+
+  /**
    * Analyze Phase 1 results and proceed to Phase 2
    * @returns {Promise<void>}
    */
   async analyzePhase1Results() {
     await this.loadNeedsDependencyData();
-    
+
     try {
+      // Resolve active family loops from Phase 0 gateway answers
+      this.processPhase0Results();
+
       const loopScores = {};
       const viceProfile = [];
-      const stressResponse = null;
       const triggerSensitivity = [];
-      
-      // Initialize loop scores
-      DEPENDENCY_LOOPS.forEach(loop => {
+
+      // Initialise scores only for loops in the active family scope
+      this.activeFamilyLoops.forEach(loop => {
         loopScores[loop] = {
           compulsionIndex: 0,
           aversionIndex: 0,
@@ -216,56 +252,53 @@ export class NeedsDependencyEngine {
           totalScore: 0
         };
       });
-      
-      // Process Phase 1 answers
+
+      // Generalised metadata-driven scoring — no hardcoded question IDs.
+      // Each question declares scoringWeight; mapsTo.sourcing / mapsTo.loops drive scoring.
+      // Adding a new Phase 0 or Phase 1 question requires no engine changes.
       PHASE_1_QUESTIONS.forEach(question => {
         const answer = this.answers[question.id];
         if (!answer) return;
-        
-        if (question.id === 'p1_relationship_pattern' && answer.mapsTo) {
-          answer.mapsTo.loops.forEach(loop => {
-            if (answer.mapsTo.sourcing === 'compulsive') {
-              loopScores[loop].compulsionIndex += 3;
-            } else if (answer.mapsTo.sourcing === 'avoidant') {
-              loopScores[loop].aversionIndex += 3;
+
+        const weight = question.scoringWeight ?? 2;
+
+        // Single-select scenario / scaled questions
+        if (!Array.isArray(answer) && answer.mapsTo) {
+          const loops = answer.mapsTo.loops || [];
+          const sourcing = answer.mapsTo.sourcing;
+
+          loops.forEach(loop => {
+            if (!loopScores[loop]) return; // only score active-family loops
+            if (sourcing === 'compulsive') {
+              loopScores[loop].compulsionIndex += weight;
+            } else if (sourcing === 'avoidant') {
+              loopScores[loop].aversionIndex += weight;
+            } else {
+              loopScores[loop].compulsionIndex += weight;
             }
           });
-          if (answer.mapsTo.stressResponse) {
-            // Store stress response for later use
+
+          // Trigger sensitivity
+          if (answer.mapsTo.triggers) {
+            triggerSensitivity.push(...answer.mapsTo.triggers);
+            loops.forEach(loop => {
+              if (loopScores[loop]) loopScores[loop].triggerMatch += weight;
+            });
           }
         }
-        
-        if (question.id === 'p1_stress_response' && answer.mapsTo) {
-          answer.mapsTo.loops.forEach(loop => {
-            loopScores[loop].compulsionIndex += 2;
-          });
-        }
-        
-        if (question.id === 'p1_vice_states' && Array.isArray(answer)) {
+
+        // Multiselect questions (vice states)
+        if (Array.isArray(answer)) {
           answer.forEach(selected => {
-            if (selected.mapsTo) {
-              viceProfile.push(...selected.mapsTo.vices);
-              selected.mapsTo.loops.forEach(loop => {
-                loopScores[loop].viceAlignment += 2;
-              });
-            }
-          });
-        }
-        
-        if (question.id === 'p1_trigger_sensitivity' && answer.mapsTo) {
-          triggerSensitivity.push(...(answer.mapsTo.triggers || []));
-          answer.mapsTo.loops.forEach(loop => {
-            loopScores[loop].triggerMatch += 2;
-          });
-        }
-        
-        if (question.id === 'p1_attachment_style' && answer.mapsTo) {
-          answer.mapsTo.loops.forEach(loop => {
-            loopScores[loop].compulsionIndex += 1;
+            if (!selected.mapsTo) return;
+            if (selected.mapsTo.vices) viceProfile.push(...selected.mapsTo.vices);
+            (selected.mapsTo.loops || []).forEach(loop => {
+              if (loopScores[loop]) loopScores[loop].viceAlignment += weight;
+            });
           });
         }
       });
-      
+
       // Calculate total scores
       Object.keys(loopScores).forEach(loop => {
         const score = loopScores[loop];
@@ -276,26 +309,25 @@ export class NeedsDependencyEngine {
           score.triggerMatch * 0.25
         );
       });
-      
+
       // Identify top 3 loops
       const sortedLoops = Object.entries(loopScores)
         .sort((a, b) => b[1].totalScore - a[1].totalScore)
         .slice(0, 3);
-      
+
       this.identifiedLoops = sortedLoops.map(([loop, scores]) => ({
         loop,
         scores,
         confidence: scores.totalScore >= 6 ? 'high' : scores.totalScore >= 4 ? 'medium' : 'low'
       }));
-      
+
       this.analysisData.phase1Results = {
         loopScores,
         viceProfile,
-        stressResponse,
         triggerSensitivity,
         topLoops: this.identifiedLoops
       };
-      
+
       // Build Phase 2 sequence based on identified loops
       await this.buildPhase2Sequence();
     } catch (error) {
@@ -403,6 +435,7 @@ export class NeedsDependencyEngine {
 
   getSurfaceNeedForLoop(loop) {
     const loopNeedMap = {
+      // Original 16
       'SPACE': 'space',
       'JOY': 'joy',
       'BEING WANTED': 'being wanted',
@@ -418,7 +451,34 @@ export class NeedsDependencyEngine {
       'REST': 'rest',
       'CONTRIBUTION': 'contribution',
       'INDEPENDENCE': 'independence',
-      'STIMULATION/ADVENTURE': 'stimulation'
+      'STIMULATION/ADVENTURE': 'stimulation',
+      // Connection additions
+      'ACCEPTANCE': 'acceptance',
+      'INTIMACY': 'intimacy',
+      'TRUST': 'trust',
+      'LOVE': 'love',
+      'WARMTH': 'warmth',
+      'CLOSENESS': 'closeness',
+      // Physical additions
+      'SAFETY': 'safety',
+      'TOUCH': 'touch',
+      'MOVEMENT': 'movement',
+      // Honesty additions
+      'AUTHENTICITY': 'authenticity',
+      'PRESENCE': 'presence',
+      // Peace additions
+      'ORDER': 'order',
+      'HARMONY': 'harmony',
+      // Autonomy additions
+      'FREEDOM': 'freedom',
+      'SPONTANEITY': 'spontaneity',
+      // Meaning additions
+      'PURPOSE': 'purpose',
+      'SELF-EXPRESSION': 'self-expression',
+      'TO MATTER': 'to matter',
+      'CLARITY': 'clarity',
+      'GROWTH': 'growth',
+      'CREATIVITY': 'creativity'
     };
     return loopNeedMap[loop] || 'this need';
   }
@@ -1323,23 +1383,28 @@ export class NeedsDependencyEngine {
       }
       
       let html = '<div class="results-content">';
-      
+
       // Primary Loop
       if (this.analysisData.primaryLoop) {
         html += this.renderPrimaryLoop();
       }
-      
+
+      // Secondary Loops — wrapped in collapsible
+      if (this.analysisData.secondaryLoops && this.analysisData.secondaryLoops.length > 0) {
+        html += `<details class="closure-section"><summary><strong>Secondary patterns detected</strong></summary><div class="closure-content">${this.renderSecondaryLoops()}</div></details>`;
+      }
+
       // Need Chain
       if (this.needChain.length > 0) {
         html += this.renderNeedChain();
       }
-      
+
       // Recommendations
       html += this.renderRecommendations();
-      
+
       // Closure
       html += this.renderClosure();
-      
+
       html += '</div>';
       
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
@@ -1361,28 +1426,55 @@ export class NeedsDependencyEngine {
     const surfaceNeed = this.surfaceNeed || this.getSurfaceNeedForLoop(loop);
     const compulsionScore = scores?.compulsionScore || 0;
     const aversionScore = scores?.aversionScore || 0;
-    const tilt = compulsionScore >= aversionScore ? 'compulsive sourcing' : 'avoidant sourcing';
-    const tiltWhy = compulsionScore >= aversionScore
+    const isCompulsive = compulsionScore >= aversionScore;
+    const tilt = isCompulsive ? 'compulsive sourcing' : 'avoidant sourcing';
+    const tiltWhy = isCompulsive
       ? 'seeking immediate relief or reassurance to quiet the pattern'
       : 'withdrawing or delaying to reduce felt pressure in the moment';
+    const tiltNote = isCompulsive
+      ? 'Your pattern leans toward <strong>seeking</strong> — you tend to pursue the need externally, often urgently, which can deplete others or create dependency cycles.'
+      : 'Your pattern leans toward <strong>avoiding</strong> — you tend to withdraw from the need, which can delay resolution and build internal pressure over time.';
     const chainDepth = scores?.needChainDepth || 0;
-    
+
+    // Historical pattern depth from Phase 2
+    const historicalScore = scores?.historicalPatternScore || 0;
+    const depthNote = historicalScore >= 5
+      ? 'This appears to be a <strong>deeply rooted historical pattern</strong>, likely originating in early conditioning.'
+      : historicalScore >= 3
+        ? 'This pattern has <strong>moderate historical depth</strong> — it has been present across multiple periods or relationships.'
+        : historicalScore > 0
+          ? 'This pattern may be more <strong>situational than structural</strong> — it may resolve with changed circumstances.'
+          : '';
+
+    // Vice profile from Phase 1
+    const viceProfile = this.analysisData.phase1Results?.viceProfile || [];
+    const uniqueVices = [...new Set(viceProfile)];
+    const viceNote = uniqueVices.length > 0
+      ? `<p><strong>Emotional signatures:</strong> ${uniqueVices.map(v => SecurityUtils.sanitizeHTML(v)).join(', ')} — consistent with how the ${SecurityUtils.sanitizeHTML(loop)} loop commonly presents.</p>`
+      : '';
+
     return `
       <div class="primary-loop-section">
         <h2>Primary Dependency Loop Identified</h2>
         <div class="loop-card primary">
           <div class="loop-header">
-            <h3>${loop} Loop</h3>
+            <h3>${SecurityUtils.sanitizeHTML(loop)} Loop</h3>
             <span class="loop-strength">Confidence: ${scores?.totalScore?.toFixed(1) || 'N/A'}/10</span>
           </div>
-          <p class="loop-description">Based on your responses, the ${loop} dependency loop shows the strongest alignment with your patterns.</p>
-          <div class="loop-mechanics">
-            <p><strong>How the loop functions:</strong> When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to ${tilt}, ${tiltWhy}.</p>
-            <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
-            <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
-            ${chainDepth > 0 ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>` : ''}
-            ${this.analysisData.secondaryLoops.length > 0 ? '<p style="color: var(--muted);">Secondary signals were detected but are intentionally omitted here to keep the focus on the dominant loop.</p>' : ''}
-          </div>
+          <p class="loop-description">Based on your responses, the ${SecurityUtils.sanitizeHTML(loop)} dependency loop shows the strongest alignment with your patterns.</p>
+          <p><strong>Sourcing tilt:</strong> ${tilt} — ${tiltWhy}.</p>
+          ${viceNote}
+          ${depthNote ? `<p>${depthNote}</p>` : ''}
+          ${chainDepth > 0 ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>` : ''}
+          <details class="closure-section">
+            <summary><strong>How this loop works</strong></summary>
+            <div class="closure-content">
+              <p><strong>How the loop functions:</strong> When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to ${tilt}, ${tiltWhy}.</p>
+              <p>${tiltNote}</p>
+              <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
+              <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
+            </div>
+          </details>
         </div>
       </div>
     `;
@@ -1452,27 +1544,45 @@ export class NeedsDependencyEngine {
     const rootCandidates = rawRootCandidates
       .map(need => String(need))
       .filter(need => !uniqueChain.map(n => String(n.need).toLowerCase().trim()).includes(String(need).toLowerCase().trim()));
-    
+
     const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
     const chainText = chainParts.filter(Boolean).join(' ← ');
 
+    const patternType = this.analysisData.phase3Results?.isDependencyLoop;
+    const sectionTitle = patternType === true
+      ? 'Need Chain Analysis — Confirmed Dependency Loop'
+      : patternType === false
+        ? 'Need Chain Analysis — Situational Need Cascade'
+        : 'Need Chain Analysis';
+    const patternNote = patternType === true
+      ? '<p>You identified this as a <strong>recurring pattern across different relationships and situations</strong> — this is a dependency loop. Addressing the root need resolves it structurally.</p>'
+      : patternType === false
+        ? '<p>You identified this as more of a <strong>temporary response to current circumstances</strong>. This may resolve with changed conditions — though the root need still warrants attention.</p>'
+        : '';
+
     return `
       <div class="need-chain-section">
-        <h2>Need Chain Analysis</h2>
+        <h2>${SecurityUtils.sanitizeHTML(sectionTitle)}</h2>
         <div class="need-chain-visualization">
-          <p>This chain traces why the loop formed: the surface need shows how the pattern tries to cope, while the deeper needs reveal the underlying reason the loop exists.</p>
+          ${patternNote}
           ${chainText ? `<p><strong>Need Chain (Loop ← Root):</strong> ${chainText}</p>` : ''}
           <p><strong>Root Need Focus:</strong> ${SecurityUtils.sanitizeHTML(rootNeed)}</p>
           ${rootCandidates.length > 0 ? `
             <p><strong>Root Need Candidates:</strong> ${rootCandidates.map(n => SecurityUtils.sanitizeHTML(n)).join(', ')}</p>
           ` : ''}
-          <p style="color: var(--muted);">Addressing the root need is what collapses the loop; the surface symptom still needs attention but won’t resolve the pattern on its own.</p>
+          <details class="closure-section">
+            <summary><strong>How to read this chain</strong></summary>
+            <div class="closure-content">
+              <p>This chain traces why the loop formed: the surface need shows how the pattern tries to cope, while the deeper needs reveal the underlying reason the loop exists.</p>
+              <p>Addressing the root need is what collapses the loop; the surface symptom still needs attention but will not resolve the pattern on its own.</p>
+            </div>
+          </details>
         </div>
       </div>
     `;
   }
 
-  titleCaseNeed(needStr) {
+    titleCaseNeed(needStr) {
     return String(needStr || '').replace(/\b\w/g, c => c.toUpperCase()).trim() || '—';
   }
 
@@ -1502,7 +1612,6 @@ export class NeedsDependencyEngine {
     const loopNeed = this.surfaceNeed || loopNeedRaw || uniqueChain[0]?.need || 'the surface need';
     const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
     const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
-    // First link = first need in chain that is not the loop need (the one directly after the dependency when loop is prepended)
     const firstStageOfChain = chainParts.find(part => {
       const p = String(part || '').toLowerCase().trim();
       return p && p !== loopNorm;
@@ -1518,20 +1627,36 @@ export class NeedsDependencyEngine {
     const firstStageDisplay = firstStageOfChain ? this.titleCaseNeed(firstStageOfChain) : null;
     const rootNeedDisplay = this.titleCaseNeed(rootNeed);
 
+    // Tilt-personalised framing
+    const scores = this.analysisData.loopScores[this.analysisData.primaryLoop] || {};
+    const isCompulsive = (scores.compulsionScore || 0) >= (scores.aversionScore || 0);
+    const tiltFraming = isCompulsive
+      ? 'Your pattern leans compulsive — the first step is to <strong>pause and delay</strong> the loop behaviour rather than acting on the urge immediately. Create a gap between the trigger and the response.'
+      : 'Your pattern leans avoidant — the first step is to <strong>re-engage and tolerate</strong> the discomfort of the avoided need rather than withdrawing further. Small, deliberate steps toward the need break the pattern.';
+
+    // Resistance-aware prefix from Phase 4
+    const resistanceType = this.analysisData.phase4Results?.resistanceType;
+    const resistancePrefix = {
+      'cynical_doubt': '<p class="resistance-note"><strong>A note on your resistance:</strong> You expressed cynical doubt — a sense that nothing changes. Treat these actions as small experiments, not commitments. You do not need to believe they will work to try them once.</p>',
+      'skeptical_doubt': '<p class="resistance-note"><strong>A note on your resistance:</strong> You expressed some uncertainty about whether this will work. That is fair. You do not need certainty to begin — one small trial is enough.</p>',
+      'external_blame': '<p class="resistance-note"><strong>A note on your resistance:</strong> You indicated that others need to change. External factors are real — and this loop is also self-authored. Both can be true. The actions below address what is within your reach.</p>',
+      'harsh_self_attack': '<p class="resistance-note"><strong>A note on your resistance:</strong> You expressed harsh self-attack. Before action, offer yourself one moment of self-compassion — this pattern formed for a reason, and recognising it is already a step forward.</p>',
+      'open': '<p class="resistance-note"><strong>You expressed openness to engaging with this work.</strong> That is the most powerful starting condition. The actions below are yours to begin immediately.</p>'
+    }[resistanceType] || '';
+
     return `
       <div class="recommendations-section action-strategies-section">
         <h2>Action Strategies</h2>
-        <p class="form-help">Two complementary approaches: address the loop need (the need identified as the loop itself) to restore immanent authorship; and address the deepest root need to resolve the cascade at its source.</p>
+        ${resistancePrefix}
 
         <div class="action-strategy strategy-loop">
           <h3>1. Addressing the loop need: ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}</h3>
           <p><strong>Goal:</strong> Restore immanent authorship and resolve draining external dependencies, compulsions, or aversions.</p>
-          <p><strong>First step—consciously address and disclose the primary dependency.</strong> The loop is what presents in the situation and is often mistaken for the root. Addressing it is absolutely necessary: a ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} loop reflects an unhealthy dynamic around ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}—for example, taking others' ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, taking too much ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} away from others, or some other variation. This must be resolved. The primary dependency is the visible and consequential issue: it causes a draining impact—depletion in others, their withdrawal, or compulsive attendance to undesired situations—depending on whether it manifests as a compulsion or aversion. However, addressing the loop only mitigates in the moment. The resolution comes from tracing to the root to stop the systemic construction of the dynamic.</p>
-          <p>This need can be resolved by disclosing it to yourself and others—gaining conscious consent for external resourcing—and taking conscious, deliberate action to restore agency.</p>
+          <p>${tiltFraming}</p>
           <p><strong>Two-fold approach (address BOTH the primary dependency and the first link in the chain):</strong></p>
           <ul class="approach-list">
             <li><strong>First:</strong> By disclosing, people make efforts to establish ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, or the dependent individual consciously overrides whatever has put them in that situation so they can navigate to another space in which they can find ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}.</li>
-            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek to address the next link in the chain - in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the first link in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
+            ${firstStageDisplay ? `<li><strong>Second (more effective for resolution):</strong> Seek to address the next link in the chain — in this case ${SecurityUtils.sanitizeHTML(firstStageDisplay)}. This is immanent work: the root is the source of the situation, but the immanent must be addressed for conscious presence and self-authorship to be restored.</li>` : '<li><strong>Second:</strong> Seek and achieve the first link in your need chain. The immanent must be addressed for conscious presence and self-authorship to be restored.</li>'}
           </ul>
           ${loopActions.length > 0 ? `
             <p><strong>Practical actions:</strong></p>
@@ -1539,30 +1664,57 @@ export class NeedsDependencyEngine {
               ${loopActions.slice(0, 4).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}
             </ul>
           ` : ''}
+          <details class="closure-section">
+            <summary><strong>Why addressing the loop need matters</strong></summary>
+            <div class="closure-content">
+              <p><strong>First step — consciously address and disclose the primary dependency.</strong> The loop is what presents in the situation and is often mistaken for the root. Addressing it is absolutely necessary: a ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} loop reflects an unhealthy dynamic around ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} — for example, taking others' ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, taking too much ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} away from others, or some other variation. This must be resolved. The primary dependency is the visible and consequential issue: it causes a draining impact — depletion in others, their withdrawal, or compulsive attendance to undesired situations — depending on whether it manifests as a compulsion or aversion. However, addressing the loop only mitigates in the moment. The resolution comes from tracing to the root to stop the systemic construction of the dynamic.</p>
+              <p>This need can be resolved by disclosing it to yourself and others — gaining conscious consent for external resourcing — and taking conscious, deliberate action to restore agency.</p>
+            </div>
+          </details>
         </div>
 
         <div class="action-strategy strategy-root">
           <h3>2. Addressing the deepest root need: ${SecurityUtils.sanitizeHTML(rootNeedDisplay)}</h3>
           <p><strong>Goal:</strong> Prevent the cascading needs that cause the loop to exist in the first place.</p>
           <p>Rather than responding only where the problem occurs (treating the symptom), consciously adapt your lifestyle to fulfil the root need independently. This is the deepest core need that governs the pattern.</p>
-          ${cascadeExplanation ? `<p class="cascade-explanation"><strong>How the chain works:</strong> ${SecurityUtils.sanitizeHTML(cascadeExplanation)}</p>` : ''}
-          <p>Consciously meeting the root need resolves the entire need cascade and ends the loop—or at least creates the freedom to develop resilience and capacity to meet the dependency need unto yourself.</p>
+          <p>Consciously meeting the root need resolves the entire need cascade and ends the loop — or at least creates the freedom to develop resilience and capacity to meet the dependency need unto yourself.</p>
           ${rootActions.length > 0 ? `
             <p><strong>Practical actions:</strong></p>
             <ul class="action-list">
               ${rootActions.slice(0, 4).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}
             </ul>
           ` : ''}
+          ${cascadeExplanation ? `
+            <details class="closure-section">
+              <summary><strong>How the chain works</strong></summary>
+              <div class="closure-content">
+                <p class="cascade-explanation"><strong>How the chain works:</strong> ${SecurityUtils.sanitizeHTML(cascadeExplanation)}</p>
+              </div>
+            </details>
+          ` : ''}
         </div>
       </div>
     `;
   }
 
-  renderClosure() {
+    renderClosure() {
+    const readiness = this.analysisData.phase4Results?.readiness || 0;
+    const severity = this.analysisData.phase4Results?.impactSeverity || 0;
+
+    let readinessNote = '';
+    if (severity >= 5 && readiness <= 3) {
+      readinessNote = '<p class="readiness-note"><strong>Given the severity of this pattern and your current readiness,</strong> consider supplementing self-work with professional support — a therapist, coach, or counsellor familiar with needs-based work can help you move through this more safely.</p>';
+    } else if (readiness >= 5) {
+      readinessNote = '<p class="readiness-note"><strong>You expressed strong readiness to engage.</strong> That is the most valuable asset you have. You can begin the practical actions in the section above immediately.</p>';
+    } else if (severity < 3 && severity > 0) {
+      readinessNote = '<p class="readiness-note"><strong>This pattern is currently causing mild interference.</strong> The work here is preventive — addressing it now, before it intensifies, is far easier than resolving an entrenched loop later.</p>';
+    }
+
     return `
       <details class="closure-section">
         <summary><strong>What This Does NOT Imply</strong></summary>
         <div class="closure-content">
+          ${readinessNote}
           <p><strong>This analysis does not mean:</strong></p>
           <ul>
             <li>That you are broken or deficient</li>
@@ -1688,7 +1840,7 @@ export class NeedsDependencyEngine {
     const uniqueChain = this.getUniqueNeedChain();
     const loopNeedRaw = this.analysisData.primaryLoop ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) : null;
     const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
-    const needChainDisplay = chainParts.filter(Boolean).join(' ← ');
+    const needChainDisplay = chainParts.filter(Boolean).join(' ΓåÉ ');
     const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
     const firstLinkInChain = chainParts.find(part => {
       const p = String(part || '').toLowerCase().trim();
@@ -1718,7 +1870,7 @@ export class NeedsDependencyEngine {
     const uniqueChain = this.getUniqueNeedChain();
     const loopNeedRaw = this.analysisData.primaryLoop ? this.getSurfaceNeedForLoop(this.analysisData.primaryLoop) : null;
     const chainParts = this.getDeduplicatedChainParts(loopNeedRaw, uniqueChain);
-    const needChainDisplay = chainParts.filter(Boolean).join(' ← ');
+    const needChainDisplay = chainParts.filter(Boolean).join(' ΓåÉ ');
     const loopNorm = String(loopNeedRaw || '').toLowerCase().trim();
     const firstLinkInChain = chainParts.find(part => {
       const p = String(part || '').toLowerCase().trim();

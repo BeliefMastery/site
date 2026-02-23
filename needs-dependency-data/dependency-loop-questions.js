@@ -3,24 +3,147 @@
 // Based on Chapter 5: Needs and Beliefs from Belief Mastery
 // STRICT PROPRIETARY VOCABULARY - MUST BE ADHERED TO
 
-// 16 Primary Dependency Loops
+// All Dependency Loops — expanded from 16 to 40
 export const DEPENDENCY_LOOPS = [
-  'SPACE',
-  'JOY',
-  'BEING WANTED',
-  'EQUALITY',
-  'TO SEE AND BE SEEN',
-  'EASE',
-  'SECURITY',
+  // CONNECTION family
   'BELONGING',
+  'SECURITY',
   'CONSIDERATION',
+  'TO SEE AND BE SEEN',
+  'ACCEPTANCE',
+  'INTIMACY',
+  'TRUST',
+  'LOVE',
+  'WARMTH',
+  'CLOSENESS',
+  // PHYSICAL family
   'FLOW',
+  'REST',
+  'SAFETY',
+  'TOUCH',
+  'MOVEMENT',
+  // HONESTY family
+  'JOY',
+  'AUTHENTICITY',
+  'PRESENCE',
+  // PEACE family
+  'EASE',
+  'EQUALITY',
+  'ORDER',
+  'HARMONY',
+  // AUTONOMY family
+  'SPACE',
+  'INDEPENDENCE',
+  'FREEDOM',
+  'SPONTANEITY',
+  // MEANING family
   'MOURNING',
   'APPROVAL',
-  'REST',
   'CONTRIBUTION',
-  'INDEPENDENCE',
-  'STIMULATION/ADVENTURE'
+  'STIMULATION/ADVENTURE',
+  'BEING WANTED',
+  'PURPOSE',
+  'SELF-EXPRESSION',
+  'TO MATTER',
+  'CLARITY',
+  'GROWTH',
+  'CREATIVITY'
+];
+
+// Loop family groupings — used by Phase 0 to scope Phase 1 scoring
+export const LOOP_GROUPS = {
+  CONNECTION: [
+    'BELONGING', 'SECURITY', 'CONSIDERATION', 'TO SEE AND BE SEEN',
+    'ACCEPTANCE', 'INTIMACY', 'TRUST', 'LOVE', 'WARMTH', 'CLOSENESS'
+  ],
+  PHYSICAL: [
+    'FLOW', 'REST', 'SAFETY', 'TOUCH', 'MOVEMENT'
+  ],
+  HONESTY: [
+    'JOY', 'AUTHENTICITY', 'PRESENCE'
+  ],
+  PEACE: [
+    'EASE', 'EQUALITY', 'ORDER', 'HARMONY'
+  ],
+  AUTONOMY: [
+    'SPACE', 'INDEPENDENCE', 'FREEDOM', 'SPONTANEITY'
+  ],
+  MEANING: [
+    'MOURNING', 'APPROVAL', 'CONTRIBUTION', 'STIMULATION/ADVENTURE',
+    'BEING WANTED', 'PURPOSE', 'SELF-EXPRESSION', 'TO MATTER',
+    'CLARITY', 'GROWTH', 'CREATIVITY'
+  ]
+};
+
+// Phase 0: Category Gate (2 questions)
+// Purpose: Route respondent into a need family so Phase 1 scores only ~6-10 relevant loops
+export const PHASE_0_QUESTIONS = [
+  {
+    id: 'p0_life_area',
+    question: 'Which area of your life feels most persistently unresolved?',
+    type: 'scenario',
+    scoringWeight: 0, // gate only — not scored against loops
+    options: [
+      {
+        text: 'Relationships — feeling connected, accepted, loved, or truly known',
+        mapsTo: { families: ['CONNECTION'] }
+      },
+      {
+        text: 'Energy and body — rest, physical ease, feeling safe in your body',
+        mapsTo: { families: ['PHYSICAL'] }
+      },
+      {
+        text: 'Authenticity and joy — being real, present, or genuinely alive',
+        mapsTo: { families: ['HONESTY'] }
+      },
+      {
+        text: 'Inner peace — fairness, calm, order, or harmony with your environment',
+        mapsTo: { families: ['PEACE'] }
+      },
+      {
+        text: 'Freedom and self-direction — space, autonomy, or independence',
+        mapsTo: { families: ['AUTONOMY'] }
+      },
+      {
+        text: 'Purpose and impact — contribution, recognition, growth, or mattering',
+        mapsTo: { families: ['MEANING'] }
+      }
+    ],
+    category: 'category_gate'
+  },
+  {
+    id: 'p0_trigger_feeling',
+    question: 'When you feel most triggered or destabilised, which feeling tends to be at the centre of it?',
+    type: 'scenario',
+    scoringWeight: 0,
+    options: [
+      {
+        text: 'Rejection, exclusion, or not being truly wanted',
+        mapsTo: { families: ['CONNECTION', 'MEANING'] }
+      },
+      {
+        text: 'Depletion, overwhelm, or feeling unsafe',
+        mapsTo: { families: ['PHYSICAL', 'PEACE'] }
+      },
+      {
+        text: 'Feeling fake, numb, or cut off from what matters',
+        mapsTo: { families: ['HONESTY', 'MEANING'] }
+      },
+      {
+        text: 'Injustice, chaos, or things being out of order',
+        mapsTo: { families: ['PEACE', 'CONNECTION'] }
+      },
+      {
+        text: 'Being controlled, trapped, or losing your independence',
+        mapsTo: { families: ['AUTONOMY', 'PHYSICAL'] }
+      },
+      {
+        text: 'Feeling purposeless, invisible, or like you do not matter',
+        mapsTo: { families: ['MEANING', 'CONNECTION'] }
+      }
+    ],
+    category: 'category_gate'
+  }
 ];
 
 // Phase 1: Initial Screening (5-7 questions)
@@ -30,6 +153,7 @@ export const PHASE_1_QUESTIONS = [
     id: 'p1_relationship_pattern',
     question: 'In your closest relationships, which statement resonates most?',
     type: 'scenario',
+    scoringWeight: 3,
     options: [
       {
         text: 'I become more attentive and seek reassurance when things feel unstable',
@@ -58,6 +182,7 @@ export const PHASE_1_QUESTIONS = [
     id: 'p1_stress_response',
     question: 'When facing difficulty, what\'s your most common response?',
     type: 'scenario',
+    scoringWeight: 2,
     options: [
       {
         text: 'I avoid or evade the situation, hoping it will resolve itself',
@@ -86,6 +211,7 @@ export const PHASE_1_QUESTIONS = [
     id: 'p1_vice_states',
     question: 'Which emotional states do you experience most frequently? (Select all that apply)',
     type: 'multiselect',
+    scoringWeight: 2,
     options: [
       { text: 'Anxiety', mapsTo: { vices: ['anxiety'], loops: ['SECURITY', 'REST', 'EASE'] } },
       { text: 'Shame', mapsTo: { vices: ['shame'], loops: ['BEING WANTED', 'APPROVAL', 'TO SEE AND BE SEEN'] } },
@@ -108,6 +234,7 @@ export const PHASE_1_QUESTIONS = [
     id: 'p1_trigger_sensitivity',
     question: 'Which situations cause the strongest emotional reactions?',
     type: 'scenario',
+    scoringWeight: 2,
     options: [
       {
         text: 'Feeling crowded or having my boundaries violated',
@@ -140,6 +267,7 @@ export const PHASE_1_QUESTIONS = [
     id: 'p1_compulsion_aversion',
     question: 'Do you find yourself repeatedly seeking or avoiding certain experiences?',
     type: 'scaled',
+    scoringWeight: 1,
     scale: { min: 1, max: 7, labels: { 1: 'Never', 4: 'Sometimes', 7: 'Constantly' } },
     mapsTo: { loops: ['ALL'], category: 'compulsion_aversion_preliminary' },
     category: 'compulsion_aversion'
@@ -148,6 +276,7 @@ export const PHASE_1_QUESTIONS = [
     id: 'p1_attachment_style',
     question: 'In relationships, how do you typically respond when your partner seems distant?',
     type: 'scenario',
+    scoringWeight: 1,
     options: [
       {
         text: 'I become anxious and seek more connection/reassurance',
@@ -931,6 +1060,291 @@ export const PHASE_2_QUESTIONS = {
       mapsTo: { loop: 'STIMULATION/ADVENTURE', indicator: 'historical_pattern' },
       category: 'loop_deep_dive'
     }
+  ],
+
+  // ── CONNECTION additions ──────────────────────────────────────────────────
+
+  'ACCEPTANCE': [
+    { id: 'p2_acceptance_compulsive', question: 'Do you change yourself or your opinions to gain others\' approval, even when it conflicts with what you actually believe?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ACCEPTANCE', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_acceptance_avoidant', question: 'Do you withdraw from social situations or reject praise because you fear the eventual moment of rejection more than you enjoy the connection?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ACCEPTANCE', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_acceptance_partner', question: 'Have relationships become strained because others sense you are performing a version of yourself rather than being fully present?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ACCEPTANCE', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_acceptance_need_chain', question: 'When you feel unaccepted or like you have to earn your place, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'I feel fundamentally flawed', mapsTo: { need: 'self-respect', deeper: ['compassion', 'safety'] } },
+      { text: 'I do not feel safe being myself', mapsTo: { need: 'safety', deeper: ['security', 'trust'] } },
+      { text: 'I feel invisible unless I perform', mapsTo: { need: 'to see and be seen', deeper: ['to matter', 'being wanted'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'ACCEPTANCE', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_acceptance_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ACCEPTANCE', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'INTIMACY': [
+    { id: 'p2_intimacy_compulsive', question: 'Do you overshare or rush emotional closeness with people, needing them to know the deepest parts of you before the relationship has earned that level of trust?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'INTIMACY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_intimacy_avoidant', question: 'Do you keep relationships at a surface level, afraid that real closeness will expose something others will ultimately reject?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'INTIMACY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_intimacy_partner', question: 'Have relationships become strained because your partner feels either suffocated by your need for closeness or shut out by your distance?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'INTIMACY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_intimacy_need_chain', question: 'When you feel the absence of true intimacy, what might be underneath that feeling?', type: 'need_chain', options: [
+      { text: 'I fear being truly known and still rejected', mapsTo: { need: 'safety', deeper: ['trust', 'acceptance'] } },
+      { text: 'I do not trust that I am loveable as I am', mapsTo: { need: 'self-respect', deeper: ['acceptance', 'love'] } },
+      { text: 'I feel profoundly lonely even around people', mapsTo: { need: 'to know and be known', deeper: ['belonging', 'closeness'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'INTIMACY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_intimacy_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'INTIMACY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'TRUST': [
+    { id: 'p2_trust_compulsive', question: 'Do you extend trust too quickly — giving people the benefit of the doubt far past the point where it has been earned — and then feel devastated when it is broken?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TRUST', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_trust_avoidant', question: 'Do you withhold trust entirely, remaining suspicious even when others have given you no reason to doubt them?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TRUST', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_trust_partner', question: 'Have relationships become strained because your partner feels constantly tested or kept at arm\'s length?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TRUST', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_trust_need_chain', question: 'When trust feels absent or broken, what sits underneath that?', type: 'need_chain', options: [
+      { text: 'I do not feel safe with other people', mapsTo: { need: 'safety', deeper: ['security', 'consistency'] } },
+      { text: 'I have been let down enough times to stop expecting reliability', mapsTo: { need: 'consistency', deeper: ['stability', 'security'] } },
+      { text: 'I feel I must rely entirely on myself', mapsTo: { need: 'independence', deeper: ['safety', 'self-respect'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'TRUST', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_trust_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TRUST', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'LOVE': [
+    { id: 'p2_love_compulsive', question: 'Do you pursue or maintain relationships primarily out of a need to feel loved rather than from a genuine desire to love the other person?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'LOVE', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_love_avoidant', question: 'Do you deflect, minimise, or reject love when it is offered, as though receiving it fully would make you too vulnerable?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'LOVE', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_love_partner', question: 'Have relationships become strained because your partner feels their love is never quite enough, or that you pull away when they get close?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'LOVE', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_love_need_chain', question: 'When you feel unloved or unable to receive love, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'I do not feel worthy of being loved as I am', mapsTo: { need: 'self-respect', deeper: ['acceptance', 'compassion'] } },
+      { text: 'Being loved makes me feel exposed and at risk', mapsTo: { need: 'safety', deeper: ['trust', 'security'] } },
+      { text: 'I confuse being needed with being loved', mapsTo: { need: 'to matter', deeper: ['being wanted', 'contribution'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'LOVE', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_love_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'LOVE', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'WARMTH': [
+    { id: 'p2_warmth_compulsive', question: 'Do you seek constant warmth or affection from others — needing a steady supply of reassurance, kind words, or gentle touch to feel okay?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'WARMTH', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_warmth_avoidant', question: 'Do you keep an emotional chill — holding people at a distance or being reserved — even when warmth is freely available?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'WARMTH', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_warmth_partner', question: 'Have relationships become strained because your partner finds you emotionally cold, or exhausted by constantly having to provide warmth you cannot sustain?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'WARMTH', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_warmth_need_chain', question: 'When warmth feels absent or unsafe, what might be underneath that feeling?', type: 'need_chain', options: [
+      { text: 'I grew up in an emotionally cold environment', mapsTo: { need: 'nurturing', deeper: ['love', 'safety'] } },
+      { text: 'Warmth feels conditional and I am waiting for it to be withdrawn', mapsTo: { need: 'consistency', deeper: ['trust', 'security'] } },
+      { text: 'I do not know how to give or receive warmth without feeling exposed', mapsTo: { need: 'safety', deeper: ['acceptance', 'intimacy'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'WARMTH', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_warmth_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'WARMTH', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'CLOSENESS': [
+    { id: 'p2_closeness_compulsive', question: 'Do you merge with the people you care about — spending almost all your time together, losing your own perspective, needing them physically or emotionally near at all times?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLOSENESS', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_closeness_avoidant', question: 'Do you maintain careful distance from the people you love — never quite letting anyone fully in — to protect yourself from the pain of eventual loss?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLOSENESS', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_closeness_partner', question: 'Have relationships become strained because your partner feels smothered by your need for closeness, or that they can never quite reach you?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLOSENESS', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_closeness_need_chain', question: 'When closeness feels threatened or impossible, what sits underneath that?', type: 'need_chain', options: [
+      { text: 'I am terrified of being alone', mapsTo: { need: 'belonging', deeper: ['safety', 'love'] } },
+      { text: 'I fear that people I love will leave', mapsTo: { need: 'consistency', deeper: ['security', 'trust'] } },
+      { text: 'I do not know how to be close without losing myself', mapsTo: { need: 'independence', deeper: ['space', 'self-respect'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'CLOSENESS', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_closeness_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLOSENESS', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  // ── PHYSICAL additions ────────────────────────────────────────────────────
+
+  'SAFETY': [
+    { id: 'p2_safety_compulsive', question: 'Do you over-monitor your environment — scanning for threats, controlling variables, or avoiding anything unfamiliar — to the point where it limits your life?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SAFETY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_safety_avoidant', question: 'Do you take unnecessary risks or dismiss genuine danger — as if proving to yourself that you are untouchable — as an alternative to feeling your vulnerability?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SAFETY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_safety_partner', question: 'Have relationships become strained because others feel your fear of danger — or your reckless disregard for it — makes closeness feel unstable?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SAFETY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_safety_need_chain', question: 'When you feel unsafe — or when you numb out to danger — what sits underneath that?', type: 'need_chain', options: [
+      { text: 'I grew up in an unpredictable or threatening environment', mapsTo: { need: 'stability', deeper: ['security', 'consistency'] } },
+      { text: 'I feel safer being the one who causes danger than the one who suffers it', mapsTo: { need: 'control', deeper: ['independence', 'safety'] } },
+      { text: 'I feel unsafe in my own body', mapsTo: { need: 'rest', deeper: ['ease', 'nourishment'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'SAFETY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_safety_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SAFETY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'TOUCH': [
+    { id: 'p2_touch_compulsive', question: 'Do you seek physical contact — hugs, closeness, sexual expression — compulsively, using it to regulate emotional states rather than as genuine connection?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TOUCH', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_touch_avoidant', question: 'Do you flinch from or avoid physical contact, even gentle or caring touch, as though it threatens something in you?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TOUCH', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_touch_partner', question: 'Have relationships become strained because your partner feels their physical affection is either never enough or constantly pushed away?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TOUCH', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_touch_need_chain', question: 'When your need for touch feels unmet or unsafe, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'Touch was withheld or weaponised when I was young', mapsTo: { need: 'nurturing', deeper: ['safety', 'love'] } },
+      { text: 'My body does not feel like a safe place to live in', mapsTo: { need: 'safety', deeper: ['rest', 'ease'] } },
+      { text: 'I use touch to feel real, connected, or alive', mapsTo: { need: 'presence', deeper: ['joy', 'intimacy'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'TOUCH', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_touch_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TOUCH', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'MOVEMENT': [
+    { id: 'p2_movement_compulsive', question: 'Do you use exercise or physical activity compulsively — to manage anxiety, punish yourself, or prove something — rather than for genuine wellbeing?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'MOVEMENT', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_movement_avoidant', question: 'Do you avoid movement or exercise even when you know it would restore you — staying stuck, stagnant, or numb in your body?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'MOVEMENT', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_movement_partner', question: 'Has your relationship to your body — over-exercising or under-exercising — created tension in your relationships or in how others experience you?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'MOVEMENT', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_movement_need_chain', question: 'When you feel stuck in your body or compelled to exhaust it, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'I feel safest when I am in control of my body', mapsTo: { need: 'control', deeper: ['safety', 'independence'] } },
+      { text: 'I use physical activity to escape emotional pain', mapsTo: { need: 'ease', deeper: ['rest', 'peace'] } },
+      { text: 'I feel disconnected from my body and movement is the only way back', mapsTo: { need: 'presence', deeper: ['flow', 'joy'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'MOVEMENT', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_movement_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'MOVEMENT', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  // ── HONESTY additions ─────────────────────────────────────────────────────
+
+  'AUTHENTICITY': [
+    { id: 'p2_authenticity_compulsive', question: 'Do you over-disclose or over-share — insisting on radical honesty in situations where it creates damage — using authenticity as a club rather than a connection?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'AUTHENTICITY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_authenticity_avoidant', question: 'Do you perform a version of yourself — agreeable, palatable, carefully constructed — to avoid the risk of what might happen if people saw the real you?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'AUTHENTICITY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_authenticity_partner', question: 'Have relationships become strained because others sense they are getting a curated version of you, or because your bluntness has damaged people who didn\'t ask for full transparency?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'AUTHENTICITY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_authenticity_need_chain', question: 'When being authentic feels impossible or dangerous, what sits underneath that?', type: 'need_chain', options: [
+      { text: 'The real me was rejected or punished when I was young', mapsTo: { need: 'acceptance', deeper: ['safety', 'self-respect'] } },
+      { text: 'I do not know who the real me actually is', mapsTo: { need: 'identity', deeper: ['clarity', 'presence'] } },
+      { text: 'I was taught that performing was survival', mapsTo: { need: 'safety', deeper: ['integrity', 'trust'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'AUTHENTICITY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_authenticity_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'AUTHENTICITY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'PRESENCE': [
+    { id: 'p2_presence_compulsive', question: 'Do you pursue mindfulness, grounding, or spiritual practices obsessively — using presence as a way to escape emotion rather than meet it?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PRESENCE', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_presence_avoidant', question: 'Do you stay perpetually distracted — screens, busyness, noise — because stillness and being in the moment feels intolerable?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PRESENCE', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_presence_partner', question: 'Have relationships become strained because others feel you are never truly here — either checked out or so focused on inner states that you miss them?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PRESENCE', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_presence_need_chain', question: 'When being present feels impossible or threatening, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'The present moment usually contains pain I am not ready for', mapsTo: { need: 'safety', deeper: ['ease', 'rest'] } },
+      { text: 'I am always in my head — past or future — and cannot find now', mapsTo: { need: 'clarity', deeper: ['awareness', 'flow'] } },
+      { text: 'I fear that if I stop, everything I have been avoiding will arrive', mapsTo: { need: 'mourning', deeper: ['acceptance', 'ease'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'PRESENCE', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_presence_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PRESENCE', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  // ── PEACE additions ───────────────────────────────────────────────────────
+
+  'ORDER': [
+    { id: 'p2_order_compulsive', question: 'Do you impose rigid structure on your environment — schedules, systems, or rules — to the point where spontaneity or disruption causes disproportionate distress?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ORDER', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_order_avoidant', question: 'Do you deliberately resist or create chaos — refusing structure, leaving things unfinished — as though order itself is a threat to your freedom?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ORDER', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_order_partner', question: 'Have relationships become strained because others feel controlled by your need for order, or exhausted by the chaos you generate?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ORDER', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_order_need_chain', question: 'When your need for order is unmet, what might be underneath that feeling?', type: 'need_chain', options: [
+      { text: 'My early environment was chaotic and unpredictable', mapsTo: { need: 'security', deeper: ['safety', 'stability'] } },
+      { text: 'I feel like if I let go of control everything will collapse', mapsTo: { need: 'safety', deeper: ['ease', 'trust'] } },
+      { text: 'Chaos represents failure to me', mapsTo: { need: 'competence', deeper: ['self-respect', 'approval'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'ORDER', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_order_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'ORDER', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'HARMONY': [
+    { id: 'p2_harmony_compulsive', question: 'Do you smooth over conflict at the expense of truth — keeping the peace in ways that require you to suppress your own needs or suppress honest conversation?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'HARMONY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_harmony_avoidant', question: 'Do you create discord or provoke conflict, even when things are peaceful, as though harmony feels threatening or false?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'HARMONY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_harmony_partner', question: 'Have relationships become strained because others sense that the peace between you is maintained through avoidance rather than resolution?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'HARMONY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_harmony_need_chain', question: 'When harmony feels absent or like a lie you are maintaining, what might be underneath?', type: 'need_chain', options: [
+      { text: 'Conflict in my early life felt genuinely dangerous', mapsTo: { need: 'safety', deeper: ['security', 'ease'] } },
+      { text: 'I believe my real feelings would destroy the relationship', mapsTo: { need: 'acceptance', deeper: ['safety', 'trust'] } },
+      { text: 'I have never seen conflict resolved well and expect it to end badly', mapsTo: { need: 'trust', deeper: ['consistency', 'safety'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'HARMONY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_harmony_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'HARMONY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  // ── AUTONOMY additions ────────────────────────────────────────────────────
+
+  'FREEDOM': [
+    { id: 'p2_freedom_compulsive', question: 'Do you resist authority, rules, or commitments reflexively — even when they are reasonable — because constraint of any kind feels intolerable?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'FREEDOM', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_freedom_avoidant', question: 'Do you over-commit, comply automatically, or give away your autonomy to keep the peace — and then feel resentful of the cage you have built yourself?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'FREEDOM', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_freedom_partner', question: 'Have relationships become strained because your need for freedom makes long-term commitment feel impossible, or because you resent the very obligations you agreed to?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'FREEDOM', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_freedom_need_chain', question: 'When freedom feels absent or threatened, what sits underneath that?', type: 'need_chain', options: [
+      { text: 'I was over-controlled or parentified as a child', mapsTo: { need: 'independence', deeper: ['autonomy', 'self-respect'] } },
+      { text: 'Freedom is the only way I know how to feel safe', mapsTo: { need: 'safety', deeper: ['ease', 'space'] } },
+      { text: 'I equate commitment with loss of self', mapsTo: { need: 'identity', deeper: ['integrity', 'autonomy'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'FREEDOM', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_freedom_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'FREEDOM', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'SPONTANEITY': [
+    { id: 'p2_spontaneity_compulsive', question: 'Do you act impulsively — making sudden changes, commitments, or decisions without forethought — chasing the feeling of aliveness that spontaneity brings?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SPONTANEITY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_spontaneity_avoidant', question: 'Do you over-plan and over-structure everything, refusing to leave room for the unexpected, because unpredictability feels threatening?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SPONTANEITY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_spontaneity_partner', question: 'Have relationships become strained because others find it impossible to make plans with you, or feel suffocated by the rigid structure you impose?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SPONTANEITY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_spontaneity_need_chain', question: 'When spontaneity feels impossible or terrifying, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'Unpredictability in my past meant danger', mapsTo: { need: 'safety', deeper: ['security', 'consistency'] } },
+      { text: 'I need novelty to feel alive and routine feels like slow death', mapsTo: { need: 'stimulation', deeper: ['joy', 'flow'] } },
+      { text: 'I fear losing control if I let go of the plan', mapsTo: { need: 'control', deeper: ['safety', 'order'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'SPONTANEITY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_spontaneity_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SPONTANEITY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  // ── MEANING additions ─────────────────────────────────────────────────────
+
+  'PURPOSE': [
+    { id: 'p2_purpose_compulsive', question: 'Do you attach yourself so strongly to a mission, cause, or role that without it you feel empty — using purpose as an identity prosthetic rather than a genuine calling?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PURPOSE', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_purpose_avoidant', question: 'Do you drift, delay, or dismiss meaningful pursuits — staying busy with the inconsequential — to avoid the vulnerability of caring deeply about something?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PURPOSE', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_purpose_partner', question: 'Have relationships become strained because your pursuit of purpose excludes others, or because your lack of direction makes you feel hollow to be around?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PURPOSE', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_purpose_need_chain', question: 'When purpose feels absent or hollow, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'I was never encouraged to develop my own direction', mapsTo: { need: 'autonomy', deeper: ['self-expression', 'clarity'] } },
+      { text: 'I fear that my deepest calling is not enough — or not real', mapsTo: { need: 'self-respect', deeper: ['competence', 'to matter'] } },
+      { text: 'Purpose is the only thing that makes me feel worthy', mapsTo: { need: 'to matter', deeper: ['acceptance', 'love'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'PURPOSE', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_purpose_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'PURPOSE', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'SELF-EXPRESSION': [
+    { id: 'p2_selfexpression_compulsive', question: 'Do you over-broadcast — constantly sharing opinions, creative output, or personal narrative — needing an audience to validate that your expression is real?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SELF-EXPRESSION', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_selfexpression_avoidant', question: 'Do you silence yourself — withholding opinions, shelving creative work, or staying invisible — to avoid judgment or the risk of being truly seen?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SELF-EXPRESSION', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_selfexpression_partner', question: 'Have relationships become strained because others feel you dominate every space with your self-expression, or that they cannot reach you because you never share yourself?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SELF-EXPRESSION', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_selfexpression_need_chain', question: 'When self-expression feels impossible or compulsive, what sits underneath that?', type: 'need_chain', options: [
+      { text: 'My voice was dismissed or punished when I was young', mapsTo: { need: 'acceptance', deeper: ['safety', 'to see and be seen'] } },
+      { text: 'I only feel real when I am being seen or heard', mapsTo: { need: 'to see and be seen', deeper: ['to matter', 'presence'] } },
+      { text: 'I have so much unexpressed inside me it creates pressure', mapsTo: { need: 'authenticity', deeper: ['freedom', 'joy'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'SELF-EXPRESSION', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_selfexpression_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'SELF-EXPRESSION', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'TO MATTER': [
+    { id: 'p2_tomatter_compulsive', question: 'Do you insert yourself into situations, take on high-stakes roles, or over-contribute in order to prove to yourself and others that your existence is significant?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TO MATTER', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_tomatter_avoidant', question: 'Do you shrink — minimising your impact, avoiding responsibility, or staying beneath the radar — to protect yourself from the risk of trying and still not mattering?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TO MATTER', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_tomatter_partner', question: 'Have relationships become strained because others feel overshadowed by your need to be significant, or disconnected from someone who seems to barely occupy their own life?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TO MATTER', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_tomatter_need_chain', question: 'When you feel like you do not matter, what might be underneath that feeling?', type: 'need_chain', options: [
+      { text: 'I was made to feel invisible or replaceable as a child', mapsTo: { need: 'to see and be seen', deeper: ['belonging', 'love'] } },
+      { text: 'My worth was always tied to performance or usefulness', mapsTo: { need: 'self-respect', deeper: ['acceptance', 'love'] } },
+      { text: 'I fear that if I stopped performing, no one would stay', mapsTo: { need: 'belonging', deeper: ['being wanted', 'trust'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'TO MATTER', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_tomatter_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'TO MATTER', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'CLARITY': [
+    { id: 'p2_clarity_compulsive', question: 'Do you obsessively research, analyse, or seek information — needing to understand everything before you can act — to the point where thinking replaces living?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLARITY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_clarity_avoidant', question: 'Do you avoid thinking things through, resist feedback, or stay deliberately vague — as though clarity might reveal something you cannot face?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLARITY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_clarity_partner', question: 'Have relationships become strained because others find your need to analyse everything suffocating, or are frustrated by your resistance to honest reflection?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLARITY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_clarity_need_chain', question: 'When you lack clarity — or when you seek it obsessively — what might be underneath that?', type: 'need_chain', options: [
+      { text: 'Confusion was dangerous in my early life — I had to stay alert', mapsTo: { need: 'safety', deeper: ['security', 'consistency'] } },
+      { text: 'If I understand everything, maybe I can prevent pain', mapsTo: { need: 'control', deeper: ['safety', 'order'] } },
+      { text: 'I use analysis to avoid feeling', mapsTo: { need: 'presence', deeper: ['mourning', 'ease'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'CLARITY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_clarity_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CLARITY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'GROWTH': [
+    { id: 'p2_growth_compulsive', question: 'Do you pursue constant self-improvement — courses, frameworks, habits, challenges — as a way to fix something fundamentally wrong with who you are rather than genuine curiosity?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'GROWTH', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_growth_avoidant', question: 'Do you stagnate — avoiding challenges, dismissing opportunities to develop — because failure or change feels more threatening than the discomfort of staying stuck?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'GROWTH', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_growth_partner', question: 'Have relationships become strained because your obsession with growth makes others feel inadequate, or because your stagnation makes others feel they are carrying you?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'GROWTH', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_growth_need_chain', question: 'When growth feels compulsive or impossible, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'I believe I am fundamentally not enough as I am', mapsTo: { need: 'self-respect', deeper: ['acceptance', 'compassion'] } },
+      { text: 'Change feels dangerous or like a betrayal of who I am', mapsTo: { need: 'stability', deeper: ['safety', 'identity'] } },
+      { text: 'I am running from something rather than growing toward something', mapsTo: { need: 'mourning', deeper: ['presence', 'ease'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'GROWTH', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_growth_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'GROWTH', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
+  ],
+
+  'CREATIVITY': [
+    { id: 'p2_creativity_compulsive', question: 'Do you throw yourself into creative output obsessively — projects, ideas, making — as a way to feel alive or worthy, but find it never quite fills the need it promises to fill?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CREATIVITY', sourcing: 'compulsive', indicator: 'compulsive_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_creativity_avoidant', question: 'Do you block, procrastinate, or abandon creative work — self-censoring ideas before they reach the world — because making something real means it can be judged?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CREATIVITY', sourcing: 'avoidant', indicator: 'avoidant_sourcing' }, category: 'loop_deep_dive' },
+    { id: 'p2_creativity_partner', question: 'Have relationships become strained because your creative world consumes you and leaves others out, or because your creative block makes you feel hollow and hard to reach?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CREATIVITY', indicator: 'partner_consequence' }, category: 'loop_deep_dive' },
+    { id: 'p2_creativity_need_chain', question: 'When creativity feels blocked or all-consuming, what might be underneath that?', type: 'need_chain', options: [
+      { text: 'My creative expression was dismissed or ridiculed when I was young', mapsTo: { need: 'acceptance', deeper: ['self-expression', 'safety'] } },
+      { text: 'Creating is the only time I feel fully real', mapsTo: { need: 'presence', deeper: ['authenticity', 'joy'] } },
+      { text: 'I am afraid the work is not good enough and never will be', mapsTo: { need: 'self-respect', deeper: ['competence', 'approval'] } },
+      { text: 'I do not know', mapsTo: { need: 'clarity', deeper: ['awareness', 'presence'] } }
+    ], mapsTo: { loop: 'CREATIVITY', indicator: 'need_chain' }, category: 'loop_deep_dive' },
+    { id: 'p2_creativity_historical', question: 'Can you trace this pattern back to childhood or early experiences?', type: 'scaled', scale: { min: 1, max: 7 }, mapsTo: { loop: 'CREATIVITY', indicator: 'historical_pattern' }, category: 'loop_deep_dive' }
   ]
 };
 
