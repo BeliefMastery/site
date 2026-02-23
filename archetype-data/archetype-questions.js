@@ -1307,6 +1307,63 @@ export const PHASE_5_QUESTIONS = {
         { id: 'sigma', weight: 1.0 },
         { id: 'gamma_pi', weight: 0.8 }
       ]
+    },
+    {
+      id: 'p5_m_ac_investment',
+      question: 'I actively invest in my physical presentation — training, grooming, style, and appearance are a consistent priority.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic Investment',
+      archetypes: [
+        { id: 'alpha', weight: 1.1 },
+        { id: 'sigma', weight: 0.9 },
+        { id: 'gamma', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_m_ac_response',
+      question: 'The way I present myself physically generates noticeable positive responses from others — doors open, people lean in, I am treated differently.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic Market Return',
+      archetypes: [
+        { id: 'alpha', weight: 1.3 },
+        { id: 'sigma', weight: 1.1 },
+        { id: 'delta', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_m_ac_engineering',
+      question: 'I have deliberately and systematically worked to improve my physical appearance — this was an intentional project, not passive maintenance.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic Engineering',
+      archetypes: [
+        { id: 'gamma_pi', weight: 1.1 },
+        { id: 'delta', weight: 1.0 },
+        { id: 'alpha', weight: 0.9 }
+      ]
+    },
+    {
+      id: 'p5_m_ac_gap',
+      question: 'There is a significant gap between how I am received by strangers based on appearance and how people regard me once they know me well.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic-Behavioural Gap',
+      likertLabels: ['No gap at all', 'Slight gap', 'Moderate gap', 'Noticeable gap', 'Large gap'],
+      archetypes: [
+        { id: 'gamma', weight: 1.1 },
+        { id: 'beta', weight: 1.1 },
+        { id: 'omega', weight: 1.0 }
+      ]
     }
   ],
   female: [
@@ -1504,6 +1561,61 @@ export const PHASE_5_QUESTIONS = {
       archetypes: [
         { id: 'gamma', weight: 1.5 },
         { id: 'alpha', weight: 1.2 }
+      ]
+    },
+    {
+      id: 'p5_f_ac_investment',
+      question: 'I consistently invest in my physical appearance — fitness, grooming, style, and presentation are things I actively manage.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic Investment',
+      archetypes: [
+        { id: 'alpha_female', weight: 1.4 },
+        { id: 'gamma_feminist_female', weight: 0.9 },
+        { id: 'delta_female', weight: 0.8 }
+      ]
+    },
+    {
+      id: 'p5_f_ac_response',
+      question: 'My physical appearance generates tangible advantages in social, romantic, and professional environments — I am aware that I am treated differently because of how I look.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic Market Return',
+      archetypes: [
+        { id: 'alpha_female', weight: 1.5 },
+        { id: 'sigma_female', weight: 1.1 },
+        { id: 'beta_female', weight: 0.9 }
+      ]
+    },
+    {
+      id: 'p5_f_ac_engineering',
+      question: 'I have made deliberate, systematic improvements to my appearance — this has been a conscious effort to present myself at a higher level than my natural baseline.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic Engineering',
+      archetypes: [
+        { id: 'gamma_feminist_female', weight: 1.1 },
+        { id: 'alpha_female', weight: 1.0 }
+      ]
+    },
+    {
+      id: 'p5_f_ac_gap',
+      question: 'There is a noticeable difference between the level of attention and treatment I receive from people who do not know me versus those who do — my appearance sets an expectation I do not always match in other ways.',
+      type: 'likert',
+      scale: 5,
+      cluster: 'aesthetics_capital',
+      clusterLabel: 'Aesthetic Capital',
+      markerLabel: 'Aesthetic-Behavioural Gap',
+      likertLabels: ['No gap at all', 'Slight gap', 'Moderate gap', 'Noticeable gap', 'Large gap'],
+      archetypes: [
+        { id: 'dark_alpha_female', weight: 1.1 },
+        { id: 'beta_kappa_female', weight: 1.1 }
       ]
     }
   ]

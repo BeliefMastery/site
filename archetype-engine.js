@@ -1443,35 +1443,45 @@ showGenderSelection() {
       });
     }
 
+    // Apply aesthetics-context adjustments (both genders): high aesthetic capital amplifies Alpha/Sigma,
+    // low aesthetic capital dampens them; large aesthetic-behavioural gap nudges toward inner-pattern archetypes.
+    // Multipliers are intentionally modest — aesthetics nudge, not override behavioural evidence.
+    if (this.analysisData.aestheticsContext && this.analysisData.aestheticsContext.adjustments) {
+      const adj = this.analysisData.aestheticsContext.adjustments;
+      Object.keys(this.archetypeScores).forEach(archId => {
+        const baseId = archId.replace(/_female$/, '');
+        const mult = adj[baseId] ?? adj[archId] ?? 1;
+        this.archetypeScores[archId].phase1 *= mult;
+        this.archetypeScores[archId].phase2 *= mult;
+      });
+    }
+
     // Gender-split calibrated phase weights.
     // Weights derived from: desired_proportion / typical_max_raw_score_per_archetype_per_phase,
     // accounting for per-scoring multipliers (Phase1=3x, Phase2=2x, Phase3=1x, Phase4=0.5x, Phase5=1x).
     //
     // Male targets:  Phase1=45%, Phase2=28%, Phase3=14%, Phase4=7%, Phase5=6%
-    //   Phase 5 includes provision-gradation questions (dating/lifestyle/assets) — modest weight.
+    //   Phase 5 now has 16 questions (12 original + 4 aesthetics_capital) — p5raw rises ~1.5pts.
+    //   Weight drops from 0.0077 to 0.0060 to hold 6% target proportion.
     //
     // Female targets: Phase1=42%, Phase2=28%, Phase3=14%, Phase4=7%, Phase5=9%
-    //   Phase 5 now includes maternal identity + instinct + nesting + child-rearing impulse questions,
-    //   making it a key discriminator between archetypes (beta_rho/delta vs sigma/gamma_feminist).
-    //   Phase 1 reduced slightly to give Phase 5 proportionally more influence for females.
-    // Phase 3 now has 16 non-aspiration behavioral questions (up from 10 after adding 6 temperament
-    // indicators), so p3raw rises from 5 to 8 — weight drops from 0.0467 to 0.0175 to hold 14%.
-    // Female Phase 5 now has 14 questions (up from 12 after adding aesthetic + career identity),
-    // so p5raw_female rises from 7.8 to ~8.4 — weight adjusts to 0.0107 to hold 9%.
+    //   Phase 5 now has 18 questions (14 previous + 4 aesthetics_capital) — p5raw rises ~1.5pts.
+    //   Weight drops from 0.0107 to 0.0090 to hold 9% target proportion.
+    // Phase 3 has 16 non-aspiration behavioral questions (p3raw ≈ 8) — weight 0.0175 unchanged.
     const phaseWeights = this.gender === 'female'
       ? {
           phase1: 0.0233,  // 42%
           phase2: 0.0194,  // 28%
-          phase3: 0.0175,  // 14% — recalibrated for 16 behavioral qs (p3raw ≈ 8)
+          phase3: 0.0175,  // 14% — 16 behavioral qs (p3raw ≈ 8)
           phase4: 0.0467,  //  7%
-          phase5: 0.0107   //  9% — recalibrated for 14 female Phase 5 qs (p5raw ≈ 8.4)
+          phase5: 0.0090   //  9% — recalibrated for 18 female Phase 5 qs (p5raw ≈ 9.9)
         }
       : {
           phase1: 0.025,   // 45%
           phase2: 0.0194,  // 28%
-          phase3: 0.0175,  // 14% — recalibrated for 16 behavioral qs (p3raw ≈ 8)
+          phase3: 0.0175,  // 14% — 16 behavioral qs (p3raw ≈ 8)
           phase4: 0.0467,  //  7%
-          phase5: 0.0077   //  6%
+          phase5: 0.0060   //  6% — recalibrated for 16 male Phase 5 qs (p5raw ≈ 9.9)
         };
 
     // Apply phase weights with Phase 5 extension
@@ -1828,6 +1838,79 @@ showGenderSelection() {
       } else {
         this.analysisData.provisionContext = provisionAverage != null ? { provisionAverage, provisionLevel } : null;
       }
+    }
+
+    // Aesthetics context: applies to both genders
+    // Questions: investment, market return, engineering intentionality, aesthetic-behavioural gap
+    const isMaleAesthetics = this.gender === 'male';
+    const acInvestmentId  = isMaleAesthetics ? 'p5_m_ac_investment'  : 'p5_f_ac_investment';
+    const acResponseId    = isMaleAesthetics ? 'p5_m_ac_response'    : 'p5_f_ac_response';
+    const acEngineeringId = isMaleAesthetics ? 'p5_m_ac_engineering' : 'p5_f_ac_engineering';
+    const acGapId         = isMaleAesthetics ? 'p5_m_ac_gap'         : 'p5_f_ac_gap';
+
+    const acAnswers = [acInvestmentId, acResponseId, acEngineeringId, acGapId]
+      .map(id => this.answers[id])
+      .filter(a => a && typeof a.value === 'number');
+
+    if (acAnswers.length >= 2) {
+      const acValues = acAnswers.map(a => a.value);
+      const aestheticsAverage = acValues.slice(0, 3).reduce((s, v) => s + v, 0) / Math.min(3, acValues.length);
+      const gapScore = (this.answers[acGapId]?.value ?? null);
+      const engineeringScore = (this.answers[acEngineeringId]?.value ?? null);
+
+      const aestheticsLevel = aestheticsAverage >= 4.0 ? 'high' : aestheticsAverage <= 2.0 ? 'low' : 'mid';
+      const engineeringLevel = engineeringScore == null ? 'unknown' : engineeringScore >= 4 ? 'high' : engineeringScore <= 2 ? 'low' : 'mid';
+      const gapLevel = gapScore == null ? 'unknown' : gapScore >= 4 ? 'large' : gapScore <= 2 ? 'small' : 'moderate';
+
+      let adjustments = null;
+
+      if (this.gender === 'male') {
+        if (aestheticsLevel === 'high') {
+          adjustments = {
+            alpha: 1.08, alpha_xi: 1.05, sigma: 1.06,
+            delta: 0.96, beta: 0.97, omega: 0.95, gamma: 0.97
+          };
+        } else if (aestheticsLevel === 'low') {
+          adjustments = {
+            alpha: 0.92, alpha_xi: 0.93, sigma: 0.94,
+            delta: 1.04, beta: 1.03, omega: 1.05, gamma: 1.02
+          };
+        }
+        // If large gap detected: the aesthetic presentation is masking behavioral archetype — nudge toward inner-pattern archetypes
+        if (gapLevel === 'large' && adjustments) {
+          adjustments.gamma  = (adjustments.gamma  || 1) * 1.08;
+          adjustments.beta   = (adjustments.beta   || 1) * 1.06;
+          adjustments.omega  = (adjustments.omega  || 1) * 1.04;
+          adjustments.alpha  = (adjustments.alpha  || 1) * 0.93;
+          adjustments.sigma  = (adjustments.sigma  || 1) * 0.95;
+        }
+      } else {
+        if (aestheticsLevel === 'high') {
+          adjustments = {
+            alpha: 1.10, sigma: 1.06,
+            delta: 0.95, beta: 0.96, gamma: 0.97, omega: 0.95
+          };
+        } else if (aestheticsLevel === 'low') {
+          adjustments = {
+            alpha: 0.90, sigma: 0.94,
+            delta: 1.05, beta: 1.04, gamma: 1.03, omega: 1.05
+          };
+        }
+        if (gapLevel === 'large' && adjustments) {
+          adjustments.dark_alpha = (adjustments.dark_alpha || 1) * 1.08;
+          adjustments.beta_kappa = (adjustments.beta_kappa || 1) * 1.08;
+          adjustments.alpha      = (adjustments.alpha      || 1) * 0.93;
+          adjustments.sigma      = (adjustments.sigma      || 1) * 0.94;
+        }
+      }
+
+      this.analysisData.aestheticsContext = {
+        aestheticsAverage,
+        aestheticsLevel,
+        engineeringLevel,
+        gapLevel,
+        adjustments
+      };
     }
   }
 
@@ -2377,6 +2460,35 @@ showGenderSelection() {
               </ul>
             </div>
           ` : ''}
+        </div>
+      `;
+    }
+
+    // Aesthetics & Market Presentation
+    const aestheticsCtx = this.analysisData.aestheticsContext;
+    if (aestheticsCtx) {
+      const acLevelLabel = { high: 'High', mid: 'Moderate', low: 'Low' }[aestheticsCtx.aestheticsLevel] || 'Not assessed';
+      const acEngLabel   = { high: 'Deliberate / engineered', mid: 'Some intentional effort', low: 'Minimal / passive', unknown: 'Not assessed' }[aestheticsCtx.engineeringLevel] || 'Not assessed';
+      const acGapLabel   = { large: 'Large gap detected', moderate: 'Moderate gap', small: 'Minimal gap', unknown: 'Not assessed' }[aestheticsCtx.gapLevel] || 'Not assessed';
+
+      const gapNote = aestheticsCtx.gapLevel === 'large'
+        ? 'Your physical presentation is generating a stronger market impression than your behavioural pattern supports. The score has been adjusted to weight your inner pattern more heavily — what you project and what you are differ enough to matter.'
+        : aestheticsCtx.gapLevel === 'moderate'
+          ? 'There is some difference between how you are read on first impression and who you are in closer context. This is common and has been accounted for in your result.'
+          : 'Your aesthetic presentation and behavioural pattern appear broadly consistent.';
+
+      resultsHTML += `
+        <div class="panel panel-outline-accent" style="margin-bottom: 2rem; border-left-color: rgba(255,184,0,0.5);">
+          <h3 class="panel-title">Aesthetic Capital & Market Presentation</h3>
+          <p class="panel-text">Physical presentation acts as a market modifier — it amplifies or dampens the signals your behavioural pattern already emits. This section reflects how your aesthetic investment, market return, and any gap between presentation and pattern have been weighted in your result.</p>
+          <ul style="color: var(--muted); line-height: 1.8; margin-top: 1rem;">
+            <li><strong>Aesthetic investment level:</strong> ${SecurityUtils.sanitizeHTML(acLevelLabel)}</li>
+            <li><strong>Engineering intentionality:</strong> ${SecurityUtils.sanitizeHTML(acEngLabel)}</li>
+            <li><strong>Presentation vs. pattern gap:</strong> ${SecurityUtils.sanitizeHTML(acGapLabel)}</li>
+          </ul>
+          <p style="color: var(--muted); line-height: 1.7; margin-top: 1rem; font-size: 0.92rem; font-style: italic;">
+            ${SecurityUtils.sanitizeHTML(gapNote)}
+          </p>
         </div>
       `;
     }
