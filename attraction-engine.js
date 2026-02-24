@@ -542,15 +542,27 @@ export class AttractionEngine {
     const peerRank = Math.round(s.clusters?.coalitionRank ?? 0);
     const reproConf = Math.round(s.clusters?.reproductiveConfidence ?? 0);
     const attractOpp = Math.round(s.clusters?.axisOfAttraction ?? 0);
+    const peerRankSentence = this.currentGender === 'male'
+      ? `Ranging above ~${peerRank}% of other men in the male–male hierarchy.`
+      : `Ranging above ~${peerRank}% of other women in the female–female hierarchy.`;
+    const reproConfSentence = this.currentGender === 'male'
+      ? this.getReproConfSentenceMale(reproConf)
+      : `Ranging above ~${reproConf}% of women on the male commitment signal you project (willingness to nest / long-term invest).`;
+    const attractOppSentence = `Ranging above ~${attractOpp}% of peers on initiation and access.`;
     const execBadges = `
-      <div class="attraction-badge" style="background:${this.getPercentileColor(peerRank)}20;border-color:${this.getPercentileColor(peerRank)}"><span class="attraction-badge-label">Peer Rank</span><span class="attraction-badge-value">${peerRank}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${this.currentGender === 'male' ? 'Male–male hierarchy' : 'Female–female hierarchy'}</span></div>
-      <div class="attraction-badge" style="background:${this.getPercentileColor(reproConf)}20;border-color:${this.getPercentileColor(reproConf)}"><span class="attraction-badge-label">Reproductive Confidence</span><span class="attraction-badge-value">${reproConf}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${this.currentGender === 'male' ? 'Procreate/nest willingness' : 'Male commitment signal'}</span></div>
-      <div class="attraction-badge" style="background:${this.getPercentileColor(attractOpp)}20;border-color:${this.getPercentileColor(attractOpp)}"><span class="attraction-badge-label">Attraction Opportunity</span><span class="attraction-badge-value">${attractOpp}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">Initiation & access</span></div>
+      <div class="attraction-badge" style="background:${this.getPercentileColor(peerRank)}20;border-color:${this.getPercentileColor(peerRank)}"><span class="attraction-badge-label">Peer Rank</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(peerRankSentence)}</span></div>
+      <div class="attraction-badge" style="background:${this.getPercentileColor(reproConf)}20;border-color:${this.getPercentileColor(reproConf)}"><span class="attraction-badge-label">Reproductive Confidence</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(reproConfSentence)}</span></div>
+      <div class="attraction-badge" style="background:${this.getPercentileColor(attractOpp)}20;border-color:${this.getPercentileColor(attractOpp)}"><span class="attraction-badge-label">Attraction Opportunity</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(attractOppSentence)}</span></div>
     `;
 
     const gridLabel = this.currentGender === 'male' && s.badBoyGoodGuy ? s.badBoyGoodGuy.label : this.currentGender === 'female' && s.keeperSweeper ? s.keeperSweeper.label : '';
     const gridExpl = this.currentGender === 'male' && s.badBoyGoodGuy ? this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy') : this.currentGender === 'female' && s.keeperSweeper ? this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper') : '';
-    const gridBadge = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">${this.currentGender === 'male' ? 'Grid Position' : 'Chart Position'}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
+    const gridBadgeLabel = this.currentGender === 'male' && gridLabel
+      ? 'Most likely categorisation by women in the dating market'
+      : this.currentGender === 'female' && gridLabel
+        ? 'Your investment segment'
+        : '';
+    const gridBadge = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(gridBadgeLabel)}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
 
     const smvExpl = 'Sexual Market Value — your relative desirability in the dating/mating market based on evolutionary clusters.';
     const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
@@ -580,7 +592,7 @@ export class AttractionEngine {
           <div class="attraction-exec-badges">${execBadges}</div>
           ${gridBadge}
           <div class="attraction-overall-badge attraction-badge-with-expl"><span class="attraction-badge-label">Overall SMV</span><span class="attraction-badge-value">${Math.round(s.overall)}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${s.marketPosition}</span><span class="qualification-explanation">${SecurityUtils.sanitizeHTML(smvExpl)}</span></div>
-          <div class="attraction-level-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">Developmental Level</span><span class="attraction-result-badge-value">${s.levelClassification}</span>${levelExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(levelExpl)}</span>` : ''}</div>
+          <div class="attraction-level-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">Consciousness opportunity</span><span class="attraction-result-badge-value">${s.levelClassification}</span>${levelExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(levelExpl)}</span>` : ''}</div>
         </section>
 
         ${s.delusionIndex > 30 ? `<section class="report-section"><div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div></section>` : ''}
@@ -621,15 +633,15 @@ export class AttractionEngine {
       'Sweepers': 'Where you invest less — partners you\'d engage with casually or de-prioritise relative to higher-value options.'
     };
     const badBoyGoodGuy = {
-      'Friend zone': 'High commitment signal, high attraction — she values you but doesn\'t feel romantic chemistry.',
-      'Husband zone': 'High commitment signal, moderate attraction — strong long-term partner potential.',
-      'Prince Charming (Ideal LT)': 'High on both — ideal long-term partner: commitment-willing and highly attractive.',
-      'Gold Digger Ick': 'Moderate commitment, high attraction — she may pursue you for status/resources without genuine connection.',
-      'Settling': 'Moderate on both — she\'d accept but isn\'t excited; you\'re "good enough".',
-      'Good': 'Moderate commitment, low attraction — reliable but not exciting.',
-      'Bad Boy (Ideal ST)': 'Low commitment signal, high attraction — exciting short-term; she may not see you as long-term material.',
-      'Mistake': 'Low commitment, moderate attraction — fun but she knows it won\'t last.',
-      'Ghost / Creep': 'Low on both — she\'ll avoid or disengage; seen as low value or threatening.'
+      'Friend zone': 'Women are likely to place you here: valued as a person but not as a romantic option; they don\'t feel the chemistry.',
+      'Husband zone': 'Women are likely to see you as strong long-term material: high commitment signal and solid attraction.',
+      'Prince Charming (Ideal LT)': 'Women are likely to see you as ideal long-term: high on both commitment and attraction.',
+      'Gold Digger Ick': 'Women may pursue you for status or resources without genuine connection; moderate commitment read, high attraction.',
+      'Settling': 'Women may accept but not be excited; you\'re often read as "good enough" rather than a strong match.',
+      'Good': 'Women tend to see you as reliable but not exciting; moderate commitment, low attraction read.',
+      'Bad Boy (Ideal ST)': 'Women are often attracted short-term but may not see you as long-term material; high attraction, low commitment signal.',
+      'Mistake': 'Women may engage for fun but typically don\'t see it lasting; low commitment, moderate attraction.',
+      'Ghost / Creep': 'Women are most likely to categorise you as invisible or threatening; they tend to avoid or disengage.'
     };
     const developmentalLevels = {
       'Integral/Holistic (High Integration)': 'You integrate multiple perspectives and act from a coherent worldview; mature decision-making.',
@@ -640,8 +652,39 @@ export class AttractionEngine {
     };
     if (type === 'keeperSweeper') return keeperSweeper[label] || '';
     if (type === 'badBoyGoodGuy') return badBoyGoodGuy[label] || '';
-    if (type === 'developmentalLevel') return developmentalLevels[label] || '';
+    if (type === 'developmentalLevel') return this.getDevelopmentalOpportunity(label);
     return '';
+  }
+
+  /** Reframe developmental level as opportunity to reorient one stage higher (not a fixed label). */
+  getDevelopmentalOpportunity(currentLabel) {
+    const order = [
+      'Survival Mode (Basic Needs Focus)',
+      'Egocentric (Reactive/Impulsive)',
+      'Conformist (Rule-Following)',
+      'Achievement-Oriented (Rational/Strategic)',
+      'Integral/Holistic (High Integration)'
+    ];
+    const nextDescriptions = {
+      'Survival Mode (Basic Needs Focus)': 'Egocentric — start to act from immediate wants and impulses while still securing basics.',
+      'Egocentric (Reactive/Impulsive)': 'Conformist — begin to follow norms and consider stability and belonging, not only short-term gain.',
+      'Conformist (Rule-Following)': 'Achievement-Oriented — shift toward goals, strategy, and rational choice; rule-conscious and achievement-driven.',
+      'Achievement-Oriented (Rational/Strategic)': 'Integral/Holistic — integrate multiple perspectives and act from a coherent worldview; mature decision-making.',
+      'Integral/Holistic (High Integration)': 'You\'re at the highest integration; continue to deepen and sustain this level.'
+    };
+    const idx = order.indexOf(currentLabel);
+    if (idx === -1) return '';
+    if (idx === order.length - 1) return nextDescriptions[currentLabel] || '';
+    const nextLabel = order[idx + 1];
+    return `Your responses suggest you're operating from ${currentLabel}. The opportunity is to adjust consciousness toward the next stage: ${nextDescriptions[currentLabel] || nextLabel}.`;
+  }
+
+  /** Plain-language Reproductive Confidence for men (percentile as likelihood of nesting/reproduction if desired). */
+  getReproConfSentenceMale(percent) {
+    const p = Math.round(percent);
+    if (p >= 70) return `High likelihood of reproduction as signalled to women (~${p}% if desired).`;
+    if (p >= 40) return `Moderate likelihood of reproduction as signalled to women (~${p}% if desired).`;
+    return `Low likelihood of reproduction as signalled to women (~${p}% if desired).`;
   }
 
   getPercentileColor(p) { if (p >= 80) return '#2ecc71'; if (p >= 60) return '#3498db'; if (p >= 40) return '#f39c12'; return '#e74c3c'; }
