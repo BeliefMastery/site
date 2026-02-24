@@ -4132,6 +4132,88 @@ img {
     }
 }
 
+/* Cellphone: minimal left/right buffer so cards use full width (all engines) */
+@media (max-width: 640px) {
+    .container {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .main-content {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .tool-container,
+    .manipulation-container,
+    .archetype-container,
+    .dependency-container,
+    .channels-container,
+    .coaching-container,
+    .needs-dependency-container,
+    .attraction-container,
+    .spectrum-container,
+    .paradigm-container,
+    .relationship-container,
+    .temperament-container,
+    .character-sheet-container,
+    .diagnosis-container,
+    .sovereignty-container {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    section,
+    .minimal-section,
+    .section-inner-padded {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .questionnaire-section.active,
+    .results-section.active,
+    .instructions-panel.expanded,
+    .disclaimer-section.expanded {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .results-content,
+    .primary-loop-section,
+    .secondary-loops-section,
+    .need-chain-section,
+    .recommendations-section,
+    .closure-section,
+    .closure-content,
+    .loop-card,
+    .need-chain-visualization,
+    .action-strategies-section,
+    .action-strategy,
+    .content-section,
+    .question-block {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .questionnaire-container,
+    #questionnaire-form,
+    .tool-wrapper {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .paradigm-result-card,
+    .sea-matrix-card,
+    .analysis-module-card {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+}
+
 @media (max-width: 480px) {
     .image-row.books-grid,
     .image-row.tools-grid {
@@ -4172,15 +4254,28 @@ img {
     .spectrum-container,
     .needs-dependency-container,
     .dependency-container {
-        padding: 0.5rem;
+        padding-left: 4px;
+        padding-right: 4px;
         margin: 0.4rem 0;
     }
-    
+
+    .results-section.active,
+    .results-content,
+    .primary-loop-section,
+    .closure-section,
+    .loop-card,
+    .need-chain-section,
+    .recommendations-section,
+    .need-chain-visualization {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
     .question-block {
-        padding: 0.5rem;
+        padding: 0.5rem 4px;
         margin-bottom: 0.5rem;
-    }    
-    
+    }
+
     .image-card.tool-card .tool-summary {
         max-width: calc(100% - 2rem);
         min-width: auto;
