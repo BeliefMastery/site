@@ -4212,6 +4212,39 @@ img {
         padding-left: 0.25rem;
         padding-right: 0.25rem;
     }
+
+    /* Assessment process: question and option cards (all assessments) */
+    .question-card,
+    .choice-btn,
+    .option-card,
+    .three-point-option,
+    .card,
+    .paradigm-card,
+    .paradigm-option,
+    .section-card,
+    .choice-box,
+    .paradigm-choice,
+    .diagnosis-card,
+    .assessment-card,
+    .category-card,
+    .pathology-card {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .options-container,
+    .diagnosis-options,
+    .assessment-grid,
+    .paradigm-options,
+    .selection-grid,
+    .section-selection,
+    .category-selection,
+    .pathology-selection,
+    .section-grid,
+    .category-grid {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 
 @media (max-width: 480px) {
@@ -4236,8 +4269,41 @@ img {
 
     .question-card,
     .card {
-        padding: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 4px;
+        padding-right: 4px;
         margin: 0.4rem 0;
+    }
+
+    .choice-btn,
+    .option-card,
+    .three-point-option,
+    .paradigm-card,
+    .paradigm-option,
+    .section-card,
+    .choice-box,
+    .paradigm-choice,
+    .diagnosis-card,
+    .assessment-card,
+    .category-card,
+    .pathology-card {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .options-container,
+    .diagnosis-options,
+    .assessment-grid,
+    .paradigm-options,
+    .selection-grid,
+    .section-selection,
+    .category-selection,
+    .pathology-selection,
+    .section-grid,
+    .category-grid {
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .tool-container,
