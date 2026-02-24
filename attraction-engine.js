@@ -549,38 +549,39 @@ export class AttractionEngine {
       ? this.getReproConfSentenceMale(reproConf)
       : `Ranging above ~${reproConf}% of women on the male commitment signal you project (willingness to nest / long-term invest).`;
     const attractOppSentence = `Ranging above ~${attractOpp}% of peers on initiation and access.`;
-    const execBadges = `
-      <div class="attraction-badge" style="background:${this.getPercentileColor(peerRank)}20;border-color:${this.getPercentileColor(peerRank)}"><span class="attraction-badge-label">Peer Rank</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(peerRankSentence)}</span></div>
-      <div class="attraction-badge" style="background:${this.getPercentileColor(reproConf)}20;border-color:${this.getPercentileColor(reproConf)}"><span class="attraction-badge-label">Reproductive Confidence</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(reproConfSentence)}</span></div>
-      <div class="attraction-badge" style="background:${this.getPercentileColor(attractOpp)}20;border-color:${this.getPercentileColor(attractOpp)}"><span class="attraction-badge-label">Attraction Opportunity</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(attractOppSentence)}</span></div>
-    `;
+    const peerRankBadge = `<div class="attraction-badge" style="background:${this.getPercentileColor(peerRank)}20;border-color:${this.getPercentileColor(peerRank)}"><span class="attraction-badge-label">Peer Rank</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(peerRankSentence)}</span></div>`;
+    const reproConfBadge = `<div class="attraction-badge" style="background:${this.getPercentileColor(reproConf)}20;border-color:${this.getPercentileColor(reproConf)}"><span class="attraction-badge-label">Reproductive Confidence</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(reproConfSentence)}</span></div>`;
+    const attractOppBadge = `<div class="attraction-badge" style="background:${this.getPercentileColor(attractOpp)}20;border-color:${this.getPercentileColor(attractOpp)}"><span class="attraction-badge-label">Attraction Opportunity</span><span class="attraction-badge-desc">${SecurityUtils.sanitizeHTML(attractOppSentence)}</span></div>`;
 
     const gridLabel = this.currentGender === 'male' && s.badBoyGoodGuy ? s.badBoyGoodGuy.label : this.currentGender === 'female' && s.keeperSweeper ? s.keeperSweeper.label : '';
     const gridExpl = this.currentGender === 'male' && s.badBoyGoodGuy ? this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy') : this.currentGender === 'female' && s.keeperSweeper ? this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper') : '';
     const gridBadgeLabel = this.currentGender === 'male' && gridLabel
       ? 'Most likely categorisation by women in the dating market'
       : this.currentGender === 'female' && gridLabel
-        ? 'How you\'re likely to segment partners'
+        ? 'How partners are likely to treat you'
         : '';
     const gridBadge = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(gridBadgeLabel)}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
 
     const smvExpl = 'Sexual Market Value — your relative desirability in the dating/mating market based on evolutionary clusters.';
     const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
 
-    const subcategoryBlock = Object.keys(s.subcategories || {}).map(clusterId => {
+    const clusterOrder = ['coalitionRank', 'reproductiveConfidence', 'axisOfAttraction'];
+    const badgeByCluster = { coalitionRank: peerRankBadge, reproductiveConfidence: reproConfBadge, axisOfAttraction: attractOppBadge };
+    const subcategoryBlock = clusterOrder.filter(clusterId => s.subcategories?.[clusterId]).map(clusterId => {
       const subs = s.subcategories[clusterId];
       const weakest = s.weakestSubcategories?.[clusterId];
       const subHtml = Object.entries(subs).map(([subId, score]) => {
         const isWeak = weakest && weakest.id === subId;
         return `<div class="subcategory-row ${isWeak ? 'weakest' : ''}"><span class="sub-label">${subLabels[subId] || subId}${isWeak ? ' (Weakest — address to increase rank)' : ''}</span><div class="sub-bar"><div class="sub-bar-fill" style="width:${score}%;background:${this.getPercentileColor(score)}"></div></div></div>`;
       }).join('');
-      return `<div class="cluster-subcategory-block"><h4>${this.formatClusterName(clusterId)}</h4>${subHtml}</div>`;
+      const badge = badgeByCluster[clusterId] || '';
+      return `<div class="attraction-cluster-section"><div class="attraction-cluster-badge">${badge}</div><div class="cluster-subcategory-block"><h4>${this.formatClusterName(clusterId)}</h4>${subHtml}</div></div>`;
     }).join('');
 
     const gridBlock = this.currentGender === 'male' && s.badBoyGoodGuy
       ? `<section class="report-section"><h2 class="report-section-title">How women are likely to categorise you</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.badBoyGoodGuy.label)}</strong></p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy'))}</p><p class="grid-detail">Driven by: reproductive confidence as read by women ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction and initiation appeal ~${s.badBoyGoodGuy.badBoyPercentile}%.</p></div></section>`
       : this.currentGender === 'female' && s.keeperSweeper
-        ? `<section class="report-section"><h2 class="report-section-title">How you're likely to segment partners</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.keeperSweeper.label)}</strong>${s.keeperSweeper.investment ? ` — ${SecurityUtils.sanitizeHTML(s.keeperSweeper.investment)}` : ''}</p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper'))}</p>${s.keeperSweeper.desc ? `<p class="grid-detail">${SecurityUtils.sanitizeHTML(s.keeperSweeper.desc)}</p>` : ''}</div></section>`
+        ? `<section class="report-section"><h2 class="report-section-title">How partners are likely to treat you</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.keeperSweeper.label)}</strong>${s.keeperSweeper.investment ? ` — ${SecurityUtils.sanitizeHTML(s.keeperSweeper.investment)}` : ''}</p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper'))}</p>${s.keeperSweeper.desc ? `<p class="grid-detail">${SecurityUtils.sanitizeHTML(s.keeperSweeper.desc)}</p>` : ''}</div></section>`
         : '';
 
     let html = `
@@ -588,16 +589,15 @@ export class AttractionEngine {
         <div class="results-header"><h2>Your Sexual Market Value Profile</h2><p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} SMV Assessment</p></div>
 
         <section class="report-section attraction-exec-summary">
-          <h2 class="report-section-title">At a Glance</h2>
-          <div class="attraction-exec-badges">${execBadges}</div>
-          ${gridBadge}
+          <div class="attraction-exec-badges">${gridBadge}
           <div class="attraction-overall-badge attraction-badge-with-expl"><span class="attraction-badge-label">Overall SMV</span><span class="attraction-badge-value">${Math.round(s.overall)}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${s.marketPosition}</span><span class="qualification-explanation">${SecurityUtils.sanitizeHTML(smvExpl)}</span></div>
           <div class="attraction-level-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">Consciousness opportunity</span><span class="attraction-result-badge-value">${s.levelClassification}</span>${levelExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(levelExpl)}</span>` : ''}</div>
+          </div>
         </section>
 
         ${gridBlock}
 
-        <section class="report-section"><h2 class="report-section-title">Subcategory Detail & Weakest Points</h2>
+        <section class="report-section">
         <div class="subcategory-breakdown">${subcategoryBlock}</div></section>
 
         <section class="report-section"><h2 class="report-section-title">Market Position</h2>
@@ -622,9 +622,9 @@ export class AttractionEngine {
   /** Brief explanations for qualifications — respondent may not know the terms */
   getQualificationExplanation(label, type) {
     const keeperSweeper = {
-      'Keepers': 'Where you invest for the long term — partners you\'d commit to and prioritise.',
-      'Sleepers': 'The middle zone — you\'re open but not fully committed; options you\'d consider but may not prioritise.',
-      'Sweepers': 'Where you invest less — partners you\'d engage with casually or de-prioritise relative to higher-value options.'
+      'Keepers': 'Men you attract are likely to invest in you for the long term: they\'d commit to and prioritise you.',
+      'Sleepers': 'The middle zone — men are open to you but not fully committed; they\'d consider you but may not prioritise you.',
+      'Sweepers': 'Men you attract are likely to treat you with less investment: they\'ll engage casually or de-prioritise you relative to women they see as higher value.'
     };
     const badBoyGoodGuy = {
       'Friend zone': 'Women are likely to place you here: valued as a person but not as a romantic option; they don\'t feel the chemistry.',

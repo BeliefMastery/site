@@ -4180,6 +4180,7 @@ img {
         padding-right: 0.25rem;
     }
 
+    .results-container,
     .results-content,
     .primary-loop-section,
     .secondary-loops-section,
@@ -4195,6 +4196,16 @@ img {
     .question-block {
         padding-left: 0.25rem;
         padding-right: 0.25rem;
+    }
+
+    .archetype-card {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+
+    .archetype-report-card {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
     }
 
     .questionnaire-container,
@@ -4325,6 +4336,7 @@ img {
         margin: 0.4rem 0;
     }
 
+    .results-container,
     .results-section.active,
     .results-content,
     .primary-loop-section,
@@ -4335,6 +4347,16 @@ img {
     .need-chain-visualization {
         padding-left: 4px;
         padding-right: 4px;
+    }
+
+    .archetype-card {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    .archetype-report-card {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
     }
 
     .question-block {
@@ -5645,6 +5667,14 @@ img {
 /* Attraction: subcategory breakdown with weakest highlight */
 .results-dashboard .subcategory-breakdown {
     margin: 2rem 0;
+}
+
+.results-dashboard .attraction-cluster-section {
+    margin-bottom: 2rem;
+}
+
+.results-dashboard .attraction-cluster-section .attraction-cluster-badge {
+    margin-bottom: 0.75rem;
 }
 
 .results-dashboard .cluster-subcategory-block {

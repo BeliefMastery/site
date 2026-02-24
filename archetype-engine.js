@@ -2313,14 +2313,14 @@ showGenderSelection() {
             <p style="color: var(--muted); line-height: 1.7;">${primary.growthEdge}</p>
           </div>
 
-          <div style="margin-top: 1.5rem; background: rgba(0, 120, 200, 0.12); border-left: 4px solid #1e90ff; border-radius: var(--radius); padding: 1.25rem;">
+          <div class="archetype-report-card" style="margin-top: 1.5rem; background: rgba(0, 120, 200, 0.12); border-left: 4px solid #1e90ff; border-radius: var(--radius); padding: 1.25rem;">
             <h4 style="color: #7fbfff; margin-top: 0; margin-bottom: 0.75rem;">Within-Archetype Optimization</h4>
             <p style="color: var(--muted); line-height: 1.7; margin: 0 0 0.75rem;">${SecurityUtils.sanitizeHTML(primaryBlindSpot)}</p>
             <p style="color: var(--muted); line-height: 1.7; margin: 0;">${SecurityUtils.sanitizeHTML(primaryOptimization)}</p>
           </div>
 
           ${(BRUTAL_TRUTHS?.[primary.id]?.narrative || primary.archetypalNarrative) ? `
-          <div style="margin-top: 1.5rem; background: rgba(100, 0, 0, 0.15); border-left: 4px solid #cc0000; border-radius: var(--radius); padding: 1.5rem;">
+          <div class="archetype-report-card" style="margin-top: 1.5rem; background: rgba(100, 0, 0, 0.15); border-left: 4px solid #cc0000; border-radius: var(--radius); padding: 1.5rem;">
             <h4 style="color: #cc0000; margin-top: 0; margin-bottom: 1rem;">Archetypal Narrative: The Brutal Truth</h4>
             <p style="color: var(--muted); line-height: 1.8; font-size: 1rem; margin: 0; font-style: italic;">
               ${SecurityUtils.sanitizeHTML(BRUTAL_TRUTHS?.[primary.id]?.narrative || primary.archetypalNarrative)}
