@@ -560,7 +560,7 @@ export class AttractionEngine {
     const gridBadgeLabel = this.currentGender === 'male' && gridLabel
       ? 'Most likely categorisation by women in the dating market'
       : this.currentGender === 'female' && gridLabel
-        ? 'Your investment segment'
+        ? 'How you\'re likely to segment partners'
         : '';
     const gridBadge = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(gridBadgeLabel)}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
 
@@ -572,15 +572,15 @@ export class AttractionEngine {
       const weakest = s.weakestSubcategories?.[clusterId];
       const subHtml = Object.entries(subs).map(([subId, score]) => {
         const isWeak = weakest && weakest.id === subId;
-        return `<div class="subcategory-row ${isWeak ? 'weakest' : ''}"><span class="sub-label">${subLabels[subId] || subId}${isWeak ? ' (Weakest — address to increase rank)' : ''}</span><span class="sub-score">${Math.round(score)}th %</span><div class="sub-bar"><div class="sub-bar-fill" style="width:${score}%;background:${this.getPercentileColor(score)}"></div></div></div>`;
+        return `<div class="subcategory-row ${isWeak ? 'weakest' : ''}"><span class="sub-label">${subLabels[subId] || subId}${isWeak ? ' (Weakest — address to increase rank)' : ''}</span><div class="sub-bar"><div class="sub-bar-fill" style="width:${score}%;background:${this.getPercentileColor(score)}"></div></div></div>`;
       }).join('');
       return `<div class="cluster-subcategory-block"><h4>${this.formatClusterName(clusterId)}</h4>${subHtml}</div>`;
     }).join('');
 
     const gridBlock = this.currentGender === 'male' && s.badBoyGoodGuy
-      ? `<section class="report-section"><h2 class="report-section-title">Bad Boy / Good Guy Grid</h2><div class="grid-placement"><p class="grid-label"><strong>${s.badBoyGoodGuy.label}</strong></p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy'))}</p><p class="grid-detail">Good Guy (4P's): ${s.badBoyGoodGuy.goodGuyPercentile}th % — Reproductive Confidence / Willingness to Nest</p><p class="grid-detail">Bad Boy (Axis): ${s.badBoyGoodGuy.badBoyPercentile}th % — Attraction Signals / Initiation Appeal</p></div></section>`
+      ? `<section class="report-section"><h2 class="report-section-title">How women are likely to categorise you</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.badBoyGoodGuy.label)}</strong></p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy'))}</p><p class="grid-detail">Driven by: reproductive confidence as read by women ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction and initiation appeal ~${s.badBoyGoodGuy.badBoyPercentile}%.</p></div></section>`
       : this.currentGender === 'female' && s.keeperSweeper
-        ? `<section class="report-section"><h2 class="report-section-title">Keeper-Sweeper Chart</h2><div class="grid-placement"><p class="grid-label"><strong>${s.keeperSweeper.label}</strong>${s.keeperSweeper.investment ? ` — ${s.keeperSweeper.investment}` : ''}</p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper'))}</p><p class="grid-detail">${s.keeperSweeper.desc || ''}</p></div></section>`
+        ? `<section class="report-section"><h2 class="report-section-title">How you're likely to segment partners</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.keeperSweeper.label)}</strong>${s.keeperSweeper.investment ? ` — ${SecurityUtils.sanitizeHTML(s.keeperSweeper.investment)}` : ''}</p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper'))}</p>${s.keeperSweeper.desc ? `<p class="grid-detail">${SecurityUtils.sanitizeHTML(s.keeperSweeper.desc)}</p>` : ''}</div></section>`
         : '';
 
     let html = `
@@ -595,19 +595,13 @@ export class AttractionEngine {
           <div class="attraction-level-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">Consciousness opportunity</span><span class="attraction-result-badge-value">${s.levelClassification}</span>${levelExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(levelExpl)}</span>` : ''}</div>
         </section>
 
-        ${s.delusionIndex > 30 ? `<section class="report-section"><div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div></section>` : ''}
-
         ${gridBlock}
-
-        <section class="report-section"><h2 class="report-section-title">Cluster Breakdown</h2>
-        <div class="cluster-scores">
-        ${Object.keys(s.clusters || {}).map(k => `<div class="cluster-card"><div class="cluster-header"><h4>${this.formatClusterName(k)}</h4><span class="cluster-score attraction-metric-badge">${Math.round(s.clusters[k])}th %</span></div><div class="cluster-bar"><div class="cluster-bar-fill" style="width:${s.clusters[k]}%;background:${this.getPercentileColor(s.clusters[k])}"></div></div></div>`).join('')}
-        </div></section>
 
         <section class="report-section"><h2 class="report-section-title">Subcategory Detail & Weakest Points</h2>
         <div class="subcategory-breakdown">${subcategoryBlock}</div></section>
 
         <section class="report-section"><h2 class="report-section-title">Market Position</h2>
+        ${s.delusionIndex > 30 ? `<div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div>` : ''}
         <div class="market-analysis"><div class="market-grid"><div class="market-card"><h4>Realistic Target</h4><p>${s.targetMarket?.realistic || ''}</p></div><div class="market-card"><h4>Aspirational</h4><p>${s.targetMarket?.aspirational || ''}</p></div></div></div></section>
 
         <section class="report-section"><h2 class="report-section-title">Strategic Recommendations</h2>
