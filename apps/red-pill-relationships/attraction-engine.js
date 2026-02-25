@@ -611,6 +611,10 @@ export class AttractionEngine {
         ${(rec.weakestGuidance || []).length ? `<div class="weakest-guidance"><h4>Targeted Guidance — Weakest Subcategories</h4>${(rec.weakestGuidance || []).map(w => `<div class="guidance-block"><h5>${SecurityUtils.sanitizeHTML(w.label)} <span class="guidance-cluster">(${SecurityUtils.sanitizeHTML(w.cluster)})</span></h5><p class="guidance-meaning"><strong>What it means:</strong> ${SecurityUtils.sanitizeHTML(w.meaning)}</p><p class="guidance-actions"><strong>How to improve:</strong></p><ol>${(w.actions || []).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}</ol></div>`).join('')}</div>` : ''}
         <div class="tactical-actions"><h4>Immediate Actions</h4><ol>${(rec.tactical || []).map(a => `<li>${SecurityUtils.sanitizeHTML(a)}</li>`).join('')}</ol></div>
         </div></section>
+
+        <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
+          <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Attraction and status connect to identity and relationships. Try <a href="archetype.html">Modern Archetype Identification</a> to see how your patterns map to archetypes, <a href="temperament.html">Polarity Position Mapping</a> to clarify your masculine–feminine expression, or <a href="relationship.html">Relationships</a> to assess compatibility and strain points.</p>
+        </div>
       </div>`;
     container.innerHTML = html;
   }

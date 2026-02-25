@@ -1320,6 +1320,13 @@ export class RelationshipEngine {
     // Mandatory Closure Section
     html += this.getClosureSection();
 
+    // Follow-up invitation
+    html += `
+      <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
+        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Relationship strain connects to other dimensions. Try <a href="temperament.html">Polarity Position Mapping</a> to clarify masculine–feminine fit, <a href="archetype.html">Modern Archetype Identification</a> to understand archetypal pressures, or <a href="attraction.html">Attraction &amp; Status</a> to map mating-market position.</p>
+      </div>
+    `;
+
     // Sanitize HTML before rendering - all dynamic content is already sanitized above
     SecurityUtils.safeInnerHTML(resultsContainer, html);
     this.attachResultsActions();

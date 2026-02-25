@@ -1314,6 +1314,12 @@ export class TemperamentEngine {
       html += '</ul></div>';
     }
 
+    html += `
+      <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
+        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Polarity intersects with other dimensions. Try <a href="archetype.html">Modern Archetype Identification</a> to see how your temperament aligns with archetypal patterns, <a href="relationship.html">Relationships</a> to identify compatibility strain points, or <a href="attraction.html">Attraction &amp; Status</a> to map your status and selection dynamics.</p>
+      </div>
+    `;
+
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, html);
       this.saveProgress();

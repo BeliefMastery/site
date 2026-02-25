@@ -2426,6 +2426,9 @@ showGenderSelection() {
       <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--muted);">
         <a href="archetype-spread.html" style="color: var(--brand); text-decoration: underline;">View full archetype table</a> — cross-paradigm equivalents and population proportions.
       </p>
+      <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem; border-left: 4px solid var(--accent);">
+        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Your archetype informs how you show up in relationships. Consider <a href="temperament.html">Polarity Position Mapping</a> to clarify your masculine–feminine expression, <a href="relationship.html">Relationships</a> to assess compatibility strain points, or <a href="attraction.html">Attraction &amp; Status</a> to map your mating-market position.</p>
+      </div>
     `;
 
     resultsHTML += `</div>`;
