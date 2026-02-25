@@ -467,11 +467,6 @@ export class RelationshipEngine {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
     }
 
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    if (clearCacheBtn) {
-      clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
-    }
-
     const sampleBtn = document.getElementById('generateSampleReport');
     if (sampleBtn) {
       sampleBtn.addEventListener('click', () => this.generateSampleReport());
@@ -1662,7 +1657,7 @@ export class RelationshipEngine {
   clearAllCachedData() {
     this.dataStore.clear('progress');
     this.resetAssessment();
-    ErrorHandler.showUserError('All cached data for Relationship Optimization has been cleared.', 'success');
+    ErrorHandler.showUserError('All cached data for Relationship Optimization has been cleared.');
   }
 
   /**
