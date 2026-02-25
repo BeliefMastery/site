@@ -9,6 +9,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { SecurityUtils } from './shared/utils.js';
 import { exportJSON, exportExecutiveBrief, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import {
   MALE_CLUSTERS,
   FEMALE_CLUSTERS,
@@ -182,7 +183,7 @@ export class AttractionEngine {
     const fd = new FormData(form);
     let valid = true;
     fd.forEach((v, k) => { if (!v) valid = false; });
-    if (!valid) { alert('Please complete all preference fields'); return; }
+    if (!valid) { showAlert('Please complete all preference fields'); return; }
     fd.forEach((v, k) => { this.preferences[k] = isNaN(v) ? v : parseFloat(v); });
     this.currentPhase = 0;
     this.showPhaseIntro();
@@ -266,7 +267,7 @@ export class AttractionEngine {
     const questions = phase?.questions || [];
     const block = document.querySelector(`[data-question-index="${this.currentQuestionIndex}"][data-phase="${phaseName}"]`);
     const input = block?.querySelector('input[type="radio"]:checked');
-    if (!input) { alert('Please select an answer.'); return; }
+    if (!input) { showAlert('Please select an answer.'); return; }
     this.responses[input.name] = parseInt(input.value, 10);
 
     if (this.currentQuestionIndex >= questions.length - 1) {
@@ -311,7 +312,7 @@ export class AttractionEngine {
     const questions = phase?.questions || [];
     const block = document.querySelector(`[data-question-index="${this.currentQuestionIndex}"][data-phase="${phaseName}"]`);
     const input = block?.querySelector('input[type="radio"]:checked');
-    if (!input) { alert('Please select an answer.'); return; }
+    if (!input) { showAlert('Please select an answer.'); return; }
     this.responses[input.name] = parseInt(input.value, 10);
 
     this.currentPhase++;
@@ -714,8 +715,8 @@ export class AttractionEngine {
     this.calculateAndShowResults();
   }
 
-  abandonAssessment() {
-    if (confirm('Abandon and restart? All progress will be lost.')) this.resetAssessment();
+  async abandonAssessment() {
+    if (await showConfirm('Abandon and restart? All progress will be lost.')) this.resetAssessment();
   }
 
   resetAssessment() {

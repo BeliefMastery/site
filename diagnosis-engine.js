@@ -13,6 +13,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
@@ -708,14 +709,14 @@ export class DiagnosisEngine {
     }
   }
 
-  abandonAssessment() {
-    if (confirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
+  async abandonAssessment() {
+    if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
       this.resetAssessment();
     }
   }
 
-  clearAllCachedData() {
-    if (!confirm('Are you sure you want to clear all cached data? This will reset your progress and history.')) {
+  async clearAllCachedData() {
+    if (!(await showConfirm('Are you sure you want to clear all cached data? This will reset your progress and history.'))) {
       return;
     }
 
@@ -724,7 +725,7 @@ export class DiagnosisEngine {
     sessionStorage.removeItem('diagnosisProgress');
     localStorage.removeItem('diagnosisProgress');
     this.resetAssessment();
-    alert('All cached data for Pathology Assessment has been cleared.');
+    await showAlert('All cached data for Pathology Assessment has been cleared.');
   }
 
   /**
@@ -1212,9 +1213,9 @@ export class DiagnosisEngine {
     
     const refinementCheckbox = document.getElementById('requestRefinement');
     if (refinementCheckbox) {
-      refinementCheckbox.addEventListener('change', (e) => {
+      refinementCheckbox.addEventListener('change', async (e) => {
         // Require user intent confirmation
-        if (e.target.checked && !confirm('This step sharpens distinctions for learning clarity. Proceed?')) {
+        if (e.target.checked && !(await showConfirm('This step sharpens distinctions for learning clarity. Proceed?'))) {
           e.target.checked = false;
           return;
         }
@@ -1232,7 +1233,7 @@ export class DiagnosisEngine {
           return;
         }
         
-        if (!confirm('This step sharpens distinctions for learning clarity. Proceed?')) {
+        if (!(await showConfirm('This step sharpens distinctions for learning clarity. Proceed?'))) {
           return;
         }
         

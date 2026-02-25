@@ -7,6 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let NODES, CHANNELS, REMEDIATION_STRATEGIES;
@@ -184,8 +185,8 @@ export class ChannelsEngine {
     
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });
@@ -1046,16 +1047,18 @@ export class ChannelsEngine {
     } else if (this.currentPhase === 3) {
       this.processPhase3Results();
       // Offer Phase 4 (optional comprehensive mapping)
-      if (confirm('Would you like to complete a comprehensive assessment of all remaining channels? This is optional and will take additional time.')) {
-        this.buildPhase4Sequence();
-        if (this.questionSequence.length > 0) {
-          this.renderCurrentQuestion();
+      showConfirm('Would you like to complete a comprehensive assessment of all remaining channels? This is optional and will take additional time.').then(ok => {
+        if (ok) {
+          this.buildPhase4Sequence();
+          if (this.questionSequence.length > 0) {
+            this.renderCurrentQuestion();
+          } else {
+            this.completeAssessment();
+          }
         } else {
           this.completeAssessment();
         }
-      } else {
-        this.completeAssessment();
-      }
+      });
     } else if (this.currentPhase === 4) {
       this.processPhase4Results();
       this.completeAssessment();

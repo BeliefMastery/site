@@ -6,6 +6,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { TIMEZONES } from './shared/timezones.js';
+import { showAlert } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign;
@@ -1613,7 +1614,7 @@ export class CharacterSheetEngine {
 
   exportCharacter() {
     if (!this.characterData) {
-      alert('No character to export. Please generate a character first.');
+      showAlert('No character to export. Please generate a character first.');
       return;
     }
 

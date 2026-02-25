@@ -7,6 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm, showAlert } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let ARCHETYPES, CORE_GROUPS, ARCHETYPE_OPTIMIZATION;
@@ -236,8 +237,8 @@ init() {
 
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });
@@ -2266,20 +2267,26 @@ showGenderSelection() {
         ? `Within-archetype strategy: ${ensurePeriod(primary.growthEdge)}${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`
         : `Within-archetype strategy: Build stability by doubling down on your healthiest traits while expanding flexibility.${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`;
 
-    let resultsHTML = `
-      <div class="results-container" style="max-width: 900px; margin: 0 auto;">
-        <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile${headerDetail}</h2>
-        <p class="temperament-assessment-context" style="text-align: center;"><strong>You selected:</strong> ${SecurityUtils.sanitizeHTML(genderLabel)}.</p>
-        
-        <div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem;">
+    const disclaimerHtml = `
           <p style="margin: 0; color: var(--muted); line-height: 1.7; font-size: 0.95rem;">
             <strong style="color: var(--brand);">Important:</strong> This is a descriptive tool, not a diagnostic or predictive instrument. 
             Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
             Results reflect current patterns, not fixed identity.
           </p>
           ${this.analysisData.respectContext ? '<p style="margin: 1rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Bias mitigation:</strong> Your reported respect in personal vs professional contexts was used to improve accuracy (e.g. to avoid over-attributing leadership archetypes when respect is mainly in professional settings).</p>' : ''}
-          ${this.analysisData.provisionContext && this.analysisData.provisionContext.adjustments ? '<p style="margin: 0.5rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Provision context:</strong> Your reported provision level (dating, lifestyle, income/assets) was used to avoid over-attributing high-provider archetypes when provision is limited.</p>' : ''}
+          ${this.analysisData.provisionContext && this.analysisData.provisionContext.adjustments ? '<p style="margin: 0.5rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Provision context:</strong> Your reported provision level (dating, lifestyle, income/assets) was used to avoid over-attributing high-provider archetypes when provision is limited.</p>' : ''}`;
+
+    let resultsHTML = `
+      <div class="results-container" style="max-width: 900px; margin: 0 auto;">
+        <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile${headerDetail}</h2>
+        <p class="temperament-assessment-context" style="text-align: center;"><strong>You selected:</strong> ${SecurityUtils.sanitizeHTML(genderLabel)}.</p>
+        
+        <div class="disclaimer-acknowledgement" id="archetypeReportDisclaimerToggle" style="margin-bottom: 1rem;">
+          <div class="disclaimer-acknowledgement-text"><span>Disclaimer</span></div>
         </div>
+        <section class="disclaimer-section" id="archetypeReportDisclaimerSection" style="margin-bottom: 2rem;">
+          ${disclaimerHtml}
+        </section>
 
         <!-- Primary Archetype -->
         <div class="archetype-card primary" style="background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border: 2px solid var(--brand);">
@@ -2308,17 +2315,6 @@ showGenderSelection() {
             <p style="color: var(--muted); line-height: 1.7;">${primary.stressResponse}</p>
           </div>
 
-          <div style="margin-top: 1.5rem;">
-            <h4 style="color: var(--brand); margin-bottom: 0.5rem;">Growth Edge:</h4>
-            <p style="color: var(--muted); line-height: 1.7;">${primary.growthEdge}</p>
-          </div>
-
-          <div class="archetype-report-card" style="margin-top: 1.5rem; background: rgba(0, 120, 200, 0.12); border-left: 4px solid #1e90ff; border-radius: var(--radius); padding: 1.25rem;">
-            <h4 style="color: #7fbfff; margin-top: 0; margin-bottom: 0.75rem;">Within-Archetype Optimization</h4>
-            <p style="color: var(--muted); line-height: 1.7; margin: 0 0 0.75rem;">${SecurityUtils.sanitizeHTML(primaryBlindSpot)}</p>
-            <p style="color: var(--muted); line-height: 1.7; margin: 0;">${SecurityUtils.sanitizeHTML(primaryOptimization)}</p>
-          </div>
-
           ${(BRUTAL_TRUTHS?.[primary.id]?.narrative || primary.archetypalNarrative) ? `
           <div class="archetype-report-card" style="margin-top: 1.5rem; background: rgba(100, 0, 0, 0.15); border-left: 4px solid #cc0000; border-radius: var(--radius); padding: 1.5rem;">
             <h4 style="color: #cc0000; margin-top: 0; margin-bottom: 1rem;">Archetypal Narrative: The Brutal Truth</h4>
@@ -2330,6 +2326,14 @@ showGenderSelection() {
             </p>
           </div>
           ` : ''}
+
+          <div class="archetype-report-card" style="margin-top: 1.5rem; background: rgba(0, 120, 200, 0.12); border-left: 4px solid #1e90ff; border-radius: var(--radius); padding: 1.25rem;">
+            <h4 style="color: #7fbfff; margin-top: 0; margin-bottom: 0.75rem;">Innate Challenges</h4>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0 0 0.75rem;">${primary.growthEdge || ''}</p>
+            <h5 style="color: #7fbfff; font-size: 0.95rem; margin: 1rem 0 0.5rem;">Within-Archetype Optimization</h5>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0 0 0.75rem;">${SecurityUtils.sanitizeHTML(primaryBlindSpot)}</p>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0;">${SecurityUtils.sanitizeHTML(primaryOptimization)}</p>
+          </div>
 
           ${primary.reproductiveSuccess && primary.reproductiveDescription ? `
           <div style="margin-top: 1.5rem; background: rgba(0, 100, 200, 0.1); border-left: 3px solid #0066cc; border-radius: var(--radius); padding: 1rem;">
@@ -2402,97 +2406,6 @@ showGenderSelection() {
       `;
     }
 
-    const phase5Results = this.analysisData.phase5Results || {};
-    const clusterOrder = ['coalition_rank', 'reproductive_confidence', 'axis_of_attraction'];
-    const phase5Clusters = clusterOrder
-      .map(key => {
-        const cluster = phase5Results.clusters?.[key];
-        return cluster ? { key, ...cluster } : null;
-      })
-      .filter(Boolean);
-    const phase5Markers = Array.isArray(phase5Results.topMarkers) ? phase5Results.topMarkers : [];
-    const getGrade = (score = 0) => {
-      if (score >= 0.8) return 'Very Strong';
-      if (score >= 0.6) return 'Strong';
-      if (score >= 0.4) return 'Moderate';
-      if (score >= 0.2) return 'Weak';
-      return 'Very Weak';
-    };
-    const getRelativeBand = (score = 0) => {
-      if (score >= 0.8) return 'far above average';
-      if (score >= 0.6) return 'above average';
-      if (score >= 0.4) return 'around average';
-      if (score >= 0.2) return 'below average';
-      return 'far below average';
-    };
-    const getClusterInsight = (key, score, grade) => {
-      const relative = getRelativeBand(score);
-      const insights = {
-        coalition_rank: `Peer standing is ${relative}.`,
-        reproductive_confidence: `Bonded mate‑investment likelihood is ${relative}.`,
-        axis_of_attraction: `Initial attraction signal strength is ${relative}.`
-      };
-      return insights[key] || `Relative position is ${relative}.`;
-    };
-
-    if (phase5Clusters.length > 0) {
-      resultsHTML += `
-        <div class="panel panel-outline-accent" style="margin-bottom: 2rem;">
-          <h3 class="panel-title">Status, Selection & Attraction Markers</h3>
-          <p class="panel-text">Self-reported signals that refine archetype weighting across coalition rank, selection criteria, and attraction dynamics. Grades are shown as relative position versus a typical baseline.</p>
-          <p class="panel-text" style="font-size: 0.9rem; color: var(--muted);">
-            Axis of Attraction accuracy depends on honest self‑reporting for health, fitness, aesthetics, cleanliness, wealth, productivity, popularity, and creative brilliance.
-          </p>
-          <div style="margin-top: 1rem;">
-            <ul style="color: var(--muted); line-height: 1.8;">
-              ${phase5Clusters.map(cluster => `
-                <li><strong>${SecurityUtils.sanitizeHTML(cluster.label || '')}:</strong> ${getGrade(cluster.score)} — ${SecurityUtils.sanitizeHTML(getClusterInsight(cluster.key || '', cluster.score, getGrade(cluster.score)))}</li>
-              `).join('')}
-            </ul>
-          </div>
-          ${phase5Markers.length ? `
-            <div style="margin-top: 1rem;">
-              <p style="color: var(--muted); margin-bottom: 0.5rem;"><strong>Top markers:</strong></p>
-              <ul style="color: var(--muted); line-height: 1.8;">
-                ${phase5Markers.map(marker => `
-                  <li>${SecurityUtils.sanitizeHTML(marker.label || '')}: ${getGrade(marker.score)} (${getRelativeBand(marker.score)})</li>
-                `).join('')}
-              </ul>
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }
-
-    // Aesthetics & Market Presentation
-    const aestheticsCtx = this.analysisData.aestheticsContext;
-    if (aestheticsCtx) {
-      const acLevelLabel = { high: 'High', mid: 'Moderate', low: 'Low' }[aestheticsCtx.aestheticsLevel] || 'Not assessed';
-      const acEngLabel   = { high: 'Deliberate / engineered', mid: 'Some intentional effort', low: 'Minimal / passive', unknown: 'Not assessed' }[aestheticsCtx.engineeringLevel] || 'Not assessed';
-      const acGapLabel   = { large: 'Large gap detected', moderate: 'Moderate gap', small: 'Minimal gap', unknown: 'Not assessed' }[aestheticsCtx.gapLevel] || 'Not assessed';
-
-      const gapNote = aestheticsCtx.gapLevel === 'large'
-        ? 'Your physical presentation is generating a stronger market impression than your behavioural pattern supports. The score has been adjusted to weight your inner pattern more heavily — what you project and what you are differ enough to matter.'
-        : aestheticsCtx.gapLevel === 'moderate'
-          ? 'There is some difference between how you are read on first impression and who you are in closer context. This is common and has been accounted for in your result.'
-          : 'Your aesthetic presentation and behavioural pattern appear broadly consistent.';
-
-      resultsHTML += `
-        <div class="panel panel-outline-accent" style="margin-bottom: 2rem; border-left-color: rgba(255,184,0,0.5);">
-          <h3 class="panel-title">Aesthetic Capital & Market Presentation</h3>
-          <p class="panel-text">Physical presentation acts as a market modifier — it amplifies or dampens the signals your behavioural pattern already emits. This section reflects how your aesthetic investment, market return, and any gap between presentation and pattern have been weighted in your result.</p>
-          <ul style="color: var(--muted); line-height: 1.8; margin-top: 1rem;">
-            <li><strong>Aesthetic investment level:</strong> ${SecurityUtils.sanitizeHTML(acLevelLabel)}</li>
-            <li><strong>Engineering intentionality:</strong> ${SecurityUtils.sanitizeHTML(acEngLabel)}</li>
-            <li><strong>Presentation vs. pattern gap:</strong> ${SecurityUtils.sanitizeHTML(acGapLabel)}</li>
-          </ul>
-          <p style="color: var(--muted); line-height: 1.7; margin-top: 1rem; font-size: 0.92rem; font-style: italic;">
-            ${SecurityUtils.sanitizeHTML(gapNote)}
-          </p>
-        </div>
-      `;
-    }
-
     // Shadow Patterns
     const shadowPatterns = this.analysisData.phase3Results?.shadowIndicators || [];
     if (shadowPatterns.length > 0) {
@@ -2509,34 +2422,24 @@ showGenderSelection() {
       `;
     }
 
-    // Aspirational Traits
-    const aspirational = this.analysisData.phase3Results?.aspirationalTraits || [];
-    if (aspirational.length > 0) {
-      resultsHTML += `
-        <div class="aspirational-section" style="background: rgba(0, 255, 0, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid #44ff44;">
-          <h3 style="color: #44ff44; margin-top: 0;">Developmental Opportunities</h3>
-          <p style="color: var(--muted); line-height: 1.7; margin-bottom: 1rem;">
-            Areas you identified as aspirational - qualities you'd like to develop further.
-          </p>
-          <ul style="color: var(--muted); line-height: 1.8;">
-            ${aspirational.map(asp => `<li><strong>${SecurityUtils.sanitizeHTML(asp.name || '')}:</strong> ${SecurityUtils.sanitizeHTML(asp.description || '')}</li>`).join('')}
-          </ul>
-        </div>
-      `;
-    }
-
     resultsHTML += `
-      <div class="panel panel-outline-accent" style="margin-bottom: 2rem;">
-        <h3 class="panel-title">Explore the Full Archetype Spread</h3>
-        <p class="panel-text">Compare your results to the full archetype table, including cross-paradigm equivalents and population proportions.</p>
-        <a href="archetype-spread.html" class="btn btn-secondary">View Full Archetype Table</a>
-      </div>
+      <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--muted);">
+        <a href="archetype-spread.html" style="color: var(--brand); text-decoration: underline;">View full archetype table</a> — cross-paradigm equivalents and population proportions.
+      </p>
     `;
 
     resultsHTML += `</div>`;
 
     // Sanitize results HTML before rendering
     SecurityUtils.safeInnerHTML(container, resultsHTML);
+    const disclaimerToggle = container.querySelector('#archetypeReportDisclaimerToggle');
+    const disclaimerSection = container.querySelector('#archetypeReportDisclaimerSection');
+    if (disclaimerToggle && disclaimerSection) {
+      disclaimerToggle.addEventListener('click', () => {
+        disclaimerToggle.classList.toggle('expanded');
+        disclaimerSection.classList.toggle('expanded');
+      });
+    }
     this.showResultsContainer();
   }
 
@@ -2722,7 +2625,7 @@ showGenderSelection() {
 
   exportAnalysis(format) {
     if (!this.analysisData.primaryArchetype) {
-      alert('Please complete the assessment before exporting.');
+      showAlert('Please complete the assessment before exporting.');
       return;
     }
 

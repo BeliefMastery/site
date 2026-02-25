@@ -7,6 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
@@ -640,8 +641,8 @@ export class NeedsDependencyEngine {
     }
   }
 
-  abandonAssessment() {
-    if (confirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
+  async abandonAssessment() {
+    if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
       this.resetAssessment();
     }
   }
@@ -1802,8 +1803,8 @@ export class NeedsDependencyEngine {
     }
   }
 
-  resetAssessment() {
-    if (confirm('Are you sure you want to start a new assessment? This will clear all current progress.')) {
+  async resetAssessment() {
+    if (await showConfirm('Are you sure you want to start a new assessment? This will clear all current progress.')) {
       this.currentPhase = 1;
       this.currentQuestionIndex = 0;
       this.answers = {};

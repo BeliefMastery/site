@@ -7,6 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_PARADIGMS, SPECTRUM_THRESHOLDS, DERAILERS, SPECTRUM_QUESTIONS;
@@ -174,8 +175,8 @@ export class SovereigntySpectrumEngine {
     const clearCacheBtn = document.getElementById('clearCacheBtn');
     const clearCacheBtnInAssessment = document.getElementById('clearCacheBtnInAssessment');
     
-    const clearCache = () => {
-      if (confirm('Are you sure you want to clear all cached data? This will reset your progress.')) {
+    const clearCache = async () => {
+      if (await showConfirm('Are you sure you want to clear all cached data? This will reset your progress.')) {
         this.dataStore.clear('progress');
         sessionStorage.removeItem('spectrum-assessment');
         localStorage.removeItem('spectrum-assessment');
@@ -192,8 +193,8 @@ export class SovereigntySpectrumEngine {
 
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });
@@ -201,8 +202,8 @@ export class SovereigntySpectrumEngine {
 
     const abandonSelectionBtn = document.getElementById('abandonSelection');
     if (abandonSelectionBtn) {
-      abandonSelectionBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonSelectionBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });

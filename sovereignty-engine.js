@@ -3,6 +3,7 @@
 
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { loadDataModule } from './shared/data-loader.js';
 
@@ -179,8 +180,8 @@ export class SovereigntyEngine {
 
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });
@@ -428,7 +429,7 @@ export class SovereigntyEngine {
       const handleIQSubmit = () => {
         const iqValue = parseInt(iqInput.value);
         if (isNaN(iqValue) || iqValue < 70 || iqValue > 200) {
-          alert('Please enter a valid IQ between 70 and 200.');
+          showAlert('Please enter a valid IQ between 70 and 200.');
           return;
         }
         
@@ -1850,8 +1851,8 @@ export class SovereigntyEngine {
     return total;
   }
 
-  resetAssessment() {
-    if (confirm('Are you sure you want to start a new assessment? All progress will be lost.')) {
+  async resetAssessment() {
+    if (await showConfirm('Are you sure you want to start a new assessment? All progress will be lost.')) {
       this.answers = {};
       this.scores = {
         dependency: 0,

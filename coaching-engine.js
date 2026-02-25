@@ -7,6 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm, showAlert } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
@@ -245,8 +246,8 @@ export class CoachingEngine {
     
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });
@@ -1416,11 +1417,11 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     }
   }
 
-  clearAllCachedData() {
-    if (confirm('Are you sure you want to clear all cached data? This will clear all saved progress and you will need to start from the beginning.')) {
+  async clearAllCachedData() {
+    if (await showConfirm('Are you sure you want to clear all cached data? This will clear all saved progress and you will need to start from the beginning.')) {
       sessionStorage.removeItem('coachingProgress');
       this.resetAssessment();
-      alert('All cached data has been cleared.');
+      await showAlert('All cached data has been cleared.');
     }
   }
 

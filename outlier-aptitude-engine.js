@@ -2,6 +2,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm } from './shared/confirm-modal.js';
 import { exportJSON, downloadFile } from './shared/export-utils.js';
 
 let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATION_PROMPTS, APTITUDE_ACUITY_DOMAINS;
@@ -721,8 +722,8 @@ export class OutlierAptitudeEngine {
     }
   }
 
-  abandonAssessment() {
-    if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+  async abandonAssessment() {
+    if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
       this.resetAssessment();
     }
   }

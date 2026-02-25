@@ -8,6 +8,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
+import { showConfirm, showAlert } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let MANIPULATION_VECTORS, MANIPULATION_TACTICS;
@@ -207,8 +208,8 @@ export class ManipulationEngine {
 
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      abandonBtn.addEventListener('click', async () => {
+        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
           this.resetAssessment();
         }
       });
@@ -1408,10 +1409,11 @@ renderCurrentQuestion() {
     }
   }
 
-  clearAllCachedData() {
+  async clearAllCachedData() {
+    if (!(await showConfirm('Are you sure you want to clear all cached data? This will clear all saved progress.'))) return;
     sessionStorage.removeItem('manipulationProgress');
     this.resetAssessment();
-    alert('All cached data for Manipulation Analysis has been cleared.');
+    await showAlert('All cached data for Manipulation Analysis has been cleared.');
   }
 
   resetAssessment() {
