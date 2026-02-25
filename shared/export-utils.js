@@ -84,6 +84,10 @@ function buildExecutiveHighlights(data) {
     highlights.push(`Primary pattern: ${data.primaryPattern}`);
   }
 
+  if (data.crossPolarityDetected && data.crossPolarityNote) {
+    highlights.push(`Cross-polarity finding: ${data.crossPolarityNote}`);
+  }
+
   if (data.primaryLoop) {
     highlights.push(`Primary dependency loop: ${data.primaryLoop}`);
     if (data.needChainDisplay) {
@@ -670,7 +674,10 @@ function generateTemperamentExport(data) {
     csv += `Feminine Score: ${(data.overallTemperament.feminineScore * 100).toFixed(1)}%\n`;
     csv += `Net Score: ${(data.overallTemperament.netScore * 100).toFixed(1)}%\n`;
   }
-  
+  if (data.crossPolarityDetected && data.crossPolarityNote) {
+    csv += '\n=== CROSS-POLARITY FINDING ===\n';
+    csv += `Notable: ${data.crossPolarityNote}\n`;
+  }
   if (data.dimensionScores && Object.keys(data.dimensionScores).length > 0) {
     csv += '\n=== DIMENSION SCORES ===\n';
     csv += 'Dimension,Masculine Score,Feminine Score,Net Score\n';

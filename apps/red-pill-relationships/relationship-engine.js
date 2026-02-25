@@ -1184,21 +1184,10 @@ export class RelationshipEngine {
     const resultsContainer = document.getElementById('resultsContainer');
     if (!resultsContainer) return;
 
-    let html = `
-      <h3>Current Strain Points:</h3>
-    `;
-    html += '<p style="color: var(--muted); margin-bottom: 1rem;">These are the areas showing current strain, ranked by weighted impact score.</p>';
-    
-    // Normalize universal weak points
-    html += '<div style="background: var(--glass); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
-    html += '<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--brand);">Note:</strong> All relationships show strain in at least 3–5 areas. This is normal, not failure. These strain points indicate areas for attention, not verdicts on relationship viability.</p>';
-    html += '</div>';
+    let html = '<p style="color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem;">All relationships show strain in at least 3–5 areas. This is normal, not failure. These strain points indicate areas for attention, not verdicts on relationship viability. This report clarifies the areas showing strain, ranked in order of impact.</p>';
 
-    // Cross-domain spillover
-    if (this.crossDomainSpillover.detected) {
-      html += '<div style="background: var(--glass); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem;">';
-      html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Cross-Domain Amplification:</strong> ${SecurityUtils.sanitizeHTML(this.crossDomainSpillover.message || '')}</p>`;
-      html += '</div>';
+    if (this.crossDomainSpillover.detected && this.crossDomainSpillover.message) {
+      html += `<p style="color: var(--muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; font-style: italic;">${SecurityUtils.sanitizeHTML(this.crossDomainSpillover.message)}</p>`;
     }
 
     let weakestLinks = this.analysisData.weakestLinks || [];
@@ -1221,77 +1210,85 @@ export class RelationshipEngine {
     if (weakestLinks.length > 0) {
       weakestLinks.forEach((link, index) => {
         const criticalClass = link.severity === 'Critical' ? 'critical' : '';
+        const point = COMPATIBILITY_POINTS?.[link.point];
         
-        // Tier action strategies
         const selfRegulation = this.getSelfRegulationStrategies(link);
         const relationalInvitation = this.getRelationalInvitationStrategies(link);
         const structuralBoundary = this.getStructuralBoundaryStrategies(link);
-        
-        // Separate Change from Acceptance
         const changeStrategies = this.getChangeStrategies(link);
         const acceptanceStrategies = this.getAcceptanceStrategies(link);
         
+        const suggestion = link.rawScore <= 3
+          ? 'Your score indicates significant strain in this area, suggesting patterns that may be affecting the relationship.'
+          : link.rawScore <= 5
+            ? 'Your score suggests moderate strain worth attention before it deepens.'
+            : 'Your score indicates some strain; early attention can help prevent escalation.';
+        
+        const contextDesc = point?.description ? SecurityUtils.sanitizeHTML(point.description) : '';
+        const contextImpact = point?.impact ? SecurityUtils.sanitizeHTML(point.impact) : '';
+        
+        if (index > 0) {
+          html += '<hr class="strain-section-divider" style="margin: 2.5rem 0 1.5rem; border: none; border-top: 1px solid rgba(255,255,255,0.12);" aria-hidden="true" />';
+        }
+        
         html += `
-          <div class="weakest-link-item ${criticalClass}">
+          <div class="weakest-link-item strain-point-section ${criticalClass}">
             <h3>${index + 1}. ${SecurityUtils.sanitizeHTML(link.name || '')} <span style="font-size: 0.9em; color: var(--muted);">(${SecurityUtils.sanitizeHTML(link.impactTier || '')} impact)</span></h3>
-            <p><strong>Score:</strong> ${link.rawScore}/10 (Weighted: ${link.weightedScore.toFixed(2)})</p>
-            <p><strong>Priority:</strong> ${SecurityUtils.sanitizeHTML(link.priority || '')} | <strong>Severity:</strong> ${SecurityUtils.sanitizeHTML(link.severity || '')}</p>
+            <p><strong>Score:</strong> ${link.rawScore}/10 (Weighted: ${link.weightedScore.toFixed(2)}) · <strong>Priority:</strong> ${SecurityUtils.sanitizeHTML(link.priority || '')} · <strong>Severity:</strong> ${SecurityUtils.sanitizeHTML(link.severity || '')}</p>
             
-            <div class="action-strategies" style="margin-top: 1.5rem;">
-              <h4 style="color: var(--brand); margin-bottom: 0.75rem;">Tiered Action Strategies:</h4>
+            <div class="strain-context" style="margin: 1.25rem 0; color: var(--muted); line-height: 1.7; font-size: 0.95rem;">
+              ${contextDesc ? `<p style="margin: 0 0 0.75rem;"><strong style="color: var(--brand);">What this is:</strong> ${contextDesc}</p>` : ''}
+              <p style="margin: 0 0 0.75rem;"><strong style="color: var(--brand);">What it suggests:</strong> ${suggestion}</p>
+              ${contextImpact ? `<p style="margin: 0;"><strong style="color: var(--brand);">Long-term impact:</strong> ${contextImpact}</p>` : ''}
+            </div>
+            
+            <div class="action-strategies-card" style="background: var(--glass); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 1.25rem; margin-top: 1rem;">
+              <h4 style="color: var(--brand); margin-top: 0; margin-bottom: 1rem;">Action Strategies</h4>
               
-              <div style="background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                <h5 style="color: var(--brand); margin-bottom: 0.5rem;">1. Self-Regulation Actions</h5>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Actions you can take independently to improve your experience:</p>
-                <ul style="margin-left: 1.5rem;">
-                  ${selfRegulation.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
+              <div style="margin-bottom: 1.25rem;">
+                <strong style="color: var(--brand); font-size: 0.95rem;">Self-Regulation</strong> — actions you can take independently:
+                <ul style="margin: 0.5rem 0 0 1.5rem;">
+                  ${selfRegulation.map(strategy => `<li style="margin-bottom: 0.35rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
-              <div style="background: var(--glass); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                <h5 style="color: var(--accent); margin-bottom: 0.5rem;">2. Relational Invitations</h5>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Ways to invite mutual participation and improvement:</p>
-                <ul style="margin-left: 1.5rem;">
-                  ${relationalInvitation.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
+              <div style="margin-bottom: 1.25rem;">
+                <strong style="color: var(--accent); font-size: 0.95rem;">Relational Invitations</strong> — ways to invite mutual participation:
+                <ul style="margin: 0.5rem 0 0 1.5rem;">
+                  ${relationalInvitation.map(strategy => `<li style="margin-bottom: 0.35rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
-              <div style="background: var(--glass); border-left: 3px solid var(--muted); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                <h5 style="color: var(--muted); margin-bottom: 0.5rem;">3. Structural Boundaries (Optional)</h5>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">Boundaries to reduce harm if dynamics persist:</p>
-                <ul style="margin-left: 1.5rem;">
-                  ${structuralBoundary.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
+              <div style="margin-bottom: 1.25rem;">
+                <strong style="color: var(--muted); font-size: 0.95rem;">Structural Boundaries (optional)</strong> — boundaries if dynamics persist:
+                <ul style="margin: 0.5rem 0 0 1.5rem;">
+                  ${structuralBoundary.map(strategy => `<li style="margin-bottom: 0.35rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
               
-              <div style="margin-top: 1.5rem; padding: 1rem; background: var(--glass); border-radius: var(--radius);">
-                <h5 style="color: var(--brand); margin-bottom: 0.75rem;">Change vs. Acceptance:</h5>
-                <div style="margin-bottom: 1rem;">
-                  <strong style="color: var(--brand);">Actions Aiming to Improve Dynamics:</strong>
-                  <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                    ${changeStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
-                  </ul>
-                </div>
-                <div>
-                  <strong style="color: var(--accent);">Actions Aiming to Reduce Harm if Dynamics Persist:</strong>
-                  <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                    ${acceptanceStrategies.map(strategy => `<li style="margin-bottom: 0.5rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
-                  </ul>
-                </div>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-top: 1rem; font-style: italic;">
-                  <strong>Time Horizon:</strong> Reassess after 30–90 days. Avoid impulsive decisions based on this analysis alone.
-                </p>
-              </div>
-              
-              <div style="margin-top: 1.5rem; padding: 1rem; background: var(--glass); border-left: 3px solid var(--brand); border-radius: var(--radius);">
-                <h5 style="color: var(--brand); margin-bottom: 0.5rem;">Archetypal Pressures:</h5>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; font-style: italic;">
-                  <strong>Note:</strong> These describe activated archetypal pressures, not fixed identities. Each archetype has a complementary counterpart. Insight applies forward; avoid rereading the past through a single lens.
-                </p>
-                <ul style="margin-left: 1.5rem;">
-                  ${link.strategies.archetypal.map(insight => `<li style="margin-bottom: 0.5rem;">${insight}</li>`).join('')}
+              <div style="margin-bottom: 1.25rem;">
+                <strong style="color: var(--brand); font-size: 0.95rem;">Change vs. Acceptance</strong>
+                <p style="font-size: 0.9rem; color: var(--muted); margin: 0.5rem 0 0.25rem;">Actions to improve dynamics:</p>
+                <ul style="margin: 0.25rem 0 0 1.5rem;">
+                  ${changeStrategies.map(strategy => `<li style="margin-bottom: 0.35rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
+                </ul>
+                <p style="font-size: 0.9rem; color: var(--muted); margin: 0.75rem 0 0.25rem;">If dynamics persist, ways to reduce harm:</p>
+                <ul style="margin: 0.25rem 0 0 1.5rem;">
+                  ${acceptanceStrategies.map(strategy => `<li style="margin-bottom: 0.35rem;">${SecurityUtils.sanitizeHTML(strategy || '')}</li>`).join('')}
                 </ul>
               </div>
+              
+              <p style="font-size: 0.85rem; color: var(--muted); margin: 1rem 0 0; font-style: italic;">Reassess after 30–90 days. Avoid impulsive decisions based on this analysis alone.</p>
+              
+              ${link.strategies?.archetypal?.length ? `
+              <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+                <strong style="color: var(--brand); font-size: 0.95rem;">Archetypal Pressures</strong>
+                <p style="font-size: 0.85rem; color: var(--muted); margin: 0.25rem 0 0.5rem; font-style: italic;">Activated patterns, not fixed identities. Insight applies forward.</p>
+                <ul style="margin: 0 0 0 1.5rem;">
+                  ${link.strategies.archetypal.map(insight => `<li style="margin-bottom: 0.35rem;">${SecurityUtils.sanitizeHTML(insight || '')}</li>`).join('')}
+                </ul>
+              </div>
+              ` : ''}
             </div>
           </div>
         `;

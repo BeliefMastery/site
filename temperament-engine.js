@@ -29,6 +29,11 @@ const EXPECTED_GENDER_TRENDS = {
   woman: 0.4
 };
 
+// Cross-polarity: respondent scores significantly beyond their gender's typical range
+// toward the opposite pole (e.g. man more feminine than avg woman, woman more masculine than avg man).
+// Used to highlight polarity-degradation implications.
+const CROSS_POLARITY_THRESHOLD = 0.12;
+
 /**
  * Temperament Engine - Analyzes masculine-feminine temperament spectrum
  */
@@ -840,6 +845,7 @@ export class TemperamentEngine {
 
     Object.keys(dimensionGroups).forEach(groupKey => {
       const group = dimensionGroups[groupKey];
+      const dimWeight = TEMPERAMENT_SCORING.dimensionWeights[groupKey] || 1.0;
       let groupMasculine = 0;
       let groupFeminine = 0;
       let groupWeight = 0;
@@ -864,9 +870,6 @@ export class TemperamentEngine {
         const masculineContribution = normalizedAnswer * masculineWeight;
         const feminineContribution = normalizedAnswer * feminineWeight;
         
-        // Get dimension weight
-        const dimWeight = TEMPERAMENT_SCORING.dimensionWeights[groupKey] || 1.0;
-        
         groupMasculine += masculineContribution * dimWeight;
         groupFeminine += feminineContribution * dimWeight;
         groupWeight += dimWeight;
@@ -881,9 +884,12 @@ export class TemperamentEngine {
         net: avgMasculine - avgFeminine
       };
 
-      totalMasculineScore += avgMasculine * groupWeight;
-      totalFeminineScore += avgFeminine * groupWeight;
-      totalWeight += groupWeight;
+      // Apply dimension weight once per dimension (not per question), so importance
+      // weights control contribution rather than question count (e.g. intimate
+      // categories with 6 questions shouldn't dominate core dimensions with 4)
+      totalMasculineScore += avgMasculine * dimWeight;
+      totalFeminineScore += avgFeminine * dimWeight;
+      totalWeight += dimWeight;
     });
 
     // Calculate overall temperament
@@ -892,7 +898,7 @@ export class TemperamentEngine {
     const overallNet = overallMasculine - overallFeminine;
 
     // Normalize to 0-1 scale (where 1 = highly masculine, 0 = highly feminine)
-    const normalizedScore = (overallNet + 1) / 2;
+    const normalizedScore = Math.max(0, Math.min(1, (overallNet + 1) / 2));
 
     // Determine temperament category
     let temperamentCategory = 'balanced';
@@ -921,6 +927,19 @@ export class TemperamentEngine {
       feminineScore: overallFeminine,
       netScore: overallNet
     };
+
+    // Cross-polarity: detect when respondent scores significantly beyond typical gender range
+    const reportedGender = this.analysisData.gender;
+    const maleTrend = EXPECTED_GENDER_TRENDS.man;
+    const femaleTrend = EXPECTED_GENDER_TRENDS.woman;
+    const isMaleCrossPolarity = reportedGender === 'man' && normalizedScore < (femaleTrend - CROSS_POLARITY_THRESHOLD);
+    const isFemaleCrossPolarity = reportedGender === 'woman' && normalizedScore > (maleTrend + CROSS_POLARITY_THRESHOLD);
+    this.analysisData.crossPolarityDetected = isMaleCrossPolarity || isFemaleCrossPolarity;
+    if (this.analysisData.crossPolarityDetected) {
+      this.analysisData.crossPolarityNote = isMaleCrossPolarity
+        ? 'Significantly more feminine-leaning than the average woman; consider partner polarity fit.'
+        : 'Significantly more masculine-leaning than the average man; consider partner polarity fit.';
+    }
 
     // Analyze variation
     this.analyzeVariation();
@@ -1161,8 +1180,9 @@ export class TemperamentEngine {
         return option ? option.label : 'Not specified';
       })();
     const reportedGender = this.analysisData.gender;
-      const maleTrend = EXPECTED_GENDER_TRENDS.man;
-      const femaleTrend = EXPECTED_GENDER_TRENDS.woman;
+    const maleTrend = EXPECTED_GENDER_TRENDS.man;
+    const femaleTrend = EXPECTED_GENDER_TRENDS.woman;
+    const score = temperament.normalizedScore;
 
     // Contextual framing block at results entry
     let html = `
@@ -1184,8 +1204,9 @@ export class TemperamentEngine {
       `;
     }
 
+    const crossPolarityClass = (reportedGender === 'man' && score < (femaleTrend - CROSS_POLARITY_THRESHOLD)) || (reportedGender === 'woman' && score > (maleTrend + CROSS_POLARITY_THRESHOLD)) ? ' cross-polarity-notable' : '';
     html += `
-      <div class="temperament-profile-card">
+      <div class="temperament-profile-card${crossPolarityClass}">
         <h2>Temperament Expression Profile</h2>
         <p class="temperament-assessment-context"><strong>Assessment context:</strong> Taken as ${SecurityUtils.sanitizeHTML(genderLabel)}.</p>
         <div class="temperament-profile-inner">
@@ -1226,6 +1247,24 @@ export class TemperamentEngine {
         </div>
       </div>
     `;
+
+    // Cross-polarity callout: respondent significantly beyond typical range for their gender
+    const isMaleCrossPolarity = reportedGender === 'man' && score < (femaleTrend - CROSS_POLARITY_THRESHOLD);
+    const isFemaleCrossPolarity = reportedGender === 'woman' && score > (maleTrend + CROSS_POLARITY_THRESHOLD);
+    if (isMaleCrossPolarity || isFemaleCrossPolarity) {
+      const polarityNote = isMaleCrossPolarity
+        ? `Your temperament expression is significantly more feminine-leaning than the average woman (${(femaleTrend * 100).toFixed(0)}%). This is a highly noteworthy pattern.`
+        : `Your temperament expression is significantly more masculine-leaning than the average man (${(maleTrend * 100).toFixed(0)}%). This is a highly noteworthy pattern.`;
+      const implicationNote = `In relationships, temperament polarity—the natural complement between opposite poles—tends to support attraction and dynamic flow. When your expression strongly crosses typical gender norms, polarity can degrade unless your partner naturally occupies the opposite pole. A partner whose temperament leans in the opposite direction can restore polarity; same-direction pairing may lead to reduced tension and attraction, or role confusion. This is not a verdict but an invitation to consider partner fit and intentional polarity calibration.`;
+      html += `
+        <div class="temperament-info-box cross-polarity-callout panel-brand-left" style="border-left: 4px solid var(--accent); background: var(--accent-panel); margin-top: 1.5rem;">
+          <h3 style="margin-top: 0; color: var(--accent);">Cross-Polarity Expression — Notable Finding</h3>
+          <p style="margin: 0.75rem 0;"><strong>What this means:</strong> ${polarityNote}</p>
+          <p style="margin: 0.75rem 0;"><strong>Relationship implication:</strong> ${implicationNote}</p>
+          <p style="margin: 0.75rem 0 0; font-size: 0.9rem; color: var(--muted);"><em>Understanding this pattern helps you make informed choices about partnership dynamics and polarity optimization.</em></p>
+        </div>
+      `;
+    }
 
     // Dimension breakdown
     html += '<div class="dimension-breakdown">';
@@ -1334,6 +1373,7 @@ RELATIONSHIP POLARITY IMPLICATIONS:
 - Higher polarity (greater difference between partners) typically increases attraction
 - Understanding temperament helps optimize relationship dynamics
 - Both partners can develop complementary qualities while honoring their core expression patterns
+- CROSS-POLARITY: When crossPolarityDetected is true, the respondent scores significantly beyond typical gender norms (e.g. man more feminine than avg woman). This is a notable finding: polarity can degrade unless partner occupies the opposite pole. Invite consideration of partner fit and intentional polarity calibration—not as verdict, but as informed choice.
 
 AI AGENT CONFIGURATION:
 - Use temperament data to inform coaching style and communication approach

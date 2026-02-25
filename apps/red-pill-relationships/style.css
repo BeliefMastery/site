@@ -6386,6 +6386,11 @@ img {
     margin-bottom: 2rem;
 }
 
+.temperament-profile-card.cross-polarity-notable {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
 .temperament-profile-card h2 {
     color: var(--brand);
     margin-bottom: 1rem;
