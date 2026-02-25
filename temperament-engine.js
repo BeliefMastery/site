@@ -929,7 +929,6 @@ export class TemperamentEngine {
     };
 
     // Cross-polarity: detect when respondent scores significantly beyond typical gender range
-    const reportedGender = this.analysisData.gender;
     const maleTrend = EXPECTED_GENDER_TRENDS.man;
     const femaleTrend = EXPECTED_GENDER_TRENDS.woman;
     const isMaleCrossPolarity = reportedGender === 'man' && normalizedScore < (femaleTrend - CROSS_POLARITY_THRESHOLD);
