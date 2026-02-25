@@ -1542,8 +1542,8 @@ export class RelationshipEngine {
   
   getClosureSection() {
     return `
-      <div style="background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border: 2px solid var(--brand); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <h3 style="color: var(--brand); margin-bottom: 1rem; text-align: center;">Closure & Next Steps</h3>
+      <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 2rem; margin-top: 2.5rem; border-left: 4px solid var(--brand);">
+        <h3 style="color: var(--brand); margin-bottom: 1rem;">Closure & Next Steps</h3>
         <div style="line-height: 1.8;">
           <div style="margin-bottom: 1.5rem;">
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">What You Control</h4>
@@ -1553,12 +1553,9 @@ export class RelationshipEngine {
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">What Requires Mutual Participation</h4>
             <p style="color: var(--muted); margin: 0;">Improving relational dynamics requires both partners' participation. You can invite, but cannot force, mutual engagement. Some strain points may require your partner's willingness to address them.</p>
           </div>
-          <div style="margin-bottom: 1.5rem;">
+          <div>
             <h4 style="color: var(--brand); margin-bottom: 0.5rem;">What Acceptance Would Look Like</h4>
             <p style="color: var(--muted); margin: 0;">If certain dynamics persist despite your efforts, acceptance means recognizing limitations without self-blame. It means protecting yourself through boundaries while maintaining clarity about what you can and cannot change.</p>
-          </div>
-          <div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Analysis Complete:</strong> This assessment is complete. Use this information to support your sovereignty and relational clarity. Avoid looping back into analysis or using results to escalate conflict. Return to lived action with this understanding.</p>
           </div>
         </div>
       </div>
