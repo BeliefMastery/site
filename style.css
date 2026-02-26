@@ -1885,6 +1885,29 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     }
 }
 
+/* Books page: flex layout for 3 portal cards – fits expandable content better than 6-col grid */
+.portal-grid-books {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.portal-grid-books .portal-card {
+    flex: 1 1 min(100%, 340px);
+    min-width: 280px;
+    max-width: 420px;
+}
+
+@media (min-width: 768px) {
+    .portal-grid-books .portal-card {
+        flex: 1 1 calc(33.333% - 1rem);
+        min-width: 260px;
+        max-width: none;
+    }
+}
+
 .portal-grid-spaced {
     margin-top: 3rem;
 }
@@ -5625,6 +5648,37 @@ img {
     display: inline-block;
     vertical-align: top;
     max-width: 320px;
+}
+
+/* At-a-glance combined card: larger sizing and text */
+.results-dashboard .attraction-exec-badges .attraction-result-badge.attraction-badge-with-expl {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding: 1.5rem 1.75rem;
+    font-size: 1.05rem;
+}
+.results-dashboard .attraction-exec-badges .attraction-result-badge .attraction-result-badge-label {
+    display: block;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.35rem;
+}
+.results-dashboard .attraction-exec-badges .attraction-result-badge .attraction-result-badge-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-left: 0;
+    margin-bottom: 0.5rem;
+}
+.results-dashboard .attraction-exec-badges .attraction-result-badge .attraction-badge-desc {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+}
+.results-dashboard .attraction-exec-badges .attraction-result-badge .qualification-explanation {
+    font-size: 0.95rem;
+    margin-top: 0.6rem;
+    line-height: 1.5;
 }
 
 .results-dashboard .qualification-explanation {
