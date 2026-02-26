@@ -8,8 +8,8 @@ import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils
 import { loadDataModule } from './shared/data-loader.js';
 
 // Lazy load data modules - only load when needed
-let COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS;
-let SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY;
+let COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS, SOVEREIGNTY_LAYERS;
+let SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY, SECTION_5_RESILIENCE;
 
 export class SovereigntyEngine {
   constructor() {
@@ -24,7 +24,11 @@ export class SovereigntyEngine {
       attachment: 0,
       sovereignty: 0,
       cognitiveComplexity: 0,
-      driftRisk: 0
+      driftRisk: 0,
+      layer2: 0,
+      layer3: 0,
+      layer4: 0,
+      layer5: 0
     };
     this.preliminaryFilters = {
       aiUsageFrequency: null, // 'never', 'rarely', 'daily', 'frequent'
@@ -118,6 +122,13 @@ export class SovereigntyEngine {
       SECTION_2_COGNITIVE_STYLE = questionsModule.SECTION_2_COGNITIVE_STYLE;
       SECTION_3_ATTACHMENT = questionsModule.SECTION_3_ATTACHMENT;
       SECTION_4_SOVEREIGNTY = questionsModule.SECTION_4_SOVEREIGNTY;
+      SECTION_5_RESILIENCE = questionsModule.SECTION_5_RESILIENCE;
+
+      const layersModule = await loadDataModule(
+        './sovereignty-data/sovereignty-layers.js',
+        'Sovereignty Layers'
+      );
+      SOVEREIGNTY_LAYERS = layersModule.SOVEREIGNTY_LAYERS;
     } catch (error) {
       ErrorHandler.logError(error, 'SovereigntyEngine.ensureDataLoaded');
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
@@ -204,6 +215,8 @@ export class SovereigntyEngine {
       section2Results: {},
       section3Results: {},
       section4Results: {},
+      section5Results: {},
+      layerScores: {},
       cognitiveBand: null,
       subclasses: [],
       attachmentMode: null,
@@ -301,6 +314,11 @@ export class SovereigntyEngine {
       await this.buildSectionSequence(4);
       this.questionSequence.forEach(q => this.answerQuestionForSample(q));
       this.analyzeSection4Results();
+
+      this.currentSection = 5;
+      await this.buildSectionSequence(5);
+      this.questionSequence.forEach(q => this.answerQuestionForSample(q));
+      this.analyzeSection5Results();
       this.finalizeResults();
     } catch (error) {
       ErrorHandler.logError(error, 'SovereigntyEngine.generateSampleReport');
@@ -566,6 +584,9 @@ export class SovereigntyEngine {
         questions = [...(SECTION_4_SOVEREIGNTY || [])];
         // Apply IQ bracket, dependency level, and cognitive level filters
         questions = this.filterSection4Questions(questions);
+        break;
+      case 5:
+        questions = [...(SECTION_5_RESILIENCE || [])];
         break;
     }
     
@@ -849,24 +870,29 @@ export class SovereigntyEngine {
   getSectionExplanation(section) {
     const explanations = {
       1: {
-        title: 'Section 1: AI Usage Patterns',
+        title: 'Section 1: AI Usage Patterns (Layer 6 — AI Fluency)',
         description: 'We\'ll explore your daily patterns, use cases, and emotional triggers for AI usage.',
-        purpose: 'This section helps identify your level of dependency and typical usage contexts.'
+        purpose: 'This section helps identify whether you treat AI as a tractor (multiplies labor) or an oracle (replaces thinking).'
       },
       2: {
-        title: 'Section 2: Cognitive Style',
+        title: 'Section 2: Cognitive Style (Layer 1 — Cognitive Sovereignty)',
         description: 'We\'ll examine your thinking patterns, problem-solving approaches, and abstraction capacity.',
-        purpose: 'This section determines your cognitive complexity level and thinking style preferences.'
+        purpose: 'This section assesses your capacity for formal reasoning, manipulation detection, and independent judgment under uncertainty.'
       },
       3: {
-        title: 'Section 3: Attachment & Relationship',
-        description: 'We\'ll explore your relationship with AI tools - how you perceive and interact with them.',
-        purpose: 'This section identifies your attachment mode (Tool, Companion, Authority, or Independent).'
+        title: 'Section 3: Attachment & Identity (Layer 7 — Identity Integrity)',
+        description: 'We\'ll explore your relationship with AI tools—how you perceive and interact with them.',
+        purpose: 'This section identifies your attachment mode and susceptibility to digital hive pressure.'
       },
       4: {
         title: 'Section 4: Sovereignty Indicators',
         description: 'We\'ll assess your independence practices, critical thinking habits, and resistance capacity.',
         purpose: 'This section measures your sovereignty capacity and identifies areas of strength or vulnerability.'
+      },
+      5: {
+        title: 'Section 5: Resilience Layers (Economic, Material, Embodied, Social)',
+        description: 'We\'ll assess your capacity across four additional sovereignty layers: economic independence, material competence, embodied strength, and social architecture.',
+        purpose: 'This section identifies your resilience in a post-job world—income optionality, supply chain literacy, physical capability, and micro-community capacity.'
       }
     };
 
@@ -1225,7 +1251,13 @@ export class SovereigntyEngine {
             }
             // Handle cognitiveLevel which maps to cognitiveComplexity
             if (scoreKey === 'cognitiveLevel') {
-              this.scores.cognitiveComplexity += option.scores[scoreKey] || 0;
+              const val = option.scores[scoreKey];
+              if (typeof val === 'number') {
+                this.scores.cognitiveComplexity += val;
+              } else if (typeof val === 'string') {
+                const map = { low: 0, medium: 1, high: 2, very_high: 3 };
+                this.scores.cognitiveComplexity += map[val] ?? 0;
+              }
             }
           });
         }
@@ -1376,6 +1408,12 @@ export class SovereigntyEngine {
       this.renderCurrentQuestion();
     } else if (this.currentSection === 4) {
       this.analyzeSection4Results();
+      this.currentSection = 5;
+      this.currentQuestionIndex = 0;
+      await this.buildSectionSequence(5);
+      this.renderCurrentQuestion();
+    } else if (this.currentSection === 5) {
+      this.analyzeSection5Results();
       this.finalizeResults();
     }
   }
@@ -1412,6 +1450,17 @@ export class SovereigntyEngine {
     this.analysisData.section4Results = {
       sovereigntyScore: this.scores.sovereignty,
       sovereigntyIndicators: this.extractSovereigntyIndicators(),
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  analyzeSection5Results() {
+    // Analyze resilience layers (Economic, Material, Embodied, Social)
+    this.analysisData.section5Results = {
+      layer2: this.scores.layer2 || 0,
+      layer3: this.scores.layer3 || 0,
+      layer4: this.scores.layer4 || 0,
+      layer5: this.scores.layer5 || 0,
       timestamp: new Date().toISOString()
     };
   }
@@ -1470,7 +1519,10 @@ export class SovereigntyEngine {
     
     // Determine sovereign split position
     this.analysisData.sovereignSplitPosition = this.determineSovereignSplitPosition();
-    
+
+    // Compute 7-layer scores (0-100 normalized)
+    this.analysisData.layerScores = this.computeLayerScores();
+
     // Store all answers
     this.analysisData.allAnswers = { ...this.answers };
     // Store full question objects with text for export
@@ -1606,6 +1658,94 @@ export class SovereigntyEngine {
     }
   }
 
+  computeLayerScores() {
+    // Normalize raw scores to 0-100 for each of the 7 layers
+    const norm = (raw, center = 50, scale = 5) =>
+      Math.max(0, Math.min(100, Math.round(center + (raw || 0) * scale)));
+    const s5 = this.analysisData.section5Results || {};
+    return {
+      layer1: norm(this.scores.cognitiveComplexity * 0.5 + this.scores.sovereignty * 0.1, 40, 1.2),
+      layer2: norm(s5.layer2, 50, 4),
+      layer3: norm(s5.layer3, 50, 4),
+      layer4: norm(s5.layer4, 50, 4),
+      layer5: norm(s5.layer5, 50, 4),
+      layer6: norm(100 - this.scores.dependency * 2 + this.scores.sovereignty * 0.3, 50, 0.5),
+      layer7: norm(100 - this.scores.attachment * 2 + this.scores.sovereignty * 0.3, 50, 0.5)
+    };
+  }
+
+  renderLayerProfile() {
+    if (!this.analysisData.layerScores || Object.keys(this.analysisData.layerScores).length === 0) return '';
+    const layers = ['layer1', 'layer2', 'layer3', 'layer4', 'layer5', 'layer6', 'layer7'];
+    const names = ['Cognitive', 'Economic', 'Material', 'Embodied', 'Social', 'AI Fluency', 'Identity'];
+    let html = '<div class="layer-profile"><h3 class="section-title">7-Layer Sovereignty Profile</h3>';
+    html += '<p class="layer-profile-note">Strength across each sovereignty layer. Gaps indicate priority areas for building resilience.</p>';
+    html += '<div class="layer-scores-grid">';
+    layers.forEach((layerId, idx) => {
+      const score = this.analysisData.layerScores[layerId] ?? 0;
+      const name = (SOVEREIGNTY_LAYERS && SOVEREIGNTY_LAYERS[layerId]?.shortName) || names[idx] || layerId;
+      const weak = score < 40;
+      const strong = score >= 70;
+      html += `<div class="layer-score-item ${weak ? 'weak' : ''} ${strong ? 'strong' : ''}">`;
+      html += `<div class="layer-score-header"><span class="layer-name">${SecurityUtils.sanitizeHTML(name)}</span><span class="layer-value">${score}</span></div>`;
+      html += `<div class="score-bar layer-bar"><div class="sovereignty-score-fill" style="width: ${score}%"></div></div>`;
+      html += '</div>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
+  renderBlueprintForFutureproofing() {
+    return `
+      <div class="blueprint-futureproofing">
+        <h3 class="section-title">Blueprint for Futureproofing</h3>
+        <p class="blueprint-intro">Education becomes capability density, not certification. Small, strong, antifragile. That profile ages well across every timeline.</p>
+
+        <div class="blueprint-block">
+          <h4 class="blueprint-subtitle">Weekly Mix</h4>
+          <p class="blueprint-note">This quietly builds every layer simultaneously.</p>
+          <ul class="blueprint-list">
+            <li>3× physical training</li>
+            <li>2× technical / AI skill building</li>
+            <li>1× practical or manual project</li>
+            <li>1× debate, discussion, or logic practice</li>
+            <li>1× community or service activity</li>
+            <li>Daily reading and writing</li>
+          </ul>
+        </div>
+
+        <div class="blueprint-block">
+          <h4 class="blueprint-subtitle">The Bar</h4>
+          <p class="blueprint-note">If systems fracture, can you:</p>
+          <ul class="blueprint-list">
+            <li>Think clearly</li>
+            <li>Feed yourself</li>
+            <li>Earn flexibly</li>
+            <li>Fix things</li>
+            <li>Move your body</li>
+            <li>Form alliances</li>
+            <li>Use tools (including AI)</li>
+            <li>Stay psychologically centered</li>
+          </ul>
+          <p class="blueprint-outcome">If yes, you thrive in almost any future. If not, even a "good" economy becomes fragile. That's the bar now.</p>
+        </div>
+
+        <div class="blueprint-block blueprint-avoid">
+          <h4 class="blueprint-subtitle">Lower Marginal Returns</h4>
+          <p class="blueprint-note">Given the trajectory we're modeling—what not to over-invest in:</p>
+          <ul class="blueprint-list">
+            <li>Prestige chasing</li>
+            <li>Narrow specialization</li>
+            <li>Expensive credentials without leverage</li>
+            <li>Social media identity building</li>
+            <li>Purely theoretical education detached from utility</li>
+          </ul>
+          <p class="blueprint-note">Those belong to the old economy.</p>
+        </div>
+      </div>
+    `;
+  }
+
   displayResults() {
     const container = document.getElementById('resultsContent');
     if (!container) return;
@@ -1643,6 +1783,8 @@ export class SovereigntyEngine {
           <p class="score-description">Higher scores indicate stronger cognitive resistance and greater independence from external influence.</p>
         </div>
 
+        ${this.renderLayerProfile()}
+
         <div class="attachment-mode">
           <h3 class="section-title">Primary Attachment Vector</h3>
           <p class="attachment-name">${SecurityUtils.sanitizeHTML(attachmentMode || '')}</p>
@@ -1677,6 +1819,10 @@ export class SovereigntyEngine {
           <p class="action-plan-intro">Based on your profile, here are priority interventions:</p>
           ${this.generateActionPlan()}
         </div>
+
+        ${this.renderBlueprintForFutureproofing()}
+
+        <p class="follow-up-invite">Explore related tools: <a href="manipulation.html">Manipulation Defense Decoder</a>, <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a>.</p>
       </div>
     `;
 
@@ -1742,6 +1888,41 @@ export class SovereigntyEngine {
       });
     }
 
+    // Layer-specific recommendations based on 7-layer framework
+    const layerScores = this.analysisData.layerScores || {};
+    if ((layerScores.layer2 ?? 50) < 40) {
+      recommendations.push({
+        priority: 'Medium',
+        title: 'Economic Independence',
+        description: 'Build portable value creation—digital leverage, financial literacy, or small-scale entrepreneurship.',
+        practices: ['Explore remote freelancing or contracting', 'Learn basic financial literacy (tax, investing, debt)', 'Develop a skill you could monetize outside platforms']
+      });
+    }
+    if ((layerScores.layer3 ?? 50) < 40) {
+      recommendations.push({
+        priority: 'Medium',
+        title: 'Material Competence',
+        description: 'Most modern adults fail here. Build supply chain resilience.',
+        practices: ['Learn to cook from raw ingredients', 'Basic first aid certification', 'One repair skill (clothing, simple carpentry, or basic electrical)']
+      });
+    }
+    if ((layerScores.layer4 ?? 50) < 40) {
+      recommendations.push({
+        priority: 'Medium',
+        title: 'Embodied Strength',
+        description: 'Stability follows capability. Physical confidence changes behavioral boundaries.',
+        practices: ['Start strength training or a martial discipline', 'Develop somatic regulation (breath work, stress control)', 'Build endurance through regular movement']
+      });
+    }
+    if ((layerScores.layer5 ?? 50) < 40) {
+      recommendations.push({
+        priority: 'Medium',
+        title: 'Social Architecture',
+        description: 'In a fragmented economy, networks replace institutions.',
+        practices: ['Practice group facilitation or conflict resolution', 'Build reciprocal alliances, not just popularity', 'Strengthen boundary-setting skills']
+      });
+    }
+
     if (recommendations.length === 0) {
       return '<p class="action-plan-empty">Continue maintaining your sovereignty practices. Stay vigilant.</p>';
     }
@@ -1797,23 +1978,25 @@ export class SovereigntyEngine {
       const currentQuestion = this.questionSequence[this.currentQuestionIndex];
       const isAnswered = currentQuestion && this.answers[currentQuestion.id];
       nextBtn.textContent = this.currentQuestionIndex >= this.questionSequence.length - 1 ? 
-        (this.currentSection === 4 ? 'Complete Assessment' : 'Next Section') : 'Next';
+        (this.currentSection === 5 ? 'Complete Assessment' : 'Next Section') : 'Next';
     }
 
     if (questionCounter) {
-      const totalQuestions = SECTION_1_USAGE_PATTERNS.length + 
-                             SECTION_2_COGNITIVE_STYLE.length + 
-                             SECTION_3_ATTACHMENT.length + 
-                             SECTION_4_SOVEREIGNTY.length;
+      const totalQuestions = (SECTION_1_USAGE_PATTERNS?.length || 0) + 
+                             (SECTION_2_COGNITIVE_STYLE?.length || 0) + 
+                             (SECTION_3_ATTACHMENT?.length || 0) + 
+                             (SECTION_4_SOVEREIGNTY?.length || 0) +
+                             (SECTION_5_RESILIENCE?.length || 0);
       const currentQuestionNum = this.getCurrentQuestionNumber();
-      questionCounter.textContent = `Question ${currentQuestionNum} of ${totalQuestions} | Section ${this.currentSection} of 4`;
+      questionCounter.textContent = `Question ${currentQuestionNum} of ${totalQuestions} | Section ${this.currentSection} of 5`;
     }
 
     if (progressBar) {
-      const totalQuestions = SECTION_1_USAGE_PATTERNS.length + 
-                             SECTION_2_COGNITIVE_STYLE.length + 
-                             SECTION_3_ATTACHMENT.length + 
-                             SECTION_4_SOVEREIGNTY.length;
+      const totalQuestions = (SECTION_1_USAGE_PATTERNS?.length || 0) + 
+                             (SECTION_2_COGNITIVE_STYLE?.length || 0) + 
+                             (SECTION_3_ATTACHMENT?.length || 0) + 
+                             (SECTION_4_SOVEREIGNTY?.length || 0) +
+                             (SECTION_5_RESILIENCE?.length || 0);
       const currentQuestionNum = this.getCurrentQuestionNumber();
       const progress = (currentQuestionNum / totalQuestions) * 100;
       progressBar.style.width = `${progress}%`;
@@ -1823,16 +2006,18 @@ export class SovereigntyEngine {
   getCurrentQuestionNumber() {
     let questionNum = 0;
     for (let s = 1; s < this.currentSection; s++) {
-      // Use actual filtered question sequence lengths
       if (s === 1) {
-        const section1Questions = this.filterSection1Questions([...SECTION_1_USAGE_PATTERNS]);
+        const section1Questions = this.filterSection1Questions([...(SECTION_1_USAGE_PATTERNS || [])]);
         questionNum += section1Questions.length;
       } else if (s === 2) {
-        const section2Questions = this.filterSection2Questions([...SECTION_2_COGNITIVE_STYLE]);
+        const section2Questions = this.filterSection2Questions([...(SECTION_2_COGNITIVE_STYLE || [])]);
         questionNum += section2Questions.length;
       } else if (s === 3) {
-        const section3Questions = this.filterSection3Questions([...SECTION_3_ATTACHMENT]);
+        const section3Questions = this.filterSection3Questions([...(SECTION_3_ATTACHMENT || [])]);
         questionNum += section3Questions.length;
+      } else if (s === 4) {
+        const section4Questions = this.filterSection4Questions([...(SECTION_4_SOVEREIGNTY || [])]);
+        questionNum += section4Questions.length;
       }
     }
     questionNum += this.currentQuestionIndex + 1;
@@ -1840,14 +2025,14 @@ export class SovereigntyEngine {
   }
   
   getTotalQuestionsEstimate() {
-    // Estimate total questions based on filters
     let total = 0;
-    const section1Questions = this.filterSection1Questions([...SECTION_1_USAGE_PATTERNS]);
-    const section2Questions = this.filterSection2Questions([...SECTION_2_COGNITIVE_STYLE]);
-    const section3Questions = this.filterSection3Questions([...SECTION_3_ATTACHMENT]);
-    const section4Questions = this.filterSection4Questions([...SECTION_4_SOVEREIGNTY]);
-    total = section1Questions.length + section2Questions.length + 
-            section3Questions.length + section4Questions.length;
+    const section1Questions = this.filterSection1Questions([...(SECTION_1_USAGE_PATTERNS || [])]);
+    const section2Questions = this.filterSection2Questions([...(SECTION_2_COGNITIVE_STYLE || [])]);
+    const section3Questions = this.filterSection3Questions([...(SECTION_3_ATTACHMENT || [])]);
+    const section4Questions = this.filterSection4Questions([...(SECTION_4_SOVEREIGNTY || [])]);
+    const section5Questions = SECTION_5_RESILIENCE || [];
+    total = section1Questions.length + section2Questions.length +
+            section3Questions.length + section4Questions.length + section5Questions.length;
     return total;
   }
 
@@ -1859,7 +2044,11 @@ export class SovereigntyEngine {
         attachment: 0,
         sovereignty: 0,
         cognitiveComplexity: 0,
-        driftRisk: 0
+        driftRisk: 0,
+        layer2: 0,
+        layer3: 0,
+        layer4: 0,
+        layer5: 0
       };
       this.iqBracket = null;
       this.iqBracketSecondary = null;
@@ -1878,6 +2067,8 @@ export class SovereigntyEngine {
         section2Results: {},
         section3Results: {},
         section4Results: {},
+        section5Results: {},
+        layerScores: {},
         cognitiveBand: null,
         subclasses: [],
         attachmentMode: null,
@@ -1927,13 +2118,17 @@ export class SovereigntyEngine {
         this.iqBracket = progress.iqBracket || null;
         this.iqBracketSecondary = progress.iqBracketSecondary || null;
         this.answers = progress.answers || {};
-        this.scores = progress.scores || {
+        this.scores = Object.assign({
           dependency: 0,
           attachment: 0,
           sovereignty: 0,
           cognitiveComplexity: 0,
-          driftRisk: 0
-        };
+          driftRisk: 0,
+          layer2: 0,
+          layer3: 0,
+          layer4: 0,
+          layer5: 0
+        }, progress.scores || {});
         this.preliminaryFilters = progress.preliminaryFilters || {
           aiUsageFrequency: null,
           dependencyLevel: null,
@@ -1953,7 +2148,7 @@ export class SovereigntyEngine {
         if (this.currentSection === 0) {
           // Show IQ bracket selection if not yet selected
           this.showIQBracketSelection();
-        } else if (this.currentSection > 0 && this.currentSection <= 4) {
+        } else if (this.currentSection > 0 && this.currentSection <= 5) {
           // Load data and rebuild sequence
           this.ensureDataLoaded().then(() => {
             return this.buildSectionSequence(this.currentSection);
@@ -1988,7 +2183,7 @@ export class SovereigntyEngine {
   }
 
   generateCSV() {
-    // Generate CSV from analysis data
+    const layerScores = this.analysisData.layerScores || {};
     const rows = [
       ['Metric', 'Value'],
       ['Timestamp', this.analysisData.timestamp],
@@ -1999,8 +2194,14 @@ export class SovereigntyEngine {
       ['Sovereign Split Position', this.analysisData.sovereignSplitPosition?.name || ''],
       ['Dependency Score', this.scores.dependency],
       ['Attachment Score', this.scores.attachment],
-      ['Resistance Capacity Score', this.scores.sovereignty],
-      ['Cognitive Complexity', this.scores.cognitiveComplexity]
+      ['Cognitive Complexity', this.scores.cognitiveComplexity],
+      ['Layer 1 (Cognitive)', layerScores.layer1 ?? ''],
+      ['Layer 2 (Economic)', layerScores.layer2 ?? ''],
+      ['Layer 3 (Material)', layerScores.layer3 ?? ''],
+      ['Layer 4 (Embodied)', layerScores.layer4 ?? ''],
+      ['Layer 5 (Social)', layerScores.layer5 ?? ''],
+      ['Layer 6 (AI Fluency)', layerScores.layer6 ?? ''],
+      ['Layer 7 (Identity)', layerScores.layer7 ?? '']
     ];
     
     return rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');

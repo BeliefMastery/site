@@ -1,0 +1,68 @@
+// 7-Layer Sovereignty Framework
+// Calibrated for post-job world, supply chain resilience, and algorithmic pressure
+
+export const SOVEREIGNTY_LAYERS = {
+  layer1: {
+    id: 'layer1',
+    name: 'Cognitive Sovereignty',
+    shortName: 'Cognitive',
+    tagline: 'Non-negotiable foundation',
+    description: 'Formal reasoning, manipulation detection, narrative vs. facts, independent learning, critical AI use.',
+    skills: ['debate', 'philosophy', 'statistics', 'prompt engineering', 'epistemology basics', 'writing with precision'],
+    outcome: 'Trusts own judgment under uncertainty. Prevents becoming psychologically decorative.',
+  },
+  layer2: {
+    id: 'layer2',
+    name: 'Economic Independence',
+    shortName: 'Economic',
+    tagline: 'Post-job world compatible',
+    description: 'Portable value creation—digital leverage, remote capability, financial literacy, small-scale entrepreneurship, negotiation, bookkeeping.',
+    skills: ['digital leverage', 'remote contracting', 'financial literacy', 'small-scale entrepreneurship', 'negotiation', 'operating without platforms'],
+    outcome: 'Income optionality rather than employment dependency.',
+  },
+  layer3: {
+    id: 'layer3',
+    name: 'Material Competence',
+    shortName: 'Material',
+    tagline: 'Supply chain resilience',
+    description: 'Cooking from raw ingredients, growing food, repair, basic carpentry/tools, basic electrical/plumbing, first aid, outdoor navigation, driving/logistics.',
+    skills: ['cooking from scratch', 'growing food', 'repair clothing/equipment', 'basic carpentry', 'basic electrical/plumbing', 'first aid', 'outdoor navigation'],
+    outcome: 'Never panics when systems hiccup. Most modern adults fail here.',
+  },
+  layer4: {
+    id: 'layer4',
+    name: 'Embodied Strength',
+    shortName: 'Embodied',
+    tagline: 'Stability follows capability',
+    description: 'Strength training, endurance, coordination, self-defense or martial discipline, somatic regulation.',
+    skills: ['strength training', 'endurance', 'coordination', 'self-defense', 'somatic regulation', 'breath and stress control'],
+    outcome: 'Lower victimization risk, higher psychological stability.',
+  },
+  layer5: {
+    id: 'layer5',
+    name: 'Social Architecture',
+    shortName: 'Social',
+    tagline: 'Networks replace institutions',
+    description: 'Group facilitation, conflict resolution, reading character, boundary setting, collaborative problem solving, reciprocal alliances.',
+    skills: ['group facilitation', 'conflict resolution', 'reading character', 'boundary setting', 'collaborative problem solving', 'reciprocal alliances'],
+    outcome: 'Can form functional micro-communities. Future wealth.',
+  },
+  layer6: {
+    id: 'layer6',
+    name: 'AI Fluency',
+    shortName: 'AI Fluency',
+    tagline: 'Leverage, not dependence',
+    description: 'AI as tractor (multiplies labor) not oracle (replaces thinking). Understands model failure, hallucinations, bias, verification, automation pipelines.',
+    skills: ['understanding model failure', 'verification', 'automation pipelines', 'using AI to compress time, not outsource judgment'],
+    outcome: '10× productivity without cognitive atrophy.',
+  },
+  layer7: {
+    id: 'layer7',
+    name: 'Identity Integrity',
+    shortName: 'Identity',
+    tagline: 'Most protective layer',
+    description: 'Self-authorship, long attention span, solitude tolerance, values clarity, service orientation, purpose not tied to external validation.',
+    skills: ['self-authorship', 'long attention span', 'solitude tolerance', 'values clarity', 'service orientation'],
+    outcome: 'Low susceptibility to digital hive pressure. High sovereignty.',
+  },
+};

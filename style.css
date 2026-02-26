@@ -306,6 +306,12 @@ main {
     max-width: 100%;
 }
 
+@media (min-width: 768px) {
+    .tools-section-inner .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 .tool-card-header {
     display: flex;
     align-items: center;
@@ -5857,6 +5863,118 @@ img {
     height: 100%;
     background: var(--brand);
     transition: width 0.5s;
+}
+
+.layer-profile {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+}
+
+.layer-profile-note {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.layer-scores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.layer-score-item {
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+}
+
+.layer-score-item.weak {
+    border-left: 3px solid var(--accent);
+}
+
+.layer-score-item.strong {
+    border-left: 3px solid var(--brand);
+}
+
+.layer-score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.layer-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.layer-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.layer-bar {
+    height: 8px;
+    margin: 0;
+}
+
+.blueprint-futureproofing {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+}
+
+.blueprint-intro {
+    color: var(--muted);
+    font-size: 1rem;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+
+.blueprint-block {
+    margin-bottom: 1.5rem;
+}
+
+.blueprint-block:last-child {
+    margin-bottom: 0;
+}
+
+.blueprint-subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--brand);
+    margin: 0 0 0.5rem 0;
+}
+
+.blueprint-note {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.blueprint-list {
+    margin: 0 0 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.blueprint-list li {
+    margin: 0.25rem 0;
+}
+
+.blueprint-outcome {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0.5rem 0 0 0;
+}
+
+.blueprint-avoid {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
 }
 
 .attachment-name {

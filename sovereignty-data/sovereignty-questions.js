@@ -1036,11 +1036,182 @@ export const SECTION_4_SOVEREIGNTY = [
   // Note: Full implementation would have 25 questions total
 ];
 
+// Section 5: Resilience Layers (Economic, Material, Embodied, Social)
+// Maps to sovereignty framework layers 2, 3, 4, 5
+export const SECTION_5_RESILIENCE = [
+  // Layer 2 - Economic Independence
+  {
+    id: 'r1',
+    section: 5,
+    layer: 2,
+    question: 'If your primary income source disappeared tomorrow, how quickly could you generate replacement income?',
+    type: 'multiple_choice',
+    options: [
+      { text: 'Within a week—I have multiple income streams or portable skills', scores: { layer2: 5 } },
+      { text: 'Within a month—I could pivot to freelancing or consulting', scores: { layer2: 3 } },
+      { text: 'Within a few months—I\'d need to retrain or find a new employer', scores: { layer2: 0 } },
+      { text: 'I\'m not sure—I\'m highly dependent on my current job', scores: { layer2: -3 } }
+    ]
+  },
+  {
+    id: 'r2',
+    section: 5,
+    layer: 2,
+    question: 'I understand my finances well enough to:',
+    type: 'multiple_response',
+    options: [
+      { text: 'File my own taxes or manage a simple business', scores: { layer2: 2 } },
+      { text: 'Explain compound interest and basic investing', scores: { layer2: 1 } },
+      { text: 'Negotiate rates or contracts', scores: { layer2: 2 } },
+      { text: 'Operate without a platform if needed (direct clients, barter, co-ops)', scores: { layer2: 3 } },
+      { text: 'None of the above', scores: { layer2: -2 } }
+    ]
+  },
+  {
+    id: 'r3',
+    section: 5,
+    layer: 2,
+    question: 'I have experience with:',
+    type: 'multiple_response',
+    options: [
+      { text: 'Remote work or freelancing', scores: { layer2: 2 } },
+      { text: 'Basic scripting or automation to multiply my output', scores: { layer2: 2 } },
+      { text: 'Small-scale entrepreneurship (even a side hustle)', scores: { layer2: 2 } },
+      { text: 'None of these', scores: { layer2: -2 } }
+    ]
+  },
+  // Layer 3 - Material Competence
+  {
+    id: 'r4',
+    section: 5,
+    layer: 3,
+    question: 'I can cook a nutritious meal from raw ingredients (no premade sauces or packaged meals):',
+    type: 'frequency',
+    options: [
+      { text: 'Regularly (weekly or more)', scores: { layer3: 4 } },
+      { text: 'Sometimes', scores: { layer3: 2 } },
+      { text: 'Rarely', scores: { layer3: 0 } },
+      { text: 'Never or I wouldn\'t know where to start', scores: { layer3: -3 } }
+    ]
+  },
+  {
+    id: 'r5',
+    section: 5,
+    layer: 3,
+    question: 'I have basic competence in:',
+    type: 'multiple_response',
+    options: [
+      { text: 'First aid', scores: { layer3: 2 } },
+      { text: 'Repairing clothing or basic equipment', scores: { layer3: 1 } },
+      { text: 'Basic carpentry, electrical, or plumbing literacy', scores: { layer3: 2 } },
+      { text: 'Outdoor navigation or driving/manual logistics', scores: { layer3: 1 } },
+      { text: 'Growing food (even herbs or a small garden)', scores: { layer3: 2 } },
+      { text: 'None of these', scores: { layer3: -2 } }
+    ]
+  },
+  {
+    id: 'r6',
+    section: 5,
+    layer: 3,
+    question: 'If supply chains hiccup and stores are empty for a week, I would:',
+    type: 'multiple_choice',
+    options: [
+      { text: 'Be fine—I have stocks and skills to manage', scores: { layer3: 4 } },
+      { text: 'Manage with some stress—I have basics covered', scores: { layer3: 2 } },
+      { text: 'Struggle significantly', scores: { layer3: -1 } },
+      { text: 'Panic—I\'m completely dependent on just-in-time delivery', scores: { layer3: -4 } }
+    ]
+  },
+  // Layer 4 - Embodied Strength
+  {
+    id: 'r7',
+    section: 5,
+    layer: 4,
+    question: 'I engage in strength training or sustained physical discipline:',
+    type: 'frequency',
+    options: [
+      { text: 'Regularly (2+ times per week)', scores: { layer4: 4 } },
+      { text: 'Occasionally', scores: { layer4: 2 } },
+      { text: 'Rarely', scores: { layer4: 0 } },
+      { text: 'Never', scores: { layer4: -2 } }
+    ]
+  },
+  {
+    id: 'r8',
+    section: 5,
+    layer: 4,
+    question: 'I have training or practice in:',
+    type: 'multiple_response',
+    options: [
+      { text: 'Self-defense or a martial discipline', scores: { layer4: 2 } },
+      { text: 'Somatic regulation (breath work, stress control, body awareness)', scores: { layer4: 2 } },
+      { text: 'Endurance activities (running, swimming, cycling)', scores: { layer4: 1 } },
+      { text: 'None of these', scores: { layer4: -1 } }
+    ]
+  },
+  {
+    id: 'r9',
+    section: 5,
+    layer: 4,
+    question: 'When stressed, I typically:',
+    type: 'multiple_choice',
+    options: [
+      { text: 'Use breath, movement, or body-based practices to regulate', scores: { layer4: 3 } },
+      { text: 'Sometimes use physical methods, sometimes screen-scroll', scores: { layer4: 0 } },
+      { text: 'Rely on distraction (screens, food, substances)', scores: { layer4: -2 } },
+      { text: 'I don\'t have reliable stress regulation', scores: { layer4: -3 } }
+    ]
+  },
+  // Layer 5 - Social Architecture
+  {
+    id: 'r10',
+    section: 5,
+    layer: 5,
+    question: 'I can:',
+    type: 'multiple_response',
+    options: [
+      { text: 'Facilitate a group discussion or meeting', scores: { layer5: 2 } },
+      { text: 'Mediate conflict or help others resolve disagreements', scores: { layer5: 2 } },
+      { text: 'Read character and assess trustworthiness', scores: { layer5: 2 } },
+      { text: 'Set and hold boundaries clearly', scores: { layer5: 2 } },
+      { text: 'Build reciprocal alliances (not just popularity)', scores: { layer5: 2 } },
+      { text: 'None of these', scores: { layer5: -2 } }
+    ]
+  },
+  {
+    id: 'r11',
+    section: 5,
+    layer: 5,
+    question: 'In a fragmented economy, I rely on:',
+    type: 'multiple_choice',
+    options: [
+      { text: 'A functional micro-community or reciprocal network I\'ve built', scores: { layer5: 4 } },
+      { text: 'A mix of institutions and some personal connections', scores: { layer5: 2 } },
+      { text: 'Mostly institutions (employer, government, platforms)', scores: { layer5: -1 } },
+      { text: 'I\'m not sure—I feel isolated when systems fail', scores: { layer5: -3 } }
+    ]
+  },
+  {
+    id: 'r12',
+    section: 5,
+    layer: 5,
+    question: 'When someone crosses a boundary, I:',
+    type: 'multiple_choice',
+    options: [
+      { text: 'Address it clearly and directly', scores: { layer5: 4 } },
+      { text: 'Sometimes speak up, sometimes avoid', scores: { layer5: 1 } },
+      { text: 'Usually avoid confrontation', scores: { layer5: -2 } },
+      { text: 'Struggle to recognize or enforce boundaries', scores: { layer5: -3 } }
+    ]
+  }
+];
+
 // Combined questions array for easy access
 export const ALL_QUESTIONS = [
   ...SECTION_1_USAGE_PATTERNS,
   ...SECTION_2_COGNITIVE_STYLE,
   ...SECTION_3_ATTACHMENT,
-  ...SECTION_4_SOVEREIGNTY
+  ...SECTION_4_SOVEREIGNTY,
+  ...SECTION_5_RESILIENCE
 ];
 

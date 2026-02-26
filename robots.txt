@@ -19,7 +19,6 @@ Allow: /books.html
 Allow: /tools.html
 Allow: /about-the-author.html
 Allow: /framework-atlas.html
-Allow: /assessment-examples.html
 Allow: /archetype-spread.html
 Allow: /diagnosis.html
 Allow: /coaching.html

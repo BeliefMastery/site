@@ -31,11 +31,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://beliefmastery.github.io/site/assessment-examples.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://beliefmastery.github.io/site/coaching.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
