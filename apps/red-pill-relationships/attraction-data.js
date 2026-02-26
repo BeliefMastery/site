@@ -7,6 +7,8 @@
  */
 
 const OPTS = [1, 3, 5, 7, 10];
+/** 6-point scale for rad activity type (anti-rad → low-rad → rad → high-rad spectrum) */
+const OPTS_6 = [1, 2, 4, 6, 8, 10];
 
 /** Male cluster weights (Hoe_math: Axis = 40% for males) */
 export const MALE_CLUSTER_WEIGHTS = {
@@ -80,8 +82,54 @@ const MALE_REPRODUCTIVE_QUESTIONS = [
   { id: 'parental_3', subcategory: 'parentalInvestor', text: 'How much time and energy would you realistically invest in child-rearing?', weight: 1.0, options: OPTS, optionLabels: ['Minimal; prefer to outsource', 'Limited; career comes first', 'Moderate; balanced approach', 'Significant; hands-on father', 'Primary; central to my life'] }
 ];
 
-/** MALE Axis of Attraction — Performance/Status (wealth = productivity, sharing, popularity, unique talent) + Physical/Genetic + Humour. Maps to Bad Boy / Good Guy grid. */
+/**
+ * MALE Rad Activity — External interest that signals direction; she competes with it.
+ * Uses behavioral descriptors (not exhaustive category lists) to reduce gaming.
+ * shuffleOptions: true hides significance; options displayed in random order per respondent.
+ * Gym/vanity: fitness-for-aesthetics sits in low-rad (committed but no larger purpose).
+ * Weighting: activity type (40%), consumption vs creation (30%), competition (20%), visibility (10%).
+ */
+const MALE_RAD_ACTIVITY_QUESTIONS = [
+  { id: 'rad_1', subcategory: 'radActivity', weight: 0.40, shuffleOptions: true, text: 'What best describes your primary focus outside romantic relationships?', options: OPTS_6, optionLabels: [
+    'I spend significant time on escape, substances, or content consumption with nothing to show for it',
+    'Most of my free time is passive—watching, playing, scrolling—with little external output',
+    'I have no compelling external focus; my free time has no real direction',
+    'I have regular activities or hobbies—fitness, light pastimes—but they\'re not part of a larger purpose',
+    'I pursue physical or skill-based activities that require real commitment, risk, or mastery',
+    'I\'m building something—career, project, craft, or mission—that extends beyond me'
+  ] },
+  { id: 'rad_2', subcategory: 'radActivity', weight: 0.30, shuffleOptions: true, text: 'How do you spend your non-work time?', options: OPTS, optionLabels: [
+    'Mostly consumption—watching, playing, scrolling—with little building or output',
+    'Heavy consumption with some light activity',
+    'Mix of consumption and skill-building',
+    'Significant skill-building or physical mastery',
+    'Primarily building, creating, or mastering—output-focused'
+  ] },
+  { id: 'rad_3', subcategory: 'radActivity', weight: 0.20, shuffleOptions: true, text: 'How much does your partner (or potential partner) have to compete with for your time and attention from external pursuits?', options: OPTS, optionLabels: [
+    'Nothing; I have no compelling external focus',
+    'Little; she gets most of my attention',
+    'Moderate; I have interests but she\'s central',
+    'Significant; I have a mission she respects',
+    'High; she competes with something I\'m building'
+  ] },
+  { id: 'rad_4', subcategory: 'radActivity', weight: 0.10, shuffleOptions: true, text: 'Would others describe your life as having a compelling ambition or mission beyond the relationship?', options: OPTS, optionLabels: [
+    'No; seen as having no real direction',
+    'Unclear; mixed or low-ambition impression',
+    'Somewhat; I have goals but they\'re private',
+    'Yes; people see I\'m building something',
+    'Strongly; known for a visible mission or output'
+  ] }
+];
+
+/** Rad activity type modifier: anti-rad (1–2) gets floor; ensures consumption/escape tanks the score. */
+export const RAD_ACTIVITY_TYPE_MODIFIER = {
+  ANTI_RAD_FLOOR: 25,   // Max percentile if activity type is 1 or 2 (porn/drugs or gaming/TV)
+  ANTI_RAD_THRESHOLD: 2 // rad_1 raw ≤ 2 = anti-rad penalty (OPTS_6: 1=porn/drugs, 2=gaming/TV)
+};
+
+/** MALE Axis of Attraction — Performance/Status (wealth = productivity, sharing, popularity, unique talent) + Physical/Genetic + Humour + Rad Activity. Maps to Bad Boy / Good Guy grid. */
 const MALE_AXIS_QUESTIONS = [
+  ...MALE_RAD_ACTIVITY_QUESTIONS,
   // Performance/Status (Wealth = productivity, sharing, social network popularity, unique/outstanding talent — capacity to fluff the nest, provide, support status)
   { id: 'perf_1', subcategory: 'performanceStatus', text: 'How would you rate your current social status and influence?', weight: 1.0, options: OPTS, optionLabels: ['Low; little influence', 'Below average', 'Average', 'Above average; notable', 'High; significant influence'] },
   { id: 'perf_2', subcategory: 'performanceStatus', text: 'What is your current annual income bracket?', weight: 1.0, options: OPTS, optionLabels: ['Under $30k', '$30k-$60k', '$60k-$100k', '$100k-$200k', 'Over $200k'] },
@@ -181,6 +229,7 @@ export const MALE_CLUSTERS = {
     subtitle: 'Performance/Status + Physical/Genetic + Humour — Bad Boy / Good Guy Grid',
     description: 'Wealth (productivity, sharing, social popularity, unique talent); aesthetics, virility, fitness; humour as intelligence signal. Drives initiation attraction, time-to-intimacy, investment requirement. Maps to Bad Boy / Good Guy grid.',
     subcategories: {
+      radActivity: { label: 'Rad Activity', desc: 'External interest that signals direction; she competes with it. Anti-rad (gaming, TV, porn, drugs) = consumption/escape. Low-rad (badminton, casual hobbies) = weak. Rad (snowboarding, martial arts) = risk, skill. High-rad (business, mission) = "fucking the world with your passion." Weighted: activity type 40%, consumption 30%, competition 20%, visibility 10%.' },
       performanceStatus: { label: 'Performance/Status (Wealth)', desc: 'Productivity, sharing, social network popularity, unique/outstanding talent.' },
       physicalGenetic: { label: 'Physical/Genetic Signals', desc: 'Aesthetics, genetics, virility, fitness, cleanliness.' },
       humour: { label: 'Humour', desc: 'Intelligence indicator; approachability and attraction.' }
