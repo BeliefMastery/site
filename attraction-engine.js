@@ -412,10 +412,10 @@ export class AttractionEngine {
     return smv;
   }
 
-  classifyMarketPosition(smv) {
-    const segs = this.currentGender === 'male' ? MARKET_SEGMENTS.map(s => ({ ...s, label: s.label })) : MARKET_SEGMENTS.map(s => ({ ...s, label: s.femaleLabel }));
-    for (const s of segs) if (smv >= s.min) return s.label;
-    return segs[segs.length - 1].label;
+  classifyMarketPosition(overall) {
+    const useLabel = this.currentGender === 'male' ? 'maleLabel' : 'femaleLabel';
+    for (const s of MARKET_SEGMENTS) if (overall >= s.min) return s[useLabel];
+    return MARKET_SEGMENTS[MARKET_SEGMENTS.length - 1][useLabel];
   }
 
   identifyWeakestSubcategories(smv) {
@@ -632,14 +632,14 @@ export class AttractionEngine {
     const femaleLabelSingular = { Keepers: 'Keeper', Sleepers: 'Sleeper', Sweepers: 'Sweeper' };
     const classificationContext = this.currentGender === 'male' ? 'How women are likely to categorise you' : 'How men are likely to treat you';
     const classificationDisplay = this.currentGender === 'female' && gridLabel ? `${femaleLabelSingular[gridLabel] || gridLabel}` : gridLabel;
-    const investmentSuffix = this.currentGender === 'female' && s.keeperSweeper?.investment ? ` — ${s.keeperSweeper.investment}` : '';
+    const investmentSuffix = '';
     const combinedCardDetail = this.currentGender === 'male' && s.badBoyGoodGuy
       ? `Overall Sexual Market Value ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: manner and provision ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction ~${s.badBoyGoodGuy.badBoyPercentile}%.`
       : this.currentGender === 'female' && s.keeperSweeper
         ? `Overall Sexual Market Value ~${overallPercentile}th percentile — ${s.marketPosition}.${s.keeperSweeper.desc ? ` ${s.keeperSweeper.desc}` : ''}`
         : '';
     const partnerCountNote = this.currentGender === 'female' && s.keeperSweeper?.partnerCountDowngrade
-      ? `<span class="qualification-explanation" style="display:block;margin-top:0.5rem;font-style:italic;">Partner-count impact (${s.keeperSweeper.partnerCountDowngrade}): men tend to move women down when partner count is high — it signals reduced loyalty expectation for long-term commitment. Men won't know initially; it matters if discovered.</span>`
+      ? `<span class="qualification-explanation" style="display:block;margin-top:0.5rem;font-style:italic;">Partner-count impact (${s.keeperSweeper.partnerCountDowngrade}): attractiveness mitigates the effect. High partner count more often moves Keepers to Sleepers than Sleepers to Sweepers—the latter typically requires an extremely high partner count. It signals reduced loyalty expectation for long-term commitment. Men won't know initially; it matters if discovered.</span>`
       : '';
     const combinedCard = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl attraction-at-glance-card" style="background:${smvColor}12;border-left:4px solid ${smvColor}"><span class="attraction-classification-label">${SecurityUtils.sanitizeHTML(classificationContext)}</span><span class="attraction-classification-value" style="color:${smvColor}">${SecurityUtils.sanitizeHTML(classificationDisplay)}${SecurityUtils.sanitizeHTML(investmentSuffix)}</span><span class="attraction-badge-desc" style="margin-top:0.5rem;">${SecurityUtils.sanitizeHTML(combinedCardDetail)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}${partnerCountNote}</div>` : '';
 

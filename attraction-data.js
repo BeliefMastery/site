@@ -320,13 +320,13 @@ export const KEEPER_SWEEPER_CHART = [
   { segment: 'sweepers', label: 'Sweepers', desc: '(Under the rug)', sublabel: 'Worst I\'ll take', investment: 'LESS Investment' }
 ];
 
-/** Market segmentation thresholds (Keeper/Sleeper/Sweeper) */
+/** Market segmentation thresholds. Male = tier/percentile; female = Keeper/Sleeper/Sweeper lens. */
 export const MARKET_SEGMENTS = [
-  { min: 80, label: 'Top Tier Keeper (Top 20%)', femaleLabel: 'Top Tier (High Mate Value)' },
-  { min: 60, label: 'Keeper Material (Above Average)', femaleLabel: 'Above Average (Strong Options)' },
-  { min: 40, label: 'Sleeper Zone (Average)', femaleLabel: 'Average (Decent Options)' },
-  { min: 20, label: 'Sweeper Territory (Below Average)', femaleLabel: 'Below Average (Limited Options)' },
-  { min: 0, label: 'Bottom Quintile (Critical Development)', femaleLabel: 'Bottom Quintile (Critical Development)' }
+  { min: 80, maleLabel: 'Top Tier (Top 20%)', femaleLabel: 'Top Tier (High Mate Value)' },
+  { min: 60, maleLabel: 'Above Average', femaleLabel: 'Above Average (Strong Options)' },
+  { min: 40, maleLabel: 'Average', femaleLabel: 'Average (Decent Options)' },
+  { min: 20, maleLabel: 'Below Average', femaleLabel: 'Below Average (Limited Options)' },
+  { min: 0, maleLabel: 'Bottom Quintile (Critical Development)', femaleLabel: 'Bottom Quintile (Critical Development)' }
 ];
 
 /** Developmental levels (Hoe_math) */

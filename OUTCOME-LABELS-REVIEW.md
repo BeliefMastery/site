@@ -56,8 +56,8 @@ These labels appear in the "Overall SMV ~Xth percentile" line.
 
 | Min percentile | Male label | Female label |
 |----------------|------------|--------------|
-| 80 | Top Tier Keeper (Top 20%) | Top Tier (High Mate Value) |
-| 60 | Keeper Material (Above Average) | Above Average (Strong Options) |
-| 40 | Sleeper Zone (Average) | Average (Decent Options) |
-| 20 | Sweeper Territory (Below Average) | Below Average (Limited Options) |
+| 80 | Top Tier (Top 20%) | Top Tier (High Mate Value) |
+| 60 | Above Average | Above Average (Strong Options) |
+| 40 | Average | Average (Decent Options) |
+| 20 | Below Average | Below Average (Limited Options) |
 | 0 | Bottom Quintile (Critical Development) | Bottom Quintile (Critical Development) |
