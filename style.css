@@ -363,8 +363,8 @@ main {
 
 .tool-card-action {
     display: inline-block;
-    width: 50%;
-    min-width: 200px;
+    width: fit-content;
+    min-width: unset;
     text-align: center;
 }
 
