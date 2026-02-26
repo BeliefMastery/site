@@ -1570,6 +1570,10 @@ export class CharacterSheetEngine {
             </table>
           ` : '<p>No significant flaws identified.</p>'}
         </section>
+
+        <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
+          <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Character and temperament connect across tools. <a href="archetype.html">Modern Archetype Identification</a> maps behavioral patterns and social roles; <a href="paradigm.html">Logos Structure</a> surfaces meaning frameworks; <a href="channels.html">Channel Flow Diagnostics</a> offers another lens on expression and flow.</p>
+        </div>
       </div>
     `;
 

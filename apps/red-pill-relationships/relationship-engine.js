@@ -791,9 +791,7 @@ export class RelationshipEngine {
     SecurityUtils.safeInnerHTML(container, `
       <div style="padding: 2.5rem; text-align: center; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius); box-shadow: var(--shadow);">
         <h3 style="color: var(--brand); margin-bottom: 1.5rem; font-size: 1.5rem;">Assessment Complete</h3>
-        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-          Before viewing your results, take a moment to ground yourself. This analysis is a tool for clarity, not a verdict. Use it to support your sovereignty and relational understanding.
-        </p>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem;">Your analysis is ready.</p>
         <button class="btn btn-primary" id="continueToResults" style="min-width: 150px;">View Results</button>
       </div>
     `);
@@ -1323,7 +1321,7 @@ export class RelationshipEngine {
     // Follow-up invitation
     html += `
       <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
-        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Relationship strain connects to other dimensions. Try <a href="temperament.html">Polarity Position Mapping</a> to clarify masculine–feminine fit, <a href="archetype.html">Modern Archetype Identification</a> to understand archetypal pressures, or <a href="attraction.html">Attraction &amp; Status</a> to map mating-market position.</p>
+        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Strain points often root in identity, polarity, or market reality. <a href="temperament.html">Polarity Position Mapping</a> clarifies whether masculine–feminine fit underlies the tension; <a href="archetype.html">Modern Archetype Identification</a> surfaces archetypal pressures; <a href="attraction.html">Attraction &amp; Status</a> maps your mating-market position so you can separate compatibility issues from selection reality.</p>
       </div>
     `;
 

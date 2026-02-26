@@ -279,21 +279,39 @@ export const FEMALE_CLUSTERS = {
   }
 };
 
-/** Bad Boy / Good Guy grid cells (male) */
+/** Bad Boy / Good Guy grid cells (male)
+ * Good Guy axis = manner and provision (5 levels: hi, upper-mid, mid, lower-mid, lo)
+ * Bad Boy axis = attraction (3 levels: hi, mid, lo)
+ */
 export const BAD_BOY_GOOD_GUY_GRID = [
-  { goodGuy: 'hi', badBoy: 'lo', label: 'Prince Charming', sublabel: 'Ideal Long-Term', color: 'lightred' },
+  { goodGuy: 'hi', badBoy: 'hi', label: 'Prince Charming', sublabel: 'Ideal Long Term', color: 'lightred' },
   { goodGuy: 'hi', badBoy: 'mid', label: 'Husband zone', color: 'lightblue' },
-  { goodGuy: 'hi', badBoy: 'hi', label: 'Friend zone', color: 'white' },
-  { goodGuy: 'mid', badBoy: 'lo', label: 'Good', color: 'lightred' },
+  { goodGuy: 'hi', badBoy: 'lo', label: 'Friend zone', color: 'white' },
+  { goodGuy: 'upper-mid', badBoy: 'hi', label: 'Good Situationship', color: 'lightgreen' },
+  { goodGuy: 'upper-mid', badBoy: 'mid', label: 'Good Settling', color: 'lightyellow' },
+  { goodGuy: 'upper-mid', badBoy: 'lo', label: 'Comfortable Compromise', color: 'lightyellow' },
+  { goodGuy: 'mid', badBoy: 'hi', label: 'Situationship', color: 'lightgreen' },
   { goodGuy: 'mid', badBoy: 'mid', label: 'Settling', color: 'lightyellow' },
-  { goodGuy: 'mid', badBoy: 'hi', label: 'Gold Digger Ick', color: 'lightgreen' },
-  { goodGuy: 'lo', badBoy: 'lo', label: 'Mid', color: 'lightred' },
-  { goodGuy: 'lo', badBoy: 'mid', label: 'Bad', color: 'lightyellow' },
-  { goodGuy: 'lo', badBoy: 'hi', label: 'Creep', color: 'lightgreen' },
-  { goodGuy: 'lo', badBoy: 'lo', label: 'Bad Boy', sublabel: 'Ideal Short-Term', color: 'reddishbrown' },
-  { goodGuy: 'lo', badBoy: 'mid', label: 'Mistake', color: 'palegreen' },
-  { goodGuy: 'lo', badBoy: 'hi', label: 'Ghost', color: 'darkgrey' }
+  { goodGuy: 'mid', badBoy: 'lo', label: 'Resource Compromise', color: 'lightred' },
+  { goodGuy: 'lower-mid', badBoy: 'hi', label: 'Bad Situationship', color: 'palegreen' },
+  { goodGuy: 'lower-mid', badBoy: 'mid', label: 'Bad Settling', color: 'lightred' },
+  { goodGuy: 'lower-mid', badBoy: 'lo', label: 'Last Resort', color: 'darkgrey' },
+  { goodGuy: 'lo', badBoy: 'hi', label: 'Bad Boy Fun Time', sublabel: 'Short Term', color: 'reddishbrown' },
+  { goodGuy: 'lo', badBoy: 'mid', label: '... Mistake', color: 'palegreen' },
+  { goodGuy: 'lo', badBoy: 'lo', label: 'Invisible/Ghost or Creep', color: 'darkgrey' }
 ];
+
+/**
+ * Partner count impact on female Keeper/Sleeper/Sweeper (male lens).
+ * pat_2 raw: 1=0-1, 3=2-4, 5=5-9, 7=10-19, 10=20+. Kept moderate so it doesn't override overall SMV.
+ * - Keeper→Sleeper: only 10-19+ (under 30) or 20+ (30+)
+ * - Sleeper→Sweeper: only 20+ partners
+ * - Keepers never drop to Sweeper from partner count alone (max one step)
+ */
+export const PARTNER_COUNT_DOWNGRADE = {
+  keeperToSleeper: { under30: 7, under40: 10, over40: 10 },
+  sleeperToSweeper: { under30: 10, under40: 10, over40: 10 }
+};
 
 /** Keeper-Sweeper chart (female) */
 export const KEEPER_SWEEPER_CHART = [

@@ -2267,26 +2267,10 @@ showGenderSelection() {
         ? `Within-archetype strategy: ${ensurePeriod(primary.growthEdge)}${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`
         : `Within-archetype strategy: Build stability by doubling down on your healthiest traits while expanding flexibility.${primaryTraitsSummary ? ` Leverage your strengths: ${primaryTraitsSummary}.` : ''}`;
 
-    const disclaimerHtml = `
-          <p style="margin: 0; color: var(--muted); line-height: 1.7; font-size: 0.95rem;">
-            <strong style="color: var(--brand);">Important:</strong> This is a descriptive tool, not a diagnostic or predictive instrument. 
-            Archetypes are fluid; people contain multitudes. No archetype is superior to another. 
-            Results reflect current patterns, not fixed identity.
-          </p>
-          ${this.analysisData.respectContext ? '<p style="margin: 1rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Bias mitigation:</strong> Your reported respect in personal vs professional contexts was used to improve accuracy (e.g. to avoid over-attributing leadership archetypes when respect is mainly in professional settings).</p>' : ''}
-          ${this.analysisData.provisionContext && this.analysisData.provisionContext.adjustments ? '<p style="margin: 0.5rem 0 0; color: var(--muted); line-height: 1.6; font-size: 0.9rem;"><strong>Provision context:</strong> Your reported provision level (dating, lifestyle, income/assets) was used to avoid over-attributing high-provider archetypes when provision is limited.</p>' : ''}`;
-
     let resultsHTML = `
       <div class="results-container" style="max-width: 900px; margin: 0 auto;">
         <h2 style="color: var(--brand); text-align: center; margin-bottom: 2rem;">Your Archetype Profile${headerDetail}</h2>
         <p class="temperament-assessment-context" style="text-align: center;"><strong>You selected:</strong> ${SecurityUtils.sanitizeHTML(genderLabel)}.</p>
-        
-        <div class="disclaimer-acknowledgement" id="archetypeReportDisclaimerToggle" style="margin-bottom: 1rem;">
-          <div class="disclaimer-acknowledgement-text"><span>Disclaimer</span></div>
-        </div>
-        <section class="disclaimer-section" id="archetypeReportDisclaimerSection" style="margin-bottom: 2rem;">
-          ${disclaimerHtml}
-        </section>
 
         <!-- Primary Archetype -->
         <div class="archetype-card primary" style="background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border: 2px solid var(--brand);">
@@ -2432,14 +2416,6 @@ showGenderSelection() {
 
     // Sanitize results HTML before rendering
     SecurityUtils.safeInnerHTML(container, resultsHTML);
-    const disclaimerToggle = container.querySelector('#archetypeReportDisclaimerToggle');
-    const disclaimerSection = container.querySelector('#archetypeReportDisclaimerSection');
-    if (disclaimerToggle && disclaimerSection) {
-      disclaimerToggle.addEventListener('click', () => {
-        disclaimerToggle.classList.toggle('expanded');
-        disclaimerSection.classList.toggle('expanded');
-      });
-    }
     this.showResultsContainer();
   }
 

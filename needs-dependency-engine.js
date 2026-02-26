@@ -1406,8 +1406,12 @@ export class NeedsDependencyEngine {
       // Closure
       html += this.renderClosure();
 
+      html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
+      html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Dependency loops sit at the intersection of belief and need. <a href="paradigm.html">Logos Structure</a> maps the meaning frameworks that may fuel or soothe the loop; <a href="manipulation.html">Manipulation Defense Decoder</a> identifies vectors that can exploit dependency; <a href="coaching.html">Life Domain Review</a> connects patterns to concrete life areas.</p>';
       html += '</div>';
-      
+
+      html += '</div>';
+
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, html);
       

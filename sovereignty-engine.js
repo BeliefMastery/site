@@ -1822,7 +1822,7 @@ export class SovereigntyEngine {
 
         ${this.renderBlueprintForFutureproofing()}
 
-        <p class="follow-up-invite">Explore related tools: <a href="manipulation.html">Manipulation Defense Decoder</a>, <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a>.</p>
+        <p class="follow-up-invite"><strong style="color: var(--accent);">Explore further:</strong> Resistance capacity and vulnerability go hand in hand. <a href="manipulation.html">Manipulation Defense Decoder</a> identifies which vectors you may be susceptible to; <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a> maps how your values and paradigm align with your resistance profile.</p>
       </div>
     `;
 

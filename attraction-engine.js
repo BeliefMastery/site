@@ -21,7 +21,8 @@ import {
   DEVELOPMENTAL_LEVELS,
   BAD_BOY_GOOD_GUY_GRID,
   KEEPER_SWEEPER_CHART,
-  RAD_ACTIVITY_TYPE_MODIFIER
+  RAD_ACTIVITY_TYPE_MODIFIER,
+  PARTNER_COUNT_DOWNGRADE
 } from './attraction-data.js';
 
 export class AttractionEngine {
@@ -433,17 +434,51 @@ export class AttractionEngine {
   placeBadBoyGoodGuy(smv) {
     const goodGuy = smv.clusters?.reproductiveConfidence ?? 50;
     const badBoy = smv.clusters?.axisOfAttraction ?? 50;
-    const gLevel = goodGuy >= 70 ? 'hi' : goodGuy >= 40 ? 'mid' : 'lo';
+    const gLevel = goodGuy >= 70 ? 'hi' : goodGuy >= 55 ? 'upper-mid' : goodGuy >= 40 ? 'mid' : goodGuy >= 25 ? 'lower-mid' : 'lo';
     const bLevel = badBoy >= 70 ? 'hi' : badBoy >= 40 ? 'mid' : 'lo';
-    const labels = { hi_hi: 'Friend zone', hi_mid: 'Husband zone', hi_lo: 'Prince Charming (Ideal LT)', mid_hi: 'Gold Digger Ick', mid_mid: 'Settling', mid_lo: 'Good', lo_hi: 'Bad Boy (Ideal ST)', lo_mid: 'Mistake', lo_lo: 'Ghost / Creep' };
-    return { goodGuyPercentile: Math.round(goodGuy), badBoyPercentile: Math.round(badBoy), label: labels[`${gLevel}_${bLevel}`] || 'Mid', goodGuyLevel: gLevel, badBoyLevel: bLevel };
+    const labels = {
+      hi_hi: 'Prince Charming (Ideal Long Term)', hi_mid: 'Husband zone', hi_lo: 'Friend zone',
+      'upper-mid_hi': 'Good Situationship', 'upper-mid_mid': 'Good Settling', 'upper-mid_lo': 'Comfortable Compromise',
+      mid_hi: 'Situationship', mid_mid: 'Settling', mid_lo: 'Resource Compromise',
+      'lower-mid_hi': 'Bad Situationship', 'lower-mid_mid': 'Bad Settling', 'lower-mid_lo': 'Last Resort',
+      lo_hi: 'Bad Boy Fun Time (Short Term)', lo_mid: '... Mistake', lo_lo: 'Invisible/Ghost or Creep'
+    };
+    return { goodGuyPercentile: Math.round(goodGuy), badBoyPercentile: Math.round(badBoy), label: labels[`${gLevel}_${bLevel}`] || 'Settling', goodGuyLevel: gLevel, badBoyLevel: bLevel };
   }
 
   placeKeeperSweeper(smv) {
     const overall = smv.overall;
-    if (overall >= 80) return { segment: 'keepers', label: 'Keepers', desc: 'My one and only', investment: 'More Investment' };
-    if (overall >= 40) return { segment: 'sleepers', label: 'Sleepers', desc: 'I dunno where I\'m gonna be in 3 weeks, ya know?' };
-    return { segment: 'sweepers', label: 'Sweepers', desc: '(Under the rug)', investment: 'LESS Investment' };
+    let segment = overall >= 80 ? 'keepers' : overall >= 40 ? 'sleepers' : 'sweepers';
+    let label = segment === 'keepers' ? 'Keepers' : segment === 'sleepers' ? 'Sleepers' : 'Sweepers';
+    let desc = segment === 'keepers' ? 'My one and only' : segment === 'sleepers' ? 'I dunno where I\'m gonna be in 3 weeks, ya know?' : '(Under the rug)';
+    let investment = segment === 'keepers' ? 'More Investment' : segment === 'sweepers' ? 'LESS Investment' : undefined;
+    let partnerCountDowngrade = null;
+
+    const pat2Raw = this.responses?.pat_2;
+    const age = this.preferences?.age ?? 25;
+    if (pat2Raw != null && PARTNER_COUNT_DOWNGRADE) {
+      const cfg = PARTNER_COUNT_DOWNGRADE;
+      const ageKey = age < 30 ? 'under30' : age < 40 ? 'under40' : 'over40';
+      const k2s = cfg.keeperToSleeper[ageKey];
+      const s2s = cfg.sleeperToSweeper[ageKey];
+      const wasKeeper = segment === 'keepers';
+      if (segment === 'keepers' && pat2Raw >= k2s) {
+        segment = 'sleepers';
+        label = 'Sleepers';
+        desc = 'I dunno where I\'m gonna be in 3 weeks, ya know?';
+        investment = undefined;
+        partnerCountDowngrade = 'Keeper→Sleeper';
+      }
+      if (segment === 'sleepers' && pat2Raw >= s2s && !wasKeeper) {
+        segment = 'sweepers';
+        label = 'Sweepers';
+        desc = '(Under the rug)';
+        investment = 'LESS Investment';
+        partnerCountDowngrade = 'Sleeper→Sweeper';
+      }
+    }
+
+    return { segment, label, desc, investment, partnerCountDowngrade };
   }
 
   classifyDevelopmentalLevel(smv) {
@@ -594,17 +629,22 @@ export class AttractionEngine {
     const smvColor = this.getPercentileColor(s.overall);
     const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
 
+    const femaleLabelSingular = { Keepers: 'Keeper', Sleepers: 'Sleeper', Sweepers: 'Sweeper' };
     const combinedCardLabel = this.currentGender === 'male' && gridLabel
-      ? 'How women are likely to categorise you'
+      ? `How women are likely to categorise you: ${gridLabel}`
       : this.currentGender === 'female' && gridLabel
-        ? 'How partners are likely to treat you'
+        ? `How men are likely to treat you: as a ${femaleLabelSingular[gridLabel] || gridLabel}`
         : '';
+    const investmentSuffix = this.currentGender === 'female' && s.keeperSweeper?.investment ? ` — ${s.keeperSweeper.investment}` : '';
     const combinedCardDetail = this.currentGender === 'male' && s.badBoyGoodGuy
-      ? `Overall SMV ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: reproductive confidence as read by women ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction and initiation appeal ~${s.badBoyGoodGuy.badBoyPercentile}%.`
+      ? `Overall SMV ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: manner and provision ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction ~${s.badBoyGoodGuy.badBoyPercentile}%.`
       : this.currentGender === 'female' && s.keeperSweeper
         ? `Overall SMV ~${overallPercentile}th percentile — ${s.marketPosition}.${s.keeperSweeper.desc ? ` ${s.keeperSweeper.desc}` : ''}`
         : '';
-    const combinedCard = (gridLabel || combinedCardLabel) ? `<div class="attraction-result-badge attraction-badge-with-expl" style="background:${smvColor}12;border-left:4px solid ${smvColor}"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(combinedCardLabel)}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel || '—')}${this.currentGender === 'female' && s.keeperSweeper?.investment ? ` — ${SecurityUtils.sanitizeHTML(s.keeperSweeper.investment)}` : ''}</span><span class="attraction-badge-desc" style="margin-top:0.35rem;">${SecurityUtils.sanitizeHTML(combinedCardDetail)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
+    const partnerCountNote = this.currentGender === 'female' && s.keeperSweeper?.partnerCountDowngrade
+      ? `<span class="qualification-explanation" style="display:block;margin-top:0.5rem;font-style:italic;">Partner-count impact (${s.keeperSweeper.partnerCountDowngrade}): men tend to move women down when partner count is high — it signals reduced loyalty expectation for long-term commitment. Men won't know initially; it matters if discovered.</span>`
+      : '';
+    const combinedCard = (gridLabel || combinedCardLabel) ? `<div class="attraction-result-badge attraction-badge-with-expl attraction-at-glance-card" style="background:${smvColor}12;border-left:4px solid ${smvColor}"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(combinedCardLabel)}${SecurityUtils.sanitizeHTML(investmentSuffix)}</span><span class="attraction-badge-desc" style="margin-top:0.35rem;">${SecurityUtils.sanitizeHTML(combinedCardDetail)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}${partnerCountNote}</div>` : '';
 
     const clusterOrder = ['coalitionRank', 'reproductiveConfidence', 'axisOfAttraction'];
     const badgeByCluster = { coalitionRank: peerRankBadge, reproductiveConfidence: reproConfBadge, axisOfAttraction: attractOppBadge };
@@ -676,15 +716,21 @@ export class AttractionEngine {
       'Sweepers': 'Men you attract are likely to treat you with less investment: they\'ll engage casually or de-prioritise you relative to women they see as higher value.'
     };
     const badBoyGoodGuy = {
-      'Friend zone': 'Women are likely to place you here: valued as a person but not as a romantic option; they don\'t feel the chemistry.',
-      'Husband zone': 'Women are likely to see you as strong long-term material: high commitment signal and solid attraction.',
-      'Prince Charming (Ideal LT)': 'Women are likely to see you as ideal long-term: high on both commitment and attraction.',
-      'Gold Digger Ick': 'Women may pursue you for status or resources without genuine connection; moderate commitment read, high attraction.',
-      'Settling': 'Women may accept but not be excited; you\'re often read as "good enough" rather than a strong match.',
-      'Good': 'Women tend to see you as reliable but not exciting; moderate commitment, low attraction read.',
-      'Bad Boy (Ideal ST)': 'Women are often attracted short-term but may not see you as long-term material; high attraction, low commitment signal.',
-      'Mistake': 'Women may engage for fun but typically don\'t see it lasting; low commitment, moderate attraction.',
-      'Ghost / Creep': 'Women are most likely to categorise you as invisible or threatening; they tend to avoid or disengage.'
+      'Prince Charming (Ideal Long Term)': 'Women are likely to see you as ideal long-term: high on both manner/provision and attraction.',
+      'Husband zone': 'Women see you as strong long-term material: high manner/provision and solid attraction.',
+      'Friend zone': 'Women tend to value you for your provision and reliability but don\'t feel the attraction; they keep you around without romantic intent.',
+      'Good Situationship': 'Upper-mid on manner/provision, high attraction; the relationship is ambiguous but has good foundations and could move toward commitment.',
+      'Situationship': 'Moderate manner/provision, high attraction; women are drawn to you but don\'t see clear commitment; they engage without fully investing long-term.',
+      'Bad Situationship': 'Lower-mid on manner/provision, high attraction; women engage but see weak foundations; the relationship is ambiguous and unlikely to deepen.',
+      'Good Settling': 'Upper-mid on both axes; women accept you as "good enough" — the match is workable but not exciting.',
+      'Settling': 'Moderate on both axes; women may accept but not be excited; you\'re often read as "good enough" rather than a strong match.',
+      'Bad Settling': 'Lower-mid on manner/provision, moderate attraction; women may be with you primarily for what you provide — they\'re settling for provision rather than desire.',
+      'Comfortable Compromise': 'Upper-mid provision, low attraction; women may be with you for what you provide; the compromise feels acceptable.',
+      'Resource Compromise': 'Moderate provision, low attraction; women may be with you primarily for what you provide.',
+      'Last Resort': 'Lower-mid provision, low attraction; women are barely engaged; the relationship is fragile.',
+      'Bad Boy Fun Time (Short Term)': 'Women are attracted short-term but don\'t see you as long-term material; high attraction, low manner/provision signal.',
+      '... Mistake': 'Women may engage for fun but typically don\'t see it lasting; low provision, moderate attraction.',
+      'Invisible/Ghost or Creep': 'Women are most likely to categorise you as invisible or threatening; they tend to avoid or disengage.'
     };
     const developmentalLevels = {
       'Integral/Holistic (High Integration)': 'You integrate multiple perspectives and act from a coherent worldview; mature decision-making.',

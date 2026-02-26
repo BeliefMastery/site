@@ -558,6 +558,9 @@ export class EntitiesEngine {
       <div class="panel panel-outline">
         <p class="panel-text"><strong>Safety note:</strong> This framework is for structured self-inquiry. If experiences feel overwhelming or destabilizing, seek qualified support and prioritize safety.</p>
       </div>
+      <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
+        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Will anomalies intersect with other frameworks. <a href="channels.html">Channel Flow Diagnostics</a> maps node and channel health at a structural level; <a href="diagnosis.html">Pathology Assessment</a> offers symptom-based pattern recognition; <a href="needs-dependency.html">Dependency Loop Tracer</a> traces need patterns that may anchor the contract.</p>
+      </div>
     `;
   }
 

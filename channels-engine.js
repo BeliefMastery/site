@@ -1282,6 +1282,10 @@ export class ChannelsEngine {
       html += '</div>';
     }
     
+    html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
+    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Channel flow sits within broader meaning-structures. <a href="entities.html">Will Anomaly Mapping</a> maps distortions that may block or divert flow; <a href="paradigm.html">Logos Structure</a> surfaces the frameworks that organize your engagement; <a href="character-sheet.html">Astrological Character Sheet</a> offers another lens on temperament and expression.</p>';
+    html += '</div>';
+    
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, html);
       

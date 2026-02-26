@@ -1434,6 +1434,10 @@ export class SovereigntySpectrumEngine {
       html += '</div>';
     }
     
+    html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
+    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Paradigm and practice connect. <a href="paradigm.html">Logos Structure</a> maps how you organize meaning and the Good Life—the deeper framing behind your paradigm; <a href="sovereignty.html">Cognitive Resistance Capacity</a> assesses how well your resistance aligns with your values; <a href="manipulation.html">Manipulation Defense Decoder</a> identifies vectors that may exploit paradigm gaps.</p>';
+    html += '</div>';
+    
     html += '</div>';
     
     SecurityUtils.safeInnerHTML(container, html);

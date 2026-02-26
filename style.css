@@ -5569,16 +5569,15 @@ img {
 /* Executive at-a-glance summary */
 .results-dashboard .attraction-exec-summary {
     background: rgba(255, 255, 255, 0.04);
-    padding: 1.5rem;
+    padding: 0;
     border-radius: var(--radius);
     border: 1px solid var(--border-subtle);
+    overflow: hidden;
 }
 
 .results-dashboard .attraction-exec-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    display: block;
+    width: 100%;
 }
 
 .results-dashboard .attraction-badge {
@@ -5650,35 +5649,36 @@ img {
     max-width: 320px;
 }
 
-/* At-a-glance combined card: larger sizing and text */
-.results-dashboard .attraction-exec-badges .attraction-result-badge.attraction-badge-with-expl {
+/* At-a-glance combined card: fills whole section, larger text */
+.results-dashboard .attraction-at-glance-card {
     display: block;
     width: 100%;
     max-width: none;
-    padding: 1.5rem 1.75rem;
-    font-size: 1.05rem;
+    margin: 0;
+    padding: 2rem 2.25rem;
+    font-size: 1.15rem;
+    border: none;
+    border-radius: var(--radius);
 }
-.results-dashboard .attraction-exec-badges .attraction-result-badge .attraction-result-badge-label {
+.results-dashboard .attraction-at-glance-card .attraction-result-badge-label {
     display: block;
-    font-size: 0.95rem;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--brand);
+    margin-bottom: 0.75rem;
 }
-.results-dashboard .attraction-exec-badges .attraction-result-badge .attraction-result-badge-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-left: 0;
-    margin-bottom: 0.5rem;
-}
-.results-dashboard .attraction-exec-badges .attraction-result-badge .attraction-badge-desc {
-    font-size: 1rem;
-    line-height: 1.5;
+.results-dashboard .attraction-at-glance-card .attraction-badge-desc {
+    font-size: 1.1rem;
+    line-height: 1.6;
     margin-top: 0.5rem;
+    color: var(--brand);
 }
-.results-dashboard .attraction-exec-badges .attraction-result-badge .qualification-explanation {
-    font-size: 0.95rem;
-    margin-top: 0.6rem;
-    line-height: 1.5;
+.results-dashboard .attraction-at-glance-card .qualification-explanation {
+    font-size: 1.05rem;
+    margin-top: 0.75rem;
+    line-height: 1.55;
+    color: var(--muted);
 }
 
 .results-dashboard .qualification-explanation {

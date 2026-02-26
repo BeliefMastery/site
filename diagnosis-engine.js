@@ -1767,6 +1767,10 @@ export class DiagnosisEngine {
       `;
     }
     
+    html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
+    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Pattern recognition supports clarity; these tools complement, not replace, professional assessment. <a href="needs-dependency.html">Dependency Loop Tracer</a> traces need-based patterns that may underlie or overlap with symptoms; <a href="coaching.html">Life Domain Review</a> maps where distress shows up across life areas; <a href="paradigm.html">Logos Structure</a> surfaces meaning frameworks that may amplify or buffer distress.</p>';
+    html += '</div>';
+
     html += `
       <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.05); border-radius: var(--radius);">
         <h4>Important Reminders</h4>

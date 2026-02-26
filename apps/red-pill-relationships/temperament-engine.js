@@ -1316,7 +1316,7 @@ export class TemperamentEngine {
 
     html += `
       <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
-        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Polarity intersects with other dimensions. Try <a href="archetype.html">Modern Archetype Identification</a> to see how your temperament aligns with archetypal patterns, <a href="relationship.html">Relationships</a> to identify compatibility strain points, or <a href="attraction.html">Attraction &amp; Status</a> to map your status and selection dynamics.</p>
+        <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Polarity sits between identity and outcome — it shapes both. <a href="archetype.html">Modern Archetype Identification</a> reveals the deeper patterns behind your expression; <a href="relationship.html">Relationships</a> shows where polarity mismatch creates strain; <a href="attraction.html">Attraction &amp; Status</a> connects your polarity to selection dynamics and market reality.</p>
       </div>
     `;
 

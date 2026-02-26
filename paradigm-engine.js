@@ -1842,6 +1842,10 @@ export class ParadigmEngine {
       html += '</div>';
     }
     
+    html += '<div style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem; border-left: 4px solid var(--accent);">';
+    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Your logos structure informs sovereignty and defense. <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a> shows how this framing translates to paradigm alignment; <a href="sovereignty.html">Cognitive Resistance Capacity</a> assesses vulnerability where meaning-structures meet external pressure; <a href="needs-dependency.html">Dependency Loop Tracer</a> traces where belief and need intersect.</p>';
+    html += '</div>';
+    
     html += '<div style="background: rgba(211, 47, 47, 0.1); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem; text-align: center;">';
     html += '<p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--muted);"><strong style="color: #d32f2f;">Exit Cue:</strong> This map serves orientation. Return to lived action. Use this understanding to support your sovereignty, not to fuel recursive meaning-chasing or metaphysical fixation.</p>';
     html += '</div>';

@@ -1118,6 +1118,10 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     html += '</ul>';
     html += '</div>';
 
+    html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
+    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Life domains connect to deeper structures. <a href="paradigm.html">Logos Structure</a> maps how you frame the Good Life and meaning—the lenses behind domain satisfaction; <a href="needs-dependency.html">Dependency Loop Tracer</a> traces need patterns that may underlie dissatisfaction; <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a> shows values alignment and where action may be blocked.</p>';
+    html += '</div>';
+
     html += '</div>';
     // Sanitize HTML before rendering - all dynamic content is already sanitized above
     SecurityUtils.safeInnerHTML(container, html);

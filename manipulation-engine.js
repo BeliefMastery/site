@@ -1329,6 +1329,10 @@ renderCurrentQuestion() {
       html += '</div>';
     }
     
+    html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
+    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Identifying vectors is the first step; building resistance is the next. <a href="sovereignty.html">Cognitive Resistance Capacity</a> maps your vulnerability profile and how to strengthen it; <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a> shows how your values alignment affects what you defend against.</p>';
+    html += '</div>';
+    
     // Sanitize results HTML before rendering - all dynamic content is already sanitized above
     SecurityUtils.safeInnerHTML(container, html);
     } catch (error) {
