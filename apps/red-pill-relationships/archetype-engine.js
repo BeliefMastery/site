@@ -2495,6 +2495,13 @@ showGenderSelection() {
       this.respectContextAnswers = progress.respectContextAnswers || {};
       this.archetypeScores = progress.archetypeScores || {};
       this.analysisData = progress.analysisData || this.analysisData;
+
+      // PRIORITY: If we have completed results, show report immediately on revisit
+      if (this.analysisData.primaryArchetype) {
+        this.renderResults();
+        this.showResultsContainer();
+        return;
+      }
       
       // If gender not selected, show gender selection
       if (!this.gender || this.currentPhase === 0) {
@@ -2508,7 +2515,7 @@ showGenderSelection() {
         return;
       }
       
-      // Rebuild question sequence based on phase
+      // Rebuild question sequence based on phase (in-progress only)
       if (this.currentPhase === 1 || (this.currentPhase > 0 && this.currentPhase < 2)) {
         this.currentPhase = 1;
         await this.buildPhase1Sequence();
@@ -2522,13 +2529,9 @@ showGenderSelection() {
         await this.buildPhase5Sequence();
       }
 
-      // If assessment is in progress, show question container
       if (this.currentPhase <= 5 && this.questionSequence.length > 0) {
         this.renderCurrentQuestion();
         this.showQuestionContainer();
-      } else if (this.analysisData.primaryArchetype) {
-        this.renderResults();
-        this.showResultsContainer();
       }
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');

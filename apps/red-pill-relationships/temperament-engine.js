@@ -1457,8 +1457,16 @@ AI AGENT CONFIGURATION:
       this.answers = data.answers || {};
       this.phase1Results = data.phase1Results || null;
       this.analysisData = data.analysisData || this.analysisData;
+
+      // PRIORITY: If we have completed results, show report immediately on revisit
+      if (this.analysisData && this.analysisData.overallTemperament) {
+        await this.loadTemperamentData();
+        this.ui.transition('results');
+        await this.renderResults();
+        return;
+      }
       
-      // Restore appropriate phase
+      // Restore appropriate phase (in-progress only)
       if (this.currentPhase === 1) {
         await this.buildPhase1Sequence();
       } else if (this.currentPhase === 2) {
@@ -1467,7 +1475,6 @@ AI AGENT CONFIGURATION:
       }
       
       if (this.currentQuestionIndex > 0 && this.currentQuestionIndex < this.questionSequence.length) {
-        // Resume assessment
         const introSection = document.getElementById('introSection');
         const actionButtonsSection = document.getElementById('actionButtonsSection');
         const questionnaireSection = document.getElementById('questionnaireSection');
@@ -1505,6 +1512,7 @@ AI AGENT CONFIGURATION:
       questionSequence: []
     };
     
+    if (this.dataStore) this.dataStore.clear('progress');
     sessionStorage.removeItem('temperamentProgress');
     
     const introSection = document.getElementById('introSection');

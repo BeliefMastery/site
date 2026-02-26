@@ -25,6 +25,8 @@ import {
   PARTNER_COUNT_DOWNGRADE
 } from './attraction-data.js';
 
+const ATTRACTION_RESULTS_KEY = 'attraction-assessment-results';
+
 export class AttractionEngine {
   constructor() {
     this.currentGender = null;
@@ -44,7 +46,45 @@ export class AttractionEngine {
     });
 
     this.attachEventListeners();
+
+    // Restore last report on revisit (show report unless user explicitly starts new)
+    if (this.restoreLastResults()) return;
     this.ui.transition('idle');
+  }
+
+  restoreLastResults() {
+    try {
+      const raw = localStorage.getItem(ATTRACTION_RESULTS_KEY);
+      if (!raw) return false;
+      const d = JSON.parse(raw);
+      if (!d || !d.smv || !d.currentGender) return false;
+      this.smv = d.smv;
+      this.responses = d.responses || {};
+      this.preferences = d.preferences || {};
+      this.currentGender = d.currentGender;
+      this.ui.transition('results');
+      this.renderResults();
+      window.scrollTo(0, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  saveResults() {
+    try {
+      if (this.smv && this.currentGender) {
+        localStorage.setItem(ATTRACTION_RESULTS_KEY, JSON.stringify({
+          smv: this.smv,
+          responses: this.responses,
+          preferences: this.preferences,
+          currentGender: this.currentGender,
+          savedAt: new Date().toISOString()
+        }));
+      }
+    } catch (e) {
+      this.debugReporter.logError(e, 'saveResults');
+    }
   }
 
   attachEventListeners() {
@@ -336,6 +376,7 @@ export class AttractionEngine {
 
   calculateAndShowResults() {
     this.smv = this.calculateSMV();
+    this.saveResults();
     this.ui.transition('results');
     this.renderResults();
     window.scrollTo(0, 0);
@@ -819,6 +860,7 @@ export class AttractionEngine {
   }
 
   resetAssessment() {
+    localStorage.removeItem(ATTRACTION_RESULTS_KEY);
     this.currentGender = null;
     this.currentPhase = -1;
     this.responses = {};

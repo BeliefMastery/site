@@ -1624,6 +1624,17 @@ export class RelationshipEngine {
       this.crossDomainSpillover = data.crossDomainSpillover || {};
       this.analysisData = data.analysisData || this.analysisData;
 
+      // PRIORITY: If we have completed results, show report immediately on revisit
+      const hasCompletedResults = this.analysisData && (
+        (this.analysisData.compatibilityScores && Object.keys(this.analysisData.compatibilityScores).length > 0) ||
+        (this.analysisData.stage3Results && Object.keys(this.analysisData.stage3Results).length > 0)
+      );
+      if (hasCompletedResults) {
+        this.ui.transition('results');
+        this.renderResults();
+        return;
+      }
+
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0) {
         if (this.currentStage === 1) {
