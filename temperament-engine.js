@@ -1247,28 +1247,52 @@ export class TemperamentEngine {
       </div>
     `;
 
-    // Cross-polarity callout: respondent significantly beyond typical range for their gender
     const isMaleCrossPolarity = reportedGender === 'man' && score < (femaleTrend - CROSS_POLARITY_THRESHOLD);
     const isFemaleCrossPolarity = reportedGender === 'woman' && score > (maleTrend + CROSS_POLARITY_THRESHOLD);
-    if (isMaleCrossPolarity || isFemaleCrossPolarity) {
-      const polarityNote = isMaleCrossPolarity
-        ? `Your temperament expression is significantly more feminine-leaning than the average woman (${(femaleTrend * 100).toFixed(0)}%). This is a highly noteworthy pattern.`
-        : `Your temperament expression is significantly more masculine-leaning than the average man (${(maleTrend * 100).toFixed(0)}%). This is a highly noteworthy pattern.`;
-      const implicationNote = `In relationships, temperament polarity—the natural complement between opposite poles—tends to support attraction and dynamic flow. When your expression strongly crosses typical gender norms, polarity can degrade unless your partner naturally occupies the opposite pole. A partner whose temperament leans in the opposite direction can restore polarity; same-direction pairing may lead to reduced tension and attraction, or role confusion. This is not a verdict but an invitation to consider partner fit and intentional polarity calibration.`;
+
+    // Collect anomalous (cross-polarity) dimensions for polarity failure alert
+    const anomalousDimensions = [];
+    Object.keys(this.analysisData.dimensionScores).forEach(dimKey => {
+      const score = this.analysisData.dimensionScores[dimKey];
+      const normalizedDimScore = (score.net + 1) / 2;
+      const isDimAnomalous = (reportedGender === 'man' && normalizedDimScore < (femaleTrend - CROSS_POLARITY_THRESHOLD)) ||
+                            (reportedGender === 'woman' && normalizedDimScore > (maleTrend + CROSS_POLARITY_THRESHOLD));
+      if (isDimAnomalous) {
+        const dimName = this.questionSequence.find(q => (q.dimension || q.category) === dimKey)?.dimensionName ||
+                       this.questionSequence.find(q => (q.dimension || q.category) === dimKey)?.categoryName || dimKey;
+        anomalousDimensions.push({ key: dimKey, name: dimName });
+      }
+    });
+
+    // Polarity Failure Alert section — when overall or dimension-level cross-polarity detected
+    const hasOverallCrossPolarity = isMaleCrossPolarity || isFemaleCrossPolarity;
+    if (hasOverallCrossPolarity || anomalousDimensions.length > 0) {
+      const direction = (hasOverallCrossPolarity ? isMaleCrossPolarity : reportedGender === 'man')
+        ? 'more feminine-leaning than typical'
+        : 'more masculine-leaning than typical';
+      const complement = reportedGender === 'man' ? 'masculine-leaning' : 'feminine-leaning';
+      let whatMeans = '';
+      if (hasOverallCrossPolarity && anomalousDimensions.length === 0) {
+        whatMeans = `Your overall temperament expression is ${direction} for your gender.`;
+      } else if (anomalousDimensions.length > 0) {
+        whatMeans = `You express ${direction} in ${anomalousDimensions.length === 1 ? 'one dimension' : anomalousDimensions.length + ' dimensions'}: <strong>${anomalousDimensions.map(d => d.name).join(', ')}</strong>.`;
+        if (hasOverallCrossPolarity) whatMeans = `Your overall expression is ${direction}. At the dimension level, this shows particularly in: <strong>${anomalousDimensions.map(d => d.name).join(', ')}</strong>.`;
+      }
       html += `
-        <div class="temperament-info-box cross-polarity-callout panel-brand-left" style="border-left: 4px solid var(--accent); background: var(--accent-panel); margin-top: 1.5rem;">
-          <h3 style="margin-top: 0; color: var(--accent);">Cross-Polarity Expression — Notable Finding</h3>
-          <p style="margin: 0.75rem 0;"><strong>What this means:</strong> ${polarityNote}</p>
-          <p style="margin: 0.75rem 0;"><strong>Relationship implication:</strong> ${implicationNote}</p>
-          <p style="margin: 0.75rem 0 0; font-size: 0.9rem; color: var(--muted);"><em>Understanding this pattern helps you make informed choices about partnership dynamics and polarity optimization.</em></p>
+        <div class="polarity-failure-alert panel-brand-left">
+          <h3 class="polarity-failure-alert-title">Potential Polarity Failure — Partner Fit Consideration</h3>
+          <p><strong>What this means:</strong> ${whatMeans}</p>
+          <p><strong>Relationship implication:</strong> Polarity—the natural complement between opposite poles—tends to support attraction and dynamic flow. If your partner does not have the <strong>complementary opposite</strong> (i.e. a ${complement} temperament in these areas), polarity can degrade: reduced tension and attraction, or role confusion. A partner who naturally occupies the opposite pole can restore polarity. This is not a verdict but an invitation to consider partner fit and intentional polarity calibration.</p>
+          ${anomalousDimensions.length > 0 ? `<p class="polarity-failure-ref"><em>The dimensions highlighted below indicate where this applies:</em></p>` : ''}
         </div>
       `;
     }
 
-    // Dimension breakdown
+    // Dimension breakdown — anomalous dimensions get polarity-notable class to stand out
     html += '<div class="dimension-breakdown">';
     html += '<h3>Dimension Breakdown</h3>';
-    
+    const anomalousKeys = new Set(anomalousDimensions.map(d => d.key));
+
     Object.keys(this.analysisData.dimensionScores).forEach(dimKey => {
       const score = this.analysisData.dimensionScores[dimKey];
       const dimName = this.questionSequence.find(q => (q.dimension || q.category) === dimKey)?.dimensionName || 
@@ -1277,14 +1301,15 @@ export class TemperamentEngine {
       
       const netScore = score.net;
       const normalizedDimScore = (netScore + 1) / 2;
+      const isAnomalous = anomalousKeys.has(dimKey);
       
       const selectionCriteriaNote = dimKey === 'selection_criteria' && (reportedGender === 'man' || reportedGender === 'woman')
         ? `<p style="color: var(--muted); margin: 0.35rem 0 0; font-size: 0.85rem;">Selection criteria adjusted for ${reportedGender === 'man' ? 'male' : 'female'} standards.</p>`
         : '';
 
       html += `
-        <div class="dimension-item">
-          <h4>${SecurityUtils.sanitizeHTML(dimName || '')}</h4>
+        <div class="dimension-item${isAnomalous ? ' dimension-polarity-notable' : ''}">
+          <h4>${SecurityUtils.sanitizeHTML(dimName || '')}${isAnomalous ? ' <span class="polarity-notable-badge">Polarity consideration</span>' : ''}</h4>
           <div class="dimension-spectrum">
             <div class="temperament-trend-dot temperament-trend-male" style="left: ${maleTrend * 100}%;"></div>
             <div class="temperament-trend-dot temperament-trend-female" style="left: ${femaleTrend * 100}%;"></div>
