@@ -639,7 +639,7 @@ export class AttractionEngine {
 
     const femaleLabelSingular = { Keepers: 'Keeper', Sleepers: 'Sleeper', Sweepers: 'Sweeper' };
     const classificationContext = this.currentGender === 'male' ? 'How women are likely to categorise you' : 'How men are likely to treat you';
-    const classificationDisplay = this.currentGender === 'female' && gridLabel ? `as a ${femaleLabelSingular[gridLabel] || gridLabel}` : gridLabel;
+    const classificationDisplay = this.currentGender === 'female' && gridLabel ? `${femaleLabelSingular[gridLabel] || gridLabel}` : gridLabel;
     const investmentSuffix = '';
     const combinedCardDetail = this.currentGender === 'male' && s.badBoyGoodGuy
       ? `Overall Sexual Market Value ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: manner and provision ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction ~${s.badBoyGoodGuy.badBoyPercentile}%.`
