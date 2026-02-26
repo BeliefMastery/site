@@ -590,15 +590,21 @@ export class AttractionEngine {
 
     const gridLabel = this.currentGender === 'male' && s.badBoyGoodGuy ? s.badBoyGoodGuy.label : this.currentGender === 'female' && s.keeperSweeper ? s.keeperSweeper.label : '';
     const gridExpl = this.currentGender === 'male' && s.badBoyGoodGuy ? this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy') : this.currentGender === 'female' && s.keeperSweeper ? this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper') : '';
-    const gridBadgeLabel = this.currentGender === 'male' && gridLabel
-      ? 'Most likely categorisation by women in the dating market'
+    const overallPercentile = Math.round(s.overall);
+    const smvColor = this.getPercentileColor(s.overall);
+    const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
+
+    const combinedCardLabel = this.currentGender === 'male' && gridLabel
+      ? 'How women are likely to categorise you'
       : this.currentGender === 'female' && gridLabel
         ? 'How partners are likely to treat you'
         : '';
-    const gridBadge = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(gridBadgeLabel)}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
-
-    const smvExpl = 'Sexual Market Value — your relative desirability in the dating/mating market based on evolutionary clusters.';
-    const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
+    const combinedCardDetail = this.currentGender === 'male' && s.badBoyGoodGuy
+      ? `Overall SMV ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: reproductive confidence as read by women ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction and initiation appeal ~${s.badBoyGoodGuy.badBoyPercentile}%.`
+      : this.currentGender === 'female' && s.keeperSweeper
+        ? `Overall SMV ~${overallPercentile}th percentile — ${s.marketPosition}.${s.keeperSweeper.desc ? ` ${s.keeperSweeper.desc}` : ''}`
+        : '';
+    const combinedCard = (gridLabel || combinedCardLabel) ? `<div class="attraction-result-badge attraction-badge-with-expl" style="background:${smvColor}12;border-left:4px solid ${smvColor}"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(combinedCardLabel)}</span><span class="attraction-result-badge-value">${SecurityUtils.sanitizeHTML(gridLabel || '—')}${this.currentGender === 'female' && s.keeperSweeper?.investment ? ` — ${SecurityUtils.sanitizeHTML(s.keeperSweeper.investment)}` : ''}</span><span class="attraction-badge-desc" style="margin-top:0.35rem;">${SecurityUtils.sanitizeHTML(combinedCardDetail)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}</div>` : '';
 
     const clusterOrder = ['coalitionRank', 'reproductiveConfidence', 'axisOfAttraction'];
     const badgeByCluster = { coalitionRank: peerRankBadge, reproductiveConfidence: reproConfBadge, axisOfAttraction: attractOppBadge };
@@ -613,12 +619,6 @@ export class AttractionEngine {
       return `<div class="attraction-cluster-section"><div class="attraction-cluster-badge">${badge}</div><div class="cluster-subcategory-block"><h4>${this.formatClusterName(clusterId)}</h4>${subHtml}</div></div>`;
     }).join('');
 
-    const gridBlock = this.currentGender === 'male' && s.badBoyGoodGuy
-      ? `<section class="report-section"><h2 class="report-section-title">How women are likely to categorise you</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.badBoyGoodGuy.label)}</strong></p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.badBoyGoodGuy.label, 'badBoyGoodGuy'))}</p><p class="grid-detail">Driven by: reproductive confidence as read by women ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction and initiation appeal ~${s.badBoyGoodGuy.badBoyPercentile}%.</p></div></section>`
-      : this.currentGender === 'female' && s.keeperSweeper
-        ? `<section class="report-section"><h2 class="report-section-title">How partners are likely to treat you</h2><div class="grid-placement"><p class="grid-label"><strong>${SecurityUtils.sanitizeHTML(s.keeperSweeper.label)}</strong>${s.keeperSweeper.investment ? ` — ${SecurityUtils.sanitizeHTML(s.keeperSweeper.investment)}` : ''}</p><p class="qualification-explanation-block">${SecurityUtils.sanitizeHTML(this.getQualificationExplanation(s.keeperSweeper.label, 'keeperSweeper'))}</p>${s.keeperSweeper.desc ? `<p class="grid-detail">${SecurityUtils.sanitizeHTML(s.keeperSweeper.desc)}</p>` : ''}</div></section>`
-        : '';
-
     const radScore = this.currentGender === 'male' && s.subcategories?.axisOfAttraction?.radActivity;
     const radBlock = this.currentGender === 'male' && radScore != null && (radScore < 40 || radScore >= 75)
       ? radScore < 40
@@ -631,18 +631,13 @@ export class AttractionEngine {
         <div class="results-header"><h2>Your Sexual Market Value Profile</h2><p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} SMV Assessment</p></div>
 
         <section class="report-section attraction-exec-summary">
-          <div class="attraction-exec-badges">${gridBadge}
-          <div class="attraction-overall-badge attraction-badge-with-expl"><span class="attraction-badge-label">Overall SMV</span><span class="attraction-badge-value">${Math.round(s.overall)}</span><span class="attraction-badge-unit">th %</span><span class="attraction-badge-desc">${s.marketPosition}</span><span class="qualification-explanation">${SecurityUtils.sanitizeHTML(smvExpl)}</span></div>
-          <div class="attraction-level-badge attraction-badge-with-expl"><span class="attraction-result-badge-label">Consciousness opportunity</span><span class="attraction-result-badge-value">${s.levelClassification}</span>${levelExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(levelExpl)}</span>` : ''}</div>
-          </div>
+          <div class="attraction-exec-badges">${combinedCard}</div>
         </section>
-
-        ${gridBlock}
-        ${radBlock}
 
         <section class="report-section">
         <div class="subcategory-breakdown">${subcategoryBlock}</div></section>
 
+        ${radBlock}
         <section class="report-section"><h2 class="report-section-title">Market Position</h2>
         ${s.delusionIndex > 30 ? `<div class="delusion-warning"><h3>⚠️ Delusion Index: ${Math.round(s.delusionIndex)}%</h3><p>${this.getDelusionWarning(s.delusionIndex)}</p></div>` : ''}
         <div class="market-analysis"><div class="market-grid"><div class="market-card"><h4>Realistic Target</h4><p>${s.targetMarket?.realistic || ''}</p></div><div class="market-card"><h4>Aspirational</h4><p>${s.targetMarket?.aspirational || ''}</p></div></div></div></section>
@@ -657,6 +652,13 @@ export class AttractionEngine {
         <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
           <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Market position links to who you are and how you relate. <a href="archetype.html">Modern Archetype Identification</a> shows the patterns behind your attraction dynamics; <a href="temperament.html">Polarity Position Mapping</a> clarifies how masculine–feminine expression affects selection; <a href="relationship.html">Relationships</a> assesses compatibility and strain so you can see where market reality and fit diverge.</p>
         </div>
+
+        <section class="report-section" style="margin-top: 2rem;">
+          <h2 class="report-section-title">Opportunity to improve quality of life</h2>
+          <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; border-left: 4px solid var(--accent);">
+            <p style="margin: 0;">${levelExpl ? SecurityUtils.sanitizeHTML(levelExpl) : `Your responses suggest you're operating from ${SecurityUtils.sanitizeHTML(s.levelClassification)}.`}</p>
+          </div>
+        </section>
       </div>`;
     container.innerHTML = html;
   }
