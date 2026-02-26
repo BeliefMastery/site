@@ -630,11 +630,8 @@ export class AttractionEngine {
     const levelExpl = this.getQualificationExplanation(s.levelClassification, 'developmentalLevel');
 
     const femaleLabelSingular = { Keepers: 'Keeper', Sleepers: 'Sleeper', Sweepers: 'Sweeper' };
-    const combinedCardLabel = this.currentGender === 'male' && gridLabel
-      ? `How women are likely to categorise you: ${gridLabel}`
-      : this.currentGender === 'female' && gridLabel
-        ? `How men are likely to treat you: as a ${femaleLabelSingular[gridLabel] || gridLabel}`
-        : '';
+    const classificationContext = this.currentGender === 'male' ? 'How women are likely to categorise you' : 'How men are likely to treat you';
+    const classificationDisplay = this.currentGender === 'female' && gridLabel ? `as a ${femaleLabelSingular[gridLabel] || gridLabel}` : gridLabel;
     const investmentSuffix = this.currentGender === 'female' && s.keeperSweeper?.investment ? ` — ${s.keeperSweeper.investment}` : '';
     const combinedCardDetail = this.currentGender === 'male' && s.badBoyGoodGuy
       ? `Overall SMV ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: manner and provision ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction ~${s.badBoyGoodGuy.badBoyPercentile}%.`
@@ -644,7 +641,7 @@ export class AttractionEngine {
     const partnerCountNote = this.currentGender === 'female' && s.keeperSweeper?.partnerCountDowngrade
       ? `<span class="qualification-explanation" style="display:block;margin-top:0.5rem;font-style:italic;">Partner-count impact (${s.keeperSweeper.partnerCountDowngrade}): men tend to move women down when partner count is high — it signals reduced loyalty expectation for long-term commitment. Men won't know initially; it matters if discovered.</span>`
       : '';
-    const combinedCard = (gridLabel || combinedCardLabel) ? `<div class="attraction-result-badge attraction-badge-with-expl attraction-at-glance-card" style="background:${smvColor}12;border-left:4px solid ${smvColor}"><span class="attraction-result-badge-label">${SecurityUtils.sanitizeHTML(combinedCardLabel)}${SecurityUtils.sanitizeHTML(investmentSuffix)}</span><span class="attraction-badge-desc" style="margin-top:0.35rem;">${SecurityUtils.sanitizeHTML(combinedCardDetail)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}${partnerCountNote}</div>` : '';
+    const combinedCard = gridLabel ? `<div class="attraction-result-badge attraction-badge-with-expl attraction-at-glance-card" style="background:${smvColor}12;border-left:4px solid ${smvColor}"><span class="attraction-classification-label">${SecurityUtils.sanitizeHTML(classificationContext)}</span><span class="attraction-classification-value" style="color:${smvColor}">${SecurityUtils.sanitizeHTML(classificationDisplay)}${SecurityUtils.sanitizeHTML(investmentSuffix)}</span><span class="attraction-badge-desc" style="margin-top:0.5rem;">${SecurityUtils.sanitizeHTML(combinedCardDetail)}</span>${gridExpl ? `<span class="qualification-explanation">${SecurityUtils.sanitizeHTML(gridExpl)}</span>` : ''}${partnerCountNote}</div>` : '';
 
     const clusterOrder = ['coalitionRank', 'reproductiveConfidence', 'axisOfAttraction'];
     const badgeByCluster = { coalitionRank: peerRankBadge, reproductiveConfidence: reproConfBadge, axisOfAttraction: attractOppBadge };

@@ -5660,6 +5660,22 @@ img {
     border: none;
     border-radius: var(--radius);
 }
+.results-dashboard .attraction-at-glance-card .attraction-classification-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--brand);
+    margin-bottom: 0.35rem;
+    opacity: 0.9;
+}
+.results-dashboard .attraction-at-glance-card .attraction-classification-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--brand);
+    margin-bottom: 0.5rem;
+}
 .results-dashboard .attraction-at-glance-card .attraction-result-badge-label {
     display: block;
     font-size: 1.25rem;
