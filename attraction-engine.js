@@ -634,9 +634,9 @@ export class AttractionEngine {
     const classificationDisplay = this.currentGender === 'female' && gridLabel ? `${femaleLabelSingular[gridLabel] || gridLabel}` : gridLabel;
     const investmentSuffix = this.currentGender === 'female' && s.keeperSweeper?.investment ? ` — ${s.keeperSweeper.investment}` : '';
     const combinedCardDetail = this.currentGender === 'male' && s.badBoyGoodGuy
-      ? `Overall SMV ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: manner and provision ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction ~${s.badBoyGoodGuy.badBoyPercentile}%.`
+      ? `Overall Sexual Market Value ~${overallPercentile}th percentile (${s.marketPosition}). Driven by: manner and provision ~${s.badBoyGoodGuy.goodGuyPercentile}%; attraction ~${s.badBoyGoodGuy.badBoyPercentile}%.`
       : this.currentGender === 'female' && s.keeperSweeper
-        ? `Overall SMV ~${overallPercentile}th percentile — ${s.marketPosition}.${s.keeperSweeper.desc ? ` ${s.keeperSweeper.desc}` : ''}`
+        ? `Overall Sexual Market Value ~${overallPercentile}th percentile — ${s.marketPosition}.${s.keeperSweeper.desc ? ` ${s.keeperSweeper.desc}` : ''}`
         : '';
     const partnerCountNote = this.currentGender === 'female' && s.keeperSweeper?.partnerCountDowngrade
       ? `<span class="qualification-explanation" style="display:block;margin-top:0.5rem;font-style:italic;">Partner-count impact (${s.keeperSweeper.partnerCountDowngrade}): men tend to move women down when partner count is high — it signals reduced loyalty expectation for long-term commitment. Men won't know initially; it matters if discovered.</span>`
@@ -826,7 +826,7 @@ export class AttractionEngine {
       downloadFile(exportJSON(data, 'attraction', 'Status Selection Attraction'), `smv-${this.currentGender}-${Date.now()}.json`, 'application/json');
     } else if (format === 'csv') {
       let csv = 'Metric,Value\n';
-      csv += `Overall SMV,${Math.round(this.smv.overall)}\nMarket Position,${this.smv.marketPosition}\nDelusion Index,${Math.round(this.smv.delusionIndex)}\n`;
+      csv += `Overall Sexual Market Value,${Math.round(this.smv.overall)}\nMarket Position,${this.smv.marketPosition}\nDelusion Index,${Math.round(this.smv.delusionIndex)}\n`;
       Object.entries(this.smv.clusters || {}).forEach(([k, v]) => { csv += `${this.formatClusterName(k)},${Math.round(v)}\n`; });
       downloadFile(csv, `smv-${this.currentGender}-${Date.now()}.csv`, 'text/csv');
     }
