@@ -300,7 +300,7 @@ main {
 
 .tools-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     margin: 2rem 0;
     max-width: 100%;
@@ -308,10 +308,18 @@ main {
 
 .tool-card-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 1rem;
     margin: 0 auto 0.75rem;
-    max-width: min(720px, 100%);
+    max-width: 100%;
+}
+
+.tool-card-header p {
+    margin: 0;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--muted);
 }
 
 .tool-card-thumb-link {
@@ -326,7 +334,7 @@ main {
 
 .tool-card-thumb {
     width: 100%;
-    max-width: 220px;
+    max-width: 200px;
     height: auto;
     border-radius: 12px;
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
@@ -1688,7 +1696,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     text-shadow: 0 2px 15px rgba(100, 160, 255, 0.3);
 }
 
-/* Tablet: reduce buffer so image has room */
+/* Tablet: 2 columns, reduced spacing */
 @media (max-width: 1024px) {
     .tools-grid {
         margin: 1rem 0;
@@ -1700,12 +1708,15 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     }
     
     .tool-card-thumb {
-        max-width: 180px;
+        max-width: 160px;
     }
 }
 
-/* Mobile adjustments */
+/* Mobile: single column stack */
 @media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
     .tool-card {
         padding: 1rem;
         border-radius: 14px;

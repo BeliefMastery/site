@@ -106,7 +106,7 @@ function buildExecutiveHighlights(data) {
 
   // Status, Selection, Attraction (SMV) specific
   if (typeof data.overall === 'number') {
-    highlights.push(`SMV Percentile: ${Math.round(data.overall)} (${data.marketPosition || ''})`);
+    highlights.push(`Sexual Market Value Percentile: ${Math.round(data.overall)} (${data.marketPosition || ''})`);
   }
   if (typeof data.delusionIndex === 'number' && data.delusionIndex > 30) {
     highlights.push(`Delusion Index: ${Math.round(data.delusionIndex)}% — expectations vs reality mismatch`);

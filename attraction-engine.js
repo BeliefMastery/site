@@ -414,8 +414,16 @@ export class AttractionEngine {
 
   classifyMarketPosition(overall) {
     const useLabel = this.currentGender === 'male' ? 'maleLabel' : 'femaleLabel';
-    for (const s of MARKET_SEGMENTS) if (overall >= s.min) return s[useLabel];
-    return MARKET_SEGMENTS[MARKET_SEGMENTS.length - 1][useLabel];
+    let result = '';
+    for (const s of MARKET_SEGMENTS) if (overall >= s.min) { result = s[useLabel]; break; }
+    if (!result) result = MARKET_SEGMENTS[MARKET_SEGMENTS.length - 1][useLabel];
+    // Ensure male reports never show female Keeper/Sleeper/Sweeper terminology (e.g. "Sweeper Territory (Below Average)")
+    const femaleSegmentInMaleReport = /(Sweeper|Sleeper)\s+(Zone|Territory)\b|(Sweeper|Sleeper)\s*[\(—]|^Keeper\s+(Zone|Territory)\b/i;
+    if (this.currentGender === 'male' && femaleSegmentInMaleReport.test(result || '')) {
+      for (const s of MARKET_SEGMENTS) if (overall >= s.min) return s.maleLabel;
+      return MARKET_SEGMENTS[MARKET_SEGMENTS.length - 1].maleLabel;
+    }
+    return result;
   }
 
   identifyWeakestSubcategories(smv) {
@@ -563,9 +571,9 @@ export class AttractionEngine {
     const r = { priority: '', tactical: [], strategic: '', warning: '', weakestGuidance: [] };
     const weakest = smv.weakestSubcategories || {};
     if (this.currentGender === 'male') {
-      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.strategic = 'SMV below average. Focus on fundamentals before pursuing high-value women.'; }
-      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.strategic = 'Average SMV. Strategic improvements can move you into keeper territory.'; }
-      else { r.priority = 'Refinement and Leverage'; r.strategic = 'Strong SMV. Focus on finding the right match.'; }
+      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.strategic = 'Sexual Market Value below average. Focus on fundamentals before pursuing high-value women.'; }
+      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.strategic = 'Average Sexual Market Value. Strategic improvements can move you into keeper territory.'; }
+      else { r.priority = 'Refinement and Leverage'; r.strategic = 'Strong Sexual Market Value. Focus on finding the right match.'; }
       if (weakest.coalitionRank) {
         const guid = this.getWeakestSubcategoryGuidance(weakest.coalitionRank.id, 'coalitionRank');
         r.weakestGuidance.push({ cluster: '3C\'s (Coalition Rank)', label: weakest.coalitionRank.label, ...guid });
@@ -580,9 +588,9 @@ export class AttractionEngine {
       }
       if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards significantly exceed your market value. Adjust expectations or commit to major self-improvement.';
     } else {
-      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.strategic = 'SMV below average. Without improvement, high-value men will not commit long-term.'; }
-      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.strategic = 'Average SMV. Improvements can access above-average men.'; }
-      else { r.priority = 'Leverage and Selection'; r.strategic = 'Strong SMV. Focus on selecting the right high-value man.'; }
+      if (smv.overall < 40) { r.priority = 'CRITICAL DEVELOPMENT NEEDED'; r.strategic = 'Sexual Market Value below average. Without improvement, high-value men will not commit long-term.'; }
+      else if (smv.overall < 60) { r.priority = 'Optimization Phase'; r.strategic = 'Average Sexual Market Value. Improvements can access above-average men.'; }
+      else { r.priority = 'Leverage and Selection'; r.strategic = 'Strong Sexual Market Value. Focus on selecting the right high-value man.'; }
       if (weakest.coalitionRank) {
         const guid = this.getWeakestSubcategoryGuidance(weakest.coalitionRank.id, 'coalitionRank');
         r.weakestGuidance.push({ cluster: '3S\'s (Coalition Rank)', label: weakest.coalitionRank.label, ...guid });
@@ -595,10 +603,10 @@ export class AttractionEngine {
         const guid = this.getWeakestSubcategoryGuidance(weakest.axisOfAttraction.id, 'axisOfAttraction');
         r.weakestGuidance.push({ cluster: 'Axis of Attraction', label: weakest.axisOfAttraction.label, ...guid });
       }
-      if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards (height/income/status) significantly exceed your market value. Adjust standards or dramatically improve SMV.';
+      if (smv.delusionIndex > 50) r.warning = 'WARNING: Your standards (height/income/status) significantly exceed your market value. Adjust standards or dramatically improve Sexual Market Value.';
     }
     r.tactical = r.weakestGuidance.flatMap(w => w.actions);
-    if (r.tactical.length === 0) r.tactical = this.currentGender === 'male' ? ['Maintain current trajectory', 'Continue refining highest-leverage areas'] : ['Maintain SMV through health and presentation', 'Continue vetting for commitment-capable men'];
+    if (r.tactical.length === 0) r.tactical = this.currentGender === 'male' ? ['Maintain current trajectory', 'Continue refining highest-leverage areas'] : ['Maintain Sexual Market Value through health and presentation', 'Continue vetting for commitment-capable men'];
     return r;
   }
 
@@ -665,7 +673,7 @@ export class AttractionEngine {
 
     let html = `
       <div class="results-dashboard">
-        <div class="results-header"><h2>Your Sexual Market Value Profile</h2><p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} SMV Assessment</p></div>
+        <div class="results-header"><h2>Your Sexual Market Value Profile</h2><p class="results-subtitle">${this.currentGender === 'male' ? 'Male' : 'Female'} Sexual Market Value Assessment</p></div>
 
         <section class="report-section attraction-exec-summary">
           <div class="attraction-exec-badges">${combinedCard}</div>
