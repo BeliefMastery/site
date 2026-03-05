@@ -23,6 +23,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Capacitor generated
+apps/red-pill-relationships/www/
+
 # Node modules (if any)
 node_modules/
 package-lock.json
