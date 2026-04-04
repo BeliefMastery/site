@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
 
@@ -163,6 +163,11 @@ export class ChannelsEngine {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
     }
     
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
     const exportJSONBtn = document.getElementById('exportAnalysisJson');
     if (exportJSONBtn) {
       exportJSONBtn.addEventListener('click', () => this.exportAnalysis('json'));
@@ -1365,6 +1370,17 @@ export class ChannelsEngine {
       medium: Array.from(medium).filter(Boolean),
       heavy: Array.from(heavy).filter(Boolean)
     };
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Channel Analysis Results',
+      filenameBase: `channel-analysis-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
+    }
   }
 
   exportAnalysis(format = 'json') {

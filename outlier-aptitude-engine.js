@@ -3,7 +3,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
-import { exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 
 let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATION_PROMPTS, APTITUDE_ACUITY_DOMAINS;
 let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS, INDUSTRY_TO_SECTOR, QUALIFICATION_ORDER;
@@ -93,10 +93,31 @@ export class OutlierAptitudeEngine {
     if (prevBtn) prevBtn.addEventListener('click', () => this.prevQuestion());
     if (nextBtn) nextBtn.addEventListener('click', () => this.nextQuestion());
 
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
     const exportJSONBtn = document.getElementById('exportJSON');
     const exportCSVBtn = document.getElementById('exportCSV');
-    if (exportJSONBtn) exportJSONBtn.addEventListener('click', () => exportJSON(this.analysisData, 'outlier-aptitude'));
+    if (exportJSONBtn) {
+      exportJSONBtn.addEventListener('click', () => {
+        const json = exportJSON(this.analysisData, 'outlier-aptitude', 'Outlier Aptitude Assessment');
+        downloadFile(json, `outlier-aptitude-${Date.now()}.json`, 'application/json');
+      });
+    }
     if (exportCSVBtn) exportCSVBtn.addEventListener('click', () => this.exportCSV());
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Outlier Aptitude Report',
+      filenameBase: `outlier-aptitude-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
+    }
   }
 
   shouldAutoGenerateSample() {

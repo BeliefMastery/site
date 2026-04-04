@@ -36,26 +36,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://beliefmastery.github.io/site/archetype.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://beliefmastery.github.io/site/archetype-spread.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beliefmastery.github.io/site/attraction.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://beliefmastery.github.io/site/temperament.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://beliefmastery.github.io/site/diagnosis.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -67,11 +47,6 @@
   </url>
   <url>
     <loc>https://beliefmastery.github.io/site/manipulation.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://beliefmastery.github.io/site/relationship.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

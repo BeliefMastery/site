@@ -25,7 +25,8 @@
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/vulnerability-vector-cover.jpg">
   
   <!-- CRITICAL: Universal styles MUST load first -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   
@@ -204,11 +205,17 @@
 
       <!-- Results Section (hidden by default) -->
       <section class="results-section" id="resultsContainer">
-        <div class="action-buttons">
-          <button class="btn btn-secondary" id="newAssessment">New Assessment</button>
-          <button class="btn btn-primary" id="exportJSON">Export JSON</button>
-          <button class="btn btn-secondary" id="exportCSV">Export CSV</button>
-          <button class="btn btn-secondary" id="exportExecutiveBrief">Export Executive Brief</button>
+        <div class="export-section action-buttons">
+          <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+          <button type="button" class="btn btn-secondary" id="newAssessment">New Assessment</button>
+          <details class="export-advanced" style="margin-top: 1rem; width: 100%;">
+            <summary>Advanced export (JSON, CSV, executive brief)</summary>
+            <div class="action-buttons" style="margin-top: 0.75rem;">
+              <button type="button" class="btn btn-secondary" id="exportJSON">Export JSON</button>
+              <button type="button" class="btn btn-secondary" id="exportCSV">Export CSV</button>
+              <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
+            </div>
+          </details>
         </div>
         <div id="resultsContent">
           <!-- Results populated by JavaScript -->

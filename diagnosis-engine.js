@@ -14,7 +14,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS;
@@ -599,9 +599,19 @@ export class DiagnosisEngine {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
     }
     
-    const viewDataBtn = document.getElementById('viewData');
-    if (viewDataBtn) {
-      viewDataBtn.addEventListener('click', () => this.viewAnalysisData());
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
+    const exportJsonBtn = document.getElementById('exportAnalysisJson');
+    if (exportJsonBtn) {
+      exportJsonBtn.addEventListener('click', () => this.viewAnalysisData('json'));
+    }
+
+    const exportCsvBtn = document.getElementById('exportAnalysisCsv');
+    if (exportCsvBtn) {
+      exportCsvBtn.addEventListener('click', () => this.viewAnalysisData('csv'));
     }
 
     const exportBriefBtn = document.getElementById('exportExecutiveBrief');
@@ -2024,6 +2034,17 @@ export class DiagnosisEngine {
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
       ErrorHandler.showUserError('Failed to load saved progress.');
+    }
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Pathology Assessment — Results',
+      filenameBase: `diagnosis-analysis-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
   }
 

@@ -10,7 +10,7 @@ This repository contains the official website for **Belief Mastery** and **Sover
 ### Primary Purpose
 A static website that serves as:
 - Book information and sales portal
-- Collection of 15 self-assessment tools for mental sovereignty and diagnostic clarity
+- Collection of 12 self-assessment tools for mental sovereignty and diagnostic clarity
 - Author biography and contact information
 
 ### Target Audience
@@ -18,7 +18,7 @@ A static website that serves as:
 
 **Use this site if:**
 - You want to learn about books on mental sovereignty and cognitive defense
-- You're looking for self-assessment tools for psychological patterns, relationships, archetypes, or worldview clarity
+- You're looking for self-assessment tools for psychological patterns, worldview clarity, and cognitive defense
 - You want to contact the author or purchase books
 
 ## Quick Start
@@ -55,22 +55,19 @@ cd site
 - `framework-atlas.html` - Cross-map of book principles, engines, and outputs
 - Assessment examples are at `tools.html#assessment-examples`
 
-### Diagnostic Tools (15 tools)
+### Diagnostic Tools (12 tools)
 1. **Pathology Assessment** (`diagnosis.html`) - DSM-5 educational self-assessment for pattern clarity
 2. **Life Domain Review** (`coaching.html`) - Sovereign of Mind + Belief Mastery obstacles/satisfaction mapping
 3. **Dependency Loop Tracer** (`needs-dependency.html`) - Belief Mastery Chapter 5 needs/dependency tracing
 4. **Manipulation Defense Decoder** (`manipulation.html`) - Sovereign of Mind manipulation vectors/tactics mapping
 5. **Technical Title for your Sovereignty Paradigm** (`sovereignty-spectrum.html`) - Philosophical paradigm alignment
 6. **Logos Structure** (`paradigm.html`) - Worldview foundation mapping (Good Life/God lenses)
-7. **Relationships** (`relationship.html`) - Compatibility assessment with polarity and status/selection/attraction
-8. **Polarity Position Mapping** (`temperament.html`) - Temperament spectrum with gender-calibrated selection criteria
-9. **Modern Archetype Identification** (`archetype.html`) - 5-phase archetype system with status/selection markers
-10. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification
-11. **Astrological Character Sheet** (`character-sheet.html`) - Western/Chinese/Mayan + Numerology RPG conversion
-12. **Will Anomaly Mapping** (`entities.html`) - Secular will-anomaly mapping with reclamation protocols
-13. **Aptitude Mapping** (`outlier-aptitude.html`) - Aptitude signal mapping with market projection matrix
-14. **Unlocked GPT** - External link to custom GPT interface
-15. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
+7. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification
+8. **Astrological Character Sheet** (`character-sheet.html`) - Western/Chinese/Mayan + Numerology RPG conversion
+9. **Will Anomaly Mapping** (`entities.html`) - Secular will-anomaly mapping with reclamation protocols
+10. **Aptitude Mapping** (`outlier-aptitude.html`) - Aptitude signal mapping with market projection matrix
+11. **Unlocked GPT** - External link to custom GPT interface
+12. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
 
 ### Key Files
 - `style.css` - Shared stylesheet for all pages

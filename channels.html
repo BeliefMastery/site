@@ -25,7 +25,8 @@
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/channel-analysis-cover.jpg">
   
   <!-- CRITICAL: Universal styles MUST load first -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   
@@ -289,14 +290,21 @@
         </div>
         
         <div class="export-section">
-          <h3>Export Your Analysis</h3>
-          <p>Export your channel analysis and remediation strategies for reference.</p>
+          <h3>Save your report</h3>
+          <p>Download a single HTML file with the full report text (works offline).</p>
           <div class="action-buttons">
-            <button class="btn btn-primary" id="exportAnalysisJson">📥 Export Analysis (JSON)</button>
-            <button class="btn btn-primary" id="exportAnalysisCsv">📥 Export Analysis (CSV)</button>
-            <button class="btn btn-secondary" id="exportExecutiveBrief">Export Executive Brief</button>
-            <button class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+            <button type="button" class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
           </div>
+          <details class="export-advanced" style="margin-top: 1rem;">
+            <summary>Advanced export (JSON, CSV, executive brief)</summary>
+            <p class="content-section" style="margin-top: 0.75rem;">For tools and AI workflows. JSON is structured data; CSV includes agent-oriented instructions.</p>
+            <div class="action-buttons">
+              <button type="button" class="btn btn-secondary" id="exportAnalysisJson">Export JSON</button>
+              <button type="button" class="btn btn-secondary" id="exportAnalysisCsv">Export CSV</button>
+              <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
+            </div>
+          </details>
         </div>
       </section>
     </div>

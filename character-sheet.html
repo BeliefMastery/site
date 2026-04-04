@@ -25,7 +25,8 @@
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/astrology-cover.jpg">
   
   <!-- CRITICAL: Universal styles MUST load first -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -328,9 +329,14 @@
 
       <!-- Results Section -->
       <section id="characterSheetResults" class="results-section hidden">
-        <div class="action-buttons">
+        <div class="export-section action-buttons">
+          <button type="button" id="exportReportHtml" class="btn btn-primary">Download sheet (HTML)</button>
           <button type="button" id="newCharacter" class="btn btn-secondary">Create New Character</button>
-          <button type="button" id="exportCharacter" class="btn btn-secondary">Export Character Sheet</button>
+          <details class="export-advanced" style="margin-top: 1rem; width: 100%;">
+            <summary>Advanced export (JSON data)</summary>
+            <p class="form-help" style="margin-top: 0.5rem;">Raw structured data for tools and backups.</p>
+            <button type="button" id="exportCharacter" class="btn btn-secondary" style="margin-top: 0.5rem;">Export JSON</button>
+          </details>
         </div>
         
         <div id="characterSheetDisplay"></div>

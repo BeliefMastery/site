@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 
@@ -214,6 +214,41 @@ export class CoachingEngine {
       prevBtn.addEventListener('click', () => this.prevQuestion());
     }
     
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
+    const startDeeperBtn = document.getElementById('startDeeperInquiry');
+    if (startDeeperBtn) {
+      startDeeperBtn.addEventListener('click', () => this.startDeeperInquiry());
+    }
+
+    const backToResultsBtn = document.getElementById('backToResults');
+    if (backToResultsBtn) {
+      backToResultsBtn.addEventListener('click', () => this.backToInitialResults());
+    }
+
+    const exportHtmlDeeperBtn = document.getElementById('exportReportHtmlDeeper');
+    if (exportHtmlDeeperBtn) {
+      exportHtmlDeeperBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
+    const exportDeepJsonBtn = document.getElementById('exportDeepProfileJSON');
+    if (exportDeepJsonBtn) {
+      exportDeepJsonBtn.addEventListener('click', () => this.exportProfile('json'));
+    }
+
+    const exportDeepCsvBtn = document.getElementById('exportDeepProfileCSV');
+    if (exportDeepCsvBtn) {
+      exportDeepCsvBtn.addEventListener('click', () => this.exportProfile('csv'));
+    }
+
+    const exportBriefDeeperBtn = document.getElementById('exportExecutiveBriefDeeper');
+    if (exportBriefDeeperBtn) {
+      exportBriefDeeperBtn.addEventListener('click', () => this.exportExecutiveBrief());
+    }
+
     const exportJSONBtn = document.getElementById('exportProfileJSON');
     if (exportJSONBtn) {
       exportJSONBtn.addEventListener('click', () => this.exportProfile('json'));
@@ -945,7 +980,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         html += `
           <div class="obstacle-item">
             <strong>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</strong> - Score: ${obstacle.rawScore}/10 (${severity})
-            <p">${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>
+            <p>${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>
           </div>
         `;
       });
@@ -1001,11 +1036,15 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     `;
   }
 
-  startDeeperInquiry() {
-    // Hide initial results, show deeper inquiry section
+  async startDeeperInquiry() {
+    try {
+      await this.loadCoachingData();
+    } catch {
+      return;
+    }
     const resultsSection = document.getElementById('resultsSection');
     const deeperSection = document.getElementById('deeperInquirySection');
-    
+
     if (resultsSection) resultsSection.classList.add('hidden');
     if (deeperSection) {
       deeperSection.classList.remove('hidden');
@@ -1127,21 +1166,37 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     SecurityUtils.safeInnerHTML(container, html);
   }
 
-  exportProfile(format = 'json', includeDeeper = false) {
-    // Deployment threshold: require user to select application context
+  exportProfile(format = 'json') {
+    // Deployment threshold applies to structured exports only (not HTML snapshot).
     const deploymentContext = this.getDeploymentContext();
     if (!deploymentContext) {
       this.showDeploymentThreshold();
       return;
     }
-    
-    // Add deployment context to profile metadata
+
     this.profileData.coachingProfile.metadata.deploymentContext = deploymentContext;
-    
+
     if (format === 'csv') {
       this.exportCSV();
     } else {
       this.exportJSON();
+    }
+  }
+
+  /** Snapshot of #resultsSection and, when populated, #deeperInquirySection (no deployment gate). */
+  exportReportHtml() {
+    const selectors = ['#resultsSection'];
+    const deeper = document.getElementById('deeperInquiryResults');
+    if (deeper && deeper.textContent.trim().length > 40) {
+      selectors.push('#deeperInquirySection');
+    }
+    const ok = downloadReportHtml({
+      title: 'Life Domain Review — Coaching Profile',
+      filenameBase: `coaching-profile-${Date.now()}`,
+      rootSelectors: selectors
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
   }
   
@@ -1444,7 +1499,12 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     };
     
     sessionStorage.removeItem('coachingProgress');
-    
+
+    const deeperSection = document.getElementById('deeperInquirySection');
+    const deeperResults = document.getElementById('deeperInquiryResults');
+    if (deeperSection) deeperSection.classList.add('hidden');
+    if (deeperResults) deeperResults.innerHTML = '';
+
     // Reset UI
     document.getElementById('sectionSelection').classList.remove('hidden');
     document.getElementById('selectionSection')?.classList.remove('hidden');

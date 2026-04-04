@@ -22,7 +22,8 @@
   <meta name="twitter:description" content="Identify aptitude signals and map them to resilient market pathways using a projection matrix and validation prompts.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/aptitude-cover.jpg">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -144,9 +145,18 @@
       <section class="results-section" id="resultsSection">
         <h2>Your Aptitude Report</h2>
         <div id="resultsContainer"></div>
-        <div class="action-buttons">
-          <button class="btn btn-secondary" id="exportJSON">Export JSON</button>
-          <button class="btn btn-secondary" id="exportCSV">Export CSV</button>
+        <div class="export-section">
+          <p class="content-section">Download a single HTML file with the full report text (works offline).</p>
+          <div class="action-buttons">
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+          </div>
+          <details class="export-advanced" style="margin-top: 1rem;">
+            <summary>Advanced export (JSON, CSV)</summary>
+            <div class="action-buttons" style="margin-top: 0.75rem;">
+              <button type="button" class="btn btn-secondary" id="exportJSON">Export JSON</button>
+              <button type="button" class="btn btn-secondary" id="exportCSV">Export CSV</button>
+            </div>
+          </details>
         </div>
         <div class="action-buttons">
           <button class="btn btn-secondary" id="abandonAssessmentResults">❌ Abandon / Restart</button>

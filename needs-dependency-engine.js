@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
 
@@ -508,6 +508,11 @@ export class NeedsDependencyEngine {
       prevBtn.addEventListener('click', () => this.prevQuestion());
     }
     
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
     const exportBtnJson = document.getElementById('exportAnalysisJson');
     if (exportBtnJson) {
       exportBtnJson.addEventListener('click', () => this.exportAnalysis('json'));
@@ -1868,6 +1873,17 @@ export class NeedsDependencyEngine {
     } else if (format === 'csv') {
       const csv = exportForAIAgent(exportData, 'needs-dependency', 'Needs Dependency Loop Determinator');
       downloadFile(csv, 'needs-dependency-analysis.csv', 'text/csv');
+    }
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Dependency Loop Analysis',
+      filenameBase: `needs-dependency-analysis-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
   }
 

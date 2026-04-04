@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
 
@@ -166,6 +166,11 @@ export class ParadigmEngine {
     const newAssessmentBtn = document.getElementById('newAssessment');
     if (newAssessmentBtn) {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
+    }
+
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
     const exportJSONBtn = document.getElementById('exportJSON');
@@ -1853,6 +1858,17 @@ export class ParadigmEngine {
     html += '</div></div>';
     
     return html;
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Logos Structure — Paradigm Profile',
+      filenameBase: `paradigm-analysis-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
+    }
   }
 
   exportAnalysis(format = 'json') {

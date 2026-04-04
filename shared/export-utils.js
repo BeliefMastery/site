@@ -12,14 +12,29 @@ const FRAMEWORK_MAP = {
   paradigm: ['Sovereign of Mind'],
   'sovereignty-spectrum': ['Sovereign of Mind'],
   sovereignty: ['Sovereign of Mind'],
-  relationship: ['Belief Mastery', 'Sovereign of Mind'],
-  temperament: ['Belief Mastery', 'Sovereign of Mind'],
-  'temperament-analysis': ['Belief Mastery', 'Sovereign of Mind'],
   'needs-dependency': ['Belief Mastery', 'Sovereign of Mind'],
-  attraction: ['Belief Mastery', 'Sovereign of Mind'],
-  archetype: ['Belief Mastery', 'Sovereign of Mind'],
-  'archetype-analysis': ['Belief Mastery', 'Sovereign of Mind']
+  'logos-structure': ['Sovereign of Mind'],
+  'cognitive-resistance-capacity': ['Sovereign of Mind'],
+  'cognitive-resistance-capacity-assessment': ['Sovereign of Mind'],
+  'sovereignty-paradigm': ['Sovereign of Mind'],
+  'sovereignty-spectrum-analysis': ['Sovereign of Mind'],
+  entities: ['Sovereign of Mind'],
+  'outlier-aptitude': ['Sovereign of Mind']
 };
+
+/** Maps engine-specific type strings to keys understood by CSV generators. */
+const SYSTEM_TYPE_ALIASES = {
+  'life-domain-review': 'coaching',
+  'logos-structure': 'paradigm',
+  'cognitive-resistance-capacity': 'sovereignty',
+  'cognitive-resistance-capacity-assessment': 'sovereignty',
+  'sovereignty-spectrum-analysis': 'sovereignty-paradigm'
+};
+
+export function normalizeSystemType(systemType) {
+  if (!systemType) return systemType;
+  return SYSTEM_TYPE_ALIASES[systemType] || systemType;
+}
 
 function getFrameworksForSystem(systemType) {
   if (!systemType) return ['Belief Mastery', 'Sovereign of Mind'];
@@ -40,12 +55,6 @@ function buildExecutiveHighlights(data) {
   if (Array.isArray(data.identifiedVectors) && data.identifiedVectors.length) {
     getTopEntriesByValue(data.identifiedVectors, 'weightedScore').forEach(vec => {
       highlights.push(`Manipulation vector: ${vec.name} (${vec.weightedScore?.toFixed?.(2) || vec.weightedScore})`);
-    });
-  }
-
-  if (Array.isArray(data.weakestLinks) && data.weakestLinks.length) {
-    data.weakestLinks.slice(0, 3).forEach(link => {
-      highlights.push(`Relationship strain: ${link.name} (${link.rawScore}/10)`);
     });
   }
 
@@ -76,16 +85,8 @@ function buildExecutiveHighlights(data) {
     });
   }
 
-  if (data.primaryArchetype) {
-    highlights.push(`Primary archetype: ${data.primaryArchetype}`);
-  }
-
   if (data.primaryPattern) {
     highlights.push(`Primary pattern: ${data.primaryPattern}`);
-  }
-
-  if (data.crossPolarityDetected && data.crossPolarityNote) {
-    highlights.push(`Cross-polarity finding: ${data.crossPolarityNote}`);
   }
 
   if (data.primaryLoop) {
@@ -104,21 +105,8 @@ function buildExecutiveHighlights(data) {
     });
   }
 
-  // Status, Selection, Attraction (SMV) specific
-  if (typeof data.overall === 'number') {
-    highlights.push(`Sexual Market Value Percentile: ${Math.round(data.overall)} (${data.marketPosition || ''})`);
-  }
-  if (typeof data.delusionIndex === 'number' && data.delusionIndex > 30) {
-    highlights.push(`Delusion Index: ${Math.round(data.delusionIndex)}% — expectations vs reality mismatch`);
-  }
-  if (data.levelClassification) {
-    highlights.push(`Developmental Level: ${data.levelClassification}`);
-  }
-  if (data.clusters && typeof data.clusters === 'object') {
-    const clusterNames = { coalitionRank: 'Coalition Rank', reproductiveConfidence: 'Reproductive Confidence', axisOfAttraction: 'Axis of Attraction' };
-    Object.entries(data.clusters).forEach(([k, v]) => {
-      if (typeof v === 'number') highlights.push(`${clusterNames[k] || k}: ${Math.round(v)}th percentile`);
-    });
+  if (data.spectrumLabel) {
+    highlights.push(`Paradigm integration level: ${data.spectrumLabel}`);
   }
 
   return highlights;
@@ -154,6 +142,7 @@ export function exportExecutiveBrief(assessmentData, systemType, systemName) {
 }
 
 export function exportForAIAgent(assessmentData, systemType, systemName) {
+  const normalizedType = normalizeSystemType(systemType);
   // Generate comprehensive CSV export with AI interpretation instructions
   let csv = `${systemName} Assessment Profile\n`;
   csv += `Export Version: ${EXPORT_VERSION}\n`;
@@ -177,27 +166,23 @@ export function exportForAIAgent(assessmentData, systemType, systemName) {
   csv += '"Sovereignty Alignment","All guidance should support the user\'s capacity for self-authorship, structural clarity, and reclaiming agency."\n';
   csv += '\n';
   
-  // Add system-specific data sections
-  if (systemType === 'coaching') {
+  // Add system-specific data sections (normalizedType aligns engine strings with generators)
+  if (normalizedType === 'coaching') {
     csv += generateCoachingExport(assessmentData);
-  } else if (systemType === 'manipulation') {
+  } else if (normalizedType === 'manipulation') {
     csv += generateManipulationExport(assessmentData);
-  } else if (systemType === 'channels') {
+  } else if (normalizedType === 'channels') {
     csv += generateChannelsExport(assessmentData);
-  } else if (systemType === 'paradigm') {
+  } else if (normalizedType === 'paradigm') {
     csv += generateParadigmExport(assessmentData);
-  } else if (systemType === 'diagnosis') {
+  } else if (normalizedType === 'diagnosis') {
     csv += generateDiagnosisExport(assessmentData);
-  } else if (systemType === 'relationship') {
-    csv += generateRelationshipExport(assessmentData);
-  } else if (systemType === 'temperament' || systemType === 'temperament-analysis') {
-    csv += generateTemperamentExport(assessmentData);
-  } else if (systemType === 'needs-dependency') {
+  } else if (normalizedType === 'needs-dependency') {
     csv += generateNeedsDependencyExport(assessmentData);
-  } else if (systemType === 'archetype' || systemType === 'archetype-analysis') {
-    csv += generateArchetypeExport(assessmentData);
-  } else if (systemType === 'sovereignty' || systemType === 'sovereignty-analysis') {
+  } else if (normalizedType === 'sovereignty' || normalizedType === 'sovereignty-analysis') {
     csv += generateSovereigntyExport(assessmentData);
+  } else if (normalizedType === 'sovereignty-paradigm') {
+    csv += generateSovereigntySpectrumExport(assessmentData);
   }
   
   csv += '\n';
@@ -548,147 +533,6 @@ function generateDiagnosisExport(data) {
   return csv;
 }
 
-function generateRelationshipExport(data) {
-  let csv = '=== RELATIONSHIP OPTIMIZATION DATA ===\n';
-  
-  // Include ALL questions with their answers (ensure comprehensive coverage)
-  if (data.questionSequence && data.questionSequence.length > 0) {
-    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
-    csv += 'Question ID,Question Text,Answer (0-10),Stage,Compatibility Point,Domain,Name\n';
-    data.questionSequence.forEach(q => {
-      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
-      const questionText = q.question || q.questionText || '';
-      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.stage || ''}","${q.point || ''}","${q.domain || ''}","${(q.name || '').replace(/"/g, '""')}"\n`;
-    });
-  }
-  
-  // Include any additional answers not in questionSequence (legacy support)
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    const questionIds = new Set();
-    if (data.questionSequence) {
-      data.questionSequence.forEach(q => questionIds.add(q.id));
-    }
-    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
-    if (missingAnswers.length > 0) {
-      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
-      csv += 'Question ID,Answer (0-10)\n';
-      missingAnswers.forEach(([id, answer]) => {
-        csv += `"${id}",${answer}\n`;
-      });
-    }
-  }
-  
-  if (data.weakestLinks && data.weakestLinks.length > 0) {
-    csv += '\n=== WEAKEST LINKS (Priority Areas) ===\n';
-    csv += 'Rank,Compatibility Point,Name,Raw Score,Weighted Score,Impact Tier,Priority,Severity,Focus\n';
-    
-    data.weakestLinks.forEach((link, index) => {
-      const focus = link.severity === 'Critical'
-        ? 'Urgent - Immediate attention required, relationship at risk'
-        : link.severity === 'Moderate'
-          ? 'Important - Significant area for improvement, address soon'
-          : 'Monitor - Present but manageable, maintain awareness';
-      
-      csv += `${index + 1},"${link.point}","${link.name}",${link.rawScore},${link.weightedScore.toFixed(2)},"${link.impactTier}",${link.priority},${link.severity},"${focus}"\n`;
-    });
-  }
-  
-  if (data.compatibilityScores && Object.keys(data.compatibilityScores).length > 0) {
-    csv += '\n=== ALL COMPATIBILITY SCORES ===\n';
-    csv += 'Compatibility Point,Name,Raw Score,Weighted Score,Impact Tier,Tier Weight,Priority,Severity\n';
-    
-    const sortedScores = Object.entries(data.compatibilityScores)
-      .map(([key, score]) => ({ key, ...score }))
-      .sort((a, b) => b.weightedScore - a.weightedScore);
-    
-    sortedScores.forEach(score => {
-      csv += `"${score.key}","${score.name}",${score.rawScore},${score.weightedScore.toFixed(2)},"${score.impactTier}",${score.tierWeight},${score.priority},${score.severity}\n`;
-    });
-  }
-  
-  if (data.actionStrategies) {
-    csv += '\n=== ACTION STRATEGIES ===\n';
-    csv += 'Compatibility Point,Strategy Type,Action\n';
-    
-    data.weakestLinks.forEach(link => {
-      if (link.strategies) {
-        if (link.strategies.immediate && link.strategies.immediate.length > 0) {
-          link.strategies.immediate.forEach(strategy => {
-            csv += `"${link.point}","Immediate","${strategy.replace(/"/g, '""')}"\n`;
-          });
-        }
-        if (link.strategies.structural && link.strategies.structural.length > 0) {
-          link.strategies.structural.forEach(strategy => {
-            csv += `"${link.point}","Structural","${strategy.replace(/"/g, '""')}"\n`;
-          });
-        }
-        if (link.strategies.archetypal && link.strategies.archetypal.length > 0) {
-          link.strategies.archetypal.forEach(insight => {
-            csv += `"${link.point}","Archetypal","${insight.replace(/"/g, '""')}"\n`;
-          });
-        }
-      }
-    });
-  }
-  
-  return csv;
-}
-
-function generateTemperamentExport(data) {
-  let csv = '=== TEMPERAMENT ANALYSIS DATA ===\n';
-  
-  // Include ALL questions with their answers (ensure comprehensive coverage)
-  if (data.questionSequence && data.questionSequence.length > 0) {
-    csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
-    csv += 'Question ID,Question Text,Answer (0-10),Type,Dimension/Category,Dimension Name/Category Name\n';
-    data.questionSequence.forEach(q => {
-      const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
-      const questionText = q.question || q.questionText || '';
-      const dimensionOrCategory = q.dimension || q.category || '';
-      const name = q.dimensionName || q.categoryName || q.name || '';
-      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.type || ''}","${dimensionOrCategory}","${name.replace(/"/g, '""')}"\n`;
-    });
-  }
-  
-  // Include any additional answers not in questionSequence (legacy support)
-  if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
-    const questionIds = new Set();
-    if (data.questionSequence) {
-      data.questionSequence.forEach(q => questionIds.add(q.id));
-    }
-    const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
-    if (missingAnswers.length > 0) {
-      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
-      csv += 'Question ID,Answer (0-10)\n';
-      missingAnswers.forEach(([id, answer]) => {
-        csv += `"${id}",${answer}\n`;
-      });
-    }
-  }
-  
-  if (data.overallTemperament) {
-    csv += '\n=== OVERALL TEMPERAMENT ===\n';
-    csv += `Category: ${data.overallTemperament.category || 'Not specified'}\n`;
-    csv += `Normalized Score: ${(data.overallTemperament.normalizedScore * 100).toFixed(1)}%\n`;
-    csv += `Masculine Score: ${(data.overallTemperament.masculineScore * 100).toFixed(1)}%\n`;
-    csv += `Feminine Score: ${(data.overallTemperament.feminineScore * 100).toFixed(1)}%\n`;
-    csv += `Net Score: ${(data.overallTemperament.netScore * 100).toFixed(1)}%\n`;
-  }
-  if (data.crossPolarityDetected && data.crossPolarityNote) {
-    csv += '\n=== CROSS-POLARITY FINDING ===\n';
-    csv += `Notable: ${data.crossPolarityNote}\n`;
-  }
-  if (data.dimensionScores && Object.keys(data.dimensionScores).length > 0) {
-    csv += '\n=== DIMENSION SCORES ===\n';
-    csv += 'Dimension,Masculine Score,Feminine Score,Net Score\n';
-    Object.entries(data.dimensionScores).forEach(([dim, score]) => {
-      csv += `"${dim}",${(score.masculine * 100).toFixed(1)}%,${(score.feminine * 100).toFixed(1)}%,${(score.net * 100).toFixed(1)}%\n`;
-    });
-  }
-  
-  return csv;
-}
-
 function formatAnswerForExport(answer) {
   if (answer == null || answer === '') return 'Not answered';
   if (typeof answer === 'object') {
@@ -778,21 +622,20 @@ function generateNeedsDependencyExport(data) {
   return csv;
 }
 
-function generateArchetypeExport(data) {
-  let csv = '=== MODERN ARCHETYPE IDENTIFICATION DATA ===\n';
-  
-  // Include ALL questions with their answers (ensure comprehensive coverage)
+function generateSovereigntySpectrumExport(data) {
+  let csv = '=== SOVEREIGNTY PARADIGM (SPECTRUM) DATA ===\n';
+
   if (data.questionSequence && data.questionSequence.length > 0) {
     csv += '\n=== ALL QUESTIONS AND ANSWERS ===\n';
-    csv += 'Question ID,Question Text,Answer (0-10),Phase,Category,Archetype,Dimension\n';
+    csv += 'Question ID,Question Text,Answer,Section,Category,Type\n';
     data.questionSequence.forEach(q => {
       const answer = data.allAnswers && data.allAnswers[q.id] !== undefined ? data.allAnswers[q.id] : 'Not answered';
-      const questionText = q.question || q.questionText || '';
-      csv += `"${q.id}","${questionText.replace(/"/g, '""')}",${answer},"${q.phase || ''}","${q.category || ''}","${q.archetype || ''}","${q.dimension || ''}"\n`;
+      const questionText = q.question || q.questionText || q.text || '';
+      const ansStr = typeof answer === 'object' ? JSON.stringify(answer) : String(answer);
+      csv += `"${q.id}","${questionText.replace(/"/g, '""')}","${ansStr.replace(/"/g, '""')}","${q.section || ''}","${q.category || ''}","${q.type || ''}"\n`;
     });
   }
-  
-  // Include any additional answers not in questionSequence (legacy support)
+
   if (data.allAnswers && Object.keys(data.allAnswers).length > 0) {
     const questionIds = new Set();
     if (data.questionSequence) {
@@ -800,35 +643,58 @@ function generateArchetypeExport(data) {
     }
     const missingAnswers = Object.entries(data.allAnswers).filter(([id]) => !questionIds.has(id));
     if (missingAnswers.length > 0) {
-      csv += '\n=== ADDITIONAL ANSWERS (Not in Question Sequence) ===\n';
-      csv += 'Question ID,Answer (0-10)\n';
+      csv += '\n=== ADDITIONAL ANSWERS ===\n';
+      csv += 'Question ID,Answer\n';
       missingAnswers.forEach(([id, answer]) => {
-        csv += `"${id}",${answer}\n`;
+        const ans = typeof answer === 'object' ? JSON.stringify(answer) : String(answer);
+        csv += `"${id}","${ans.replace(/"/g, '""')}"\n`;
       });
     }
   }
-  
-  if (data.primaryArchetype) {
-    csv += '\n=== PRIMARY ARCHETYPE ===\n';
-    csv += `Archetype: ${data.primaryArchetype.name}\n`;
-    csv += `Confidence: ${data.primaryArchetype.confidence.toFixed(1)}%\n`;
-    if (data.primaryArchetype.description) {
-      csv += `Description: ${data.primaryArchetype.description}\n`;
-    }
+
+  if (data.spectrumLabel != null || data.spectrumPosition != null) {
+    csv += '\n=== INTEGRATION SPECTRUM ===\n';
+    csv += `Spectrum Label,${data.spectrumLabel || ''}\n`;
+    csv += `Spectrum Position,${data.spectrumPosition != null ? data.spectrumPosition : ''}\n`;
   }
-  
-  if (data.secondaryArchetype) {
-    csv += '\n=== SECONDARY ARCHETYPE ===\n';
-    csv += `Archetype: ${data.secondaryArchetype.name}\n`;
-    csv += `Confidence: ${data.secondaryArchetype.confidence.toFixed(1)}%\n`;
+
+  if (data.dominantParadigm != null) {
+    csv += '\n=== DOMINANT PARADIGM ID ===\n';
+    csv += `${data.dominantParadigm}\n`;
   }
-  
-  if (data.tertiaryArchetype) {
-    csv += '\n=== TERTIARY ARCHETYPE ===\n';
-    csv += `Archetype: ${data.tertiaryArchetype.name}\n`;
-    csv += `Confidence: ${data.tertiaryArchetype.confidence.toFixed(1)}%\n`;
+
+  if (Array.isArray(data.paradigmDominance) && data.paradigmDominance.length > 0) {
+    csv += '\n=== PARADIGM DOMINANCE ===\n';
+    csv += 'Paradigm ID,Score\n';
+    data.paradigmDominance.forEach(entry => {
+      csv += `"${entry.id || ''}",${entry.score != null ? entry.score : ''}\n`;
+    });
   }
-  
+
+  if (Array.isArray(data.paradigmConflicts) && data.paradigmConflicts.length > 0) {
+    csv += '\n=== PARADIGM CONFLICTS ===\n';
+    csv += 'Primary,Secondary,Tension,Resolution\n';
+    data.paradigmConflicts.forEach(c => {
+      csv += `"${(c.primaryName || '').replace(/"/g, '""')}","${(c.secondaryName || '').replace(/"/g, '""')}","${(c.tension || '').replace(/"/g, '""')}","${(c.resolution || '').replace(/"/g, '""')}"\n`;
+    });
+  }
+
+  if (data.derailerScores && typeof data.derailerScores === 'object') {
+    csv += '\n=== DERAILER SCORES ===\n';
+    csv += 'Derailer,Score\n';
+    Object.entries(data.derailerScores).forEach(([k, v]) => {
+      csv += `"${k}",${v}\n`;
+    });
+  }
+
+  if (Array.isArray(data.remediationPaths) && data.remediationPaths.length > 0) {
+    csv += '\n=== REMEDIATION PATHS ===\n';
+    csv += 'Type,Priority,Action\n';
+    data.remediationPaths.forEach(p => {
+      csv += `"${(p.type || '').replace(/"/g, '""')}","${p.priority || ''}","${(p.action || '').replace(/"/g, '""')}"\n`;
+    });
+  }
+
   return csv;
 }
 
@@ -899,6 +765,114 @@ export function exportJSON(assessmentData, systemType, systemName) {
   };
   
   return JSON.stringify(exportData, null, 2);
+}
+
+const REPORT_EXPORT_STYLES = `
+:root { color-scheme: light dark; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; margin: 0 auto; max-width: 52rem; padding: 1.5rem 1.25rem 3rem; color: #1a1a1a; background: #fafafa; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e8e8; background: #121212; }
+}
+h1 { font-size: 1.35rem; margin: 0 0 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+@media (prefers-color-scheme: dark) {
+  h1 { border-bottom-color: #444; }
+}
+h2, h3, h4, h5 { line-height: 1.3; margin-top: 1.35em; margin-bottom: 0.5em; }
+p { margin: 0.5em 0; }
+ul, ol { margin: 0.5em 0; padding-left: 1.35rem; }
+a { color: #0b57d0; }
+@media (prefers-color-scheme: dark) {
+  a { color: #8ab4f8; }
+}
+.report-export-meta { font-size: 0.875rem; color: #555; margin-bottom: 1.5rem; }
+@media (prefers-color-scheme: dark) {
+  .report-export-meta { color: #aaa; }
+}
+.report-export-section { margin-bottom: 2rem; }
+.report-export-section > h2:first-child { margin-top: 0; }
+.info-box, .panel-brand-left, .paradigm-result-card, .derailer-item, .remediation-item, .domain-item, .channel-item { margin: 0.75rem 0; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid #ddd; background: #fff; }
+@media (prefers-color-scheme: dark) {
+  .info-box, .panel-brand-left, .paradigm-result-card, .derailer-item, .remediation-item, .domain-item, .channel-item { border-color: #444; background: #1e1e1e; }
+}
+details { margin: 1rem 0; }
+summary { cursor: pointer; font-weight: 600; }
+table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; font-size: 0.9rem; }
+th, td { border: 1px solid #ccc; padding: 0.35rem 0.5rem; text-align: left; }
+@media (prefers-color-scheme: dark) {
+  th, td { border-color: #444; }
+}
+`;
+
+function escapeHtml(text) {
+  if (text == null) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * Build a self-contained HTML file from visible report DOM (offline-friendly).
+ * @param {object} options
+ * @param {string} [options.title] - Document title
+ * @param {string} [options.filenameBase] - Download filename without extension
+ * @param {string} [options.rootSelector] - Single root to clone
+ * @param {string|string[]} [options.rootSelectors] - Multiple roots (concatenated in order)
+ */
+export function downloadReportHtml(options = {}) {
+  const {
+    title = 'Assessment report',
+    filenameBase = 'report',
+    rootSelector,
+    rootSelectors
+  } = options;
+
+  const selectors = rootSelectors
+    ? (Array.isArray(rootSelectors) ? rootSelectors : [rootSelectors])
+    : rootSelector
+      ? [rootSelector]
+      : [];
+
+  if (!selectors.length || typeof document === 'undefined') {
+    return false;
+  }
+
+  const fragments = [];
+  for (const sel of selectors) {
+    const el = document.querySelector(sel);
+    if (!el) continue;
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('button, .export-section, [data-no-export], script, style[data-live-only]').forEach(node => {
+      node.remove();
+    });
+    fragments.push(`<div class="report-export-section">${clone.innerHTML}</div>`);
+  }
+
+  if (!fragments.length) {
+    return false;
+  }
+
+  const safeTitle = escapeHtml(title);
+  const generated = escapeHtml(new Date().toISOString());
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${safeTitle}</title>
+<style>${REPORT_EXPORT_STYLES}</style>
+</head>
+<body>
+<h1>${safeTitle}</h1>
+<p class="report-export-meta">Exported ${generated}</p>
+${fragments.join('\n')}
+</body>
+</html>`;
+
+  const safeBase = String(filenameBase).replace(/[^a-z0-9-_]+/gi, '_').replace(/^_|_$/g, '') || 'report';
+  downloadFile(html, `${safeBase}.html`, 'text/html;charset=utf-8');
+  return true;
 }
 
 export function downloadFile(content, filename, mimeType) {

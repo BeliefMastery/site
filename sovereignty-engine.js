@@ -1,7 +1,7 @@
 // Cognitive Resistance Capacity Assessment Engine
 // Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and resistance capacity
 
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
@@ -167,6 +167,11 @@ export class SovereigntyEngine {
     const newAssessmentBtn = document.getElementById('newAssessment');
     if (newAssessmentBtn) {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
+    }
+
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
     const exportJSONBtn = document.getElementById('exportJSON');
@@ -2163,6 +2168,17 @@ export class SovereigntyEngine {
       }
     } catch (e) {
       console.error('Error loading stored data:', e);
+    }
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Cognitive Resistance Capacity — Results',
+      filenameBase: `sovereignty-analysis-${Date.now()}`,
+      rootSelector: '#resultsContainer'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
   }
 

@@ -5,7 +5,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
 
@@ -149,6 +149,11 @@ export class SovereigntySpectrumEngine {
     const newAssessmentBtn = document.getElementById('newAssessment');
     if (newAssessmentBtn) {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
+    }
+
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
     const exportJSONBtn = document.getElementById('exportJSON');
@@ -1446,16 +1451,27 @@ export class SovereigntySpectrumEngine {
     this.saveProgress();
   }
 
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Your Sovereignty Paradigm — Results',
+      filenameBase: `sovereignty-spectrum-analysis-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
+    }
+  }
+
   /**
    * Export analysis data
    * @param {string} format - Export format ('json' or 'csv')
    */
   exportAnalysis(format = 'json') {
     if (format === 'csv') {
-      const csv = exportForAIAgent(this.analysisData, 'sovereignty-paradigm', 'Technical Title for your Sovereignty Paradigm');
+      const csv = exportForAIAgent(this.analysisData, 'sovereignty-paradigm', 'Your Sovereignty Paradigm');
       downloadFile(csv, 'sovereignty-spectrum-analysis.csv', 'text/csv');
     } else {
-      const json = exportJSON(this.analysisData, 'sovereignty-spectrum-analysis');
+      const json = exportJSON(this.analysisData, 'sovereignty-spectrum-analysis', 'Your Sovereignty Paradigm');
       downloadFile(json, 'sovereignty-spectrum-analysis.json', 'application/json');
     }
   }

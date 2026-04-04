@@ -7,6 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { TIMEZONES } from './shared/timezones.js';
 import { showAlert } from './shared/confirm-modal.js';
+import { downloadReportHtml } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
 let WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign;
@@ -231,6 +232,11 @@ export class CharacterSheetEngine {
     const newCharacterBtn = document.getElementById('newCharacter');
     if (newCharacterBtn) {
       newCharacterBtn.addEventListener('click', () => this.resetForm());
+    }
+
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
     const exportBtn = document.getElementById('exportCharacter');
@@ -1572,7 +1578,7 @@ export class CharacterSheetEngine {
         </section>
 
         <div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">
-          <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Character and temperament connect across tools. <a href="archetype.html">Modern Archetype Identification</a> maps behavioral patterns and social roles; <a href="paradigm.html">Logos Structure</a> surfaces meaning frameworks; <a href="channels.html">Channel Flow Diagnostics</a> offers another lens on expression and flow.</p>
+          <p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Character themes connect across tools. <a href="paradigm.html">Logos Structure</a> surfaces meaning frameworks; <a href="channels.html">Channel Flow Diagnostics</a> offers another lens on expression and flow; <a href="tools.html">Tools</a> lists the full diagnostic set.</p>
         </div>
       </div>
     `;
@@ -1614,6 +1620,22 @@ export class CharacterSheetEngine {
     }
     
     this.characterData = null;
+  }
+
+  exportReportHtml() {
+    if (!this.characterData) {
+      showAlert('No character to export. Please generate a character first.');
+      return;
+    }
+    const base = `${String(this.characterData.name || 'character').replace(/\s+/g, '_')}_character_sheet`;
+    const ok = downloadReportHtml({
+      title: `${this.characterData.name || 'Character'} — Character Sheet`,
+      filenameBase: base,
+      rootSelector: '#characterSheetResults'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Generate the sheet and try again.');
+    }
   }
 
   exportCharacter() {

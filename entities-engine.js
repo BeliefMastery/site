@@ -2,7 +2,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
-import { exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 
 let DSM5_CATEGORIES, NODES, CHANNELS, NEEDS_VOCABULARY;
 let WILL_ANOMALY_TIERS, WILL_ANOMALY_QUESTIONS, TASTE_SKEW_OPTIONS, CONTRACT_THEMES, NODE_CONTRACT_MAP, NODE_TAINTED_EXPRESSIONS;
@@ -195,10 +195,34 @@ export class EntitiesEngine {
     if (prevBtn) prevBtn.addEventListener('click', () => this.prevQuestion());
     if (nextBtn) nextBtn.addEventListener('click', () => this.nextQuestion());
 
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
     const exportJSONBtn = document.getElementById('exportJSON');
     const exportCSVBtn = document.getElementById('exportCSV');
-    if (exportJSONBtn) exportJSONBtn.addEventListener('click', () => exportJSON(this.analysisData, 'entities'));
+    if (exportJSONBtn) {
+      exportJSONBtn.addEventListener('click', () =>
+        downloadFile(
+          exportJSON(this.analysisData, 'entities', 'Entities Assessment'),
+          `entities-assessment-${Date.now()}.json`,
+          'application/json'
+        )
+      );
+    }
     if (exportCSVBtn) exportCSVBtn.addEventListener('click', () => this.exportCSV());
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Entities Assessment Results',
+      filenameBase: `entities-assessment-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
+    }
   }
 
   shouldAutoGenerateSample() {

@@ -25,7 +25,8 @@
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/DSM5-cover.jpg">
 
   <!-- CRITICAL: Universal styles MUST load first -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -234,10 +235,20 @@
         <div id="resultsContainer">
           <!-- Results populated by JavaScript -->
         </div>
-        <div class="results-actions">
-          <button class="btn btn-primary" id="newAssessment">New Assessment</button>
-          <button class="btn btn-secondary" id="viewData">View Data</button>
-          <button class="btn btn-secondary" id="exportExecutiveBrief">Export Executive Brief</button>
+        <div class="results-actions export-section">
+          <p class="content-section" style="margin-top: 0;">Download a single HTML file with the full report text (works offline).</p>
+          <div class="action-buttons">
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+            <button type="button" class="btn btn-secondary" id="newAssessment">New Assessment</button>
+          </div>
+          <details class="export-advanced" style="margin-top: 1rem;">
+            <summary>Advanced export (JSON, CSV, executive brief)</summary>
+            <div class="action-buttons" style="margin-top: 0.75rem;">
+              <button type="button" class="btn btn-secondary" id="exportAnalysisJson">Export JSON</button>
+              <button type="button" class="btn btn-secondary" id="exportAnalysisCsv">Export CSV</button>
+              <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
+            </div>
+          </details>
         </div>
       </section>
     </div>

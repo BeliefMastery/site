@@ -154,14 +154,11 @@ Use this section when evaluating which results should be surfaced or accepted as
 4. **Manipulation Defense Decoder** (`manipulation.html`) — manipulation vector/tactics mapping results. (Engine: `manipulation-engine.js`)
 5. **Technical Title for your Sovereignty Paradigm** (`sovereignty-spectrum.html`) — philosophical paradigm alignment. (Engine: `sovereignty-spectrum-engine.js`)
 6. **Logos Structure** (`paradigm.html`) — worldview foundation mapping (Good Life/God lenses). (Engine: `paradigm-engine.js`)
-7. **Relationships** (`relationship.html`) — compatibility assessment with polarity and selection/attraction markers. (Engine: `relationship-engine.js`)
-8. **Polarity Position Mapping** (`temperament.html`) — temperament spectrum with selection criteria. (Engine: `temperament-engine.js`)
-9. **Modern Archetype Identification** (`archetype.html`) — archetype phase output with status/selection markers. (Engine: `archetype-engine.js`)
-10. **Channel Flow Diagnostics** (`channels.html`) — energy channel blockage identification. (Engine: `channels-engine.js`)
-11. **Astrological Character Sheet** (`character-sheet.html`) — multi-system (Western/Chinese/Mayan) + numerology profile output. (Engine: `character-sheet-engine.js`)
-12. **Will Anomaly Mapping** (`entities.html`) — will-anomaly mapping with reclamation protocols. (Engine: `entities-engine.js`)
-13. **Aptitude Mapping** (`outlier-aptitude.html`) — aptitude signal mapping with market projection matrix. (Engine: `outlier-aptitude-engine.js`)
-14. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) — AI dependency resistance assessment output. (Engine: `sovereignty-engine.js`)
+7. **Channel Flow Diagnostics** (`channels.html`) — energy channel blockage identification. (Engine: `channels-engine.js`)
+8. **Astrological Character Sheet** (`character-sheet.html`) — multi-system (Western/Chinese/Mayan) + numerology profile output. (Engine: `character-sheet-engine.js`)
+9. **Will Anomaly Mapping** (`entities.html`) — will-anomaly mapping with reclamation protocols. (Engine: `entities-engine.js`)
+10. **Aptitude Mapping** (`outlier-aptitude.html`) — aptitude signal mapping with market projection matrix. (Engine: `outlier-aptitude-engine.js`)
+11. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) — AI dependency resistance assessment output. (Engine: `sovereignty-engine.js`)
 
 ---
 

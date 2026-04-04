@@ -6,7 +6,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile } from './shared/export-utils.js';
+import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 
@@ -176,6 +176,11 @@ export class ManipulationEngine {
       prevBtn.addEventListener('click', () => this.prevQuestion());
     }
     
+    const exportHtmlBtn = document.getElementById('exportReportHtml');
+    if (exportHtmlBtn) {
+      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
+    }
+
     const exportBtnJson = document.getElementById('exportAnalysisJson');
     if (exportBtnJson) {
       exportBtnJson.addEventListener('click', () => this.exportAnalysis('json'));
@@ -1338,6 +1343,17 @@ renderCurrentQuestion() {
     } catch (error) {
       this.debugReporter.logError(error, 'renderResults');
       ErrorHandler.showUserError('Failed to render results. Please refresh the page.');
+    }
+  }
+
+  exportReportHtml() {
+    const ok = downloadReportHtml({
+      title: 'Manipulation Vector Analysis',
+      filenameBase: `manipulation-analysis-${Date.now()}`,
+      rootSelector: '#resultsSection'
+    });
+    if (!ok) {
+      ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
   }
 
