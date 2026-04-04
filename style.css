@@ -45,6 +45,15 @@
     --radius: 12px;
     --transition: all .22s cubic-bezier(.4, 0, .2, 1);
 
+    /* Section & page rhythm (tighter default; narrow viewports use media overrides below) */
+    --section-padding: 22px;
+    --section-margin-y: 24px;
+    --section-inner-pad: 1.75rem;
+    --tools-section-pad-y: 2.25rem;
+    --tools-section-pad-x: 1rem;
+    --hero-padding-y-top: 0.85rem;
+    --hero-padding-y-bottom: 1.65rem;
+
     /* Accessibility & Fluid Typography */
     --text-primary: #111;
     --text-secondary: #5a5a5a;
@@ -148,12 +157,13 @@ img {
     height: auto;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    transition: box-shadow 0.2s ease;
 }
 
-img:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-    transform: translateY(-2px);
+@media (hover: hover) {
+    img:hover {
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.32);
+    }
 }
 
 main {
@@ -329,7 +339,7 @@ main {
 }
 
 .tools-section-inner {
-    padding: 3rem 1rem;
+    padding: var(--tools-section-pad-y) var(--tools-section-pad-x);
 }
 
 .tools-page-title {
@@ -660,6 +670,15 @@ ul {
         transition: none !important;
         animation: none !important;
         transform: none !important;
+    }
+
+    .image-card a::before,
+    figure.image-card a::before,
+    .headline-book a::before,
+    figure.headline-book a::before {
+        animation: none !important;
+        filter: none !important;
+        opacity: 0.55;
     }
 }
 
@@ -1008,17 +1027,18 @@ section {
     backdrop-filter: blur(8px) saturate(1.2);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
-    padding: 28px;
-    margin: 32px 0;
+    padding: var(--section-padding);
+    margin: var(--section-margin-y) 0;
     box-shadow: var(--shadow-md), inset 0 1px 0 var(--section-inset-line), 0 0 60px var(--glow-blue);
     color: var(--brand);
-    transition: var(--transition);
+    transition: border-color 0.18s ease;
     position: relative;
 }
 
-section:hover {
-    box-shadow: var(--shadow-lg), inset 0 1px 0 var(--section-inset-line-strong), 0 0 80px var(--glow-bright);
-    border-color: var(--border-bright);
+@media (hover: hover) {
+    section:hover {
+        border-color: var(--border-bright);
+    }
 }
 
 .section-inner {
@@ -1029,7 +1049,7 @@ section:hover {
 }
 
 .section-inner-padded {
-    padding: 2rem;
+    padding: var(--section-inner-pad);
     border-radius: var(--radius);
 }
 
@@ -1041,7 +1061,7 @@ section:hover {
     align-items: center;
     gap: .9rem;
     text-align: center;
-    padding: 1rem 0 2rem;
+    padding: var(--hero-padding-y-top) 0 var(--hero-padding-y-bottom);
 }
 
 .hero h1 {
@@ -1092,6 +1112,9 @@ section:hover {
     color: var(--brand);
     margin-bottom: 1rem;
     line-height: 1.5;
+    max-width: 72ch;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .description {
@@ -2475,10 +2498,12 @@ figure.image-card {
     z-index: 1;
 }
 
-.image-card-frame:hover {
-    box-shadow: var(--shadow-md), 0 0 30px var(--glow-accent);
-    border-color: var(--border-medium);
-    transform: translateY(-4px) scale(1.01);
+@media (hover: hover) {
+    .image-card-frame:hover {
+        box-shadow: var(--shadow-md), 0 0 24px var(--glow-accent);
+        border-color: var(--border-medium);
+        transform: translateY(-2px);
+    }
 }
 
 /* Override max-width for grid layouts */
@@ -2487,9 +2512,11 @@ figure.image-card {
     max-width: 100%;
 }
 
-.image-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+@media (hover: hover) {
+    .image-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    }
 }
 
 /* Tool Card Summary */
@@ -2631,10 +2658,12 @@ figure.image-card img {
     z-index: 3;
 }
 
-.image-card:hover img,
-figure.image-card:hover img {
-    transform: scale(1.06);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25) !important, 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+@media (hover: hover) {
+    .image-card:hover img,
+    figure.image-card:hover img {
+        transform: scale(1.03);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important, 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+    }
 }
 
 /* Animated Golden Sheen Border */
@@ -2733,15 +2762,16 @@ figure.headline-book a {
     transition: opacity 0.3s ease, height 0.3s ease;
 }
 
-.index-tools-grid .image-card:hover {
-    transform: translateY(-8px) scale(1.01);
-    border-color: var(--border-bright);
-    box-shadow:
-        0 16px 48px rgba(0, 0, 0, 0.4),
-        0 0 60px var(--glow-blue),
-        0 0 30px var(--glow-accent),
-        inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    background: linear-gradient(135deg, rgba(22, 38, 60, 0.95) 0%, rgba(18, 30, 50, 0.9) 100%);
+@media (hover: hover) {
+    .index-tools-grid .image-card:hover {
+        border-color: var(--border-bright);
+        box-shadow:
+            0 10px 36px rgba(0, 0, 0, 0.35),
+            0 0 40px var(--glow-blue),
+            0 0 20px var(--glow-accent),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        background: linear-gradient(135deg, rgba(22, 38, 60, 0.95) 0%, rgba(18, 30, 50, 0.9) 100%);
+    }
 }
 
 .index-tools-grid .image-card:hover::before {
@@ -4229,6 +4259,13 @@ img {
 
 /* Mobile-specific improvements */
 @media (max-width: 768px) {
+    :root {
+        --tools-section-pad-y: 1.5rem;
+        --tools-section-pad-x: 0.75rem;
+        --hero-padding-y-top: 0.65rem;
+        --hero-padding-y-bottom: 1.25rem;
+    }
+
     /* Larger touch targets on mobile */
     button,
     a,
