@@ -69,6 +69,45 @@
     --range-track: var(--border-medium);
     --range-thumb-bg: var(--brand);
     --range-thumb-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    /* Header / nav (all themes override in variant CSS) */
+    --nav-dropdown-bg: rgba(15, 25, 40, 0.98);
+    --nav-dropdown-shadow: var(--shadow-md), 0 0 40px var(--glow-blue);
+    --nav-dropdown-link-color: var(--brand);
+    --nav-dropdown-link-hover-bg: rgba(255, 215, 0, 0.1);
+    --nav-top-link-color: var(--brand);
+    --nav-top-link-hover-color: var(--accent);
+    --nav-top-link-active-color: var(--accent);
+    --nav-top-link-hover-bg: rgba(255, 215, 0, 0.1);
+    --nav-top-link-active-bg: rgba(255, 215, 0, 0.15);
+    --nav-group-psych-bg: rgba(20, 55, 85, 0.2);
+    --nav-group-psych-color: #bcdcff;
+    --nav-group-relational-bg: rgba(60, 40, 80, 0.2);
+    --nav-group-relational-color: #f0c7de;
+    --nav-group-philosophical-bg: rgba(25, 60, 55, 0.2);
+    --nav-group-philosophical-color: #c6f1da;
+    --nav-group-defensive-bg: rgba(80, 45, 30, 0.2);
+    --nav-group-defensive-color: #d6dce3;
+    --nav-group-esoteric-bg: rgba(70, 45, 20, 0.25);
+    --nav-group-esoteric-color: #ffd8a8;
+    --nav-group-tech-bg: rgba(35, 50, 90, 0.2);
+    --nav-group-tech-color: #f4f7ff;
+    --nav-group-neutral-bg: transparent;
+    --nav-group-neutral-color: var(--brand);
+
+    /* Home index tools strip */
+    --index-tools-card-bg: rgba(20, 35, 55, 0.85);
+    --index-tools-grid-hover-bg: rgba(255, 215, 0, 0.08);
+
+    /* Tool page expandable panels */
+    --panel-expanded-highlight-bg: rgba(255, 215, 0, 0.05);
+    --toggle-row-hover-bg: rgba(255, 215, 0, 0.08);
+    --tool-inset-bg: rgba(0, 0, 0, 0.2);
+    --orientation-link-color: #a0c0ff;
+    --heading-text-shadow: 0 2px 10px rgba(100, 160, 255, 0.2);
+
+    --ack-box-bg: rgba(15, 20, 30, 0.95);
+    --ack-box-border: rgba(50, 100, 220, 0.2);
 }
 
 /* ========== BASE STYLES ========== */
@@ -688,11 +727,11 @@ header.site-header {
     top: 100%;
     left: 0;
     margin-top: 0.5rem;
-    background: rgba(15, 25, 40, 0.98);
+    background: var(--nav-dropdown-bg);
     backdrop-filter: blur(16px) saturate(1.2);
     border-radius: var(--radius);
     border: 1px solid var(--border-medium);
-    box-shadow: var(--shadow-md), 0 0 40px var(--glow-blue);
+    box-shadow: var(--nav-dropdown-shadow);
     list-style: none;
     padding: 0.5rem 0;
     min-width: 250px; /* ← Increased from 220px to fit "Pathology Assessment" + padding */
@@ -728,41 +767,47 @@ header.site-header {
     border-radius: 0;
     width: 100%;
     line-height: 1.4; /* ← Improves readability on wrapped lines */
+    color: var(--nav-dropdown-link-color);
 }
 
 .dropdown-menu a:hover {
-    background: rgba(255, 215, 0, 0.1);
-    color: var(--accent);
+    background: var(--nav-dropdown-link-hover-bg);
+    color: var(--nav-top-link-hover-color);
+}
+
+.dropdown-menu li.group-neutral a {
+    background: var(--nav-group-neutral-bg);
+    color: var(--nav-group-neutral-color);
 }
 
 .dropdown-menu li.group-psych a {
-    background: rgba(20, 55, 85, 0.2);
-    color: #bcdcff;
+    background: var(--nav-group-psych-bg);
+    color: var(--nav-group-psych-color);
 }
 
 .dropdown-menu li.group-relational a {
-    background: rgba(60, 40, 80, 0.2);
-    color: #f0c7de;
+    background: var(--nav-group-relational-bg);
+    color: var(--nav-group-relational-color);
 }
 
 .dropdown-menu li.group-philosophical a {
-    background: rgba(25, 60, 55, 0.2);
-    color: #c6f1da;
+    background: var(--nav-group-philosophical-bg);
+    color: var(--nav-group-philosophical-color);
 }
 
 .dropdown-menu li.group-defensive a {
-    background: rgba(80, 45, 30, 0.2);
-    color: #d6dce3;
+    background: var(--nav-group-defensive-bg);
+    color: var(--nav-group-defensive-color);
 }
 
 .dropdown-menu li.group-esoteric a {
-    background: rgba(70, 45, 20, 0.25);
-    color: #ffd8a8;
+    background: var(--nav-group-esoteric-bg);
+    color: var(--nav-group-esoteric-color);
 }
 
 .dropdown-menu li.group-tech a {
-    background: rgba(35, 50, 90, 0.2);
-    color: #f4f7ff;
+    background: var(--nav-group-tech-bg);
+    color: var(--nav-group-tech-color);
 }
 
 .dropdown-menu a::after {
@@ -770,7 +815,7 @@ header.site-header {
 }
 
 .nav-list a {
-    color: var(--brand);
+    color: var(--nav-top-link-color);
     padding: .55rem 1rem;
     border-radius: .45rem;
     font-weight: 600;
@@ -798,13 +843,13 @@ header.site-header {
 }
 
 .nav-list a:hover {
-    background: rgba(255, 215, 0, 0.1);
-    color: var(--accent);
+    background: var(--nav-top-link-hover-bg);
+    color: var(--nav-top-link-hover-color);
 }
 
 .nav-list a.active {
-    background: rgba(255, 215, 0, 0.15);
-    color: var(--accent);
+    background: var(--nav-top-link-active-bg);
+    color: var(--nav-top-link-active-color);
 }
 
 /* Hamburger menu button */
@@ -916,7 +961,7 @@ header.site-header {
     color: var(--brand);
     margin-top: 2.5rem;
     margin-bottom: 1rem;
-    text-shadow: 0 2px 10px rgba(100, 160, 255, 0.2); /* Subtle cosmic lift */
+    text-shadow: var(--heading-text-shadow);
     font-size: var(--font-size-heading, var(--font-size-subheading));
 }
 
@@ -1060,6 +1105,83 @@ section:hover {
     flex-wrap: wrap;
 }
 
+/* Tool pages: spacing utilities (no inline styles) */
+.action-buttons--section-top {
+    margin-top: 1.5rem;
+}
+
+.action-buttons--push {
+    margin-top: 0.75rem;
+}
+
+.action-buttons--push-center {
+    margin-top: 0.75rem;
+    justify-content: center;
+}
+
+.export-advanced--top {
+    margin-top: 1rem;
+}
+
+.export-advanced--block {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.export-advanced--center-narrow {
+    margin-top: 1rem;
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn--spaced-top {
+    margin-top: 0.5rem;
+}
+
+.form-help--tight-top {
+    margin-top: 0.5rem;
+}
+
+.tool-lead {
+    max-width: 72ch;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+    line-height: 1.65;
+    color: var(--muted);
+}
+
+.tool-lead--flush {
+    margin-top: 0;
+}
+
+.tool-lead--compact {
+    margin-top: 0.75rem;
+}
+
+.tool-section-heading {
+    max-width: 72ch;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--brand);
+    font-size: var(--font-size-subheading, 1.25rem);
+    text-align: center;
+}
+
+.tool-section-heading--flush {
+    margin-top: 0;
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: none;
+}
+
+.analysis-modules-grid--section-top {
+    margin: 2rem 0 0;
+}
+
 /* Hero Image (Diagnosis Cover) */
 .hero-image {
     text-align: center;
@@ -1078,14 +1200,14 @@ section:hover {
 
 /* Acknowledgment Box */
 .ack-box {
-    background: rgba(15, 20, 30, 0.95);
+    background: var(--ack-box-bg);
     border-radius: var(--radius);
     padding: 1rem 1.5rem;
     margin-bottom: 1.5rem;
     box-shadow: var(--shadow);
     backdrop-filter: blur(8px);
+    border: 1px solid var(--ack-box-border);
     border-left: 3px solid var(--accent);
-    border: 1px solid rgba(50, 100, 220, 0.2);
 }
 
 .ack-box p {
@@ -1874,7 +1996,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 
 /* Index tools: single card with image grid inside, 6 per row, proportioned images, hover on images */
 .index-tools-card {
-    background: rgba(20, 35, 55, 0.85);
+    background: var(--index-tools-card-bg);
     border: 2px solid var(--border-medium);
     box-shadow: var(--shadow-md);
     border-radius: var(--radius);
@@ -1920,7 +2042,7 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 }
 
 .index-tools-grid-item:hover {
-    background: rgba(255, 215, 0, 0.08);
+    background: var(--index-tools-grid-hover-bg);
     box-shadow: 0 0 16px var(--glow-accent);
     z-index: 100;
 }
@@ -2709,7 +2831,7 @@ figure.headline-book a {
 }
 
 .orientation-block a {
-    color: #a0c0ff;
+    color: var(--orientation-link-color);
     font-weight: 600;
     text-decoration: underline;
 }
@@ -2733,7 +2855,7 @@ figure.headline-book a {
     display: block !important;
     opacity: 1;
     padding: 1.5rem;
-    background: rgba(255, 215, 0, 0.05);
+    background: var(--panel-expanded-highlight-bg);
     border-left: 4px solid var(--accent);
     margin: 1rem 0;
 }
@@ -2894,7 +3016,7 @@ figure.headline-book a {
 .action-strategies-section .cascade-explanation {
     margin-top: 0.75rem;
     padding: 1rem;
-    background: rgba(0,0,0,0.2);
+    background: var(--tool-inset-bg);
     border-radius: var(--radius);
     font-size: 0.95rem;
 }
@@ -2922,7 +3044,7 @@ figure.headline-book a {
 .instructions-toggle:hover,
 .extended-explanation-toggle:hover,
 .disclaimer-acknowledgement:hover {
-    background: rgba(255, 215, 0, 0.08);
+    background: var(--toggle-row-hover-bg);
     border-color: var(--accent);
     box-shadow: 0 0 20px var(--glow-accent);
 }
@@ -2963,6 +3085,7 @@ figure.headline-book a {
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    color: var(--muted);
 }
 
 .extended-explanation-panel.expanded {
@@ -2975,12 +3098,29 @@ figure.headline-book a {
     margin-bottom: 1rem;
 }
 
+.extended-explanation-panel p,
+.extended-explanation-panel li {
+    color: var(--muted);
+}
+
+.extended-explanation-panel .tool-lead {
+    color: var(--muted);
+}
+
+.instructions-panel.expanded .instructions-content {
+    color: var(--muted);
+}
+
 .extended-explanation-panel .content-section {
     margin-bottom: 1.5rem;
 }
 
 .extended-explanation-panel .instructions-content {
     margin-top: 1.5rem;
+}
+
+.extended-explanation-panel .feature-list {
+    color: var(--muted);
 }
 
 /* Advanced Question Selection (Three-Point/Frequency) */
@@ -3632,11 +3772,26 @@ blockquote {
     line-height: 1.7;
 }
 
-/* Export Section (Temperament-Specific) */
+/* Export Section (results / save report blocks on tool pages) */
 .export-section {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    border-top: 2px solid var(--border-subtle);
+}
+
+.export-section > p {
+    color: var(--muted);
+    max-width: 72ch;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+    line-height: 1.65;
+}
+
+.export-section > h3 {
+    color: var(--brand);
+    text-align: center;
+    margin-bottom: 0.75rem;
 }
 
 /* Footer */

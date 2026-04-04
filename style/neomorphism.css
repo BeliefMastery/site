@@ -62,6 +62,41 @@
     --range-track: #3d4d66;
     --range-thumb-bg: #fdba74;
     --range-thumb-shadow: var(--shadow-sm);
+
+    --nav-dropdown-bg: var(--card-bg);
+    --nav-dropdown-shadow: var(--shadow-lg);
+    --nav-dropdown-link-color: var(--brand);
+    --nav-dropdown-link-hover-bg: var(--accent-panel-strong);
+    --nav-top-link-color: var(--brand);
+    --nav-top-link-hover-color: var(--accent-hover);
+    --nav-top-link-active-color: var(--accent-hover);
+    --nav-top-link-hover-bg: var(--accent-panel);
+    --nav-top-link-active-bg: var(--accent-panel-strong);
+    --nav-group-neutral-bg: transparent;
+    --nav-group-neutral-color: var(--brand);
+    --nav-group-psych-bg: rgba(59, 130, 246, 0.12);
+    --nav-group-psych-color: #bfdbfe;
+    --nav-group-relational-bg: rgba(236, 72, 153, 0.12);
+    --nav-group-relational-color: #fbcfe8;
+    --nav-group-philosophical-bg: rgba(52, 211, 153, 0.12);
+    --nav-group-philosophical-color: #a7f3d0;
+    --nav-group-defensive-bg: rgba(249, 115, 22, 0.14);
+    --nav-group-defensive-color: #fed7aa;
+    --nav-group-esoteric-bg: rgba(234, 179, 8, 0.12);
+    --nav-group-esoteric-color: #fde68a;
+    --nav-group-tech-bg: rgba(129, 140, 248, 0.14);
+    --nav-group-tech-color: #e0e7ff;
+
+    --index-tools-card-bg: var(--card-bg);
+    --index-tools-grid-hover-bg: var(--accent-panel-strong);
+    --panel-expanded-highlight-bg: var(--accent-panel);
+    --toggle-row-hover-bg: var(--accent-panel-strong);
+    --tool-inset-bg: rgba(0, 0, 0, 0.22);
+    --orientation-link-color: var(--link-color);
+    --heading-text-shadow: none;
+
+    --ack-box-bg: var(--neo-dark);
+    --ack-box-border: rgba(249, 115, 22, 0.25);
 }
 
 html {

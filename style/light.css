@@ -58,6 +58,42 @@
     --range-track: #e2e8f0;
     --range-thumb-bg: #ffffff;
     --range-thumb-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+
+    /* Nav + home tools + tool panels (readable on light header / cards) */
+    --nav-dropdown-bg: #ffffff;
+    --nav-dropdown-shadow: var(--shadow-lg);
+    --nav-dropdown-link-color: #0f172a;
+    --nav-dropdown-link-hover-bg: var(--accent-panel);
+    --nav-top-link-color: #475569;
+    --nav-top-link-hover-color: #b91c1c;
+    --nav-top-link-active-color: #b91c1c;
+    --nav-top-link-hover-bg: var(--accent-panel);
+    --nav-top-link-active-bg: var(--accent-panel-strong);
+    --nav-group-neutral-bg: transparent;
+    --nav-group-neutral-color: #0f172a;
+    --nav-group-psych-bg: rgba(30, 64, 175, 0.08);
+    --nav-group-psych-color: #1e3a8a;
+    --nav-group-relational-bg: rgba(157, 23, 77, 0.08);
+    --nav-group-relational-color: #831843;
+    --nav-group-philosophical-bg: rgba(5, 122, 85, 0.1);
+    --nav-group-philosophical-color: #064e3b;
+    --nav-group-defensive-bg: rgba(185, 28, 28, 0.08);
+    --nav-group-defensive-color: #7f1d1d;
+    --nav-group-esoteric-bg: rgba(180, 83, 9, 0.1);
+    --nav-group-esoteric-color: #78350f;
+    --nav-group-tech-bg: rgba(51, 65, 85, 0.1);
+    --nav-group-tech-color: #1e293b;
+
+    --index-tools-card-bg: #ffffff;
+    --index-tools-grid-hover-bg: rgba(185, 28, 28, 0.07);
+    --panel-expanded-highlight-bg: var(--accent-panel);
+    --toggle-row-hover-bg: var(--accent-panel);
+    --tool-inset-bg: rgba(15, 23, 42, 0.06);
+    --orientation-link-color: #991b1b;
+    --heading-text-shadow: none;
+
+    --ack-box-bg: #f8fafc;
+    --ack-box-border: var(--border-subtle);
 }
 
 html {
@@ -122,26 +158,6 @@ header.site-header {
     position: relative;
 }
 
-.nav-list a {
-    color: var(--muted);
-}
-
-.nav-list a:hover,
-.nav-list a.active {
-    color: var(--accent);
-    background: var(--accent-panel);
-}
-
-.dropdown-menu {
-    background: #ffffff;
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-lg);
-}
-
-.dropdown-menu a {
-    color: var(--brand);
-}
-
 /* Sections: no extra panel behind content (avoids double white + odd contrast) */
 section {
     background: transparent !important;
@@ -175,6 +191,13 @@ section:hover {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+}
+
+/* Home: tools card uses tokenized surface (not cosmic navy) */
+.index-tools-card {
+    border-width: 1px;
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Cards & panels */
