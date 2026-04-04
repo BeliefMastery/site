@@ -380,3 +380,26 @@ main, header {
         display: none !important;
     }
 }
+
+/* ── Alternate themes: hide animated cosmic layers (flat --bg on body only) ── */
+html[data-bm-theme="light"] .bg-gradient,
+html[data-bm-theme="light"] .bg-gradient::before,
+html[data-bm-theme="forge"] .bg-gradient,
+html[data-bm-theme="forge"] .bg-gradient::before,
+html[data-bm-theme="neomorphism"] .bg-gradient,
+html[data-bm-theme="neomorphism"] .bg-gradient::before,
+html[data-bm-theme="ember"] .bg-gradient,
+html[data-bm-theme="ember"] .bg-gradient::before {
+    display: none !important;
+    animation: none !important;
+    visibility: hidden;
+}
+
+html[data-bm-theme="light"] #nebula-canvas,
+html[data-bm-theme="forge"] #nebula-canvas,
+html[data-bm-theme="neomorphism"] #nebula-canvas,
+html[data-bm-theme="ember"] #nebula-canvas {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}

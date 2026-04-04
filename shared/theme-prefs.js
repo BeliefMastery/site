@@ -79,6 +79,8 @@
     var root = siteRootUrl();
     if (!base || !root) return;
 
+    document.documentElement.setAttribute('data-bm-theme', themeKey);
+
     try {
       localStorage.setItem(STORAGE_THEME, themeKey);
     } catch (e) { /* ignore */ }
@@ -137,10 +139,10 @@
     themeSelect.className = 'footer-theme-prefs__select';
     [
       { value: 'cosmic', label: 'Cosmic (default)' },
-      { value: 'light', label: 'Light' },
-      { value: 'forge', label: 'Matrix Forge' },
-      { value: 'neomorphism', label: 'Neomorphism' },
-      { value: 'ember', label: 'Ember (full stylesheet)' }
+      { value: 'light', label: 'Light v2' },
+      { value: 'forge', label: 'Matrix Forge v2' },
+      { value: 'neomorphism', label: 'Neomorphism v2' },
+      { value: 'ember', label: 'Ember v2 (full stylesheet)' }
     ].forEach(function (opt) {
       var o = document.createElement('option');
       o.value = opt.value;

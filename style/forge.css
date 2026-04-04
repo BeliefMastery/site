@@ -1,145 +1,227 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
-/* ================================================
-   REDPILLAPP STYLE VARIATION 1 — "MATRIX FORGE"
-   ================================================
-   Aesthetic: Raw red-pill intensity. Deep obsidian void with molten red-orange lightning 
-   and subtle digital scanline glows. Feels like waking up inside the simulation and 
-   forging your archetype in fire. Perfect for archetype classification & SMV evaluation — 
-   aggressive, masculine, high-stakes energy. High contrast for instant impact on mobile.
-   Control-group friendly: dramatically different from original cosmic blue/gold.
-*/
+/* ============================================================
+   THEME "MATRIX FORGE" v2 — molten accent, flat void bg, legible forms
+   Cosmic layers off via data-bm-theme + shared/background.css
+   ============================================================ */
 
 :root {
-    /* Primary Colors — RED PILL FIRE */
-    --brand: #fff3e8;           /* Brighter warm text for stronger pop */
-    --muted: #c8ac8f;           /* Lifted muted text for readability */
-    --accent: #ff3d00;          /* Molten red-orange lightning */
-    --accent-hover: #ff6a00;    /* Brighter flame hover */
+    --brand: #fff5f0;
+    --muted: #c4b5a8;
+    --accent: #ff5722;
+    --accent-hover: #ff7043;
 
-    /* Backgrounds — Obsidian Matrix */
-    --bg: #020202;              /* Slightly deeper base */
-    --glass: rgba(14, 7, 6, 0.94);       /* Darker panel shell */
-    --glass-light: rgba(22, 12, 10, 0.88);
-    --card-bg: rgba(17, 9, 8, 0.97);
-    --card-hover: rgba(30, 15, 12, 0.99);
-    --accent-panel: rgba(255, 61, 0, 0.14);
-    --accent-panel-strong: rgba(255, 61, 0, 0.22);
-    --brand-panel: rgba(255, 243, 232, 0.12);
+    --bg: #030303;
+    --glass: rgba(18, 10, 8, 0.92);
+    --glass-light: rgba(28, 14, 10, 0.88);
+    --card-bg: rgba(14, 8, 6, 0.96);
+    --card-hover: rgba(32, 16, 12, 0.98);
 
-    /* Borders & Glows — Digital scanline style */
-    --border-subtle: rgba(255, 80, 30, 0.25);
-    --border-medium: rgba(255, 110, 50, 0.4);
-    --border-bright: rgba(255, 140, 70, 0.6);
-    --glow-blue: rgba(255, 80, 30, 0.18);   /* Renamed but kept for compatibility */
-    --glow-bright: rgba(255, 140, 70, 0.28);
-    --glow-accent: rgba(255, 61, 0, 0.35);
+    --accent-panel: rgba(255, 87, 34, 0.12);
+    --accent-panel-strong: rgba(255, 87, 34, 0.22);
+    --brand-panel: rgba(255, 245, 240, 0.06);
 
-    /* Shadows — Deeper, more dramatic */
-    --shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.6);
-    --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.75);
-    --shadow-lg: 0 20px 60px rgba(255, 61, 0, 0.25);
+    --border-subtle: rgba(255, 112, 67, 0.28);
+    --border-medium: rgba(255, 138, 90, 0.42);
+    --border-bright: rgba(255, 171, 120, 0.65);
 
-    /* Functional */
-    --success: #4ade80;
-    --warning: #fbbf24;
-    --error: #ff3d00;
+    --glow-blue: rgba(255, 87, 34, 0.2);
+    --glow-bright: rgba(255, 138, 90, 0.35);
+    --glow-accent: rgba(255, 87, 34, 0.4);
 
-    /* Layout — Slightly sharper edges */
-    --radius: 8px;
-    --transition: all .18s cubic-bezier(.55, 0, .2, 1);
+    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.55);
+    --shadow-md: 0 10px 36px rgba(0, 0, 0, 0.65);
+    --shadow-lg: 0 16px 48px rgba(255, 87, 34, 0.12);
+    --shadow: var(--shadow-md);
 
-    /* Typography & accessibility */
-    --text-primary: #fff3e8;
-    --text-secondary: #c8ac8f;
-    --link-color: #ff3d00;
-    --focus-color: #ff3d00;
-    --brand-dark: #ff3d00;
+    --success: #69f0ae;
+    --warning: #ffd54f;
+    --error: #ff5252;
+
+    --radius: 10px;
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --text-primary: var(--brand);
+    --text-secondary: var(--muted);
+    --link-color: #ffab40;
+    --focus-color: #ff7043;
+    --brand-dark: #ff5722;
     --font-size-base: clamp(1rem, 0.92rem + 0.45vw, 1.12rem);
-    --font-size-heading: clamp(1.65rem, 1.35rem + 1.6vw, 2.7rem);
-    --font-size-subheading: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem);
+
+    --surface-section: rgba(10, 5, 4, 0.55);
+    --section-inset-line: rgba(255, 171, 120, 0.12);
+    --section-inset-line-strong: rgba(255, 171, 120, 0.2);
+
+    --input-bg: rgba(12, 6, 4, 0.85);
+    --input-bg-focus: rgba(22, 10, 8, 0.95);
+    --range-track: rgba(255, 112, 67, 0.35);
+    --range-thumb-bg: #fff5f0;
+    --range-thumb-shadow: 0 0 12px rgba(255, 87, 34, 0.5);
 }
 
-/* Typography aligned to Obsidian theme */
-html, body {
-    font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+html {
+    color-scheme: dark;
+}
+
+html,
+body {
+    background: var(--bg) !important;
+    font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 h1, h2, h3 {
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-family: 'Cormorant Garamond', Georgia, serif;
     font-weight: 600;
     line-height: 1.15;
-    letter-spacing: 0.01em;
-    text-shadow: 0 0 12px rgba(255, 106, 0, 0.25);
+    letter-spacing: 0.02em;
 }
 
 h4, h5, h6 {
     font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    letter-spacing: 0.04em;
+    font-weight: 600;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    font-size: 0.85em;
+    font-size: 0.82em;
 }
 
-/* ================== KEY OVERRIDES FOR MATRIX FORGE ================== */
+main {
+    padding-top: 88px;
+    background: transparent;
+}
 
-/* Header — Scanline effect */
+/* Header */
 header.site-header {
-    background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
-    box-shadow: 0 0 30px rgba(255, 61, 0, 0.4);
-    border-bottom: 1px solid #ff3d00;
+    background: linear-gradient(180deg, #0d0604 0%, #050302 100%) !important;
+    border-bottom: 1px solid var(--border-medium);
+    box-shadow: 0 0 24px rgba(255, 87, 34, 0.25);
 }
 
-/* Primary buttons — Molten metal feel */
+.nav-list a {
+    color: var(--muted);
+}
+
+.nav-list a:hover,
+.nav-list a.active {
+    color: var(--accent-hover);
+    background: var(--accent-panel);
+}
+
+/* Sections: single tinted shell, no cosmic bleed-through */
+section {
+    backdrop-filter: blur(10px) saturate(1.1);
+}
+
+/* Forms — override base dark-blue field fills */
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group input[type="email"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea,
+.footer-theme-prefs__select,
+.text-input-container textarea,
+input[type="email"] {
+    background: var(--input-bg) !important;
+    color: var(--brand) !important;
+    border-color: var(--border-medium) !important;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.text-input-container textarea::placeholder {
+    color: #8a7a6e;
+    opacity: 1;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.footer-theme-prefs__select:focus,
+input[type="email"]:focus {
+    border-color: var(--accent) !important;
+    background: var(--input-bg-focus) !important;
+    box-shadow: 0 0 0 3px var(--glow-accent) !important;
+}
+
+select,
+.footer-theme-prefs__select {
+    appearance: auto;
+    color-scheme: dark;
+}
+
+/* Primary actions */
 .btn-primary,
-button:not(.secondary):not(.close-btn),
+button:not(.secondary):not(.hamburger):not(.close-btn),
 #calculate-btn,
 .next-btn {
-    background: linear-gradient(135deg, #ff3d00, #ff8a00) !important;
-    box-shadow: 0 0 25px rgba(255, 61, 0, 0.6);
-}
-.btn-primary:hover {
-    box-shadow: 0 0 45px rgba(255, 61, 0, 0.9);
-    transform: translateY(-3px) scale(1.04);
+    background: linear-gradient(135deg, #e64a19, #ff7043) !important;
+    color: #1a0500 !important;
+    font-weight: 600;
+    border: 1px solid rgba(255, 200, 160, 0.35);
+    box-shadow: 0 4px 20px rgba(255, 87, 34, 0.45);
 }
 
-/* Cards — Heavy scanline hover */
+.btn-primary:hover,
+button:not(.secondary):not(.hamburger):not(.close-btn):hover {
+    filter: brightness(1.06);
+    box-shadow: 0 6px 28px rgba(255, 87, 34, 0.55);
+}
+
+.btn-secondary,
+.secondary {
+    background: var(--glass) !important;
+    color: var(--brand) !important;
+    border: 1px solid var(--border-medium) !important;
+}
+
+/* Cards */
 .card,
 .tool-card,
 .portal-card,
-.option-card {
-    border: 1px solid #ff3d00;
-    box-shadow: 0 8px 30px rgba(255, 61, 0, 0.15);
+.option-card,
+.tool-container {
+    background: var(--card-bg) !important;
+    border-color: var(--border-medium) !important;
+    backdrop-filter: blur(8px);
 }
+
+.tool-card::before,
+.portal-card::before,
+.image-card-frame::before {
+    background: linear-gradient(90deg, var(--accent), #ffab40, transparent) !important;
+}
+
 @media (hover: hover) {
     .card:hover,
     .tool-card:hover,
     .portal-card:hover {
-        border-color: #ff8a00;
-        box-shadow: 0 0 40px rgba(255, 61, 0, 0.6);
+        border-color: var(--accent-hover) !important;
+        box-shadow: 0 0 32px rgba(255, 87, 34, 0.25);
     }
 }
 
-/* Accent bars — Red lightning */
-.tool-card::before,
-.portal-card::before,
-.image-card-frame::before {
-    background: linear-gradient(90deg, #ff3d00, #ff8a00, transparent);
-}
-
-/* Text emphasis — Fire highlights */
 .text-accent,
 .accent-heading,
 .panel-title {
-    color: #ff3d00;
-    text-shadow: 0 0 10px rgba(255, 61, 0, 0.35);
+    color: var(--accent);
+    text-shadow: 0 0 14px rgba(255, 87, 34, 0.35);
 }
 
-/* Bottom nav active state */
-.bottom-nav-item[href*="archetype"].active,
-.bottom-nav-item[href*="attraction"].active,
-.bottom-nav-item[href*="temperament"].active,
-.bottom-nav-item[href*="relationship"].active {
-    color: #ff3d00;
-    text-shadow: 0 0 12px #ff3d00;
+/* Bottom nav — any active item */
+.bottom-nav-item.active {
+    color: var(--accent) !important;
+    text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+}
+
+/* Tables */
+.archetype-table th {
+    background: rgba(255, 87, 34, 0.15) !important;
+    color: var(--accent-hover) !important;
+}
+
+@media (hover: hover) {
+    .archetype-table tr:hover td {
+        background: rgba(255, 87, 34, 0.06) !important;
+    }
 }

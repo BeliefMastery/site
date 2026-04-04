@@ -43,16 +43,26 @@
     --radius: 12px;
     --transition: all .22s cubic-bezier(.4, 0, .2, 1);
 
-    /* Accessibility & Fluid Typography */
-    --text-primary: #111;
-    --text-secondary: #5a5a5a;
-    --link-color: #0066cc; /* WCAG AA compliant */
-    --focus-color: #0066cc;
+    /* Accessibility & Fluid Typography (Ember v2 — warm text on dark forge) */
+    --text-primary: #f5e9e9;
+    --text-secondary: #c7a7a7;
+    --link-color: #ffd700;
+    --focus-color: #ffd700;
     --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
     --font-size-heading: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
     --font-size-subheading: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
 
     --brand-dark: #a34a4a;
+
+    /* Ember v2 surfaces & forms (replace stray cosmic blues in components) */
+    --surface-section: rgba(40, 14, 16, 0.5);
+    --section-inset-line: rgba(255, 230, 230, 0.06);
+    --section-inset-line-strong: rgba(255, 230, 230, 0.1);
+    --input-bg: rgba(52, 18, 20, 0.88);
+    --input-bg-focus: rgba(70, 24, 27, 0.95);
+    --range-track: rgba(219, 104, 104, 0.45);
+    --range-thumb-bg: #f5e9e9;
+    --range-thumb-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 
     /* Global font scaling (controlled by UI in style-switcher.js) */
     --font-scale: 1;
@@ -224,12 +234,12 @@ main {
 .archetype-table th {
     color: var(--accent);
     font-weight: 600;
-    background: rgba(20, 35, 55, 0.75);
+    background: rgba(70, 24, 27, 0.85);
 }
 
 @media (hover: hover) {
 .archetype-table tr:hover td {
-    background: rgba(20, 35, 55, 0.35);
+    background: rgba(176, 52, 52, 0.12);
 }
 }
 
@@ -673,7 +683,7 @@ header.site-header {
     color: var(--brand);
     margin-top: 2.5rem;
     margin-bottom: 1rem;
-    text-shadow: 0 2px 10px rgba(100, 160, 255, 0.2); /* Subtle cosmic lift */
+    text-shadow: 0 2px 12px rgba(255, 215, 0, 0.12);
     font-size: var(--font-size-heading, var(--font-size-subheading));
 }
 
@@ -896,22 +906,22 @@ header.site-header {
     border: 1px solid var(--border-subtle);
 }
 
-/* Sections (consolidated: gradient base with transparent fallback) */
+/* Sections (Ember v2 — tokenized shell) */
 section {
-    background: rgba(40, 14, 16, 0.44); /* Red-spectrum section shell */
+    background: var(--surface-section);
     backdrop-filter: blur(8px) saturate(1.2);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
     padding: 28px;
     margin: 32px 0;
-    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 60px var(--glow-blue);
+    box-shadow: var(--shadow-md), inset 0 1px 0 var(--section-inset-line), 0 0 60px var(--glow-blue);
     color: var(--brand);
     transition: var(--transition);
     position: relative;
 }
 
 section:hover {
-    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 80px var(--glow-bright);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 var(--section-inset-line-strong), 0 0 80px var(--glow-bright);
     border-color: var(--border-bright);
 }
 
@@ -940,7 +950,7 @@ section:hover {
 
 .hero h1 {
     color: var(--brand);
-    text-shadow: 0 2px 20px rgba(100, 160, 255, 0.3);
+    text-shadow: 0 2px 24px rgba(255, 215, 0, 0.2);
     font-size: 2.2rem;
     margin: 0;
     line-height: 1.1;
@@ -3299,7 +3309,7 @@ main > .section-inner.minimal-section > .section-title-btn {
     width: 100%;
     height: 8px;
     border-radius: 4px;
-    background: var(--border-medium);
+    background: var(--range-track);
     outline: none;
     -webkit-appearance: none;
     cursor: pointer;
@@ -3311,19 +3321,20 @@ main > .section-inner.minimal-section > .section-title-btn {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--brand);
+    background: var(--range-thumb-bg);
+    border: 2px solid var(--accent);
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--range-thumb-shadow);
 }
 
 .scale-input input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--brand);
+    background: var(--range-thumb-bg);
+    border: 2px solid var(--accent);
     cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--range-thumb-shadow);
 }
 
 .scale-value {
@@ -3571,16 +3582,22 @@ main > .section-inner.minimal-section > .section-title-btn {
 .form-group input[type="time"],
 .form-group input[type="email"],
 .form-group input[type="number"],
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: var(--text-field-pad-y) var(--text-field-pad-x);
     border: 2px solid var(--border-subtle);
     border-radius: var(--radius);
-    background: rgba(15, 25, 40, 0.5);
+    background: var(--input-bg);
     color: var(--brand);
     font-size: 1rem;
     font-family: inherit;
     transition: var(--transition);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 6rem;
 }
 
 textarea,
@@ -3594,11 +3611,12 @@ select {
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 20px var(--glow-accent);
-    background: rgba(20, 30, 45, 0.7);
+    box-shadow: 0 0 0 3px var(--glow-accent);
+    background: var(--input-bg-focus);
 }
 
 .form-help,
@@ -3628,7 +3646,9 @@ small.form-help {
 input[type="email"] {
     padding: .85rem 1rem;
     border-radius: 8px;
-    border: 2px solid rgba(0, 0, 0, 0.06);
+    border: 2px solid var(--border-subtle);
+    background: var(--input-bg);
+    color: var(--brand);
     min-width: 220px;
     font-size: 1rem;
     transition: var(--transition);
@@ -3637,6 +3657,8 @@ input[type="email"] {
 input[type="email"]:focus {
     outline: none;
     border-color: var(--accent);
+    background: var(--input-bg-focus);
+    box-shadow: 0 0 0 3px var(--glow-accent);
 }
 
 /* Fieldset & Radio Groups */

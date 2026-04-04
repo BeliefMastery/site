@@ -1,78 +1,82 @@
 /* ============================================================
-   STYLE VARIATION — "LIGHT"
-   Aesthetic: Clean aerial / soft corporate light
-   Mood: Calm, clear, spacious
-   Fonts: Inter (body) + system sans-serif stack
-   Palette: Bright white, warm neutrals, crimson accent (replaces former blue)
+   THEME "LIGHT" v2 — flat page, readable forms, WCAG-friendly
+   Layered over style.css. Cosmic gradient hidden via data-bm-theme.
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ========== VARIABLES ========== */
 :root {
-    /* Core colors — red accent; body text slightly softened vs pure black for long reads */
-    --brand: #1e293b;              /* Slate-800: strong contrast on white without harsh black */
-    --muted: #64748b;              /* Slate-500: secondary text, WCAG-friendly on light surfaces */
-    --accent: #b91c1c;             /* Crimson / red-700 */
-    --accent-hover: #dc2626;       /* Brighter red for hovers / links */
+    --brand: #0f172a;
+    --muted: #475569;
+    --accent: #b91c1c;
+    --accent-hover: #991b1b;
 
-    /* Backgrounds */
-    --bg: #f8fafc;
-    --glass: rgba(255, 255, 255, 0.78);
-    --glass-light: rgba(255, 255, 255, 0.92);
+    --bg: #f1f5f9;
+    --glass: #ffffff;
+    --glass-light: #ffffff;
     --card-bg: #ffffff;
-    --card-hover: #faf5f5;
-    --accent-panel: rgba(185, 28, 28, 0.08);
-    --accent-panel-strong: rgba(185, 28, 28, 0.14);
+    --card-hover: #f8fafc;
+
+    --accent-panel: rgba(185, 28, 28, 0.06);
+    --accent-panel-strong: rgba(185, 28, 28, 0.12);
     --brand-panel: rgba(15, 23, 42, 0.04);
 
-    /* Borders — light rose-grey (readable edge, not heavy) */
-    --border-subtle: rgba(226, 214, 214, 0.95);
-    --border-medium: #e8dcdc;
-    --border-bright: #d4bcbc;
+    --border-subtle: #e2e8f0;
+    --border-medium: #cbd5e1;
+    --border-bright: #94a3b8;
 
-    /* Glows / focus rings — red accent */
-    --glow-blue: rgba(220, 38, 38, 0.18);   /* var name kept for compatibility with style.css */
-    --glow-bright: rgba(220, 38, 38, 0.28);
-    --glow-accent: rgba(220, 38, 38, 0.22);
+    --glow-blue: rgba(185, 28, 28, 0.12);
+    --glow-bright: rgba(185, 28, 28, 0.2);
+    --glow-accent: rgba(185, 28, 28, 0.18);
 
-    /* Shadows — much lighter lift */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.10), 0 5px 10px rgba(0, 0, 0, 0.08);
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.1);
     --shadow: var(--shadow-md);
 
-    /* Functional */
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #dc2626; /* Distinct from --accent for form/alerts */
+    --success: #059669;
+    --warning: #d97706;
+    --error: #dc2626;
 
-    /* Layout */
     --radius: 10px;
     --transition: all 0.18s ease-out;
 
-    /* Text & accessibility */
     --text-primary: var(--brand);
     --text-secondary: var(--muted);
-    --link-color: var(--accent);
-    --focus-color: var(--accent);
+    --link-color: #991b1b;
+    --focus-color: #b91c1c;
     --font-size-base: clamp(0.94rem, 0.9rem + 0.35vw, 1.05rem);
+
+    /* v2: sections are transparent shells; content lives in cards */
+    --surface-section: transparent;
+    --section-inset-line: transparent;
+    --section-inset-line-strong: transparent;
+
+    /* Form fields: explicit light surfaces (fixes dark rgba() from base) */
+    --input-bg: #ffffff;
+    --input-bg-focus: #fffbeb;
+    --range-track: #e2e8f0;
+    --range-thumb-bg: #ffffff;
+    --range-thumb-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
 }
 
-/* Base overrides for light mode */
+html {
+    color-scheme: light;
+}
+
 html,
 body {
-    background: var(--bg);
+    background: var(--bg) !important;
     color: var(--brand);
 }
 
-/* Match main offset to fixed header height (base uses 54px vs 58px header — align for light theme) */
 main {
-    padding-top: 58px;
+    padding-top: 88px;
+    background: transparent;
 }
 
 a {
-    color: var(--accent);
+    color: var(--link-color);
 }
 
 a:hover {
@@ -80,7 +84,7 @@ a:hover {
 }
 
 img {
-    filter: brightness(0.98) contrast(1.02);
+    filter: none;
     box-shadow: var(--shadow-md);
 }
 
@@ -89,23 +93,23 @@ img:hover {
     transform: translateY(-1px);
 }
 
-/* Header — re-assert dimensions from style.css so overlay cannot shrink / drift nav layout */
+/* Header */
 header.site-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
-    height: 58px;
+    height: 68px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 0.8rem;
+    padding: 0 0.85rem;
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-medium);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.97) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
 }
 
 .nav {
@@ -118,18 +122,6 @@ header.site-header {
     position: relative;
 }
 
-@media (max-width: 768px) {
-    header.site-header {
-        height: auto;
-        min-height: 56px;
-        padding: 0.35rem 0.45rem;
-    }
-
-    .nav {
-        padding: 0;
-    }
-}
-
 .nav-list a {
     color: var(--muted);
 }
@@ -140,82 +132,184 @@ header.site-header {
     background: var(--accent-panel);
 }
 
-/* Panels & cards — bright & lifted (avoid bare `section` so layout shells / nav aren’t resized) */
-.panel,
-.card,
-.tool-container {
-    background: var(--card-bg);
+.dropdown-menu {
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
 }
 
-.panel-accent-left {
-    border-left: 4px solid var(--accent);
-    background: var(--accent-panel);
-}
-
-.btn-primary,
-button:not(.secondary):not(.hamburger):not(.close-btn) {
-    background: var(--accent);
-    color: white;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
-}
-
-.btn-primary:hover {
-    background: var(--accent-hover);
-    transform: translateY(-1px);
-}
-
-/* Spectrum / bars — warm neutral track */
-.temperament-spectrum-large,
-.dimension-spectrum {
-    background: #f1e9e9;
-    border-color: var(--border-medium);
-}
-
-.temperament-trend-dot,
-.dimension-marker {
-    background: var(--accent);
-    border-color: white;
-}
-
-/* ========== Section shells (base theme uses dark forge tint on `section` — restore light surfaces) ========== */
-section {
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(10px) saturate(1.02);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
+.dropdown-menu a {
     color: var(--brand);
+}
+
+/* Sections: no extra panel behind content (avoids double white + odd contrast) */
+section {
+    background: transparent !important;
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+    padding: 24px 16px;
+    margin: 24px 0;
+    border-radius: 0;
 }
 
 section:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: var(--border-medium);
+    box-shadow: none;
+    border-color: transparent;
 }
 
 .section-inner {
-    background: var(--glass-light);
+    background: transparent;
     color: var(--brand);
 }
 
-/* Active questionnaire / results panels — swap gold wash for accent-tinted light panel */
+.section-inner-padded {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.minimal-section.section-inner-padded,
+.section-inner.minimal-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Cards & panels */
+.panel,
+.card,
+.tool-container,
+.question-block,
+.likert-option {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-sm);
+    color: var(--brand);
+}
+
+.panel-accent-left {
+    background: var(--accent-panel);
+    border-left: 4px solid var(--accent);
+}
+
+.tool-card,
+.image-card.tool-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-medium) !important;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: none;
+}
+
+.tool-card::before,
+.portal-card::before {
+    background: linear-gradient(90deg, var(--accent), rgba(185, 28, 28, 0.2), transparent) !important;
+}
+
+.tool-card:hover,
+.image-card.tool-card:hover {
+    background: var(--card-hover) !important;
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-bright) !important;
+}
+
+.portal-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+/* Buttons */
+.btn-primary,
+button:not(.secondary):not(.hamburger):not(.close-btn) {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover,
+button:not(.secondary):not(.hamburger):not(.close-btn):hover {
+    background: var(--accent-hover) !important;
+    color: #ffffff !important;
+}
+
+.btn-secondary,
+.secondary {
+    background: #ffffff !important;
+    color: var(--brand) !important;
+    border: 1px solid var(--border-medium) !important;
+}
+
+/* Forms */
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group input[type="email"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea,
+.footer-theme-prefs__select,
+.text-input-container textarea,
+input[type="email"] {
+    background: var(--input-bg) !important;
+    color: var(--brand) !important;
+    border-color: var(--border-medium) !important;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.text-input-container textarea::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.footer-theme-prefs__select:focus,
+.text-input-container textarea:focus,
+input[type="email"]:focus {
+    border-color: var(--accent) !important;
+    background: var(--input-bg-focus) !important;
+    box-shadow: 0 0 0 3px var(--glow-accent) !important;
+}
+
+select,
+.footer-theme-prefs__select {
+    appearance: auto;
+}
+
+/* Tables */
+.archetype-table {
+    background: var(--card-bg);
+    color: var(--brand);
+}
+
+.archetype-table th {
+    background: #f1f5f9 !important;
+    color: var(--accent) !important;
+}
+
+@media (hover: hover) {
+    .archetype-table tr:hover td {
+        background: #f8fafc !important;
+    }
+}
+
+/* Questionnaire active states */
 .questionnaire-section.active,
 .results-section.active,
 .disclaimer-section.expanded,
 .instructions-panel.expanded {
-    background: var(--accent-panel);
-    border-left-color: var(--accent);
+    background: var(--accent-panel) !important;
+    border-left-color: var(--accent) !important;
 }
 
-/* Content pages: remove blue text-shadow meant for dark cosmic bg */
+/* Typography: remove dark-cosmic glow */
 .content-section h1,
 .content-section h2,
-.content-section h3 {
-    text-shadow: none;
-    color: var(--brand);
-}
-
+.content-section h3,
 .hero h1 {
     text-shadow: none;
     color: var(--brand);
@@ -226,4 +320,21 @@ section:hover {
     color: var(--muted);
 }
 
-/* Keep most other component classes the same — just color vars changed */
+.radio-group label:hover {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.multiselect-option {
+    border-left-color: var(--border-subtle) !important;
+}
+
+@media (max-width: 768px) {
+    header.site-header {
+        height: auto;
+        min-height: 56px;
+    }
+
+    main {
+        padding-top: 58px;
+    }
+}
