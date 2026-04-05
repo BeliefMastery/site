@@ -1437,10 +1437,12 @@ export class NeedsDependencyEngine {
     const compulsionScore = scores?.compulsionScore || 0;
     const aversionScore = scores?.aversionScore || 0;
     const isCompulsive = compulsionScore >= aversionScore;
-    const tilt = isCompulsive ? 'compulsive sourcing' : 'avoidant sourcing';
     const tiltWhy = isCompulsive
       ? 'seeking immediate relief or reassurance to quiet the pattern'
       : 'withdrawing or delaying to reduce felt pressure in the moment';
+    const howLoopFunctionsBody = isCompulsive
+      ? `When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to compulsive sourcing from people, situational dynamics, or environments; seeking immediate relief through external fulfillment of needs in order to gain stability or to quiet the pattern.`
+      : `When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to avoidant sourcing by disengaging from people, situational dynamics, or environments; withdrawing or delaying to reduce felt pressure in the moment rather than pursuing external relief.`;
     const tiltDisplay = isCompulsive ? 'Compulsive resourcing' : 'Avoidant patterning';
 
     // Historical pattern depth from Phase 2
@@ -1482,7 +1484,7 @@ export class NeedsDependencyEngine {
           <details class="closure-section needs-dep-loop-details">
             <summary><strong>How this loop works</strong></summary>
             <div class="closure-content">
-              <p><strong>How the loop functions:</strong> When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to ${tilt}, ${tiltWhy}.</p>
+              <p><strong>How the loop functions:</strong> ${howLoopFunctionsBody}</p>
               ${depthNoteInDetails}
               <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
               <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
