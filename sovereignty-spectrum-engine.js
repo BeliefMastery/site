@@ -34,6 +34,7 @@ export class SovereigntySpectrumEngine {
       nihilism: 0
     };
     this.spectrumPosition = 0;
+    this.reportComplete = false;
     this.paradigmAlignments = {};
     this.phase2Questions = [];
     this.analysisData = {
@@ -1345,6 +1346,8 @@ export class SovereigntySpectrumEngine {
   renderResults() {
     const container = document.getElementById('resultsContainer');
     if (!container) return;
+
+    this.reportComplete = true;
     
     // Hide questionnaire, show results
     const questionnaireSection = document.getElementById('questionnaireSection');
@@ -1491,6 +1494,7 @@ export class SovereigntySpectrumEngine {
         paradigmRatings: this.paradigmRatings,
         currentPhase: this.currentPhase,
         currentQuestionIndex: this.currentQuestionIndex,
+        reportComplete: this.reportComplete === true,
         answers: this.answers,
         questionSequence: this.questionSequence,
         spectrumPosition: this.spectrumPosition,
@@ -1520,6 +1524,17 @@ export class SovereigntySpectrumEngine {
         this.spectrumPosition = progress.spectrumPosition || 0;
         this.derailerScores = progress.derailerScores || { hypocrisy: 0, reluctance: 0, nihilism: 0 };
         this.analysisData = progress.analysisData || this.analysisData;
+        this.reportComplete = progress.reportComplete === true;
+
+        const hasSpectrumResults =
+          (this.analysisData.paradigmDominance?.length ?? 0) > 0 ||
+          Boolean(this.analysisData.spectrumLabel);
+
+        if (this.reportComplete && hasSpectrumResults) {
+          await this.loadSpectrumData();
+          this.renderResults();
+          return;
+        }
         
         // Restore UI state
         if (this.currentPhase === 1) {
@@ -1579,6 +1594,7 @@ export class SovereigntySpectrumEngine {
    * Reset assessment
    */
   resetAssessment() {
+    this.reportComplete = false;
     this.selectedParadigms = [];
     this.paradigmRatings = {};
     this.currentParadigmIndex = 0;

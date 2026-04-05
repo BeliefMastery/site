@@ -28,6 +28,7 @@ export class ParadigmEngine {
     this.questionSequence = [];
     this.phase1Results = {};
     this.identifiedParadigms = [];
+    this.reportComplete = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       goodLife: {},
@@ -1250,6 +1251,7 @@ export class ParadigmEngine {
     this.ui.transition('results');
     
     this.renderResults();
+    this.reportComplete = true;
     this.saveProgress();
   }
 
@@ -1895,6 +1897,7 @@ export class ParadigmEngine {
         selectedCategories: this.selectedCategories,
         currentPhase: this.currentPhase,
         currentQuestionIndex: this.currentQuestionIndex,
+        reportComplete: this.reportComplete === true,
         answers: this.answers,
         phase1Results: this.phase1Results,
         analysisData: this.analysisData,
@@ -1921,6 +1924,19 @@ export class ParadigmEngine {
       this.answers = data.answers || {};
       this.phase1Results = data.phase1Results || {};
       this.analysisData = data.analysisData || this.analysisData;
+      this.reportComplete = data.reportComplete === true;
+
+      const hasParadigmResults =
+        (this.analysisData.identifiedParadigms?.length ?? 0) > 0 ||
+        Object.keys(this.analysisData.goodLife || {}).length > 0 ||
+        Object.keys(this.analysisData.god || {}).length > 0;
+
+      if (this.reportComplete && hasParadigmResults) {
+        await this.loadParadigmData();
+        this.ui.transition('results');
+        this.renderResults();
+        return;
+      }
       
       // Restore category selections
       this.selectedCategories.forEach(categoryId => {
@@ -1960,6 +1976,8 @@ export class ParadigmEngine {
 
   resetAssessment() {
     this.selectedCategories = [];
+    this.reportComplete = false;
+    this.dataStore.clear('progress');
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};

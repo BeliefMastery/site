@@ -28,6 +28,7 @@ export class ChannelsEngine {
     this.nodeScores = {}; // Phase 1 results: { node: { state: 'abundant'|'balanced'|'lacking', score: number } }
     this.prioritizedChannels = []; // Phase 2: User-selected 2-3 priority channels
     this.assessedChannels = []; // Phase 3: Channels that have been assessed
+    this.reportComplete = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       phase1Results: {},
@@ -1098,7 +1099,7 @@ export class ChannelsEngine {
     // Process all channels assessed in Phase 4
   }
 
-  completeAssessment() {
+  async completeAssessment() {
     // Calculate final results
     this.calculateResults();
     
@@ -1106,11 +1107,8 @@ export class ChannelsEngine {
     this.analysisData.allAnswers = { ...this.answers };
     this.analysisData.questionSequence = this.getAllQuestionsAnswered();
     
-    // Hide questionnaire, show results
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
-    
-    this.renderResults();
+    await this.renderResults();
+    this.reportComplete = true;
     this.saveProgress();
   }
 
@@ -1406,6 +1404,7 @@ export class ChannelsEngine {
       const progressData = {
         currentPhase: this.currentPhase,
         currentQuestionIndex: this.currentQuestionIndex,
+        reportComplete: this.reportComplete === true,
         answers: this.answers,
         nodeScores: this.nodeScores,
         prioritizedChannels: this.prioritizedChannels,
@@ -1435,6 +1434,17 @@ export class ChannelsEngine {
       this.prioritizedChannels = data.prioritizedChannels || [];
       this.assessedChannels = data.assessedChannels || [];
       this.analysisData = data.analysisData || this.analysisData;
+      this.reportComplete = data.reportComplete === true;
+
+      const hasChannelResults =
+        Object.keys(this.analysisData.channelScores || {}).length > 0 ||
+        (this.analysisData.finalChannels?.length ?? 0) > 0 ||
+        (this.analysisData.remediationStrategies?.length ?? 0) > 0;
+
+      if (this.reportComplete && hasChannelResults) {
+        await this.renderResults();
+        return;
+      }
       
       // Restore questionnaire state
       if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
@@ -1483,7 +1493,9 @@ export class ChannelsEngine {
       questionSequence: []
     };
     
+    this.reportComplete = false;
     sessionStorage.removeItem('channelProgress');
+    this.dataStore.clear('progress');
     
     // Reset UI
     this.ui.transition('idle');

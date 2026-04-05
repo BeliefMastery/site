@@ -33,6 +33,7 @@ export class NeedsDependencyEngine {
     this.needChain = []; // For Phase 3
     this.surfaceNeed = null;
     this.surfaceNeedCategoryKey = null;
+    this.reportComplete = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       phase1Results: {},
@@ -1271,6 +1272,7 @@ export class NeedsDependencyEngine {
       this.ui.transition('results');
       
       await this.renderResults();
+      this.reportComplete = true;
       this.saveProgress();
     } catch (error) {
       this.debugReporter.logError(error, 'completeAssessment');
@@ -1757,9 +1759,12 @@ export class NeedsDependencyEngine {
       const progressData = {
         currentPhase: this.currentPhase,
         currentQuestionIndex: this.currentQuestionIndex,
+        reportComplete: this.reportComplete === true,
         answers: this.answers,
         identifiedLoops: this.identifiedLoops,
         needChain: this.needChain,
+        surfaceNeed: this.surfaceNeed,
+        surfaceNeedCategoryKey: this.surfaceNeedCategoryKey,
         analysisData: this.analysisData,
         timestamp: new Date().toISOString()
       };
@@ -1784,6 +1789,17 @@ export class NeedsDependencyEngine {
       this.identifiedLoops = data.identifiedLoops || [];
       this.needChain = data.needChain || [];
       this.analysisData = data.analysisData || this.analysisData;
+      this.surfaceNeed = data.surfaceNeed != null ? data.surfaceNeed : this.surfaceNeed;
+      this.surfaceNeedCategoryKey =
+        data.surfaceNeedCategoryKey != null ? data.surfaceNeedCategoryKey : this.surfaceNeedCategoryKey;
+      this.reportComplete = data.reportComplete === true;
+
+      if (this.reportComplete && this.analysisData?.primaryLoop) {
+        await this.loadNeedsDependencyData();
+        this.ui.transition('results');
+        await this.renderResults();
+        return;
+      }
       
       // Rebuild question sequence based on current phase
       if (this.currentPhase === 1) {
@@ -1838,6 +1854,10 @@ export class NeedsDependencyEngine {
         allAnswers: {},
         questionSequence: []
       };
+      this.reportComplete = false;
+      this.surfaceNeed = null;
+      this.surfaceNeedCategoryKey = null;
+      this.dataStore.clear('progress');
       localStorage.removeItem('needsDependencyProgress');
       localStorage.removeItem('needsDependencyResults');
       

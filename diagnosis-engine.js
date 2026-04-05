@@ -2017,6 +2017,8 @@ export class DiagnosisEngine {
       const progressData = {
         selectedCategories: this.selectedCategories,
         currentQuestionIndex: this.currentQuestionIndex,
+        currentStage: this.currentStage,
+        reportComplete: this.currentStage === 'results',
         answers: this.answers,
         refinedQuestionSequence: this.refinedQuestionSequence,
         refinementRequested: this.refinementRequested,
@@ -2052,7 +2054,30 @@ export class DiagnosisEngine {
       this.guideAnswers = data.guideAnswers || {};
       this.suggestedCategories = data.suggestedCategories || [];
       this.analysisData = data.analysisData || this.analysisData;
-      
+      this.currentStage = data.currentStage || this.currentStage;
+      const reportComplete = data.reportComplete === true || this.currentStage === 'results';
+
+      const cv = this.analysisData?.conclusionVector;
+      const hasResultsPayload = Boolean(
+        cv &&
+          ((cv.primaryPatternMatch != null && cv.primaryPatternMatch !== '') ||
+            (cv.secondaryPatternMatches?.length ?? 0) > 0)
+      );
+
+      if (reportComplete && this.selectedCategories.length > 0 && hasResultsPayload) {
+        this.currentStage = 'results';
+        await this.loadDiagnosisData();
+        this.selectedCategories.forEach(categoryKey => {
+          const card = document.querySelector(`[data-category="${categoryKey}"]`);
+          if (card) card.classList.add('selected');
+        });
+        const startAssessmentBtn = document.getElementById('startAssessment');
+        if (startAssessmentBtn) startAssessmentBtn.disabled = false;
+        this.ui.transition('results');
+        await this.renderResults();
+        return;
+      }
+
       // Restore category selections
       if (this.selectedCategories.length > 0) {
         await this.loadDiagnosisData();
@@ -2109,7 +2134,7 @@ export class DiagnosisEngine {
       }
       
       this.dataStore.save('history', historyData);
-      this.dataStore.clear('progress'); // Clear progress after saving results
+      this.saveProgress();
     } catch (error) {
       this.debugReporter.logError(error, 'saveResults');
     }
@@ -2171,6 +2196,7 @@ export class DiagnosisEngine {
     };
     
     sessionStorage.removeItem('diagnosisProgress');
+    this.dataStore.clear('progress');
     
     // Reset UI
     const categorySelection = document.getElementById('categorySelection');

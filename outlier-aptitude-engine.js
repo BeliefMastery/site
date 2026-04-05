@@ -12,6 +12,7 @@ export class OutlierAptitudeEngine {
   constructor() {
     this.currentQuestionIndex = 0;
     this.answers = {};
+    this.reportComplete = false;
     this.analysisData = this.getEmptyAnalysisData();
 
     this.ui = new EngineUIController({
@@ -46,6 +47,7 @@ export class OutlierAptitudeEngine {
         this.generateSampleReport();
         return;
       }
+      if (this._storageAppliedUi) return;
       this.ui.transition('idle');
     } catch (error) {
       this.debugReporter.logError(error, 'OutlierAptitudeEngine init');
@@ -128,6 +130,7 @@ export class OutlierAptitudeEngine {
   }
 
   startAssessment() {
+    this.reportComplete = false;
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.currentStage = 'earlyInput';
@@ -527,6 +530,7 @@ export class OutlierAptitudeEngine {
       projection,
       validationPrompts: VALIDATION_PROMPTS
     };
+    this.reportComplete = true;
     this.renderResults();
     this.ui.transition('results');
     this.saveProgress();
@@ -713,6 +717,7 @@ export class OutlierAptitudeEngine {
     const progress = {
       currentQuestionIndex: this.currentQuestionIndex,
       currentStage: this.currentStage,
+      reportComplete: this.reportComplete === true,
       answers: this.answers,
       acuityProfile: this.acuityProfile,
       earlyInputs: this.earlyInputs,
@@ -724,19 +729,31 @@ export class OutlierAptitudeEngine {
   async loadStoredData() {
     try {
       const progress = this.dataStore.load('progress');
-      if (!progress) return;
+      if (!progress) {
+        this._storageAppliedUi = false;
+        return;
+      }
       this.currentQuestionIndex = progress.currentQuestionIndex || 0;
       this.currentStage = progress.currentStage || 'questions';
+      this.reportComplete = progress.reportComplete === true;
       this.answers = progress.answers || {};
       this.acuityProfile = progress.acuityProfile || { primary: '', secondary: '', tertiary: '', additional: [] };
       this.earlyInputs = progress.earlyInputs || this.getEmptyAnalysisData().earlyInputs;
       this.analysisData = progress.analysisData || this.analysisData;
-      if (this.analysisData.topDimensions?.length) {
+      this._storageAppliedUi = false;
+      if (this.reportComplete && this.analysisData.topDimensions?.length) {
         this.renderResults();
         this.ui.transition('results');
+        this._storageAppliedUi = true;
+      } else if (this.analysisData.topDimensions?.length) {
+        this.reportComplete = true;
+        this.renderResults();
+        this.ui.transition('results');
+        this._storageAppliedUi = true;
       } else if (this.currentStage === 'earlyInput' || Object.keys(this.answers).length) {
         this.ui.transition('assessment');
         this.renderCurrentQuestion();
+        this._storageAppliedUi = true;
       }
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
@@ -750,7 +767,9 @@ export class OutlierAptitudeEngine {
   }
 
   resetAssessment() {
-    this.dataStore.clear();
+    this.reportComplete = false;
+    this._storageAppliedUi = false;
+    this.dataStore.clear('progress');
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.currentStage = 'questions';

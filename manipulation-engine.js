@@ -31,6 +31,7 @@ export class ManipulationEngine {
     this.vectorScores = {}; // Phase 1 results: { vector: { state: 'high'|'medium'|'low', score: number } }
     this.prioritizedVectors = []; // Phase 2: User-selected 2-3 priority vectors
     this.assessedVectors = []; // Phase 3: Vectors that have been assessed
+    this.reportComplete = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       phase1Results: {},
@@ -1125,7 +1126,7 @@ renderCurrentQuestion() {
     });
   }
 
-  completeAssessment() {
+  async completeAssessment() {
     // Calculate final results
     this.calculateResults();
     
@@ -1133,11 +1134,8 @@ renderCurrentQuestion() {
     this.analysisData.allAnswers = { ...this.answers };
     this.analysisData.questionSequence = this.getAllQuestionsAnswered();
     
-    // Hide questionnaire, show results
-    document.getElementById('questionnaireSection').classList.remove('active');
-    document.getElementById('resultsSection').classList.add('active');
-    
-    this.renderResults();
+    await this.renderResults();
+    this.reportComplete = true;
     this.saveProgress();
   }
 
@@ -1380,6 +1378,7 @@ renderCurrentQuestion() {
       const progressData = {
         currentPhase: this.currentPhase,
         currentQuestionIndex: this.currentQuestionIndex,
+        reportComplete: this.reportComplete === true,
         answers: this.answers,
         vectorScores: this.vectorScores,
         prioritizedVectors: this.prioritizedVectors,
@@ -1409,6 +1408,12 @@ renderCurrentQuestion() {
       this.prioritizedVectors = data.prioritizedVectors || [];
       this.assessedVectors = data.assessedVectors || [];
       this.analysisData = data.analysisData || this.analysisData;
+      this.reportComplete = data.reportComplete === true;
+
+      if (this.reportComplete && this.analysisData?.primaryVector) {
+        await this.renderResults();
+        return;
+      }
       
       // Restore questionnaire state
       if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
@@ -1459,7 +1464,9 @@ renderCurrentQuestion() {
       questionSequence: []
     };
     
+    this.reportComplete = false;
     sessionStorage.removeItem('manipulationProgress');
+    this.dataStore.clear('progress');
     
     // Reset UI
     this.ui.transition('idle');

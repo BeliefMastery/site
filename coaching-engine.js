@@ -27,6 +27,7 @@ export class CoachingEngine {
     this.answers = {};
     this.questionSequence = [];
     this.currentSection = null;
+    this.assessmentComplete = false;
     this.profileData = {
       timestamp: new Date().toISOString(),
       obstacles: {},
@@ -316,6 +317,56 @@ export class CoachingEngine {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  /**
+   * Rebuild questionSequence from selectedSections (does not clear answers).
+   */
+  rebuildQuestionSequenceFromSelectedSections() {
+    this.questionSequence = [];
+    this.selectedSections.forEach(sectionId => {
+      if (sectionId === 'obstacles') {
+        Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
+          const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
+          this.questionSequence.push({
+            id: `obstacle_${obstacleKey}`,
+            type: 'obstacle',
+            section: 'obstacles',
+            obstacle: obstacleKey,
+            question: obstacle.question,
+            description: obstacle.description,
+            name: obstacle.name,
+            weight: obstacle.weight
+          });
+        });
+      } else if (sectionId === 'domains') {
+        Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
+          const domain = SATISFACTION_DOMAINS[domainKey];
+          this.questionSequence.push({
+            id: `domain_${domainKey}_overview`,
+            type: 'domain_overview',
+            section: 'domains',
+            domain: domainKey,
+            question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
+            description: domain.description,
+            name: domain.name,
+            weight: domain.weight
+          });
+          domain.aspects.forEach((aspect, index) => {
+            this.questionSequence.push({
+              id: `domain_${domainKey}_aspect_${index}`,
+              type: 'domain_aspect',
+              section: 'domains',
+              domain: domainKey,
+              aspect: aspect,
+              question: this.generateAspectQuestion(domainKey, aspect, domain.name),
+              name: domain.name,
+              weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
+            });
+          });
+        });
+      }
+    });
+  }
+
   async generateSampleReport() {
     try {
       await this.loadCoachingData();
@@ -323,53 +374,8 @@ export class CoachingEngine {
       this.selectedSections = ['obstacles', 'domains'];
       this.currentQuestionIndex = 0;
       this.answers = {};
-      this.questionSequence = [];
       this.profileData = this.getEmptyProfileData();
-
-      this.selectedSections.forEach(sectionId => {
-        if (sectionId === 'obstacles') {
-          Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
-            const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
-            this.questionSequence.push({
-              id: `obstacle_${obstacleKey}`,
-              type: 'obstacle',
-              section: 'obstacles',
-              obstacle: obstacleKey,
-              question: obstacle.question,
-              description: obstacle.description,
-              name: obstacle.name,
-              weight: obstacle.weight
-            });
-          });
-        } else if (sectionId === 'domains') {
-          Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
-            const domain = SATISFACTION_DOMAINS[domainKey];
-            this.questionSequence.push({
-              id: `domain_${domainKey}_overview`,
-              type: 'domain_overview',
-              section: 'domains',
-              domain: domainKey,
-              question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
-              description: domain.description,
-              name: domain.name,
-              weight: domain.weight
-            });
-
-            domain.aspects.forEach((aspect, index) => {
-              this.questionSequence.push({
-                id: `domain_${domainKey}_aspect_${index}`,
-                type: 'domain_aspect',
-                section: 'domains',
-                domain: domainKey,
-                aspect: aspect,
-                question: this.generateAspectQuestion(domainKey, aspect, domain.name),
-                name: domain.name,
-                weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
-              });
-            });
-          });
-        }
-      });
+      this.rebuildQuestionSequenceFromSelectedSections();
 
       this.questionSequence.forEach(question => {
         this.answers[question.id] = this.getRandomInt(0, 10);
@@ -378,6 +384,7 @@ export class CoachingEngine {
       this.ui.transition('results');
       this.calculateProfile();
       this.renderResults();
+      this.assessmentComplete = true;
       this.saveProgress();
     } catch (error) {
       this.debugReporter.logError(error, 'generateSampleReport');
@@ -398,57 +405,10 @@ export class CoachingEngine {
     try {
       await this.loadCoachingData();
       
-      // Build question sequence
-      this.questionSequence = [];
       this.currentQuestionIndex = 0;
       this.answers = {};
-      
-      this.selectedSections.forEach(sectionId => {
-        if (sectionId === 'obstacles') {
-          Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
-          const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
-          this.questionSequence.push({
-            id: `obstacle_${obstacleKey}`,
-            type: 'obstacle',
-            section: 'obstacles',
-            obstacle: obstacleKey,
-            question: obstacle.question,
-            description: obstacle.description,
-            name: obstacle.name,
-            weight: obstacle.weight
-          });
-        });
-      } else if (sectionId === 'domains') {
-        Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
-          const domain = SATISFACTION_DOMAINS[domainKey];
-          // Add domain overview question
-          this.questionSequence.push({
-            id: `domain_${domainKey}_overview`,
-            type: 'domain_overview',
-            section: 'domains',
-            domain: domainKey,
-            question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
-            description: domain.description,
-            name: domain.name,
-            weight: domain.weight
-          });
-          
-          // Add aspect questions
-          domain.aspects.forEach((aspect, index) => {
-            this.questionSequence.push({
-              id: `domain_${domainKey}_aspect_${index}`,
-              type: 'domain_aspect',
-              section: 'domains',
-              domain: domainKey,
-              aspect: aspect,
-              question: this.generateAspectQuestion(domainKey, aspect, domain.name),
-              name: domain.name,
-              weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
-            });
-          });
-        });
-      }
-    });
+      this.assessmentComplete = false;
+      this.rebuildQuestionSequenceFromSelectedSections();
     
       // Hide selection, show questionnaire
       this.ui.transition('assessment');
@@ -751,6 +711,7 @@ export class CoachingEngine {
     this.ui.transition('results');
     
     this.renderResults();
+    this.assessmentComplete = true;
     this.saveProgress();
   }
 
@@ -1419,6 +1380,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       const progressData = {
         selectedSections: this.selectedSections,
         currentQuestionIndex: this.currentQuestionIndex,
+        reportComplete: this.assessmentComplete === true,
         answers: this.answers,
         profileData: this.profileData,
         timestamp: new Date().toISOString()
@@ -1442,6 +1404,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       this.currentQuestionIndex = data.currentQuestionIndex || 0;
       this.answers = data.answers || {};
       this.profileData = data.profileData || this.profileData;
+      this.assessmentComplete = data.reportComplete === true;
       
       // Restore section selections
       this.selectedSections.forEach(sectionId => {
@@ -1453,57 +1416,24 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         const startBtn = document.getElementById('startAssessment');
         if (startBtn) startBtn.disabled = false;
       }
+
+      if (this.selectedSections.length === 0) return;
+
+      await this.loadCoachingData();
+      this.rebuildQuestionSequenceFromSelectedSections();
+
+      const hasProfile =
+        (this.profileData.priorities?.topImprovementAreas?.length ?? 0) > 0 ||
+        Object.keys(this.profileData.obstacles || {}).length > 0 ||
+        Object.keys(this.profileData.domains || {}).length > 0;
+
+      if (this.assessmentComplete && this.questionSequence.length > 0 && hasProfile) {
+        this.ui.transition('results');
+        this.renderResults();
+        return;
+      }
       
-      // If in progress, rebuild question sequence and restore questionnaire state
-      if (this.currentQuestionIndex > 0 && this.selectedSections.length > 0) {
-        await this.loadCoachingData(); // Ensure data is loaded
-        
-        // Rebuild question sequence (same logic as startAssessment)
-        this.questionSequence = [];
-        this.selectedSections.forEach(sectionId => {
-          if (sectionId === 'obstacles') {
-            Object.keys(SOVEREIGNTY_OBSTACLES).forEach(obstacleKey => {
-              const obstacle = SOVEREIGNTY_OBSTACLES[obstacleKey];
-              this.questionSequence.push({
-                id: `obstacle_${obstacleKey}`,
-                type: 'obstacle',
-                section: 'obstacles',
-                obstacle: obstacleKey,
-                question: obstacle.question,
-                description: obstacle.description,
-                name: obstacle.name,
-                weight: obstacle.weight
-              });
-            });
-          } else if (sectionId === 'domains') {
-            Object.keys(SATISFACTION_DOMAINS).forEach(domainKey => {
-              const domain = SATISFACTION_DOMAINS[domainKey];
-              this.questionSequence.push({
-                id: `domain_${domainKey}_overview`,
-                type: 'domain_overview',
-                section: 'domains',
-                domain: domainKey,
-                question: `Overall, how satisfied are you with your ${domain.name.toLowerCase()}?`,
-                description: domain.description,
-                name: domain.name,
-                weight: domain.weight
-              });
-              domain.aspects.forEach((aspect, index) => {
-                this.questionSequence.push({
-                  id: `domain_${domainKey}_aspect_${index}`,
-                  type: 'domain_aspect',
-                  section: 'domains',
-                  domain: domainKey,
-                  aspect: aspect,
-                  question: this.generateAspectQuestion(domainKey, aspect, domain.name),
-                  name: domain.name,
-                  weight: QUESTION_WEIGHTINGS?.aspect_default || 1.0
-                });
-              });
-            });
-          }
-        });
-        
+      if (this.currentQuestionIndex > 0) {
         const sectionSelection = document.getElementById('sectionSelection');
         const selectionSection = document.getElementById('selectionSection');
         const questionnaireSection = document.getElementById('questionnaireSection');
@@ -1531,6 +1461,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.questionSequence = [];
+    this.assessmentComplete = false;
+    this.dataStore.clear('progress');
     this.profileData = {
       timestamp: new Date().toISOString(),
       obstacles: {},

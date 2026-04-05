@@ -14,6 +14,7 @@ export class EntitiesEngine {
     this.answers = {};
     this.tasteSkews = [];
     this.contractTheme = '';
+    this.reportComplete = false;
     this.intake = {
       pathologyCategory: '',
       pathologyDisorder: '',
@@ -65,6 +66,7 @@ export class EntitiesEngine {
         this.generateSampleReport();
         return;
       }
+      if (this._storageAppliedUi) return;
       this.ui.transition('idle');
     } catch (error) {
       this.debugReporter.logError(error, 'EntitiesEngine init');
@@ -254,6 +256,7 @@ export class EntitiesEngine {
   startAssessment() {
     this.captureIntake();
     if (!this.validateIntake()) return;
+    this.reportComplete = false;
     this.currentQuestionIndex = 0;
     this.currentStage = 'tier';
     this.answers = {};
@@ -515,6 +518,7 @@ export class EntitiesEngine {
       contract
     };
 
+    this.reportComplete = true;
     this.renderResults();
     this.ui.transition('results');
     this.saveProgress();
@@ -592,6 +596,7 @@ export class EntitiesEngine {
     const progress = {
       currentQuestionIndex: this.currentQuestionIndex,
       currentStage: this.currentStage,
+      reportComplete: this.reportComplete === true,
       answers: this.answers,
       tasteSkews: this.tasteSkews,
       intake: this.intake,
@@ -603,19 +608,31 @@ export class EntitiesEngine {
   async loadStoredData() {
     try {
       const progress = this.dataStore.load('progress');
-      if (!progress) return;
+      if (!progress) {
+        this._storageAppliedUi = false;
+        return;
+      }
       this.currentQuestionIndex = progress.currentQuestionIndex || 0;
       this.currentStage = progress.currentStage || 'tier';
+      this.reportComplete = progress.reportComplete === true;
       this.answers = progress.answers || {};
       this.tasteSkews = progress.tasteSkews || [];
       this.intake = progress.intake || this.intake;
       this.analysisData = progress.analysisData || this.analysisData;
-      if (this.analysisData?.tierResult) {
+      this._storageAppliedUi = false;
+      if (this.reportComplete && this.analysisData?.tierResult) {
         this.renderResults();
         this.ui.transition('results');
+        this._storageAppliedUi = true;
+      } else if (this.analysisData?.tierResult) {
+        this.reportComplete = true;
+        this.renderResults();
+        this.ui.transition('results');
+        this._storageAppliedUi = true;
       } else if (Object.keys(this.answers).length > 0) {
         this.ui.transition('assessment');
         this.renderCurrentQuestion();
+        this._storageAppliedUi = true;
       }
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
@@ -682,7 +699,9 @@ export class EntitiesEngine {
   }
 
   resetAssessment() {
-    this.dataStore.clear();
+    this.reportComplete = false;
+    this._storageAppliedUi = false;
+    this.dataStore.clear('progress');
     this.currentQuestionIndex = 0;
     this.currentStage = 'tier';
     this.answers = {};

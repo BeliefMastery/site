@@ -35,6 +35,7 @@ export class SovereigntyEngine {
       dependencyLevel: null, // 'low', 'medium', 'high'
       cognitiveLevel: null // From Section 2, used for filtering Sections 3 & 4
     };
+    this.reportComplete = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       iqBracket: null,
@@ -336,6 +337,7 @@ export class SovereigntyEngine {
    */
   startAssessment() {
     try {
+      this.reportComplete = false;
       this.currentSection = 0; // Start with IQ bracket selection
       this.currentQuestionIndex = 0;
       this.answers = {};
@@ -1542,6 +1544,8 @@ export class SovereigntyEngine {
     // Display results
     this.displayResults();
     this.showResults();
+    this.reportComplete = true;
+    this.saveProgress();
   }
 
   determineCognitiveBand() {
@@ -2043,6 +2047,7 @@ export class SovereigntyEngine {
 
   async resetAssessment() {
     if (await showConfirm('Are you sure you want to start a new assessment? All progress will be lost.')) {
+      this.reportComplete = false;
       this.answers = {};
       this.scores = {
         dependency: 0,
@@ -2100,6 +2105,7 @@ export class SovereigntyEngine {
       currentQuestionIndex: this.currentQuestionIndex,
       iqBracket: this.iqBracket,
       iqBracketSecondary: this.iqBracketSecondary,
+      reportComplete: this.reportComplete === true,
       answers: this.answers,
       scores: this.scores,
       preliminaryFilters: this.preliminaryFilters,
@@ -2112,7 +2118,7 @@ export class SovereigntyEngine {
     }
   }
 
-  loadStoredData() {
+  async loadStoredData() {
     try {
       const stored = localStorage.getItem('sovereigntyAssessment')
         || sessionStorage.getItem('sovereigntyAssessment');
@@ -2122,6 +2128,7 @@ export class SovereigntyEngine {
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
         this.iqBracket = progress.iqBracket || null;
         this.iqBracketSecondary = progress.iqBracketSecondary || null;
+        this.reportComplete = progress.reportComplete === true;
         this.answers = progress.answers || {};
         this.scores = Object.assign({
           dependency: 0,
@@ -2147,6 +2154,13 @@ export class SovereigntyEngine {
         }
         if (this.iqBracketSecondary) {
           this.analysisData.iqBracketSecondary = this.iqBracketSecondary;
+        }
+
+        if (this.reportComplete && this.analysisData.cognitiveBand) {
+          await this.ensureDataLoaded();
+          this.displayResults();
+          this.showResults();
+          return;
         }
         
         // Restore state
