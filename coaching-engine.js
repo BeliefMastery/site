@@ -921,48 +921,90 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     };
   }
 
+  /**
+   * Two lowest-scoring aspect names for coaching "start with" copy (sanitized, joined).
+   * @returns {string} Empty if none; otherwise "A • B"
+   */
+  getCoachingDomainAspectSnippet(domain) {
+    const aspectScores = Array.isArray(domain.aspects) ? [...domain.aspects] : [];
+    const lowestAspects = aspectScores
+      .sort((a, b) => (a.score || 0) - (b.score || 0))
+      .slice(0, 2)
+      .map(aspect => SecurityUtils.sanitizeHTML(aspect.name || ''));
+    return lowestAspects.length ? lowestAspects.join(' • ') : '';
+  }
+
   renderResults() {
     const container = document.getElementById('profileResults');
     if (!container) return;
     
-    let html = '<div class="profile-summary">';
-    html += '<h3>Greatest Impact Focus</h3>';
-    html += '<p>You have lightly combed over the scope of human life. To become more satisfied, start at the weakest link first.</p>';
-    
-    if (this.profileData.priorities.topImprovementAreas.length > 0) {
-      html += '<h4>Lowest Satisfaction Domains</h4>';
-      html += '<p>These domains show the greatest dissatisfaction and offer the highest leverage when addressed.</p>';
-      html += '<div>';
-      this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
-        const aspectScores = Array.isArray(domain.aspects) ? [...domain.aspects] : [];
-        const lowestAspects = aspectScores
-          .sort((a, b) => (a.score || 0) - (b.score || 0))
-          .slice(0, 2)
-          .map(aspect => SecurityUtils.sanitizeHTML(aspect.name || ''));
-        const aspectText = lowestAspects.length
-          ? `Start with: ${lowestAspects.join(' • ')}`
-          : 'Start with one concrete action that improves day-to-day stability in this domain.';
-        html += `
-          <div class="domain-item">
-            <strong>${index + 1}. ${SecurityUtils.sanitizeHTML(domain.name || '')}</strong>
-            <p>${aspectText}</p>
-            <p>Suggested first step: choose one micro‑change you can repeat weekly and build consistency around it.</p>
-          </div>
-        `;
-      });
-      html += '</div>';
+    const areas = this.profileData.priorities.topImprovementAreas;
+    const firstDomain = areas.length > 0 ? areas[0] : null;
+    const aspectFallback =
+      'One concrete action that improves day‑to‑day stability in this domain.';
+
+    let html = '<div class="profile-summary coaching-profile-summary">';
+    html += '<h3 class="coaching-impact-heading">Greatest Impact Focus</h3>';
+    html +=
+      '<p class="coaching-impact-lead">You have lightly combed over the scope of human life. To become more satisfied, start at the weakest link first.</p>';
+
+    if (firstDomain) {
+      html += `<div class="coaching-primary-focus" role="region" aria-label="Priority domain to address first">
+        <p class="coaching-primary-focus__text">
+          <strong>Address first:</strong>
+          <a class="coaching-primary-focus__link" href="#coaching-domain-priority-1">${SecurityUtils.sanitizeHTML(firstDomain.name || '')}</a>
+        </p>
+      </div>`;
     }
-    
+
+    if (areas.length > 0) {
+      html += '<h4 class="coaching-domains-heading">Lowest Satisfaction Domains</h4>';
+      html +=
+        '<p class="coaching-domains-intro">These domains show the greatest dissatisfaction and offer the highest leverage when addressed.</p>';
+
+      const firstSnippet = this.getCoachingDomainAspectSnippet(firstDomain);
+      html += `<article id="coaching-domain-priority-1" class="coaching-domain-card coaching-domain-card--featured">
+        <div class="coaching-domain-card__meta">
+          <span class="coaching-domain-card__rank" aria-hidden="true">1</span>
+          <h5 class="coaching-domain-card__title">${SecurityUtils.sanitizeHTML(firstDomain.name || '')}</h5>
+        </div>
+        <p class="coaching-domain-card__aspects"><span class="coaching-aspects-label">Start with</span> ${firstSnippet || aspectFallback}</p>
+      </article>`;
+
+      if (areas.length > 1) {
+        html +=
+          '<p class="coaching-domain-signals-intro"><strong>Also consider (in order of leverage)</strong></p>';
+        html += '<ul class="coaching-domain-signals" role="list">';
+        for (let i = 1; i < areas.length; i++) {
+          const domain = areas[i];
+          const tier = Math.min(i + 1, 5);
+          const snippet = this.getCoachingDomainAspectSnippet(domain);
+          html += `<li id="coaching-domain-priority-${i + 1}" class="coaching-domain-row coaching-domain-row--tier-${tier}">
+            <div class="coaching-domain-row__main">
+              <span class="coaching-domain-row__rank">${i + 1}</span>
+              <span class="coaching-domain-row__name">${SecurityUtils.sanitizeHTML(domain.name || '')}</span>
+            </div>
+            <p class="coaching-domain-row__aspects"><span class="coaching-aspects-label">Start with</span> ${snippet || aspectFallback}</p>
+          </li>`;
+        }
+        html += '</ul>';
+      }
+
+      html += `<p class="coaching-micro-step"><strong>Suggested first step:</strong> choose one micro‑change you can repeat weekly and build consistency around it.</p>`;
+    }
+
     if (this.profileData.priorities.stabilizingDomain) {
       html += `
-        <div class="domain-item">
-          <strong>Stabilizing Domain: ${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</strong>
-          <p>When all domains are low, stabilize here first to rebuild a functional baseline.</p>
-        </div>
+        <aside class="coaching-stabilizing-card">
+          <strong class="coaching-stabilizing-card__title">Stabilizing domain</strong>
+          <p class="coaching-stabilizing-card__name">${SecurityUtils.sanitizeHTML(this.profileData.priorities.stabilizingDomain.name || '')}</p>
+          <p class="coaching-stabilizing-card__note">When all domains are low, stabilize here first to rebuild a functional baseline.</p>
+        </aside>
       `;
     }
-    
-    html += '<p>Reminder: this was a broad scan. Aim for the weakest link first, then iterate.</p>';
+
+    html +=
+      '<p class="coaching-profile-reminder">Reminder: this was a broad scan. Aim for the weakest link first, then iterate.</p>';
     html += '</div>';
 
     // Full ratings disclosure (collapsed)

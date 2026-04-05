@@ -2982,6 +2982,132 @@ figure.headline-book a {
     box-shadow: 0 0 20px var(--glow-accent);
 }
 
+.needs-dep-loop-card--featured {
+    border-left: 4px solid var(--brand);
+    background: var(--brand-panel);
+}
+
+.needs-dep-primary-heading {
+    margin-top: 0;
+}
+
+.needs-dep-loop-header {
+    margin-bottom: 0.75rem;
+}
+
+.needs-dep-loop-title {
+    margin: 0;
+    color: var(--brand);
+}
+
+.needs-dep-confidence-badge {
+    display: inline-block;
+    font-size: 0.85rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+    background: var(--glass);
+}
+
+.needs-dep-vice-note {
+    margin: 0 0 1rem;
+    line-height: 1.55;
+    font-size: 0.95rem;
+}
+
+.needs-dep-loop-details {
+    margin-top: 0.25rem;
+}
+
+.needs-dep-primary-summary {
+    background: var(--brand-panel);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0;
+}
+
+.needs-dep-primary-summary__text {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.needs-dep-primary-summary__link {
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.needs-dep-secondary-details {
+    margin-top: 0;
+}
+
+.secondary-loops-section.needs-dep-secondary-wrap {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.needs-dep-secondary-wrap .needs-dep-secondary-intro {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.needs-dep-secondary-signals {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.needs-dep-secondary-row {
+    margin-bottom: 0.55rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+    background: var(--glass);
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+.needs-dep-secondary-row:last-child {
+    margin-bottom: 0;
+}
+
+.needs-dep-secondary-row__name {
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.needs-dep-secondary-row--tier-2 {
+    border-left-color: var(--accent);
+}
+
+.needs-dep-secondary-row--tier-3 {
+    border-left-color: var(--brand);
+    padding: 0.6rem 0.8rem;
+    background: rgba(128, 128, 128, 0.04);
+}
+
+.needs-dep-secondary-row--tier-4 {
+    border-left-color: var(--muted);
+    padding: 0.55rem 0.75rem;
+    background: rgba(128, 128, 128, 0.06);
+}
+
+.needs-dep-secondary-row--tier-5 {
+    border-left-color: var(--border-subtle);
+    border-left-width: 3px;
+    padding: 0.5rem 0.7rem;
+    background: rgba(128, 128, 128, 0.08);
+    font-size: 0.92rem;
+}
+
 .loop-strength {
     color: var(--accent);
     font-weight: 600;
@@ -5510,6 +5636,483 @@ img {
 .category-group-content {
     padding: 1rem;
     background: var(--glass);
+}
+
+/* Pathology assessment results: hierarchy + ranked secondary signals */
+.diagnosis-results-heading {
+    margin-bottom: 1rem;
+}
+
+.diagnosis-primary-summary {
+    background: var(--brand-panel);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.diagnosis-primary-summary__text {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--text, inherit);
+}
+
+.diagnosis-primary-summary__link {
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.diagnosis-primary-summary__none {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+details.category-group--diagnosis {
+    margin-bottom: 1.5rem;
+}
+
+details.category-group--diagnosis > summary.category-group-header--diagnosis {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+details.category-group--diagnosis > summary.category-group-header--diagnosis::-webkit-details-marker {
+    display: none;
+}
+
+details.category-group--diagnosis .category-group-header__title {
+    flex: 1;
+    text-align: left;
+}
+
+details.category-group--diagnosis .category-group-header__chev {
+    float: none;
+    font-size: 0.85rem;
+    opacity: 0.85;
+    transition: transform 0.2s ease;
+}
+
+details.category-group--diagnosis[open] .category-group-header__chev {
+    transform: rotate(-180deg);
+}
+
+.category-group-content--diagnosis {
+    padding: 1rem 1rem 1.25rem;
+}
+
+.pattern-card--primary {
+    margin-bottom: 1.25rem;
+    padding: 1.25rem 1.35rem;
+    background: var(--brand-panel);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--brand);
+}
+
+.pattern-card__title {
+    margin: 0 0 0.75rem;
+    line-height: 1.35;
+}
+
+.pattern-card__label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+}
+
+.pattern-card__disorder {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.pattern-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.pattern-card__score {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    margin-left: auto;
+}
+
+.alignment-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    line-height: 1.3;
+    border: 1px solid var(--border-subtle);
+}
+
+.alignment-badge--high {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+    border-color: rgba(40, 167, 69, 0.35);
+}
+
+.alignment-badge--med {
+    background: rgba(0, 123, 255, 0.12);
+    color: var(--brand);
+    border-color: rgba(0, 123, 255, 0.28);
+}
+
+.alignment-badge--low {
+    background: rgba(128, 128, 128, 0.12);
+    color: var(--muted);
+}
+
+.pattern-score-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(128, 128, 128, 0.2);
+    overflow: hidden;
+}
+
+.pattern-score-bar--compact {
+    height: 4px;
+    margin-top: 0.35rem;
+}
+
+.pattern-score-bar__fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    min-width: 2px;
+}
+
+.pattern-signals-intro {
+    margin: 0 0 0.65rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.pattern-signals {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pattern-row {
+    margin-bottom: 0.65rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+    background: var(--glass);
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+.pattern-row:last-child {
+    margin-bottom: 0;
+}
+
+.pattern-row__main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.65rem;
+}
+
+.pattern-row__name {
+    font-weight: 600;
+    flex: 1 1 12rem;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+.pattern-row__score {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.pattern-row--tier-1 {
+    border-left-color: var(--accent);
+}
+
+.pattern-row--tier-2 {
+    border-left-color: var(--brand);
+    padding: 0.68rem 0.85rem;
+    background: rgba(128, 128, 128, 0.04);
+}
+
+.pattern-row--tier-3 {
+    border-left-color: var(--muted);
+    padding: 0.62rem 0.8rem;
+    background: rgba(128, 128, 128, 0.06);
+}
+
+.pattern-row--tier-4 {
+    border-left-color: var(--border-subtle);
+    border-left-width: 3px;
+    padding: 0.55rem 0.75rem;
+    background: rgba(128, 128, 128, 0.08);
+}
+
+.pattern-row--tier-5 {
+    border-left-color: var(--border-subtle);
+    border-left-width: 2px;
+    padding: 0.5rem 0.7rem;
+    background: rgba(128, 128, 128, 0.1);
+    font-size: 0.92rem;
+}
+
+/* Life Domain Review — coaching profile (ranked domains, single micro-step CTA) */
+.coaching-profile-summary .coaching-impact-heading {
+    margin-top: 0;
+    color: var(--brand);
+}
+
+.coaching-impact-lead {
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+}
+
+.coaching-primary-focus {
+    background: var(--brand-panel);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.coaching-primary-focus__text {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.coaching-primary-focus__link {
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.coaching-domains-heading {
+    margin: 0 0 0.5rem;
+    color: var(--brand);
+}
+
+.coaching-domains-intro {
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+}
+
+.coaching-aspects-label {
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 0.35rem;
+}
+
+.coaching-aspects-label::after {
+    content: ':';
+    font-weight: 700;
+}
+
+.coaching-domain-card {
+    margin-bottom: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+    background: var(--glass);
+}
+
+.coaching-domain-card--featured {
+    margin-bottom: 1.15rem;
+    padding: 1.25rem 1.35rem;
+    background: var(--brand-panel);
+    border-left: 4px solid var(--brand);
+}
+
+.coaching-domain-card__meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+}
+
+.coaching-domain-card__rank {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    background: var(--brand);
+    color: #fff;
+}
+
+.coaching-domain-card__title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand);
+    line-height: 1.35;
+    flex: 1;
+    min-width: 0;
+}
+
+.coaching-domain-card__aspects {
+    margin: 0;
+    line-height: 1.55;
+    font-size: 0.95rem;
+}
+
+.coaching-domain-signals-intro {
+    margin: 0 0 0.6rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.coaching-domain-signals {
+    list-style: none;
+    margin: 0 0 1.15rem;
+    padding: 0;
+}
+
+.coaching-domain-row {
+    margin-bottom: 0.65rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-subtle);
+    background: var(--glass);
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+.coaching-domain-row:last-child {
+    margin-bottom: 0;
+}
+
+.coaching-domain-row__main {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+}
+
+.coaching-domain-row__rank {
+    flex-shrink: 0;
+    min-width: 1.65rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.coaching-domain-row__name {
+    font-weight: 600;
+    line-height: 1.4;
+    flex: 1;
+    min-width: 0;
+}
+
+.coaching-domain-row__aspects {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+.coaching-domain-row--tier-2 {
+    border-left-color: var(--accent);
+}
+
+.coaching-domain-row--tier-3 {
+    border-left-color: var(--brand);
+    padding: 0.68rem 0.85rem;
+    background: rgba(128, 128, 128, 0.04);
+}
+
+.coaching-domain-row--tier-4 {
+    border-left-color: var(--muted);
+    padding: 0.62rem 0.8rem;
+    background: rgba(128, 128, 128, 0.06);
+}
+
+.coaching-domain-row--tier-5 {
+    border-left-color: var(--border-subtle);
+    border-left-width: 3px;
+    padding: 0.55rem 0.75rem;
+    background: rgba(128, 128, 128, 0.08);
+    font-size: 0.92rem;
+}
+
+.coaching-micro-step {
+    margin: 0 0 1.25rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--accent);
+    background: rgba(128, 128, 128, 0.06);
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+
+.coaching-stabilizing-card {
+    margin: 1.25rem 0;
+    padding: 1rem 1.15rem;
+    border-radius: var(--radius);
+    border: 1px dashed var(--border-subtle);
+    background: rgba(128, 128, 128, 0.05);
+}
+
+.coaching-stabilizing-card__title {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+}
+
+.coaching-stabilizing-card__name {
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+    color: var(--brand);
+    font-size: 1rem;
+}
+
+.coaching-stabilizing-card__note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.coaching-profile-reminder {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.55;
 }
 
 .reflection-section {

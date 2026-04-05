@@ -1657,11 +1657,10 @@ export class DiagnosisEngine {
       
       const vector = this.analysisData.conclusionVector;
       const primaryPattern = vector.primaryPatternMatch;
-      const treatmentData = TREATMENT_DATABASE?.[primaryPattern] || null;
     
     // Show validation consistency
     const validationDisplay = this.analysisData.validationConsistency 
-      ? `<div style="background: ${this.analysisData.validationConsistency === 'high' ? 'rgba(40, 167, 69, 0.1)' : this.analysisData.validationConsistency === 'moderate' ? 'rgba(255, 184, 0, 0.1)' : 'rgba(211, 47, 47, 0.1)'}; border-left: 4px solid ${this.analysisData.validationConsistency === 'high' ? '#28a745' : this.analysisData.validationConsistency === 'moderate' ? '#ffc107' : '#d32f2f'}; border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
+      ? `<div id="diagnosis-response-consistency" style="background: ${this.analysisData.validationConsistency === 'high' ? 'rgba(40, 167, 69, 0.1)' : this.analysisData.validationConsistency === 'moderate' ? 'rgba(255, 184, 0, 0.1)' : 'rgba(211, 47, 47, 0.1)'}; border-left: 4px solid ${this.analysisData.validationConsistency === 'high' ? '#28a745' : this.analysisData.validationConsistency === 'moderate' ? '#ffc107' : '#d32f2f'}; border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
           <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);">
             <strong style="color: ${this.analysisData.validationConsistency === 'high' ? '#28a745' : this.analysisData.validationConsistency === 'moderate' ? '#ffc107' : '#d32f2f'};">
               Response Consistency:</strong> ${this.analysisData.validationConsistency.charAt(0).toUpperCase() + this.analysisData.validationConsistency.slice(1)}
@@ -1676,6 +1675,18 @@ export class DiagnosisEngine {
     html += `<div style="background: rgba(0, 123, 255, 0.1); border-left: 3px solid var(--brand); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
       <p style="margin: 0; font-size: 0.85rem; line-height: 1.6; color: var(--muted);">
         <strong style="color: var(--brand);">Scale Translation:</strong> Likert scores (0-10) are translated into DSM-relevant salience bands: 0-3 = Absent, 4-6 = Subthreshold, 7-10 = Clinically Salient. This protects methodological integrity.
+      </p>
+    </div>`;
+
+    const primaryCategoryName = primaryPattern ? this.getCategoryForDisorder(primaryPattern) : null;
+    const primaryCategorySlug = primaryCategoryName ? this.slugDiagnosisCategory(primaryCategoryName) : '';
+
+    html += `<div class="diagnosis-primary-summary" role="region" aria-label="Primary assessment outcome">
+      <p class="diagnosis-primary-summary__text">
+        <strong>Primary pattern:</strong>
+        ${primaryPattern
+          ? `<a class="diagnosis-primary-summary__link" href="#diagnosis-category-${primaryCategorySlug}">${SecurityUtils.sanitizeHTML(primaryPattern)}</a>`
+          : '<span class="diagnosis-primary-summary__none">No single primary pattern was identified.</span>'}
       </p>
     </div>`;
     
@@ -1707,39 +1718,57 @@ export class DiagnosisEngine {
       });
     });
     
-    html += '<h3 style="margin-bottom: 1rem;">Pathology Assessment Results by Category</h3>';
+    html += '<h3 class="diagnosis-results-heading">Pathology Assessment Results by Category</h3>';
     
     Object.keys(categoryGroups).forEach(categoryName => {
-      html += `<div class="category-group">`;
-      html += `<div class="category-group-header" onclick="this.nextElementSibling.classList.toggle('hidden')">`;
-      html += `${categoryName} <span>▼</span>`;
-      html += `</div>`;
-      html += `<div class="category-group-content hidden">`;
-      
-      categoryGroups[categoryName].forEach(pattern => {
-        const isPrimary = pattern.isPrimary;
-        const alignmentColor = pattern.alignmentBand === 'High alignment'
-          ? 'var(--accent)'
-          : pattern.alignmentBand === 'Moderate alignment'
-            ? 'var(--brand)'
-            : 'var(--muted)';
+      const slug = this.slugDiagnosisCategory(categoryName);
+      const patterns = categoryGroups[categoryName];
+      const primaryInCat = patterns.find(p => p.isPrimary) || null;
+      const secondaries = patterns.filter(p => !p.isPrimary).sort((a, b) => b.alignment - a.alignment);
+      const isPrimaryCategoryOpen = primaryCategoryName && categoryName === primaryCategoryName;
+
+      html += `<details class="category-group category-group--diagnosis" id="diagnosis-category-${slug}"${isPrimaryCategoryOpen ? ' open' : ''}>`;
+      html += `<summary class="category-group-header category-group-header--diagnosis"><span class="category-group-header__title">${SecurityUtils.sanitizeHTML(categoryName)}</span> <span class="category-group-header__chev" aria-hidden="true">▼</span></summary>`;
+      html += `<div class="category-group-content category-group-content--diagnosis">`;
+
+      if (primaryInCat) {
+        const bandClass = this.alignmentBandBadgeClass(primaryInCat.alignmentBand);
+        const pct = Math.round(primaryInCat.alignment * 100);
         html += `
-          <div style="margin-bottom: ${isPrimary ? '1.5rem' : '1rem'}; padding: ${isPrimary ? '1.5rem' : '1rem'}; background: ${isPrimary ? 'var(--brand-panel)' : 'var(--glass)'}; border-radius: var(--radius); border-left: 4px solid ${isPrimary ? 'var(--brand)' : 'var(--accent)'};">
-            <h4 style="color: ${isPrimary ? 'var(--brand)' : 'var(--accent)'}; margin-bottom: 0.75rem;">
-              ${isPrimary ? '🎯 Primary Pattern Match:' : 'Secondary Pattern Match:'} ${pattern.disorder}
+          <article class="pattern-card pattern-card--primary"${this.analysisData.validationConsistency === 'low' ? ' aria-describedby="diagnosis-response-consistency"' : ''}>
+            <h4 class="pattern-card__title">
+              <span class="pattern-card__label">Primary pattern match</span>
+              <span class="pattern-card__disorder">${SecurityUtils.sanitizeHTML(primaryInCat.disorder)}</span>
             </h4>
-            <div style="margin-bottom: 0.5rem;">
-              <strong>Alignment Band:</strong> <span style="color: ${alignmentColor};">${pattern.alignmentBand}</span>
+            <div class="pattern-card__meta">
+              <span class="alignment-badge ${bandClass}">${SecurityUtils.sanitizeHTML(primaryInCat.alignmentBand)}</span>
+              <span class="pattern-card__score" aria-label="Raw alignment score ${pct} percent">${pct}%</span>
             </div>
-            <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">
-              Raw alignment score: ${Math.round(pattern.alignment * 100)}% 
-              ${this.analysisData.validationConsistency === 'low' ? '<span style="color: var(--accent);">(Low confidence due to response inconsistency)</span>' : ''}
-            </p>
-          </div>
-        `;
-      });
-      
-      html += `</div></div>`;
+            <div class="pattern-score-bar" role="presentation" aria-hidden="true"><span class="pattern-score-bar__fill" style="width: ${pct}%;"></span></div>
+          </article>`;
+      }
+
+      if (secondaries.length > 0) {
+        html += `<p class="pattern-signals-intro"><strong>Other pattern signals in this category</strong></p>`;
+        html += `<ul class="pattern-signals"${this.analysisData.validationConsistency === 'low' ? ' aria-describedby="diagnosis-response-consistency"' : ''}>`;
+        secondaries.forEach((pattern, idx) => {
+          const rankTier = Math.min(idx + 1, 5);
+          const bandClass = this.alignmentBandBadgeClass(pattern.alignmentBand);
+          const pct = Math.round(pattern.alignment * 100);
+          html += `
+            <li class="pattern-row pattern-row--tier-${rankTier}">
+              <div class="pattern-row__main">
+                <span class="pattern-row__name">${SecurityUtils.sanitizeHTML(pattern.disorder)}</span>
+                <span class="alignment-badge ${bandClass}">${SecurityUtils.sanitizeHTML(pattern.alignmentBand)}</span>
+                <span class="pattern-row__score">${pct}%</span>
+              </div>
+              <div class="pattern-score-bar pattern-score-bar--compact" role="presentation" aria-hidden="true"><span class="pattern-score-bar__fill" style="width: ${pct}%;"></span></div>
+            </li>`;
+        });
+        html += `</ul>`;
+      }
+
+      html += `</div></details>`;
     });
     
     // Skip integration/treatment prompts (external references preferred)
@@ -1817,6 +1846,20 @@ export class DiagnosisEngine {
       }
     }
     return 'Other';
+  }
+
+  slugDiagnosisCategory(name) {
+    const s = String(name || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    return s || 'category';
+  }
+
+  alignmentBandBadgeClass(band) {
+    if (band === 'High alignment') return 'alignment-badge--high';
+    if (band === 'Moderate alignment') return 'alignment-badge--med';
+    return 'alignment-badge--low';
   }
   
   showFullDetails(disorderName) {

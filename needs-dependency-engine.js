@@ -1392,12 +1392,19 @@ export class NeedsDependencyEngine {
 
       // Primary Loop
       if (this.analysisData.primaryLoop) {
+        const primaryName = this.analysisData.primaryLoop;
+        html += `<div class="needs-dep-primary-summary" role="region" aria-label="Primary loop outcome">
+          <p class="needs-dep-primary-summary__text">
+            <strong>Primary loop:</strong>
+            <a class="needs-dep-primary-summary__link" href="#needs-dep-primary-loop">${SecurityUtils.sanitizeHTML(primaryName)}</a>
+          </p>
+        </div>`;
         html += this.renderPrimaryLoop();
       }
 
       // Secondary Loops — wrapped in collapsible
       if (this.analysisData.secondaryLoops && this.analysisData.secondaryLoops.length > 0) {
-        html += `<details class="closure-section"><summary><strong>Secondary patterns detected</strong></summary><div class="closure-content">${this.renderSecondaryLoops()}</div></details>`;
+        html += `<details class="closure-section needs-dep-secondary-details"><summary><strong>Secondary patterns detected</strong></summary><div class="closure-content">${this.renderSecondaryLoops()}</div></details>`;
       }
 
       // Need Chain
@@ -1441,9 +1448,6 @@ export class NeedsDependencyEngine {
     const tiltWhy = isCompulsive
       ? 'seeking immediate relief or reassurance to quiet the pattern'
       : 'withdrawing or delaying to reduce felt pressure in the moment';
-    const tiltNote = isCompulsive
-      ? 'Your pattern leans toward <strong>seeking</strong> — you tend to pursue the need externally, often urgently, which can deplete others or create dependency cycles.'
-      : 'Your pattern leans toward <strong>avoiding</strong> — you tend to withdraw from the need, which can delay resolution and build internal pressure over time.';
     const chainDepth = scores?.needChainDepth || 0;
 
     // Historical pattern depth from Phase 2
@@ -1456,31 +1460,36 @@ export class NeedsDependencyEngine {
           ? 'This pattern may be more <strong>situational than structural</strong> — it may resolve with changed circumstances.'
           : '';
 
+    const patternType = this.analysisData.phase3Results?.isDependencyLoop;
+    const hasPhase3Framing = patternType === true || patternType === false;
+    const depthNoteInDetails = !hasPhase3Framing && depthNote ? `<p>${depthNote}</p>` : '';
+    const rootDepthInDetails =
+      chainDepth > 0
+        ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>`
+        : '';
+
     // Vice profile from Phase 1
     const viceProfile = this.analysisData.phase1Results?.viceProfile || [];
     const uniqueVices = [...new Set(viceProfile)];
     const viceNote = uniqueVices.length > 0
-      ? `<p><strong>Emotional signatures:</strong> ${uniqueVices.map(v => SecurityUtils.sanitizeHTML(v)).join(', ')} — consistent with how the ${SecurityUtils.sanitizeHTML(loop)} loop commonly presents.</p>`
+      ? `<p class="needs-dep-vice-note"><strong>Emotional signatures:</strong> ${uniqueVices.map(v => SecurityUtils.sanitizeHTML(v)).join(', ')} — consistent with how the ${SecurityUtils.sanitizeHTML(loop)} loop commonly presents.</p>`
       : '';
 
     return `
-      <div class="primary-loop-section">
-        <h2>Primary Dependency Loop Identified</h2>
-        <div class="loop-card primary">
-          <div class="loop-header">
-            <h3>${SecurityUtils.sanitizeHTML(loop)} Loop</h3>
-            <span class="loop-strength">Confidence: ${scores?.totalScore?.toFixed(1) || 'N/A'}/10</span>
+      <div class="primary-loop-section" id="needs-dep-primary-loop">
+        <h2 class="needs-dep-primary-heading">Primary Dependency Loop Identified</h2>
+        <div class="loop-card primary needs-dep-loop-card--featured">
+          <div class="loop-header needs-dep-loop-header">
+            <h3 class="needs-dep-loop-title">${SecurityUtils.sanitizeHTML(loop)} Loop</h3>
+            <span class="loop-strength needs-dep-confidence-badge">Confidence: ${scores?.totalScore?.toFixed(1) || 'N/A'}/10</span>
           </div>
-          <p class="loop-description">Based on your responses, the ${SecurityUtils.sanitizeHTML(loop)} dependency loop shows the strongest alignment with your patterns.</p>
-          <p><strong>Sourcing tilt:</strong> ${tilt} — ${tiltWhy}.</p>
           ${viceNote}
-          ${depthNote ? `<p>${depthNote}</p>` : ''}
-          ${chainDepth > 0 ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>` : ''}
-          <details class="closure-section">
+          <details class="closure-section needs-dep-loop-details">
             <summary><strong>How this loop works</strong></summary>
             <div class="closure-content">
               <p><strong>How the loop functions:</strong> When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to ${tilt}, ${tiltWhy}.</p>
-              <p>${tiltNote}</p>
+              ${depthNoteInDetails}
+              ${rootDepthInDetails}
               <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
               <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
             </div>
@@ -1496,16 +1505,16 @@ export class NeedsDependencyEngine {
     if (secondaryLoops.length === 0) return '';
     
     return `
-      <div class="secondary-loops-section">
-        <h2>Secondary Patterns</h2>
-        <div class="loops-grid">
-          ${secondaryLoops.map(loop => `
-            <div class="loop-card">
-              <h3>${loop} Loop</h3>
-              <p>Additional pattern showing weaker signals</p>
-            </div>
-          `).join('')}
-        </div>
+      <div class="secondary-loops-section needs-dep-secondary-wrap">
+        <p class="needs-dep-secondary-intro"><strong>Weaker pattern signals</strong> — these loops showed lower alignment than your primary.</p>
+        <ul class="needs-dep-secondary-signals" role="list">
+          ${secondaryLoops
+            .map((loop, idx) => {
+              const tier = Math.min(idx + 2, 5);
+              return `<li class="needs-dep-secondary-row needs-dep-secondary-row--tier-${tier}"><span class="needs-dep-secondary-row__name">${SecurityUtils.sanitizeHTML(String(loop))} Loop</span></li>`;
+            })
+            .join('')}
+        </ul>
       </div>
     `;
   }
