@@ -1488,8 +1488,8 @@ export class NeedsDependencyEngine {
             <div class="closure-content">
               <p><strong>How the loop functions:</strong> ${howLoopFunctionsBody}</p>
               ${depthNoteInDetails}
-              <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
-              <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
+              <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place. The cost is the perpetual recurrence of the resourcing or aversion behaviour—undermining free will and self-control, perpetuating frustrating, antagonising, and draining or depleting dynamics, and ultimately exacerbating suffering.</p>
+              <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met, so it does not matter how many times the need is resourced: it is only ever temporarily satisfied because it is just the symptom of a deeper need that remains hidden and unaddressed.</p>
             </div>
           </details>
         </div>
