@@ -1047,20 +1047,37 @@ details.category-group--diagnosis[open] .category-group-header__chev { display: 
 @media (prefers-color-scheme: dark) {
   .coaching-profile-reminder { color: #aaa; }
 }
-.needs-dep-primary-summary {
-  margin: 0 0 1rem;
-  padding: 0.85rem 1rem;
+.needs-dep-primary-heading { margin-top: 0; }
+.needs-dep-sourcing-highlight {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.9rem;
   border-radius: 6px;
   border: 1px solid #ddd;
-  border-left: 4px solid #0b57d0;
-  background: #f0f6ff;
+  border-left-width: 4px;
+  border-left-style: solid;
 }
+.needs-dep-sourcing-highlight--avoidant { border-left-color: #0b57d0; background: #eef5ff; }
+.needs-dep-sourcing-highlight--compulsive { border-left-color: #c62828; background: #fcefef; }
 @media (prefers-color-scheme: dark) {
-  .needs-dep-primary-summary { border-color: #444; border-left-color: #8ab4f8; background: #1a2740; }
+  .needs-dep-sourcing-highlight { border-color: #444; }
+  .needs-dep-sourcing-highlight--avoidant { border-left-color: #8ab4f8; background: #1a2740; }
+  .needs-dep-sourcing-highlight--compulsive { border-left-color: #ef9a9a; background: #2a1f1f; }
 }
-.needs-dep-primary-summary__text { margin: 0; line-height: 1.5; }
-.needs-dep-primary-summary__link { font-weight: 600; }
-.needs-dep-primary-heading { margin-top: 0; }
+.needs-dep-sourcing-label { display: block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #666; margin-bottom: 0.3rem; }
+@media (prefers-color-scheme: dark) {
+  .needs-dep-sourcing-label { color: #999; }
+}
+.needs-dep-sourcing-title { display: block; font-size: 1rem; font-weight: 800; line-height: 1.25; }
+.needs-dep-sourcing-highlight--avoidant .needs-dep-sourcing-title { color: #0b57d0; }
+.needs-dep-sourcing-highlight--compulsive .needs-dep-sourcing-title { color: #c62828; }
+@media (prefers-color-scheme: dark) {
+  .needs-dep-sourcing-highlight--avoidant .needs-dep-sourcing-title { color: #8ab4f8; }
+  .needs-dep-sourcing-highlight--compulsive .needs-dep-sourcing-title { color: #ef9a9a; }
+}
+.needs-dep-sourcing-desc { margin: 0.4rem 0 0; font-size: 0.88rem; line-height: 1.45; color: #555; }
+@media (prefers-color-scheme: dark) {
+  .needs-dep-sourcing-desc { color: #aaa; }
+}
 .needs-dep-loop-card--featured {
   border-left: 4px solid #0b57d0;
   background: #f8fbff;

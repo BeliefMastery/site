@@ -1392,13 +1392,6 @@ export class NeedsDependencyEngine {
 
       // Primary Loop
       if (this.analysisData.primaryLoop) {
-        const primaryName = this.analysisData.primaryLoop;
-        html += `<div class="needs-dep-primary-summary" role="region" aria-label="Primary loop outcome">
-          <p class="needs-dep-primary-summary__text">
-            <strong>Primary loop:</strong>
-            <a class="needs-dep-primary-summary__link" href="#needs-dep-primary-loop">${SecurityUtils.sanitizeHTML(primaryName)}</a>
-          </p>
-        </div>`;
         html += this.renderPrimaryLoop();
       }
 
@@ -1448,7 +1441,7 @@ export class NeedsDependencyEngine {
     const tiltWhy = isCompulsive
       ? 'seeking immediate relief or reassurance to quiet the pattern'
       : 'withdrawing or delaying to reduce felt pressure in the moment';
-    const chainDepth = scores?.needChainDepth || 0;
+    const tiltDisplay = isCompulsive ? 'Compulsive resourcing' : 'Avoidant patterning';
 
     // Historical pattern depth from Phase 2
     const historicalScore = scores?.historicalPatternScore || 0;
@@ -1463,10 +1456,7 @@ export class NeedsDependencyEngine {
     const patternType = this.analysisData.phase3Results?.isDependencyLoop;
     const hasPhase3Framing = patternType === true || patternType === false;
     const depthNoteInDetails = !hasPhase3Framing && depthNote ? `<p>${depthNote}</p>` : '';
-    const rootDepthInDetails =
-      chainDepth > 0
-        ? `<p><strong>Root depth signal:</strong> Your chain mapped ${chainDepth} level${chainDepth === 1 ? '' : 's'} deep, indicating a deeper root than the surface symptom.</p>`
-        : '';
+    const sourcingMod = isCompulsive ? 'compulsive' : 'avoidant';
 
     // Vice profile from Phase 1
     const viceProfile = this.analysisData.phase1Results?.viceProfile || [];
@@ -1477,11 +1467,16 @@ export class NeedsDependencyEngine {
 
     return `
       <div class="primary-loop-section" id="needs-dep-primary-loop">
-        <h2 class="needs-dep-primary-heading">Primary Dependency Loop Identified</h2>
+        <h2 class="needs-dep-primary-heading">Primary Dependency Loop</h2>
         <div class="loop-card primary needs-dep-loop-card--featured">
           <div class="loop-header needs-dep-loop-header">
             <h3 class="needs-dep-loop-title">${SecurityUtils.sanitizeHTML(loop)} Loop</h3>
             <span class="loop-strength needs-dep-confidence-badge">Confidence: ${scores?.totalScore?.toFixed(1) || 'N/A'}/10</span>
+          </div>
+          <div class="needs-dep-sourcing-highlight needs-dep-sourcing-highlight--${sourcingMod}" role="group" aria-label="Sourcing pattern">
+            <span class="needs-dep-sourcing-label">Sourcing pattern</span>
+            <span class="needs-dep-sourcing-title">${tiltDisplay}</span>
+            <p class="needs-dep-sourcing-desc">${tiltWhy.charAt(0).toUpperCase() + tiltWhy.slice(1)}.</p>
           </div>
           ${viceNote}
           <details class="closure-section needs-dep-loop-details">
@@ -1489,7 +1484,6 @@ export class NeedsDependencyEngine {
             <div class="closure-content">
               <p><strong>How the loop functions:</strong> When the surface need for ${SecurityUtils.sanitizeHTML(surfaceNeed)} feels unmet, the system defaults to ${tilt}, ${tiltWhy}.</p>
               ${depthNoteInDetails}
-              ${rootDepthInDetails}
               <p><strong>What it costs:</strong> The loop temporarily manages the surface need, but it does so without resolving the deeper need that created the pressure in the first place.</p>
               <p><strong>Why it persists:</strong> The immediate relief reinforces the pattern while the root need remains under-met.</p>
             </div>
