@@ -1,5 +1,5 @@
 /**
- * Site-wide theme (layered CSS variants + optional full alternate) and font scale.
+ * Site-wide theme (base style.css + optional layered variant) and font scale.
  * Expects <link rel="stylesheet" href="…/style.css" id="bm-theme-base"> in <head>.
  * Resolves paths against document.baseURI so <base href> deployments work.
  */
@@ -13,8 +13,7 @@
     cosmic: { type: 'layered', file: null },
     light: { type: 'layered', file: 'style/light.css' },
     forge: { type: 'layered', file: 'style/forge.css' },
-    neomorphism: { type: 'layered', file: 'style/neomorphism.css' },
-    ember: { type: 'full', file: 'style/stylered.css' }
+    neomorphism: { type: 'layered', file: 'style/neomorphism.css' }
   };
 
   var FONT_STEPS = [
@@ -37,11 +36,6 @@
   function siteRootUrl() {
     var u = styleCssUrl();
     if (!u) return null;
-    var path = u.pathname;
-    /* Ember uses base href .../style/stylered.css — dirname is .../style/, not site root */
-    if (/\/style\/[^/?#]+\.css$/i.test(path) && !/\/style\.css$/i.test(path)) {
-      return new URL('../..', u);
-    }
     return new URL('.', u);
   }
 
@@ -73,7 +67,10 @@
 
   function applyTheme(themeKey) {
     var spec = THEMES[themeKey];
-    if (!spec) themeKey = 'cosmic';
+    if (!spec) {
+      themeKey = 'cosmic';
+      spec = THEMES.cosmic;
+    }
 
     var base = getBaseLink();
     var root = siteRootUrl();
@@ -91,12 +88,6 @@
       return;
     }
 
-    if (spec.type === 'full') {
-      removeVariantLink();
-      base.href = new URL(spec.file, root).href;
-      return;
-    }
-
     base.href = new URL('style.css', root).href;
     var v = ensureVariantLink();
     if (v) v.href = new URL(spec.file, root).href;
@@ -104,7 +95,8 @@
 
   function readStoredTheme() {
     try {
-      return localStorage.getItem(STORAGE_THEME) || 'cosmic';
+      var t = localStorage.getItem(STORAGE_THEME) || 'cosmic';
+      return THEMES[t] ? t : 'cosmic';
     } catch (e) {
       return 'cosmic';
     }
@@ -141,8 +133,7 @@
       { value: 'cosmic', label: 'Cosmic (default)' },
       { value: 'light', label: 'Light v2' },
       { value: 'forge', label: 'Matrix Forge v2' },
-      { value: 'neomorphism', label: 'Neomorphism v2' },
-      { value: 'ember', label: 'Ember v2 (full stylesheet)' }
+      { value: 'neomorphism', label: 'Neomorphism v2' }
     ].forEach(function (opt) {
       var o = document.createElement('option');
       o.value = opt.value;
