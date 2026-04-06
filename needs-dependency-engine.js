@@ -510,14 +510,6 @@ export class NeedsDependencyEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
-    const resumeBtn = document.getElementById('resumeAssessment');
-    if (resumeBtn) {
-      resumeBtn.addEventListener('click', () => {
-        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
-        window.location.reload();
-      });
-    }
-    
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());

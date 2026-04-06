@@ -4,6 +4,13 @@ import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
 import { exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
+import {
+  scoreDimensionsFromAnswers,
+  acuitySlidersToVector,
+  blendQuestionnaireAndAcuity,
+  buildSortedMarketProjection,
+  pickDiverseTopRoles
+} from './outlier-aptitude-scoring.js';
 
 let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATION_PROMPTS, APTITUDE_ACUITY_DOMAINS;
 let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS, INDUSTRY_TO_SECTOR, QUALIFICATION_ORDER;
@@ -77,12 +84,6 @@ export class OutlierAptitudeEngine {
 
     const sampleBtn = document.getElementById('generateSampleReport');
     if (sampleBtn) sampleBtn.addEventListener('click', () => this.generateSampleReport());
-
-    const resumeBtn = document.getElementById('resumeAssessment');
-    if (resumeBtn) resumeBtn.addEventListener('click', () => this.loadStoredData());
-
-    const resetBtn = document.getElementById('clearCacheBtn');
-    if (resetBtn) resetBtn.addEventListener('click', () => this.resetAssessment());
 
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) abandonBtn.addEventListener('click', () => this.abandonAssessment());
@@ -452,59 +453,20 @@ export class OutlierAptitudeEngine {
   }
 
   scoreDimensions() {
-    const scores = {};
-    APTITUDE_DIMENSIONS.forEach(dim => { scores[dim.id] = 0; });
-    const totals = {};
-    APTITUDE_DIMENSIONS.forEach(dim => { totals[dim.id] = 0; });
-
-    APTITUDE_QUESTIONS.forEach(question => {
-      const answer = this.answers[question.id];
-      if (!answer) return;
-      Object.entries(question.weights || {}).forEach(([dimId, weight]) => {
-        scores[dimId] += answer * weight;
-        totals[dimId] += weight * 5;
-      });
-    });
-
-    const normalized = {};
-    Object.keys(scores).forEach(dimId => {
-      normalized[dimId] = totals[dimId] ? scores[dimId] / totals[dimId] : 0;
-    });
-    return normalized;
+    const dimensionIds = APTITUDE_DIMENSIONS.map(d => d.id);
+    return scoreDimensionsFromAnswers(this.answers, APTITUDE_QUESTIONS, dimensionIds);
   }
 
-  buildMarketProjection(dimensionScores) {
-    const early = this.earlyInputs || {};
-    const qualOrder = QUALIFICATION_ORDER || [];
-    const userQualIdx = qualOrder.indexOf(early.qualification);
-    const userIndustrySectors = new Set((early.industries || []).map(id => INDUSTRY_TO_SECTOR[id] || id));
-    const userArchetypes = new Set((early.archetypes || []).map(a => String(a).trim()));
-
-    return MARKET_PROJECTION_MATRIX.map(role => {
-      let rawFit = 0;
-      let weightSum = 0;
-      Object.entries(role.aptitudes || {}).forEach(([dimId, weight]) => {
-        rawFit += (dimensionScores[dimId] || 0) * weight;
-        weightSum += weight;
-      });
-      let fit = weightSum > 0 ? rawFit / weightSum : 0;
-
-      if (role.educationMin && early.qualification) {
-        const reqIdx = qualOrder.indexOf(role.educationMin);
-        if (reqIdx >= 0 && userQualIdx >= 0 && userQualIdx < reqIdx) {
-          const gap = reqIdx - userQualIdx;
-          fit *= Math.max(0.5, 1 - gap * 0.15);
-        }
+  buildMarketProjection(blendedDimensionScores) {
+    return buildSortedMarketProjection(
+      blendedDimensionScores,
+      MARKET_PROJECTION_MATRIX,
+      this.earlyInputs || {},
+      {
+        qualOrder: QUALIFICATION_ORDER || [],
+        industryToSector: INDUSTRY_TO_SECTOR || {}
       }
-      if (role.archetypeFit && userArchetypes.size) {
-        const matches = role.archetypeFit.filter(a => userArchetypes.has(a)).length;
-        if (matches) fit *= (1 + matches * 0.08);
-      }
-      if (role.sector && userIndustrySectors.has(role.sector)) {
-        fit *= 1.1;
-      }
-      return { ...role, fitScore: Math.min(1, fit) };
-    }).sort((a, b) => b.fitScore - a.fitScore);
+    );
   }
 
   formatSectorLabel(sector) {
@@ -512,22 +474,37 @@ export class OutlierAptitudeEngine {
     return labels[sector] || sector;
   }
 
+  humanizeMatchRationale(text) {
+    if (!text || !APTITUDE_DIMENSIONS?.length) return text;
+    let r = text;
+    const sorted = [...APTITUDE_DIMENSIONS].sort((a, b) => b.id.length - a.id.length);
+    sorted.forEach(dim => {
+      r = r.split(dim.id).join(dim.name);
+    });
+    return r;
+  }
+
   completeAssessment() {
-    let dimensionScores = this.scoreDimensions();
-    const acuityRank = this.deriveAcuityRankFromScores();
-    dimensionScores = this.applyAcuityWeighting(dimensionScores, acuityRank);
+    const dimensionIds = APTITUDE_DIMENSIONS.map(d => d.id);
+    const questionnaireScores = scoreDimensionsFromAnswers(this.answers, APTITUDE_QUESTIONS, dimensionIds);
+    const acuityVec = acuitySlidersToVector(this.acuityProfile?.scores || {});
+    const dimensionScores = blendQuestionnaireAndAcuity(questionnaireScores, acuityVec, dimensionIds, 0.28);
     const projection = this.buildMarketProjection(dimensionScores);
+    const projectionDisplay = pickDiverseTopRoles(projection, 7, 2);
     const sortedDims = APTITUDE_DIMENSIONS
       .map(dim => ({ ...dim, score: dimensionScores[dim.id] || 0 }))
       .sort((a, b) => b.score - a.score);
 
     this.analysisData = {
       timestamp: new Date().toISOString(),
+      scoringVersion: '2.0',
       earlyInputs: this.earlyInputs || this.getEmptyAnalysisData().earlyInputs,
       dimensionScores,
+      questionnaireScores,
       acuityProfile: { scores: this.acuityProfile?.scores || {}, ...this.deriveAcuityRankFromScores() },
       topDimensions: sortedDims.slice(0, 4),
       projection,
+      projectionDisplay,
       validationPrompts: VALIDATION_PROMPTS
     };
     this.reportComplete = true;
@@ -575,6 +552,9 @@ export class OutlierAptitudeEngine {
     const userArchetypes = new Set((early.archetypes || []).map(a => String(a).trim()));
     const topDims = (this.analysisData?.topDimensions || []).slice(0, 2).map(d => d.name);
     const parts = [];
+    if (role.matchRationale) {
+      parts.push(`Why this match: ${this.humanizeMatchRationale(role.matchRationale)}.`);
+    }
     if (topDims.length) {
       parts.push(`Aligns with your top aptitudes: ${topDims.join(' and ')}.`);
     }
@@ -597,7 +577,11 @@ export class OutlierAptitudeEngine {
   }
 
   getTopCareerFits(projection, max = 7) {
-    return (projection || []).slice(0, max);
+    const display = this.analysisData?.projectionDisplay;
+    if (Array.isArray(display) && display.length) {
+      return display.slice(0, max);
+    }
+    return pickDiverseTopRoles(projection || [], max, 2);
   }
 
   getRecommendedCourseOfAction() {
@@ -622,7 +606,7 @@ export class OutlierAptitudeEngine {
     resultsContainer.innerHTML = `
       <div class="panel panel-outline-accent">
         <h3 class="panel-title">Market Projection Matrix — Top Career Fits</h3>
-        <p class="form-help">Your most compelling career matches, ranked by aptitude, archetype, qualification, and industry alignment (max 7 across all domains).</p>
+        <p class="form-help">Your most compelling career matches (diverse shortlist: at most two roles per internal cluster, then by fit, automation resistance, and education reach). Full ranked list is included in JSON export.</p>
         <ol class="career-fit-ranked">
           ${this.getTopCareerFits(this.analysisData.projection, 7).map((role, i) => `
             <li class="career-fit-item">
@@ -704,11 +688,14 @@ export class OutlierAptitudeEngine {
   getEmptyAnalysisData() {
     return {
       timestamp: new Date().toISOString(),
+      scoringVersion: null,
       earlyInputs: { archetypes: [], ageRange: '', qualification: '', industries: [] },
       dimensionScores: {},
+      questionnaireScores: {},
       acuityProfile: { primary: '', secondary: '', tertiary: '', additional: [] },
       topDimensions: [],
       projection: [],
+      projectionDisplay: [],
       validationPrompts: []
     };
   }
@@ -777,41 +764,6 @@ export class OutlierAptitudeEngine {
     this.earlyInputs = { archetypes: [], ageRange: '', qualification: '', industries: [] };
     this.analysisData = this.getEmptyAnalysisData();
     this.ui.transition('idle');
-  }
-
-  applyAcuityWeighting(dimensionScores, acuityProfile) {
-    const weights = {
-      iq: { systems: 0.4, scientific: 0.4, diagnostics: 0.3, technical: 0.2 },
-      eq: { eq: 0.7, management: 0.3 },
-      sq: { systems: 0.4, diagnostics: 0.3, management: 0.2, scientific: 0.2 },
-      aq: { field: 0.4, organization: 0.3, learning: 0.2, management: 0.2 },
-      cq: { creativity: 0.6, systems: 0.3 },
-      tq: { technical: 0.6, diagnostics: 0.3 },
-      oq: { organization: 0.7, management: 0.2 },
-      lq: { learning: 0.7, scientific: 0.2 }
-    };
-    const boosts = {
-      primary: 0.12,
-      secondary: 0.08,
-      tertiary: 0.05,
-      additional: 0.03
-    };
-
-    const applyBoost = (domainId, boost) => {
-      const domainWeights = weights[domainId];
-      if (!domainWeights) return;
-      Object.entries(domainWeights).forEach(([dimId, weight]) => {
-        const current = dimensionScores[dimId] || 0;
-        const next = Math.min(1, current + boost * weight);
-        dimensionScores[dimId] = next;
-      });
-    };
-
-    if (acuityProfile?.primary) applyBoost(acuityProfile.primary, boosts.primary);
-    if (acuityProfile?.secondary) applyBoost(acuityProfile.secondary, boosts.secondary);
-    if (acuityProfile?.tertiary) applyBoost(acuityProfile.tertiary, boosts.tertiary);
-    (acuityProfile?.additional || []).forEach(id => applyBoost(id, boosts.additional));
-    return dimensionScores;
   }
 
   getAcuityLabel(id) {

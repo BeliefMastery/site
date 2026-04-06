@@ -7,7 +7,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
-import { showConfirm, showAlert } from './shared/confirm-modal.js';
+import { showConfirm } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
@@ -197,14 +197,6 @@ export class CoachingEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
-    const resumeBtn = document.getElementById('resumeAssessment');
-    if (resumeBtn) {
-      resumeBtn.addEventListener('click', () => {
-        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
-        window.location.reload();
-      });
-    }
-    
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -270,11 +262,6 @@ export class CoachingEngine {
       newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
     }
     
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    if (clearCacheBtn) {
-      clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
-    }
-
     const sampleBtn = document.getElementById('generateSampleReport');
     if (sampleBtn) {
       sampleBtn.addEventListener('click', () => this.generateSampleReport());
@@ -1445,14 +1432,6 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     } catch (error) {
       this.debugReporter.logError(error, 'loadStoredData');
       ErrorHandler.showUserError('Failed to load saved progress.');
-    }
-  }
-
-  async clearAllCachedData() {
-    if (await showConfirm('Are you sure you want to clear all cached data? This will clear all saved progress and you will need to start from the beginning.')) {
-      sessionStorage.removeItem('coachingProgress');
-      this.resetAssessment();
-      await showAlert('All cached data has been cleared.');
     }
   }
 

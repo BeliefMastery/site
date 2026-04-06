@@ -129,14 +129,6 @@ export class SovereigntySpectrumEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
-    const resumeBtn = document.getElementById('resumeAssessment');
-    if (resumeBtn) {
-      resumeBtn.addEventListener('click', () => {
-        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
-        window.location.reload();
-      });
-    }
-
     const nextBtn = document.getElementById('nextQuestion');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -175,26 +167,6 @@ export class SovereigntySpectrumEngine {
     const sampleBtn = document.getElementById('generateSampleReport');
     if (sampleBtn) {
       sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-
-    // Clear cache buttons (both in action section and during assessment)
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    const clearCacheBtnInAssessment = document.getElementById('clearCacheBtnInAssessment');
-    
-    const clearCache = async () => {
-      if (await showConfirm('Are you sure you want to clear all cached data? This will reset your progress.')) {
-        this.dataStore.clear('progress');
-        sessionStorage.removeItem('spectrum-assessment');
-        localStorage.removeItem('spectrum-assessment');
-        location.reload();
-      }
-    };
-    
-    if (clearCacheBtn) {
-      clearCacheBtn.addEventListener('click', clearCache);
-    }
-    if (clearCacheBtnInAssessment) {
-      clearCacheBtnInAssessment.addEventListener('click', clearCache);
     }
 
     const abandonBtn = document.getElementById('abandonAssessment');

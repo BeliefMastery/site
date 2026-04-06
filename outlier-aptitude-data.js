@@ -270,12 +270,12 @@ export const APTITUDE_QUESTIONS = [
   {
     id: 'q1',
     text: 'If someone watched how you work, they would say you notice how small changes ripple across a larger system.',
-    weights: { systems: 1, diagnostics: 0.5 }
+    weights: { systems: 0.85, diagnostics: 0.35 }
   },
   {
     id: 'q2',
     text: 'People close to your work would say you notice problems before they become obvious.',
-    weights: { diagnostics: 1, systems: 0.5 }
+    weights: { diagnostics: 0.9, systems: 0.35 }
   },
   {
     id: 'q3',
@@ -300,7 +300,7 @@ export const APTITUDE_QUESTIONS = [
   {
     id: 'q7',
     text: 'When a group is stuck, you are often the one who proposes a workable alternative.',
-    weights: { creativity: 1, systems: 0.3 }
+    weights: { creativity: 1, systems: 0.22 }
   },
   {
     id: 'q8',
@@ -320,12 +320,12 @@ export const APTITUDE_QUESTIONS = [
   {
     id: 'q11',
     text: 'When equipment breaks, you are usually the person asked to troubleshoot first.',
-    weights: { diagnostics: 0.7, technical: 0.6 }
+    weights: { diagnostics: 0.55, technical: 0.5 }
   },
   {
     id: 'q12',
     text: 'You tend to perform best in roles that blend hardware and software.',
-    weights: { technical: 0.8, systems: 0.6 }
+    weights: { technical: 0.72, systems: 0.42 }
   },
   {
     id: 'q13',
@@ -345,7 +345,7 @@ export const APTITUDE_QUESTIONS = [
   {
     id: 'q16',
     text: 'Colleagues often say you can break complex tasks into a clean workflow.',
-    weights: { organization: 0.8, systems: 0.5 }
+    weights: { organization: 0.8, systems: 0.38 }
   },
   {
     id: 'q17',
@@ -365,7 +365,7 @@ export const APTITUDE_QUESTIONS = [
   {
     id: 'q20',
     text: 'Even when tasks shift, you tend to keep the long‑term goal steady.',
-    weights: { management: 0.6, systems: 0.6 }
+    weights: { management: 0.6, systems: 0.42 }
   },
   {
     id: 'q21',

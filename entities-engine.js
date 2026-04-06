@@ -175,18 +175,6 @@ export class EntitiesEngine {
       startBtn.addEventListener('click', () => this.startAssessment());
     }
 
-    const resumeBtn = document.getElementById('resumeAssessment');
-    if (resumeBtn) {
-      resumeBtn.addEventListener('click', () => {
-        this.loadStoredData();
-      });
-    }
-
-    const resetBtn = document.getElementById('clearCacheBtn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => this.resetAssessment());
-    }
-
     const sampleBtn = document.getElementById('generateSampleReport');
     if (sampleBtn) {
       sampleBtn.addEventListener('click', () => this.generateSampleReport());

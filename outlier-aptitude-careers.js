@@ -17,7 +17,99 @@ const CLUSTER_PROFILES = {
 };
 
 function career(id, name, sector, educationMin, growth, autoLabel, autoScore, cluster, archetypeFit = []) {
-  return { id, name, sector, educationMin, growth, automationResistance: autoLabel, automationResistanceScore: autoScore, aptitudes: { ...CLUSTER_PROFILES[cluster] }, archetypeFit };
+  return {
+    id,
+    name,
+    sector,
+    educationMin,
+    growth,
+    automationResistance: autoLabel,
+    automationResistanceScore: autoScore,
+    aptitudes: { ...CLUSTER_PROFILES[cluster] },
+    archetypeFit,
+    clusterKey: cluster
+  };
+}
+
+/** Deterministic small spread so non–hand-tuned roles still rank distinctly within a cluster. */
+function stablePerturb(id, aptitudes) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = Math.imul(31, h) + id.charCodeAt(i) | 0;
+  const dims = Object.keys(aptitudes);
+  const out = { ...aptitudes };
+  for (let r = 0; r < 6; r++) {
+    const dim = dims[Math.abs(h + r * 7919) % dims.length];
+    const delta = ((Math.abs(h >> (r * 5)) % 9) - 4) * 0.012;
+    out[dim] = Math.min(1, Math.max(0, out[dim] + delta));
+  }
+  return out;
+}
+
+/** Sparse additive deltas on cluster baseline for tech & business (highest-volume clusters). */
+const MANUAL_APTITUDE_DELTAS = {
+  tech_001: { scientific: 0.1, quantitative: 0.12, learning: 0.05, creativity: 0.06 },
+  tech_002: { systems: 0.1, organization: 0.08, management: 0.12, field: -0.04 },
+  tech_003: { diagnostics: 0.12, critical_thinking: 0.1, technical: 0.05, eq: -0.05 },
+  tech_004: { organization: 0.1, technical: 0.08, systems: 0.05, creativity: -0.05 },
+  tech_005: { technical: 0.08, learning: 0.06, creativity: 0.05, management: -0.04 },
+  tech_006: { quantitative: 0.15, scientific: 0.1, systems: 0.05, management: -0.08 },
+  tech_007: { spatial: 0.12, creativity: 0.15, eq: 0.08, quantitative: -0.08 },
+  tech_008: { technical: 0.1, processing: 0.08, creativity: 0.05 },
+  tech_009: { mechanical: 0.15, spatial: 0.1, technical: 0.08, field: 0.06 },
+  tech_010: { field: 0.1, technical: 0.1, diagnostics: 0.06, systems: 0.05 },
+  tech_011: { scientific: 0.18, quantitative: 0.12, fluid: 0.08, technical: 0.04 },
+  tech_012: { technical: 0.1, critical_thinking: 0.06, creativity: 0.04 },
+  tech_013: { systems: 0.12, organization: 0.1, management: 0.06 },
+  tech_014: { diagnostics: 0.1, technical: 0.1, organization: 0.05 },
+  tech_015: { mechanical: 0.12, spatial: 0.1, field: 0.08, technical: 0.08 },
+  tech_016: { technical: 0.12, diagnostics: 0.1, mechanical: 0.1, systems: 0.05 },
+  tech_017: { spatial: 0.15, creativity: 0.12, technical: 0.08 },
+  tech_018: { diagnostics: 0.12, organization: 0.1, systems: 0.1, technical: 0.05 },
+  tech_019: { organization: 0.12, processing: 0.1, technical: 0.05, creativity: -0.12, systems: 0.03 },
+  tech_020: { eq: 0.12, diagnostics: 0.08, management: -0.08, scientific: -0.08 },
+  tech_021: { scientific: 0.08, field: 0.1, systems: 0.06 },
+  tech_022: { mechanical: 0.1, technical: 0.1, systems: 0.06 },
+  tech_023: { scientific: 0.12, technical: 0.06, eq: 0.05 },
+  tech_024: { mechanical: 0.14, technical: 0.1, spatial: 0.08 },
+  tech_025: { spatial: 0.15, mechanical: 0.1, technical: 0.05, creativity: 0.04 },
+  biz_001: { critical_thinking: 0.1, situational_judgment: 0.08, linguistic: 0.08, management: 0.08 },
+  biz_002: { quantitative: 0.12, processing: 0.08, critical_thinking: 0.06 },
+  biz_003: { achievement: 0.12, grit: 0.08, quantitative: 0.08 },
+  biz_004: { processing: 0.12, organization: 0.1, clerical: 0.1, creativity: -0.15 },
+  biz_005: { eq: 0.1, situational_judgment: 0.08, resilience: 0.05 },
+  biz_006: { quantitative: 0.18, scientific: 0.08, creativity: -0.1 },
+  biz_007: { quantitative: 0.12, technical: 0.08, systems: 0.05 },
+  biz_008: { technical: 0.08, quantitative: 0.1, systems: 0.06 },
+  biz_009: { management: 0.12, organization: 0.1, eq: 0.06, technical: 0.05 },
+  biz_010: { organization: 0.12, management: 0.1, grit: 0.05 },
+  biz_011: { organization: 0.1, management: 0.1, field: 0.04, technical: 0.04 },
+  biz_012: { systems: 0.1, organization: 0.12, grit: 0.05, processing: 0.05 },
+  biz_013: { eq: 0.15, situational_judgment: 0.1, technical: -0.1 },
+  biz_014: { eq: 0.12, linguistic: 0.1, achievement: 0.05 },
+  biz_015: { eq: 0.12, learning: 0.1, management: 0.08 },
+  biz_016: { critical_thinking: 0.15, systems: 0.1, situational_judgment: 0.08 },
+  biz_017: { critical_thinking: 0.12, quantitative: 0.1, scientific: 0.05 },
+  biz_018: { organization: 0.12, critical_thinking: 0.1, clerical: 0.08, creativity: -0.1 },
+  biz_019: { quantitative: 0.08, grit: 0.08, eq: 0.06, linguistic: 0.05 },
+  biz_020: { creativity: 0.12, adaptability: 0.1, achievement: 0.1, organization: 0.05 },
+  biz_021: { organization: 0.1, management: 0.1, achievement: 0.08 },
+  biz_022: { scientific: 0.1, systems: 0.08, critical_thinking: 0.06 },
+  biz_023: { scientific: 0.12, creativity: 0.06, eq: 0.06 },
+  biz_024: { quantitative: 0.12, critical_thinking: 0.1, achievement: 0.08 },
+  biz_025: { linguistic: 0.12, eq: 0.1, learning: 0.08 }
+};
+
+function withDifferentiatedAptitudes(role) {
+  const manual = MANUAL_APTITUDE_DELTAS[role.id];
+  let aptitudes = { ...role.aptitudes };
+  if (manual) {
+    Object.entries(manual).forEach(([k, d]) => {
+      aptitudes[k] = Math.min(1, Math.max(0, (aptitudes[k] || 0) + d));
+    });
+  } else {
+    aptitudes = stablePerturb(role.id, aptitudes);
+  }
+  return { ...role, aptitudes };
 }
 
 // Tech & Engineering (25)
@@ -260,7 +352,9 @@ const AGRICULTURE = [
   career('ag_010', 'Farm Manager (Modern)', 'agriculture', 'bachelors', 'Stable', 'Medium-High', 0.65, 'business', ['Delta Male'])
 ];
 
-export const MARKET_PROJECTION_MATRIX = [
+const RAW_MARKET_PROJECTION_MATRIX = [
   ...TECH, ...HEALTHCARE, ...BUSINESS, ...EDUCATION,
   ...CREATIVE, ...LEGAL, ...TRADES, ...HOSPITALITY, ...SALES, ...AGRICULTURE
 ];
+
+export const MARKET_PROJECTION_MATRIX = RAW_MARKET_PROJECTION_MATRIX.map(withDifferentiatedAptitudes);

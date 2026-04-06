@@ -564,14 +564,6 @@ export class DiagnosisEngine {
       }
     }
 
-    const resumeBtn = document.getElementById('resumeAssessment');
-    if (resumeBtn) {
-      resumeBtn.addEventListener('click', () => {
-        sessionStorage.setItem(`resume:${this.dataStore.namespace}`, 'true');
-        window.location.reload();
-      });
-    }
-    
     const startHereGuideBtn = document.getElementById('startHereGuide');
     if (startHereGuideBtn) {
       // Remove existing listener if any, then add new one
@@ -637,11 +629,6 @@ export class DiagnosisEngine {
       conditionSearch.addEventListener('input', (e) => this.filterConditions(e.target.value));
     }
     
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    if (clearCacheBtn) {
-      clearCacheBtn.addEventListener('click', () => this.clearAllCachedData());
-    }
-
     const abandonBtn = document.getElementById('abandonAssessment');
     if (abandonBtn) {
       abandonBtn.addEventListener('click', () => this.abandonAssessment());
@@ -723,19 +710,6 @@ export class DiagnosisEngine {
     if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost and you will need to start from the beginning.')) {
       this.resetAssessment();
     }
-  }
-
-  async clearAllCachedData() {
-    if (!(await showConfirm('Are you sure you want to clear all cached data? This will reset your progress and history.'))) {
-      return;
-    }
-
-    this.dataStore.clear('progress');
-    this.dataStore.clear('history');
-    sessionStorage.removeItem('diagnosisProgress');
-    localStorage.removeItem('diagnosisProgress');
-    this.resetAssessment();
-    await showAlert('All cached data for Pathology Assessment has been cleared.');
   }
 
   /**
