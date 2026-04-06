@@ -1353,9 +1353,9 @@ export const PHASE_2_QUESTIONS = {
 export const PHASE_3_QUESTIONS = [
   {
     id: 'p3_need_chain_1',
-    question: 'You mentioned feeling [SURFACE_NEED]. What might be underneath that feeling?',
+    question: 'You named a need around [SURFACE_NEED]. Which possible underlying need feels closest right now? (A best guess is enough.)',
     type: 'need_chain',
-    dynamic: true, // Will be populated with identified surface need
+    dynamic: true, // [SURFACE_NEED] resolved at render with optional gloss
     mapsTo: { category: 'need_chain_mapping', depth: 1 },
     category: 'need_chain'
   },

@@ -11,10 +11,22 @@ import { showConfirm } from './shared/confirm-modal.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
+let NEED_GLOSS;
+let PHASE3_UNDERNEATH_CANDIDATES, PHASE3_GENERIC_FALLBACK;
 let DEPENDENCY_LOOPS, LOOP_GROUPS, PHASE_0_QUESTIONS, PHASE_1_QUESTIONS, PHASE_2_QUESTIONS, PHASE_3_QUESTIONS, PHASE_4_QUESTIONS;
 let PATTERN_NEEDS_MAPPING, NEED_COMPULSION_AVERSION_MAPPING, VICE_NEEDS_MAPPING;
 let PATTERNS_COMPENDIUM, NEEDS_GLOSSARY, VICES_GLOSSARY;
 let getLoopActionsForNeed, getRootActionsForNeed;
+
+/** Default 1–7 anchors for historical depth (low = recent/no imprint, high = formative / childhood-anchored) */
+const HISTORICAL_PATTERN_SCALE_LABELS = {
+  1: 'Mostly recent — no clear early pattern',
+  4: 'Some echoes from adolescence or earlier',
+  7: 'Clearly present since childhood / formative years'
+};
+
+const HISTORICAL_PATTERN_PREAMBLE =
+  'Take a moment to notice whether this pattern has shown up before. Is it recurring? When you reflect, how far back can you trace something like this — not as a memory test, but as a rough sense of how long it has been with you.';
 
 /**
  * Needs Dependency Engine - Identifies dependency loops through 4-phase assessment
@@ -118,6 +130,19 @@ export class NeedsDependencyEngine {
         'Needs Vocabulary'
       );
       NEEDS_VOCABULARY = needsVocabModule.NEEDS_VOCABULARY;
+
+      const needGlossModule = await loadDataModule(
+        './needs-dependency-data/need-gloss.js',
+        'Need gloss'
+      );
+      NEED_GLOSS = needGlossModule.NEED_GLOSS;
+
+      const phase3CandidatesModule = await loadDataModule(
+        './needs-dependency-data/phase3-need-candidates.js',
+        'Phase 3 need candidates'
+      );
+      PHASE3_UNDERNEATH_CANDIDATES = phase3CandidatesModule.PHASE3_UNDERNEATH_CANDIDATES;
+      PHASE3_GENERIC_FALLBACK = phase3CandidatesModule.PHASE3_GENERIC_FALLBACK;
 
       // Load vices vocabulary data
       const vicesVocabModule = await loadDataModule(
@@ -389,16 +414,10 @@ export class NeedsDependencyEngine {
       this.surfaceNeed = surfaceNeed;
       this.surfaceNeedCategoryKey = this.getNeedCategoryKey(surfaceNeed);
       
-      PHASE_3_QUESTIONS.forEach((question, index) => {
+      PHASE_3_QUESTIONS.forEach((question) => {
         if (question.dynamic) {
-          const dynamicQuestion = { ...question };
-          if (index === 0) {
-            dynamicQuestion.question = dynamicQuestion.question.replace('[SURFACE_NEED]', surfaceNeed);
-          } else {
-            // Will be populated dynamically based on previous answer
-            dynamicQuestion.question = dynamicQuestion.question.replace('[DEEPER_NEED]', 'this need');
-          }
-          this.questionSequence.push(dynamicQuestion);
+          // Keep [SURFACE_NEED] / [DEEPER_NEED] placeholders; renderNeedChainQuestion fills gloss at display time
+          this.questionSequence.push({ ...question });
         } else {
           this.questionSequence.push(question);
         }
@@ -740,8 +759,14 @@ export class NeedsDependencyEngine {
   renderScaledQuestion(question) {
     const currentAnswer = this.answers[question.id];
     const scale = question.scale || { min: 1, max: 7 };
-    const labels = scale.labels || {};
-    
+    const isHistorical = question.mapsTo?.indicator === 'historical_pattern';
+    const labels = isHistorical
+      ? { ...HISTORICAL_PATTERN_SCALE_LABELS, ...(scale.labels || {}) }
+      : (scale.labels || {});
+    const preambleHtml = isHistorical
+      ? `<p class="need-historical-preamble">${SecurityUtils.sanitizeHTML(HISTORICAL_PATTERN_PREAMBLE)}</p>`
+      : '';
+
     return `
       <div class="question-block">
         <div class="question-header">
@@ -749,6 +774,7 @@ export class NeedsDependencyEngine {
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        ${preambleHtml}
         <div class="scale-container">
           <div class="scale-input">
             <input 
@@ -834,6 +860,25 @@ export class NeedsDependencyEngine {
     `;
   }
 
+  getPhase3CandidateNeedList(currentNeed, filterNeeds) {
+    if (!PHASE3_GENERIC_FALLBACK || !PHASE3_UNDERNEATH_CANDIDATES) {
+      return [];
+    }
+    const key = currentNeed ? String(currentNeed).toLowerCase().trim() : '';
+    let list = key && PHASE3_UNDERNEATH_CANDIDATES[key]
+      ? [...PHASE3_UNDERNEATH_CANDIDATES[key]]
+      : [...PHASE3_GENERIC_FALLBACK];
+    list = filterNeeds(list);
+    if (list.length < 5 && PHASE3_GENERIC_FALLBACK) {
+      const pad = filterNeeds([...PHASE3_GENERIC_FALLBACK]);
+      for (let i = 0; i < pad.length && list.length < 10; i += 1) {
+        if (!list.includes(pad[i])) list.push(pad[i]);
+      }
+    }
+    const cap = 12;
+    return list.slice(0, cap);
+  }
+
   getNeedChainOptions(question) {
     const depth = question.mapsTo?.depth;
     const previousAnswer = depth && depth > 1
@@ -861,7 +906,27 @@ export class NeedsDependencyEngine {
       });
     }
 
+    const isPhase3Mapping = question.id?.startsWith('p3_need_chain')
+      && question.mapsTo?.category === 'need_chain_mapping';
+
     let optionNeeds = [];
+
+    if (isPhase3Mapping) {
+      if (depth && depth > 1 && previousAnswer?.mapsTo?.deeper?.length) {
+        optionNeeds = filterNeeds(previousAnswer.mapsTo.deeper);
+      }
+      if (!optionNeeds.length) {
+        optionNeeds = this.getPhase3CandidateNeedList(currentNeed, filterNeeds);
+      }
+      let uniqueNeeds = Array.from(new Set(optionNeeds));
+      if (!uniqueNeeds.length && currentNeed) {
+        uniqueNeeds = Array.from(new Set(filterNeeds(this.getCategoryNeeds(currentNeed)))).slice(0, 12);
+      }
+      return uniqueNeeds.map(need => ({
+        text: need,
+        mapsTo: { need, deeper: [] }
+      }));
+    }
 
     if (depth && depth > 1 && previousAnswer?.mapsTo?.deeper?.length) {
       optionNeeds = previousAnswer.mapsTo.deeper;
@@ -882,6 +947,49 @@ export class NeedsDependencyEngine {
       text: need,
       mapsTo: { need, deeper: [] }
     }));
+  }
+
+  formatNeedWithGlossHTML(needText) {
+    if (needText == null || needText === '') return '';
+    const key = String(needText).toLowerCase().trim();
+    const gloss = NEED_GLOSS && NEED_GLOSS[key];
+    const term = SecurityUtils.sanitizeHTML(String(needText));
+    if (!gloss) return term;
+    return `${term} <em class="need-gloss">(${SecurityUtils.sanitizeHTML(gloss)})</em>`;
+  }
+
+  buildNeedChainQuestionTitleHtml(question) {
+    let q = question.question || '';
+    if (q.includes('[SURFACE_NEED]')) {
+      const surface = this.surfaceNeed || 'this need';
+      const parts = q.split('[SURFACE_NEED]');
+      return parts.map((segment, i) => {
+        const safe = SecurityUtils.sanitizeHTML(segment);
+        if (i === parts.length - 1) return safe;
+        return safe + this.formatNeedWithGlossHTML(surface);
+      }).join('');
+    }
+    if (q.includes('[DEEPER_NEED]')) {
+      const depth = question.mapsTo?.depth;
+      const prevNeed = depth && depth > 1
+        ? this.answers[`p3_need_chain_${depth - 1}`]?.mapsTo?.need
+        : null;
+      const parts = q.split('[DEEPER_NEED]');
+      return parts.map((segment, i) => {
+        const safe = SecurityUtils.sanitizeHTML(segment);
+        if (i === parts.length - 1) return safe;
+        return safe + (prevNeed ? this.formatNeedWithGlossHTML(prevNeed) : SecurityUtils.sanitizeHTML('this need'));
+      }).join('');
+    }
+    return SecurityUtils.sanitizeHTML(q);
+  }
+
+  formatNeedChainOptionLabelHtml(option, question) {
+    const isP3Bare = question.id?.startsWith('p3_need_chain')
+      && option?.mapsTo?.need != null
+      && String(option.text || '').toLowerCase().trim() === String(option.mapsTo.need).toLowerCase().trim();
+    if (isP3Bare) return this.formatNeedWithGlossHTML(option.mapsTo.need);
+    return SecurityUtils.sanitizeHTML(option.text || '');
   }
 
   getNeedCategoryKey(needText) {
@@ -909,14 +1017,15 @@ export class NeedsDependencyEngine {
   renderNeedChainQuestion(question) {
     const currentAnswer = this.answers[question.id];
     const options = this.getNeedChainOptions(question);
-    
+    const titleHtml = this.buildNeedChainQuestionTitleHtml(question);
+
     return `
       <div class="question-block">
         <div class="question-header">
           <span class="question-number">Phase ${this.currentPhase} - Question ${this.currentQuestionIndex + 1} of ${this.questionSequence.length}</span>
           <span class="question-stage">${this.getPhaseLabel(this.currentPhase)}</span>
         </div>
-        <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
+        <h3 class="question-text">${titleHtml}</h3>
         <div class="need-chain-options">
           ${options.map((option, index) => `
             <label class="need-chain-option ${currentAnswer && currentAnswer.text === option.text ? 'selected' : ''}">
@@ -927,7 +1036,7 @@ export class NeedsDependencyEngine {
                 data-option-data='${JSON.stringify(option).replace(/'/g, "&apos;")}'
                 ${currentAnswer && currentAnswer.text === option.text ? 'checked' : ''}
               />
-              <span class="option-text">${SecurityUtils.sanitizeHTML(option.text || '')}</span>
+              <span class="option-text">${this.formatNeedChainOptionLabelHtml(option, question)}</span>
             </label>
           `).join('')}
         </div>

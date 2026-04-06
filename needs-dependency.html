@@ -29,6 +29,23 @@
   <script src="./shared/theme-prefs.js"></script>
   <link rel="stylesheet" href="./shared/background.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Needs vocabulary gloss (Phase 3 + historical preamble) */
+    .need-gloss {
+      font-style: italic;
+      font-weight: 400;
+      opacity: 0.92;
+      color: var(--muted, rgba(220, 230, 245, 0.88));
+    }
+    .need-historical-preamble {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--muted, rgba(200, 210, 230, 0.95));
+      margin: 0.75rem 0 1rem;
+      max-width: 42rem;
+    }
+  </style>
   
   <!-- Performance: Preload critical resources -->
   <link rel="modulepreload" href="./needs-dependency-engine.js">
