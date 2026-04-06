@@ -673,9 +673,7 @@ ul {
     }
 
     .image-card a::before,
-    figure.image-card a::before,
-    .headline-book a::before,
-    figure.headline-book a::before {
+    figure.image-card a::before {
         animation: none !important;
         filter: none !important;
         opacity: 0.55;
@@ -2042,6 +2040,9 @@ h3[style*="text-align:center"][style*="border-bottom"] {
 #tools,
 #tools .section-inner,
 #tools .index-tools-card,
+#books,
+#books .section-inner,
+#books .index-tools-card,
 .index-tools-grid {
     overflow: visible;
 }
@@ -2435,22 +2436,6 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     overflow: visible;
 }
 
-/* Books grid: 4 columns - headline books span 2 cols each (top row), others 1 col each (second row) */
-.image-row.books-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2.5rem;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    overflow: visible;
-    padding: 1rem 0;
-}
-
-.books-grid .headline-book {
-    grid-column: span 2;
-}
-
 /* Tools grid (index): match tools page card grid */
 .image-row.tools-grid {
     display: grid;
@@ -2507,7 +2492,6 @@ figure.image-card {
 }
 
 /* Override max-width for grid layouts */
-.image-row.books-grid .image-card,
 .image-row.tools-grid .image-card {
     max-width: 100%;
 }
@@ -2678,9 +2662,7 @@ figure.image-card {
 
 /* Animated lightning blue sheen border - the only border effect */
 .image-card a::before,
-figure.image-card a::before,
-.headline-book a::before,
-figure.headline-book a::before {
+figure.image-card a::before {
     content: '';
     position: absolute;
     top: 0;
@@ -2712,9 +2694,7 @@ figure.image-card:hover a::before {
 }
 
 .image-card a,
-figure.image-card a,
-.headline-book a,
-figure.headline-book a {
+figure.image-card a {
     position: relative;
     z-index: 2;
 }
@@ -4512,14 +4492,6 @@ img {
     }
 
     /* Responsive grid layouts */
-    .image-row.books-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .books-grid .headline-book {
-        grid-column: span 1;
-    }
-
     .image-row.tools-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -4720,7 +4692,6 @@ img {
 }
 
 @media (max-width: 480px) {
-    .image-row.books-grid,
     .image-row.tools-grid {
         grid-template-columns: 1fr;
     }
