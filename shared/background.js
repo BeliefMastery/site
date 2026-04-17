@@ -201,7 +201,7 @@
   let startTime = performance.now();
   let animationId = null;
   let lastFrame = 0;
-  const frameInterval = 1000 / 30; // 30fps cap
+  const frameInterval = 1000 / 20; // 20fps cap — fewer GPU fills when canvas is enabled
   const timeScale = 0.15; // Slow drift to prevent acceleration over long sessions
   let isPaused = false;
 
