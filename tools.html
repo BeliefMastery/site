@@ -90,7 +90,7 @@
   </script>
 
 </head>
-<body class="page-fullbleed">
+<body class="page-fullbleed" data-bm-swipe-nav="true">
 
   <!-- Nebula-style cosmic background -->
   <div class="bg-gradient"></div>
@@ -285,10 +285,10 @@
           <div class="tool-card" id="tool-entities">
             <h3 class="tool-card-title">🧩 Will Anomaly Mapping</h3>
             <div class="tool-card-header">
-              <a href="entities.html" class="tool-card-thumb-link"><img src="./images/entities-cover.jpg" alt="Will Anomaly Mapping" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
+              <a href="entities.html" class="tool-card-thumb-link" data-suite-gate="2"><img src="./images/entities-cover.jpg" alt="Will Anomaly Mapping" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
             <p>Combine prior results to pinpoint inner conflicts and restore coherence.</p>
             </div>
-              <a class="btn btn-primary tool-card-action" href="entities.html">Map Will Anomalies</a>
+              <a class="btn btn-primary tool-card-action" href="entities.html" data-suite-gate="2">Map Will Anomalies</a>
           </div>
 
         </div>
@@ -304,10 +304,10 @@
           <div class="tool-card" id="tool-aptitude">
             <h3 class="tool-card-title">💪 Aptitude Mapping</h3>
             <div class="tool-card-header">
-              <a href="outlier-aptitude.html" class="tool-card-thumb-link"><img src="./images/aptitude-cover.jpg" alt="Aptitude Mapping" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
+              <a href="outlier-aptitude.html" class="tool-card-thumb-link" data-suite-gate="3"><img src="./images/aptitude-cover.jpg" alt="Aptitude Mapping" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
             <p>Capability scan that highlights high-leverage talents for work and income.</p>
             </div>
-              <a class="btn btn-primary tool-card-action" href="outlier-aptitude.html">Map Aptitude</a>
+              <a class="btn btn-primary tool-card-action" href="outlier-aptitude.html" data-suite-gate="3">Map Aptitude</a>
           </div>
 
           <!-- Unlocked GPT Card -->
@@ -504,6 +504,8 @@
 <!-- Universal background JavaScript -->
 
 <script src="./shared/background.js"></script>
+<script type="module" src="./shared/swipe-nav.js"></script>
+<script type="module" src="./shared/suite-nav-gates.js"></script>
 
 </body>
 </html>

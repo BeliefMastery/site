@@ -8,6 +8,12 @@
 
   var STORAGE_THEME = 'bm_site_theme';
   var STORAGE_FONT = 'bm_font_scale';
+  var LOCAL_FONT_LINK_ID = 'bm-local-fonts';
+  var LEGACY_THEME_MAP = {
+    default: 'cosmic',
+    matrix: 'forge',
+    neo: 'neomorphism'
+  };
 
   var THEMES = {
     cosmic: { type: 'layered', file: null },
@@ -65,12 +71,50 @@
     } catch (e) { /* ignore */ }
   }
 
-  function applyTheme(themeKey) {
-    var spec = THEMES[themeKey];
-    if (!spec) {
-      themeKey = 'cosmic';
-      spec = THEMES.cosmic;
+  function normalizeThemeKey(themeKey) {
+    if (!themeKey) return 'cosmic';
+    var key = String(themeKey).toLowerCase();
+    return THEMES[key] ? key : (LEGACY_THEME_MAP[key] || 'cosmic');
+  }
+
+  function readThemeFromQuery() {
+    try {
+      var url = new URL(window.location.href);
+      var raw = url.searchParams.get('theme') || url.searchParams.get('style');
+      if (!raw) return null;
+      var normalized = normalizeThemeKey(raw);
+      url.searchParams.delete('theme');
+      url.searchParams.delete('style');
+      window.history.replaceState({}, document.title, url.toString());
+      return normalized;
+    } catch (e) {
+      return null;
     }
+  }
+
+  function ensureLocalFonts() {
+    var head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) return;
+
+    var root = siteRootUrl();
+    if (!root) return;
+
+    document.querySelectorAll('link[rel="preconnect"][href*="fonts.gstatic.com"], link[rel="dns-prefetch"][href*="fonts.googleapis.com"], link[rel="stylesheet"][href*="fonts.googleapis.com"]').forEach(function (node) {
+      if (node && node.parentNode) node.parentNode.removeChild(node);
+    });
+
+    var existing = document.getElementById(LOCAL_FONT_LINK_ID);
+    if (existing) return;
+    var link = document.createElement('link');
+    link.id = LOCAL_FONT_LINK_ID;
+    link.rel = 'stylesheet';
+    link.href = new URL('fonts/fonts.css', root).href;
+    head.appendChild(link);
+  }
+
+  function applyTheme(themeKey) {
+    themeKey = normalizeThemeKey(themeKey);
+    var spec = THEMES[themeKey];
 
     var base = getBaseLink();
     var root = siteRootUrl();
@@ -96,7 +140,7 @@
   function readStoredTheme() {
     try {
       var t = localStorage.getItem(STORAGE_THEME) || 'cosmic';
-      return THEMES[t] ? t : 'cosmic';
+      return normalizeThemeKey(t);
     } catch (e) {
       return 'cosmic';
     }
@@ -175,8 +219,9 @@
   }
 
   try {
+    ensureLocalFonts();
     applyFontScale(readStoredFont());
-    applyTheme(readStoredTheme());
+    applyTheme(readThemeFromQuery() || readStoredTheme());
   } catch (e) { /* ignore */ }
 
   if (document.readyState === 'loading') {

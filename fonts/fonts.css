@@ -1,0 +1,38 @@
+/*
+  Local font entrypoint for BeliefMastery.
+  Add bundled Inter woff2 files under fonts/inter/ to fully self-host.
+*/
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src:
+    local('Inter'),
+    local('Inter Regular'),
+    url('./inter/Inter-VariableFont_slnt,wght.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 300 800;
+  font-display: swap;
+  src:
+    local('Inter Italic'),
+    url('./inter/Inter-Italic-VariableFont_slnt,wght.woff2') format('woff2');
+}
+
+:root {
+  --bm-font-family-base: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--bm-font-family-base);
+}

@@ -1019,6 +1019,34 @@ header.site-header {
     border: 1px solid var(--border-subtle);
 }
 
+/* Pathology assessment: plain-language lead-in + optional DSM reference */
+.question-plain-hint {
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--muted, rgba(220, 230, 245, 0.92));
+    margin: 0 0 0.85rem;
+    padding: 0.65rem 0.9rem;
+    border-left: 3px solid var(--accent, #6b9fff);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.question-clinical-ref {
+    margin: 0 0 1rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--muted, rgba(220, 230, 245, 0.88));
+}
+
+.question-clinical-ref summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--brand);
+}
+
+.question-clinical-ref p {
+    margin: 0.5rem 0 0;
+}
+
 /* Sections (consolidated: gradient base with transparent fallback) */
 section {
     background: var(--surface-section);

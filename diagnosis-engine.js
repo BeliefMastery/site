@@ -17,11 +17,12 @@ import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 
 // Data modules - will be loaded lazily
-let DSM5_CATEGORIES, QUESTION_TEMPLATES, VALIDATION_PAIRS, SCORING_THRESHOLDS;
+let DSM5_CATEGORIES, QUESTION_TEMPLATES, PLAIN_LANGUAGE_HINTS, VALIDATION_PAIRS, SCORING_THRESHOLDS;
 let SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS;
 let MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS;
 let CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS;
 let TREATMENT_DATABASE;
+const DIAGNOSIS_SLIDER_STEP = 0.5;
 
 /**
  * Diagnosis Engine - Multi-category DSM-5 diagnostic assessment with guide mode
@@ -151,7 +152,7 @@ export class DiagnosisEngine {
    * @returns {Promise<void>}
    */
   async loadDiagnosisData() {
-    if (DSM5_CATEGORIES && QUESTION_TEMPLATES) {
+    if (DSM5_CATEGORIES && QUESTION_TEMPLATES && PLAIN_LANGUAGE_HINTS) {
       return; // Already loaded
     }
 
@@ -163,6 +164,7 @@ export class DiagnosisEngine {
       );
       DSM5_CATEGORIES = dsm5Module.DSM5_CATEGORIES;
       QUESTION_TEMPLATES = dsm5Module.QUESTION_TEMPLATES;
+      PLAIN_LANGUAGE_HINTS = dsm5Module.PLAIN_LANGUAGE_HINTS || {};
       VALIDATION_PAIRS = dsm5Module.VALIDATION_PAIRS;
       SCORING_THRESHOLDS = dsm5Module.SCORING_THRESHOLDS;
       SUB_INQUIRY_QUESTIONS = dsm5Module.SUB_INQUIRY_QUESTIONS;
@@ -763,6 +765,9 @@ export class DiagnosisEngine {
             // Multiple symptoms to assess
             criterion.symptoms.forEach((symptom, index) => {
               const questionId = `${categoryKey}_${disorderName}_${criterionKey}_${symptom.id}`;
+              const clinicalAnchorText = symptom.text || '';
+              const hintMap = (PLAIN_LANGUAGE_HINTS && PLAIN_LANGUAGE_HINTS[categoryKey]) || {};
+              const plainLanguageHint = symptom.plainLanguageHint || hintMap[symptom.id] || '';
               this.questionSequence.push({
                 id: questionId,
                 category: categoryKey,
@@ -770,6 +775,8 @@ export class DiagnosisEngine {
                 criterion: criterionKey,
                 symptom: symptom,
                 questionText: this.generateQuestionText(symptom, categoryKey),
+                clinicalAnchorText,
+                plainLanguageHint,
                 weight: symptom.weight || 1.0,
                 type: 'symptom'
               });
@@ -777,12 +784,15 @@ export class DiagnosisEngine {
           } else {
             // Single criterion question
             const questionId = `${categoryKey}_${disorderName}_${criterionKey}`;
+            const criterionAnchor = criterion.text || '';
             this.questionSequence.push({
               id: questionId,
               category: categoryKey,
               disorder: disorderName,
               criterion: criterionKey,
               questionText: this.generateCriterionQuestion(criterion, disorderName),
+              clinicalAnchorText: criterionAnchor,
+              plainLanguageHint: '',
               weight: criterion.weight || 1.0,
               type: 'criterion'
             });
@@ -798,6 +808,8 @@ export class DiagnosisEngine {
               category: categoryKey,
               disorder: disorderName,
               questionText: pair.contradictory,
+              clinicalAnchorText: '',
+              plainLanguageHint: '',
               weight: pair.weight,
               type: 'validation',
               primaryQuestion: pair.primary
@@ -987,24 +999,38 @@ export class DiagnosisEngine {
         return;
       }
       
-      // Sanitize question text for display
-      const questionText = SecurityUtils.sanitizeHTML(question.questionText || '');
-      
-      // questionText is already sanitized above
+      const rawStem = question.questionText || '';
+      const questionText = SecurityUtils.sanitizeHTML(rawStem);
+      const plainHintRaw = question.plainLanguageHint || '';
+      const plainHint = plainHintRaw ? SecurityUtils.sanitizeHTML(plainHintRaw) : '';
+      const clinicalRaw = question.clinicalAnchorText || '';
+      const clinicalAnchor = clinicalRaw ? SecurityUtils.sanitizeHTML(clinicalRaw) : '';
+      const normStem = String(rawStem).replace(/\s+/g, ' ').trim().toLowerCase();
+      const normClinical = String(clinicalRaw).replace(/\s+/g, ' ').trim().toLowerCase();
+      const showClinicalRef =
+        (question.type === 'symptom' || question.type === 'criterion') &&
+        clinicalAnchor &&
+        normClinical &&
+        normClinical !== normStem;
+
+      const sliderStep = question.sliderStep || DIAGNOSIS_SLIDER_STEP;
+      const initialValue = this.answers[question.id] ?? 5;
       SecurityUtils.safeInnerHTML(container, `
       <div class="question-block">
+        ${plainHint ? `<p class="question-plain-hint" role="note">${plainHint}</p>` : ''}
         <h3>${questionText}</h3>
+        ${showClinicalRef ? `<details class="question-clinical-ref"><summary>Clinical reference wording</summary><p>${clinicalAnchor}</p></details>` : ''}
         <div class="scale-container">
           <div class="scale-input">
             <input type="range" 
                    id="questionInput" 
                    min="0" 
                    max="10" 
-                   step="1" 
-                   value="${this.answers[question.id] || 5}"
+                   step="${sliderStep}" 
+                   value="${initialValue}"
                    data-question-id="${question.id}">
           </div>
-          <div class="scale-value" id="scaleValue">${this.answers[question.id] || 5}</div>
+          <div class="scale-value" id="scaleValue">${Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(1)}</div>
         </div>
         ${question.type === 'comorbidity_refinement' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent); font-weight: 600;"><em>Refinement Question (${question.groupName})</em></p>` : ''}
         ${question.type === 'refinement' ? `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent);"><em>Additional detail for ${question.disorder}</em></p>` : ''}
@@ -1017,8 +1043,8 @@ export class DiagnosisEngine {
     
       if (slider && valueDisplay) {
         slider.addEventListener('input', (e) => {
-          const value = parseInt(e.target.value);
-          valueDisplay.textContent = value;
+          const value = parseFloat(e.target.value);
+          valueDisplay.textContent = Number.isInteger(value) ? String(value) : value.toFixed(1);
           this.answers[question.id] = value;
           this.saveProgress();
         });
@@ -1026,7 +1052,8 @@ export class DiagnosisEngine {
         // Set initial value if exists
         if (this.answers[question.id] !== undefined) {
           slider.value = this.answers[question.id];
-          valueDisplay.textContent = this.answers[question.id];
+          const v = this.answers[question.id];
+          valueDisplay.textContent = Number.isInteger(v) ? String(v) : v.toFixed(1);
         }
         
         // Focus management for accessibility
@@ -1078,8 +1105,9 @@ export class DiagnosisEngine {
         ? 'refinedAnswers'
         : 'answers';
       if (!this.analysisData[answerKey]) this.analysisData[answerKey] = {};
-      this.analysisData[answerKey][currentQuestion.id] = parseInt(slider.value);
-      this.answers[currentQuestion.id] = parseInt(slider.value);
+      const answerValue = parseFloat(slider.value);
+      this.analysisData[answerKey][currentQuestion.id] = answerValue;
+      this.answers[currentQuestion.id] = answerValue;
     }
     
     this.currentQuestionIndex++;
@@ -1114,7 +1142,7 @@ export class DiagnosisEngine {
             ? 'refinedAnswers'
             : 'answers';
           if (!this.analysisData[answerKey]) this.analysisData[answerKey] = {};
-          const answerValue = parseInt(slider.value);
+          const answerValue = parseFloat(slider.value);
           this.analysisData[answerKey][currentQuestion.id] = answerValue;
           this.answers[currentQuestion.id] = answerValue;
           this.logDebug('Saved answer before prev', { questionId: currentQuestion.id, answer: answerValue });

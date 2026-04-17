@@ -11,7 +11,7 @@ export const PHASE_1_NODE_QUESTIONS = {
   root: [
     {
       id: 'p1_root_vitality',
-      question: 'How would you describe your overall physical vitality and energy levels?',
+      question: 'How are your overall energy and physical vitality most of the time?',
       type: 'three_point',
       options: [
         {

@@ -13,6 +13,7 @@ import { showConfirm } from './shared/confirm-modal.js';
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
 let SATISFACTION_DOMAIN_EXAMPLES, QUESTION_WEIGHTINGS;
 let COACHING_PROMPTS, DEEPER_INQUIRY, ACTION_PLANNING;
+const COACHING_SLIDER_STEP = 0.5;
 
 /**
  * Coaching Engine - Generates coaching profiles through section-based assessment
@@ -573,6 +574,7 @@ export class CoachingEngine {
       }
     }
     
+    const initialValue = this.answers[question.id] ?? 5;
     SecurityUtils.safeInnerHTML(container, `
       <div class="question-block">
         <h3>${SecurityUtils.sanitizeHTML(questionText || '')}</h3>
@@ -584,11 +586,11 @@ export class CoachingEngine {
                    id="questionInput" 
                    min="0" 
                    max="10" 
-                   step="1" 
-                   value="${this.answers[question.id] || 5}"
+                   step="${question.sliderStep || COACHING_SLIDER_STEP}" 
+                   value="${initialValue}"
                    data-question-id="${question.id}">
           </div>
-          <div class="scale-value" id="scaleValue">${this.answers[question.id] || 5}</div>
+          <div class="scale-value" id="scaleValue">${Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(1)}</div>
         </div>
         <div class="scale-labels">
           <span>Very Low / Minimal / Weak / Rare / Never (0-2)</span>
@@ -607,8 +609,8 @@ export class CoachingEngine {
     
     if (slider && valueDisplay) {
       slider.addEventListener('input', (e) => {
-        const value = parseInt(e.target.value);
-        valueDisplay.textContent = value;
+        const value = parseFloat(e.target.value);
+        valueDisplay.textContent = Number.isInteger(value) ? String(value) : value.toFixed(1);
         this.answers[question.id] = value;
         this.saveProgress();
       });
@@ -616,7 +618,8 @@ export class CoachingEngine {
       // Set initial value if exists
       if (this.answers[question.id] !== undefined) {
         slider.value = this.answers[question.id];
-        valueDisplay.textContent = this.answers[question.id];
+        const v = this.answers[question.id];
+        valueDisplay.textContent = Number.isInteger(v) ? String(v) : v.toFixed(1);
       }
     }
     
@@ -662,7 +665,7 @@ export class CoachingEngine {
     const slider = document.getElementById('questionInput');
     if (slider) {
       const questionId = slider.dataset.questionId;
-      this.answers[questionId] = parseInt(slider.value);
+      this.answers[questionId] = parseFloat(slider.value);
     }
     
     this.currentQuestionIndex++;
@@ -681,7 +684,7 @@ export class CoachingEngine {
       const slider = document.getElementById('questionInput');
       if (slider) {
         const questionId = slider.dataset.questionId;
-        this.answers[questionId] = parseInt(slider.value);
+        this.answers[questionId] = parseFloat(slider.value);
       }
       
       this.currentQuestionIndex--;
@@ -894,7 +897,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     let html = '<div class="profile-summary coaching-profile-summary">';
     html += '<h3 class="coaching-impact-heading">Greatest Impact Focus</h3>';
     html +=
-      '<p class="coaching-impact-lead">You have lightly combed over the scope of human life. To become more satisfied, start at the weakest link first.</p>';
+      '<p class="coaching-impact-lead">This review scanned every life domain you rated. To raise satisfaction, start with the weakest area first.</p>';
 
     if (firstDomain) {
       html += `<div class="coaching-primary-focus" role="region" aria-label="Priority domain to address first">

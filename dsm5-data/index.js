@@ -35,6 +35,7 @@ export const DSM5_CATEGORIES = {
 
 // Question templates exported from separate file for better organization
 export { QUESTION_TEMPLATES } from './question-templates.js';
+export { PLAIN_LANGUAGE_HINTS } from './plain-language-hints.js';
 export { VALIDATION_PAIRS } from './validation-pairs.js';
 export { SCORING_THRESHOLDS } from './scoring-thresholds.js';
 export { SUB_INQUIRY_QUESTIONS } from './sub-inquiry-questions.js';

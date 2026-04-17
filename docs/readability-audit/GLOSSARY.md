@@ -14,6 +14,7 @@ Use this file as the **single canonical gloss** for framework and clinical terms
 
 | Term | Definition | Notes |
 |------|------------|-------|
-| | | |
+| Clinical reference wording | The checklist-style symptom line as written in the diagnostic source material, shown in a collapsible block for traceability. | Pathology Assessment only; the main question you answer stays the scored prompt above the slider. |
+| Plain-language hint | A short “everyday read” line that restates the idea of the item in common words. | Shown above the main question when `PLAIN_LANGUAGE_HINTS` or per-symptom data supplies one. |
 
-*(Empty table is intentional for first pass; add rows as issues are remediated.)*
+*(Add rows as additional cross-tool terms are standardized.)*

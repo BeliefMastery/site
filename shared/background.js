@@ -3,10 +3,11 @@
   const canvas = document.getElementById('nebula-canvas');
   if (!canvas) return;
 
-  // Check for WebGL support, reduced motion, or mobile/touch devices
+  // Respect accessibility and low-power preferences first.
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const lowPowerDevice = window.matchMedia('(max-width: 1024px)').matches ||
-    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const saveDataEnabled = navigator.connection && navigator.connection.saveData;
+  const lowPowerDevice = coarsePointer && saveDataEnabled;
 
   if (prefersReducedMotion || lowPowerDevice) {
     canvas.style.display = 'none';

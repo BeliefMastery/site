@@ -9,7 +9,7 @@ import { MANIPULATION_VECTORS } from './manipulation-vectors.js';
 export const PHASE_1_VECTOR_SCREENING = [
   {
     id: 'p1_fear_screen',
-    question: 'Do you frequently experience fear, anxiety, or feeling threatened in this relationship?',
+    question: 'In this relationship, how often do you feel fear, anxiety, or unsafe?',
     type: 'three_point',
     options: [
       {

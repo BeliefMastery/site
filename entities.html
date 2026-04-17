@@ -35,7 +35,7 @@
   <link rel="modulepreload" href="./shared/utils.js">
   <link rel="modulepreload" href="./shared/performance-monitor.js">
 </head>
-<body>
+<body data-bm-swipe-nav="true">
   <div class="bg-gradient"></div>
   <canvas id="nebula-canvas" aria-hidden="true"></canvas>
 
@@ -231,6 +231,7 @@
   </main>
 
   <script src="./shared/background.js"></script>
+  <script type="module" src="./shared/swipe-nav.js"></script>
   <script>
     function setupToggle(toggleId, panelId) {
       const toggle = document.getElementById(toggleId);

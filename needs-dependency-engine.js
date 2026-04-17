@@ -27,6 +27,7 @@ const HISTORICAL_PATTERN_SCALE_LABELS = {
 
 const HISTORICAL_PATTERN_PREAMBLE =
   'Take a moment to notice whether this pattern has shown up before. Is it recurring? When you reflect, how far back can you trace something like this — not as a memory test, but as a rough sense of how long it has been with you.';
+const DEFAULT_SCALE_STEP = 0.5;
 
 /**
  * Needs Dependency Engine - Identifies dependency loops through 4-phase assessment
@@ -751,6 +752,9 @@ export class NeedsDependencyEngine {
   renderScaledQuestion(question) {
     const currentAnswer = this.answers[question.id];
     const scale = question.scale || { min: 1, max: 7 };
+    const step = scale.step || DEFAULT_SCALE_STEP;
+    const midpoint = Number((((scale.min + scale.max) / 2) / step).toFixed(6));
+    const initialValue = currentAnswer ?? (Math.round(midpoint) * step);
     const isHistorical = question.mapsTo?.indicator === 'historical_pattern';
     const labels = isHistorical
       ? { ...HISTORICAL_PATTERN_SCALE_LABELS, ...(scale.labels || {}) }
@@ -775,11 +779,11 @@ export class NeedsDependencyEngine {
               data-question-id="${question.id}"
               min="${scale.min}" 
               max="${scale.max}" 
-              step="1"
-              value="${currentAnswer || Math.round((scale.min + scale.max) / 2)}"
+              step="${step}"
+              value="${initialValue}"
             />
           </div>
-          <div class="scale-value" id="scaleValue">${currentAnswer || Math.round((scale.min + scale.max) / 2)}</div>
+          <div class="scale-value" id="scaleValue">${Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(1)}</div>
         </div>
         <div class="scale-labels">
           <span>${labels[scale.min] || scale.min}</span>
@@ -1043,8 +1047,8 @@ export class NeedsDependencyEngine {
       
       if (slider && valueDisplay) {
         slider.addEventListener('input', (e) => {
-          const value = parseInt(e.target.value);
-          valueDisplay.textContent = value;
+          const value = parseFloat(e.target.value);
+          valueDisplay.textContent = Number.isInteger(value) ? String(value) : value.toFixed(1);
           this.answers[question.id] = value;
           this.saveProgress();
         });

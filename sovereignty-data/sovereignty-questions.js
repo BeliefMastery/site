@@ -74,7 +74,7 @@ export const SECTION_1_USAGE_PATTERNS = [
   {
     id: 'u4',
     section: 1,
-    question: 'Close friends or colleagues who know you well would say AI has changed you by:',
+    question: 'People who know you well might say AI has changed you in these ways (select any that fit):',
     type: 'multiple_response',
     options: [
       {

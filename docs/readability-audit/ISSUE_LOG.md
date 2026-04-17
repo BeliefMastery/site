@@ -24,6 +24,7 @@ Operational closure rules, verification gates, backlog buckets, and cadence: **[
 | D-3 | P2 | **DSM / Likert jargon** appears early; scale translation helps but could follow a one-sentence “what this report shows” lead. |
 | D-4 | P2 | **Redundancy risk** between inline pattern cards, comorbidity block, sub-inquiry block, and **Important Reminders** — all necessary for safety but dense; consider tightening prose in reminders. |
 | D-5 | P3 | **Explore further** paragraph is strong; aligns with actionability. |
+| D-6 | P1 | **Dual-layer symptom UI** — plain-language hint + collapsible clinical reference for scored stem (`diagnosis-engine.js`, `dsm5-data/plain-language-hints.js`). Status: **verified** (this slice). |
 
 ### Coaching — [coaching-engine.js](../../coaching-engine.js) `renderResults` + `getClosureSection`
 
@@ -80,3 +81,46 @@ Command: `node scripts/readability-scan.mjs` (repo root).
 - **Duplicate normalized sentences:** Expected duplicates include footer copyright/social lines across many pages; **tool disclaimers** repeat across 8–9 assessment shells (see **X-1**) — good candidate for one shared snippet. Notable: “Understanding manipulation patterns…” appears on both `manipulation.html` and `channels.html` (review for intentional vs accidental overlap).
 
 Re-run after large copy edits and paste a fresh summary here.
+
+### Latest run — 2026-04-17 (full audit slice)
+
+Commands (repo root, PowerShell): `node scripts/readability-scan.mjs` ; `node scripts/readability-scan.mjs --engines`
+
+**HTML `<p>` scan:** Long paragraphs 0. Long sentences **0** after `books.html` peer-counseling paragraph split (`S-1` follow-up).
+
+**`--engines` heuristic:** `coaching-engine.js` (7 large templates, 2 long sentences); `needs-dependency-engine.js` (10 / 7); `outlier-aptitude-engine.js` (6 / 1); `sovereignty-engine.js` (11 / 3). Triage for next copy PRs per STRATEGY_V2.
+
+**Shipped in this slice**
+
+- **D-PLAIN** — Dual-layer pathology items: `dsm5-data/plain-language-hints.js`, `diagnosis-engine.js` (hint + clinical `<details>`), `style.css`, `GLOSSARY.md` rows.
+- **C-1** — Coaching report lead sentence clarified (`coaching-engine.js`).
+- **SOV-U4** — Cognitive Resistance multi-select stem simplified (`sovereignty-data/sovereignty-questions.js`).
+- **M-P1** — Manipulation phase-1 fear screen stem simplified (`manipulation-data/manipulation-questions-v2.js`).
+- **CH-P1** — Channels intro paragraph split/simplified (`channels.html`); Phase 1 root vitality question shortened (`channel-data/channel-questions.js`).
+
+## Q-2026 — Pass 1 question-copy audit (inventory)
+
+| Tool | Surface | Pass 1 status | Notes |
+|------|---------|---------------|--------|
+| Pathology | data + engine | Partial | Hints for mood, anxiety, trauma, substance, schizophrenia; extend `PLAIN_LANGUAGE_HINTS` for remaining DSM categories. |
+| Life Domain Review | engine report | Partial | C-1 addressed; deeper pass on `coaching-data/` strings deferred. |
+| Dependency Loop | engine templates | Open | Scan flags long sentences in `needs-dependency-engine.js` — data + templates pass. |
+| Sovereignty Paradigm | data | Open | Not edited this slice. |
+| Logos Structure | data | Open | Not edited this slice. |
+| Manipulation | data | Partial | One screening question revised; full `manipulation-data/` pass open. |
+| Cognitive Resistance | data | Partial | u4 revised; `sovereignty-questions.js` full pass open. |
+| Channel Flow | data + html | Partial | One question + intro; remainder of `channel-questions.js` open. |
+| Character Sheet | data | Open | Label pass only when scheduled. |
+| Will Anomaly | data | Open | Cross-engine copy depends on upstream clarity. |
+| Aptitude | data + engine | Open | Scan flags engine template — review `outlier-aptitude-data.js` + engine UI strings. |
+
+## Pass 2 — Verification notes (this slice)
+
+| ID | 20s intent | Export parity | Jargon | Scan | Legal |
+|----|------------|---------------|--------|------|-------|
+| D-PLAIN | Main stem still the scored Likert prompt; hint is auxiliary. | On-screen only; exports use existing question text fields — no new divergence introduced. | Glossary updated. | Re-run scan after pull. | No disclaimer change. |
+| C-1 | Opening line states domain scan + start with weakest area. | Same string in downloaded HTML report block. | N/A | OK | Editorial only. |
+| SOV-U4 | Stem asks for multi-select “ways AI changed you.” | Export uses same `question` field. | N/A | OK | N/A |
+| M-P1 | Clear frequency-style stem for fear/anxiety. | Same `question` in data export path. | N/A | OK | N/A |
+| CH-P1 | Shorter intro + shorter vitality question. | HTML shell + data; export if channel report embeds these strings — spot-check on next channel export test. | N/A | Re-run | N/A |
+| S-1b | Peer-counseling block uses shorter sentences. | Static page only. | N/A | HTML scan clean | Editorial only. |
