@@ -358,11 +358,9 @@
       if (details.style.display === 'none' || !details.style.display) {
         details.style.display = 'block';
         if (indicator) indicator.textContent = 'Click to collapse ▲';
-        card.style.transform = 'scale(1.02)';
       } else {
         details.style.display = 'none';
         if (indicator) indicator.textContent = 'Click to expand &#9660;';
-        card.style.transform = 'scale(1)';
       }
     }
 

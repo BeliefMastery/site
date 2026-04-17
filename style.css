@@ -2093,10 +2093,18 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.index-tools-grid-item:hover {
-    background: var(--index-tools-grid-hover-bg);
-    box-shadow: 0 0 16px var(--glow-accent);
-    z-index: 100;
+/* Hover zoom is pointer-fine only; touch gets no hover lane and avoids huge composited scales */
+@media (hover: hover) and (pointer: fine) {
+    .index-tools-grid-item:hover {
+        background: var(--index-tools-grid-hover-bg);
+        box-shadow: 0 0 16px var(--glow-accent);
+        z-index: 100;
+    }
+
+    .index-tools-grid-item:hover img {
+        transform: scale(2.5);
+        opacity: 0.95;
+    }
 }
 
 .index-tools-grid-item img {
@@ -2106,11 +2114,6 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     object-fit: cover;
     border-radius: 6px;
     transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-.index-tools-grid-item:hover img {
-    transform: scale(2.5);
-    opacity: 0.95;
 }
 
 @media (max-width: 1023px) {
@@ -2560,11 +2563,6 @@ figure.image-card {
     color: var(--brand);
 }
 
-.image-card.tool-card:hover {
-    z-index: 1000;
-    position: relative;
-}
-
 .image-card.tool-card .tool-summary {
     position: absolute;
     top: calc(100% + 12px);
@@ -2589,9 +2587,16 @@ figure.image-card {
     text-align: center;
 }
 
-.image-card.tool-card:hover .tool-summary {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+@media (hover: hover) and (pointer: fine) {
+    .image-card.tool-card:hover {
+        z-index: 1000;
+        position: relative;
+    }
+
+    .image-card.tool-card:hover .tool-summary {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
 /* ========== TOOLTIPS & IMAGE EFFECTS ========== */
@@ -2631,13 +2636,15 @@ figure.image-card {
     z-index: 101;
 }
 
-.image-card:hover::after {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+@media (hover: hover) and (pointer: fine) {
+    .image-card:hover::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 
-.image-card:hover::before {
-    opacity: 1;
+    .image-card:hover::before {
+        opacity: 1;
+    }
 }
 
 .image-card a,
@@ -7999,5 +8006,96 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 
 .derailer-scores {
     margin-top: 2rem;
+}
+
+/* ─────────────────────────────────────────
+   Touch / coarse pointer: drop hover lifts and heavy backdrop compositing.
+   Index stacks many sections; blur + glow per layer is costly on low-end GPUs.
+   ───────────────────────────────────────── */
+@media (hover: none), (pointer: coarse) {
+    section {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: var(--shadow-md), inset 0 1px 0 var(--section-inset-line) !important;
+        transition: none !important;
+    }
+
+    header.site-header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+
+    .dropdown-menu {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .tool-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        transition: none !important;
+    }
+
+    .tool-card::before,
+    .tool-card h3 {
+        transition: none !important;
+    }
+
+    .tool-card:hover {
+        transform: none !important;
+        box-shadow:
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+        background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%) !important;
+        border-color: var(--border-medium) !important;
+    }
+
+    .tool-card:hover::before {
+        opacity: 0.6 !important;
+        height: 3px !important;
+    }
+
+    .portal-card,
+    .portal-card img {
+        transition: none !important;
+    }
+
+    .portal-card:hover {
+        transform: none !important;
+        box-shadow: var(--shadow-md) !important;
+        border-color: var(--border-medium) !important;
+    }
+
+    .portal-card:hover img {
+        transform: none !important;
+    }
+
+    section .card:hover,
+    .card:hover {
+        transform: none !important;
+        box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .image-card::after,
+    .image-card.tool-card::after {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .image-card.tool-card .tool-summary {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .image-card img,
+    figure.image-card img {
+        transition: none !important;
+    }
+
+    .index-tools-grid-item,
+    .index-tools-grid-item img {
+        transition: none !important;
+    }
 }
 

@@ -5,11 +5,13 @@
 
   // Respect accessibility and low-power preferences first.
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  const saveDataEnabled = navigator.connection && navigator.connection.saveData;
-  const lowPowerDevice = coarsePointer && saveDataEnabled;
+  const noHover = window.matchMedia('(hover: none)').matches;
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  const saveDataEnabled = Boolean(navigator.connection && navigator.connection.saveData);
+  const touchLike = noHover || coarsePointer;
+  const saveDataOnCoarse = saveDataEnabled && coarsePointer;
 
-  if (prefersReducedMotion || lowPowerDevice) {
+  if (prefersReducedMotion || touchLike || saveDataOnCoarse) {
     canvas.style.display = 'none';
     return;
   }
