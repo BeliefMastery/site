@@ -2123,14 +2123,25 @@ body.home-page .index-tools-grid {
     max-width: min(1120px, 100%);
 }
 
+/* Books: three covers per row (six titles → two rows on desktop) */
+body.home-page #books .index-tools-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: min(900px, 100%);
+}
+
 @media (max-width: 960px) {
-    body.home-page .index-tools-grid {
+    body.home-page #tools .index-tools-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    body.home-page #books .index-tools-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 640px) {
-    body.home-page .index-tools-grid {
+    body.home-page #tools .index-tools-grid,
+    body.home-page #books .index-tools-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.4rem;
     }
@@ -2144,7 +2155,8 @@ body.home-page .index-tools-grid-item {
     box-shadow: var(--shadow-md);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
     background: rgba(8, 14, 26, 0.5);
-    aspect-ratio: 3 / 4;
+    /* Default 3:4 portrait; +10% height → 3 : (4 × 1.1) */
+    aspect-ratio: 3 / 4.4;
     min-height: 0;
     align-self: stretch;
 }
