@@ -346,13 +346,6 @@ main {
     color: var(--brand);
 }
 
-.tools-intro {
-    text-align: center;
-    color: var(--muted);
-    margin-top: 0;
-    margin-bottom: 2rem;
-}
-
 .tools-category-title {
     margin: 3rem 0 1.5rem 0;
     color: var(--brand);
