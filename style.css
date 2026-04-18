@@ -2604,6 +2604,104 @@ figure.image-card a {
     background: transparent;
 }
 
+/* Index: collapsible suite framing + consolidated per-tool disclaimers */
+.index-suite-disclosures {
+    max-width: 52rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.index-disclosure {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    margin-bottom: 0.85rem;
+    background: var(--glass);
+    overflow: hidden;
+}
+
+.index-disclosure > summary {
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    color: var(--brand);
+    padding: 0.85rem 1rem;
+}
+
+.index-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+
+.index-disclosure[open] > summary {
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.index-disclosure__body {
+    padding: 0.9rem 1rem 1.1rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.index-disclosure__body > p {
+    margin-bottom: 0.65rem;
+}
+
+.index-disclosure__body > p:last-child {
+    margin-bottom: 0;
+}
+
+.index-disclosure__subhead {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: var(--brand);
+}
+
+.index-disclosure-nested {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.index-disclosure-nested > details {
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.index-disclosure-nested > details > summary {
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--accent);
+    padding: 0.65rem 0.85rem;
+}
+
+.index-disclosure-nested > details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.index-disclosure-nested > details[open] > summary {
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.index-disclosure-nested .index-disclosure__body {
+    padding: 0.65rem 0.85rem 0.9rem;
+    font-size: 0.9rem;
+}
+
+.index-disclosure-nested .index-disclosure__body:last-child {
+    margin-bottom: 0;
+}
+
+.index-disclosure__body .ack-box,
+.index-disclosure__body .acknowledgement-box,
+.index-disclosure-nested .ack-box,
+.index-disclosure-nested .acknowledgement-box {
+    margin-bottom: 0.75rem;
+}
+
 .index-tools-grid {
     margin-top: 1rem;
 }
