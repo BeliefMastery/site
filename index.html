@@ -22,24 +22,20 @@
   <meta name="twitter:description" content="Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, channel flow diagnostics, logos structure, pathology assessment, life domain review, dependency loop tracing, and cognitive defense frameworks. Stand guard over the mind itself. Warwick Marshall, Golden Bay, New Zealand.">
   <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/bm10.gif">
 
-  <!-- Performance: Resource hints -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  
   <!-- Preload critical images -->
   <link rel="preload" href="./images/SoM-cover.jpg" as="image" type="image/jpeg">
   <link rel="preload" href="./images/BM-cover.jpg" as="image" type="image/jpeg">
 
-  <!-- Font used in original -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  
+  <!-- Self-hosted Inter (same-origin); avoids Google Fonts render-blocking -->
+  <link rel="stylesheet" href="fonts/fonts.css" id="bm-local-fonts">
+
   <!-- Shared stylesheet -->
   <link rel="stylesheet" href="style.css" id="bm-theme-base">
   <script src="./shared/theme-prefs.js"></script>
   
   <!-- Content Security Policy (CSP) -->
   <!-- Note: frame-ancestors must be set via HTTP headers, not meta tags -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self';">
 
   <!-- Structured Data: JSON-LD for Books (SEO enhancement for discoverability) -->
   <script type="application/ld+json">

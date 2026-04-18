@@ -1,31 +1,18 @@
 /*
-  Local font entrypoint for BeliefMastery.
-  Add bundled Inter woff2 files under fonts/inter/ to fully self-host.
+  Self-hosted Inter (variable, Latin) — avoids Google Fonts blocking and extra connections.
+  Subset from @fontsource-variable/inter (OFL). Italic falls back to system stack.
 */
 
 @font-face {
   font-family: 'Inter';
   font-style: normal;
-  font-weight: 300 800;
+  font-weight: 100 900;
   font-display: swap;
-  src:
-    local('Inter'),
-    local('Inter Regular'),
-    url('./inter/Inter-VariableFont_slnt,wght.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-style: italic;
-  font-weight: 300 800;
-  font-display: swap;
-  src:
-    local('Inter Italic'),
-    url('./inter/Inter-Italic-VariableFont_slnt,wght.woff2') format('woff2');
+  src: url('./inter/inter-latin-standard-normal.woff2') format('woff2');
 }
 
 :root {
-  --bm-font-family-base: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+  --bm-font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
 html,

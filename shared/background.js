@@ -5,7 +5,17 @@
 })();
 
 // Link debug identifiers + broken link checks (same-origin only).
+// Off by default: avoids dozens of HEAD/GET requests on large nav pages (see RedPillSMV-style perf).
 (function() {
+  try {
+    var sp = new URLSearchParams(window.location.search);
+    if (sp.get('debugLinks') !== '1' && localStorage.getItem('bm_debug_links') !== '1') {
+      return;
+    }
+  } catch (e) {
+    return;
+  }
+
   function isSkippableHref(href) {
     if (!href) return true;
     const trimmed = href.trim();
