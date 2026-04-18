@@ -2032,6 +2032,200 @@ h3[style*="text-align:center"][style*="border-bottom"] {
     }
 }
 
+/* ── Index home: RedPillSMV-style landing (flat section titles, tight image grid, tactile tiles) ── */
+body.home-page .home-grid-section {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+}
+
+body.home-page .home-grid-section:hover {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+body.home-page .home-grid-section .section-inner.minimal-section {
+    padding: 0.25rem 0.75rem 0.35rem;
+    max-width: 980px;
+}
+
+body.home-page #suite-info-disclosures .section-inner.minimal-section {
+    padding-top: 1rem;
+    padding-bottom: 1.25rem;
+}
+
+body.home-page .home-grid-section .section-inner.minimal-section > .section-title-btn {
+    margin: 0.65rem auto 0.45rem !important;
+    padding: 0.85rem 1.6rem;
+    font-size: clamp(1.02rem, 2.65vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    line-height: 1.15;
+    color: var(--brand);
+    background: var(--glass);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+    border: 1px solid var(--border-subtle);
+    border-bottom: 3px solid var(--accent);
+    box-shadow: none;
+}
+
+body.home-page .home-grid-section .section-title-btn::before {
+    display: none !important;
+    content: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    body.home-page .home-grid-section .section-title-btn:hover {
+        color: var(--accent);
+        border-bottom-color: var(--accent-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 rgba(255, 184, 0, 0.28);
+    }
+}
+
+body.home-page .index-tools-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.25rem 0 0.85rem;
+    border-radius: 0;
+}
+
+body.home-page .index-tools-card::before {
+    display: none;
+}
+
+body.home-page .index-tools-grid {
+    gap: 3px;
+    margin: 0.5rem auto 0;
+    max-width: min(980px, 100%);
+}
+
+body.home-page #books .index-tools-grid {
+    max-width: min(720px, 100%);
+}
+
+body.home-page .index-tools-grid-item {
+    display: block;
+    padding: 0;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    background: rgba(8, 14, 26, 0.5);
+}
+
+body.home-page .index-tools-grid-item img {
+    border-radius: 2px;
+    box-shadow: none;
+    transition: transform 0.2s ease;
+}
+
+@media (hover: hover) {
+    body.home-page .index-tools-grid-item img:hover {
+        box-shadow: none;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    body.home-page .index-tools-grid-item:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+body.home-page .index-tools-grid-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+body.home-page .index-tools-grid-item:active {
+    transform: scale(0.985);
+}
+
+body.home-page main .btn,
+body.home-page main .action-btn {
+    border-radius: 9999px;
+}
+
+@media (max-width: 768px) {
+    body.home-page .home-grid-section .section-inner.minimal-section > .section-title-btn {
+        font-size: clamp(0.98rem, 4.5vw, 1.35rem);
+        letter-spacing: 0.055em;
+        padding: 0.7rem 0.85rem;
+        width: 100%;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    body.home-page .index-tools-grid {
+        gap: 4px;
+    }
+}
+
+/* Home suite progress strip (mirrors RedPillSMV suite-progress-wrap rhythm) */
+body.home-page #suite-progress .section-inner.minimal-section {
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem 0.5rem 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
+}
+
+body.home-page #suite-progress-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 0.65rem;
+}
+
+body.home-page #suite-progress-summary {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 0 0 0.75rem;
+}
+
+body.home-page #suite-progress-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    align-items: center;
+}
+
+body.home-page #suite-progress-list li {
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+body.home-page #suite-progress-list a {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    body.home-page #suite-progress-list a:hover {
+        text-decoration: underline;
+    }
+}
+
+body.home-page #suite-progress-list li span {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-left: 0.35rem;
+}
+
 /* Books page: flex layout for 3 portal cards – fits expandable content better than 6-col grid */
 .portal-grid-books {
     display: flex;
