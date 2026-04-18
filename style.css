@@ -8049,3 +8049,241 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     }
 }
 
+/* ─────────────────────────────────────────
+   Books hub, tools hub, individual tools (data-bm-flat-hover on <body>):
+   no lift/shine hovers; lighter compositing than desktop hover polish.
+   ───────────────────────────────────────── */
+body[data-bm-flat-hover="true"] section {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] section:hover {
+    border-color: var(--border-subtle) !important;
+}
+
+body[data-bm-flat-hover="true"] header.site-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .dropdown-menu {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .btn::before,
+body[data-bm-flat-hover="true"] button::before {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: none !important;
+}
+
+body[data-bm-flat-hover="true"] .btn:hover::before,
+body[data-bm-flat-hover="true"] button:hover::before {
+    left: -75% !important;
+}
+
+body[data-bm-flat-hover="true"] .btn-primary:hover,
+body[data-bm-flat-hover="true"] button:not(.secondary):not(.close-btn):hover,
+body[data-bm-flat-hover="true"] #calculate-btn:hover,
+body[data-bm-flat-hover="true"] .next-btn:hover {
+    transform: none !important;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2) !important;
+    background: linear-gradient(135deg, var(--accent), #ffb700) !important;
+}
+
+body[data-bm-flat-hover="true"] .btn-outline,
+body[data-bm-flat-hover="true"] .btn-secondary,
+body[data-bm-flat-hover="true"] button.secondary,
+body[data-bm-flat-hover="true"] .prev-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .btn-outline:hover,
+body[data-bm-flat-hover="true"] .btn-secondary:hover,
+body[data-bm-flat-hover="true"] button.secondary:hover,
+body[data-bm-flat-hover="true"] .prev-btn:hover {
+    transform: none !important;
+    background: rgba(232, 240, 248, 0.05) !important;
+    border: 2px solid var(--border-medium) !important;
+    color: var(--brand) !important;
+}
+
+body[data-bm-flat-hover="true"] .choice-btn:hover {
+    border-color: var(--border-subtle) !important;
+    background: var(--glass-light) !important;
+}
+
+body[data-bm-flat-hover="true"] .section-title-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .section-title-btn::before {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: none !important;
+}
+
+body[data-bm-flat-hover="true"] .section-title-btn:hover::before {
+    left: -75% !important;
+}
+
+body[data-bm-flat-hover="true"] .section-title-btn:hover {
+    transform: none !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(255, 184, 0, 0.2) !important;
+    color: var(--brand) !important;
+}
+
+body[data-bm-flat-hover="true"] .paradigm-card:hover,
+body[data-bm-flat-hover="true"] .paradigm-option:hover,
+body[data-bm-flat-hover="true"] .option-card:hover,
+body[data-bm-flat-hover="true"] .section-card:hover,
+body[data-bm-flat-hover="true"] .choice-box:hover,
+body[data-bm-flat-hover="true"] .diagnosis-card:hover,
+body[data-bm-flat-hover="true"] .assessment-card:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-sm) !important;
+    background: var(--glass-light) !important;
+    border-color: var(--border-medium) !important;
+}
+
+body[data-bm-flat-hover="true"] section .card:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-sm) !important;
+    background: var(--glass-light) !important;
+    border-color: var(--border-medium) !important;
+}
+
+body[data-bm-flat-hover="true"] .card:hover {
+    transform: none !important;
+    z-index: 1 !important;
+}
+
+body[data-bm-flat-hover="true"] .card:hover .extended {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body[data-bm-flat-hover="true"] .tool-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .tool-card:hover {
+    transform: none !important;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%) !important;
+    border-color: var(--border-medium) !important;
+}
+
+body[data-bm-flat-hover="true"] .tool-card:hover::before {
+    opacity: 0.6 !important;
+    height: 3px !important;
+}
+
+body[data-bm-flat-hover="true"] .portal-card:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-md) !important;
+    border-color: var(--border-medium) !important;
+}
+
+body[data-bm-flat-hover="true"] .portal-card:hover img {
+    transform: none !important;
+}
+
+body[data-bm-flat-hover="true"] .portal-card.portal-card-image:hover img {
+    transform: none !important;
+}
+
+body[data-bm-flat-hover="true"] .instructions-toggle:hover,
+body[data-bm-flat-hover="true"] .extended-explanation-toggle:hover,
+body[data-bm-flat-hover="true"] .disclaimer-acknowledgement:hover {
+    background: var(--glass-light) !important;
+    border-color: var(--border-medium) !important;
+    box-shadow: none !important;
+}
+
+body[data-bm-flat-hover="true"] .three-point-option:hover,
+body[data-bm-flat-hover="true"] .binary-unsure-option:hover,
+body[data-bm-flat-hover="true"] .frequency-option:hover,
+body[data-bm-flat-hover="true"] .binary-option:hover,
+body[data-bm-flat-hover="true"] .scenario-option:hover,
+body[data-bm-flat-hover="true"] .multiselect-option:hover,
+body[data-bm-flat-hover="true"] .need-chain-option:hover {
+    background: var(--glass) !important;
+    border-color: var(--border-subtle) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+body[data-bm-flat-hover="true"] .likert-option:hover {
+    background: var(--glass) !important;
+    border-color: var(--border-subtle) !important;
+}
+
+body[data-bm-flat-hover="true"] .iq-btn:hover {
+    transform: none !important;
+    background: rgba(255, 184, 0, 0.1) !important;
+}
+
+body[data-bm-flat-hover="true"] .category-group-header:hover {
+    background: rgba(0, 123, 255, 0.1) !important;
+}
+
+body[data-bm-flat-hover="true"] .paradigm-slider::-webkit-slider-thumb:hover,
+body[data-bm-flat-hover="true"] .paradigm-slider::-moz-range-thumb:hover {
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+body[data-bm-flat-hover="true"] .paradigm-card-single {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .image-card::after,
+body[data-bm-flat-hover="true"] .image-card::before {
+    transition: none !important;
+}
+
+body[data-bm-flat-hover="true"] .image-card:hover::after,
+body[data-bm-flat-hover="true"] .image-card:hover::before {
+    opacity: 0 !important;
+}
+
+body[data-bm-flat-hover="true"] .image-card.tool-card:hover .tool-summary {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body[data-bm-flat-hover="true"] .image-card::after,
+body[data-bm-flat-hover="true"] .image-card.tool-card::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .image-card.tool-card .tool-summary {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-bm-flat-hover="true"] .image-card.tool-card,
+body[data-bm-flat-hover="true"] .index-tools-grid .image-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Later `.section-card` block (e.g. phase UI): reset hover to its base glass, not selection-card glass. */
+body[data-bm-flat-hover="true"] .section-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+    background: var(--glass) !important;
+}
+
