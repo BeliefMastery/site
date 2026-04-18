@@ -106,7 +106,6 @@
 
     /* Home index tools strip */
     --index-tools-card-bg: rgba(20, 35, 55, 0.85);
-    --index-tools-grid-hover-bg: rgba(255, 215, 0, 0.08);
 
     /* Tool page expandable panels */
     --panel-expanded-highlight-bg: rgba(255, 215, 0, 0.05);
