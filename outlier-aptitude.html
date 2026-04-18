@@ -136,17 +136,10 @@
         <h2>Your Aptitude Report</h2>
         <div id="resultsContainer"></div>
         <div class="export-section">
-          <p class="tool-lead tool-lead--flush">Download a single HTML file with the full report text (works offline).</p>
+          <p class="tool-lead tool-lead--flush">Download a single MHTML snapshot of the full report (works offline in Chromium-based browsers).</p>
           <div class="action-buttons">
-            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (MHTML)</button>
           </div>
-          <details class="export-advanced export-advanced--top">
-            <summary>Advanced export (JSON, CSV)</summary>
-            <div class="action-buttons action-buttons--push">
-              <button type="button" class="btn btn-secondary" id="exportJSON">Export JSON</button>
-              <button type="button" class="btn btn-secondary" id="exportCSV">Export CSV</button>
-            </div>
-          </details>
         </div>
         <div class="action-buttons">
           <button class="btn btn-secondary" id="abandonAssessmentResults">❌ Abandon / Restart</button>

@@ -1137,8 +1137,24 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;');
 }
 
+/** Encode UTF-8 text as MIME base64 with 76-char wrapped lines (CRLF between chunks). */
+function utf8TextToMimeBase64(text) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const b64 = btoa(binary);
+  const lines = [];
+  for (let i = 0; i < b64.length; i += 76) {
+    lines.push(b64.slice(i, i + 76));
+  }
+  return lines.join('\r\n');
+}
+
 /**
- * Build a self-contained HTML file from visible report DOM (offline-friendly).
+ * Build a single-file report from visible report DOM and download as MHTML
+ * (multipart/related + one HTML part; opens in Chromium/Edge; offline-friendly snapshot).
  * @param {object} options
  * @param {string} [options.title] - Document title
  * @param {string} [options.filenameBase] - Download filename without extension
@@ -1196,7 +1212,30 @@ ${fragments.join('\n')}
 </html>`;
 
   const safeBase = String(filenameBase).replace(/[^a-z0-9-_]+/gi, '_').replace(/^_|_$/g, '') || 'report';
-  downloadFile(html, `${safeBase}.html`, 'text/html;charset=utf-8');
+  const boundary = `BMReport_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  const contentLoc = `file:///C:/${safeBase}.html`;
+  const subject = String(title).replace(/[\r\n]+/g, ' ').slice(0, 200);
+  const b64Body = utf8TextToMimeBase64(html);
+  const mhtml = [
+    'From: <Saved by Belief Mastery>',
+    `Snapshot-Content-Location: ${contentLoc}`,
+    `Subject: ${subject}`,
+    `Date: ${new Date().toUTCString()}`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/related; type="text/html"; boundary="${boundary}"`,
+    '',
+    `--${boundary}`,
+    'Content-Type: text/html; charset=utf-8',
+    'Content-Transfer-Encoding: base64',
+    `Content-Location: ${contentLoc}`,
+    '',
+    b64Body,
+    '',
+    `--${boundary}--`,
+    ''
+  ].join('\r\n');
+
+  downloadFile(mhtml, `${safeBase}.mhtml`, 'multipart/related');
   return true;
 }
 

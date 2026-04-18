@@ -598,16 +598,6 @@ export class DiagnosisEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportJsonBtn = document.getElementById('exportAnalysisJson');
-    if (exportJsonBtn) {
-      exportJsonBtn.addEventListener('click', () => this.viewAnalysisData('json'));
-    }
-
-    const exportCsvBtn = document.getElementById('exportAnalysisCsv');
-    if (exportCsvBtn) {
-      exportCsvBtn.addEventListener('click', () => this.viewAnalysisData('csv'));
-    }
-
     const exportBriefBtn = document.getElementById('exportExecutiveBrief');
     if (exportBriefBtn) {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());

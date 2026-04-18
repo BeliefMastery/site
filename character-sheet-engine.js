@@ -239,11 +239,6 @@ export class CharacterSheetEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportBtn = document.getElementById('exportCharacter');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => this.exportCharacter());
-    }
-
     // Auto-calculate Sun sign when date changes
     const birthDateInput = document.getElementById('birthDate');
     if (birthDateInput) {
@@ -1638,20 +1633,5 @@ export class CharacterSheetEngine {
     }
   }
 
-  exportCharacter() {
-    if (!this.characterData) {
-      showAlert('No character to export. Please generate a character first.');
-      return;
-    }
-
-    const dataStr = JSON.stringify(this.characterData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${this.characterData.name.replace(/\s+/g, '_')}_character_sheet.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  }
 }
 

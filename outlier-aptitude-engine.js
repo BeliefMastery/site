@@ -3,7 +3,7 @@ import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
-import { exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
+import { downloadReportHtml } from './shared/export-utils.js';
 import {
   scoreDimensionsFromAnswers,
   acuitySlidersToVector,
@@ -101,15 +101,6 @@ export class OutlierAptitudeEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportJSONBtn = document.getElementById('exportJSON');
-    const exportCSVBtn = document.getElementById('exportCSV');
-    if (exportJSONBtn) {
-      exportJSONBtn.addEventListener('click', () => {
-        const json = exportJSON(this.analysisData, 'outlier-aptitude', 'Outlier Aptitude Assessment');
-        downloadFile(json, `outlier-aptitude-${Date.now()}.json`, 'application/json');
-      });
-    }
-    if (exportCSVBtn) exportCSVBtn.addEventListener('click', () => this.exportCSV());
   }
 
   exportReportHtml() {
@@ -670,19 +661,6 @@ export class OutlierAptitudeEngine {
     APTITUDE_ACUITY_DOMAINS.forEach((d, i) => { scores[d.id] = Math.min(10, Math.max(0, 4 + Math.floor(Math.random() * 5))); });
     this.acuityProfile = { scores };
     this.completeAssessment();
-  }
-
-  exportCSV() {
-    const rows = [['Dimension', 'Score']];
-    Object.entries(this.analysisData.dimensionScores || {}).forEach(([dim, value]) => {
-      rows.push([dim, (value * 100).toFixed(0)]);
-    });
-    rows.push(['Acuity Primary', this.getAcuityLabel(this.analysisData.acuityProfile?.primary)]);
-    rows.push(['Acuity Secondary', this.getAcuityLabel(this.analysisData.acuityProfile?.secondary)]);
-    rows.push(['Acuity Tertiary', this.getAcuityLabel(this.analysisData.acuityProfile?.tertiary)]);
-    rows.push(['Acuity Additional', (this.analysisData.acuityProfile?.additional || []).map(id => this.getAcuityLabel(id)).join('; ')]);
-    const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
-    downloadFile(csv, 'outlier-aptitude.csv', 'text/csv');
   }
 
   getEmptyAnalysisData() {

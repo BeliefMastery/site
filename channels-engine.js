@@ -161,16 +161,6 @@ export class ChannelsEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportJSONBtn = document.getElementById('exportAnalysisJson');
-    if (exportJSONBtn) {
-      exportJSONBtn.addEventListener('click', () => this.exportAnalysis('json'));
-    }
-    
-    const exportCSVBtn = document.getElementById('exportAnalysisCsv');
-    if (exportCSVBtn) {
-      exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
-    }
-
     const exportBriefBtn = document.getElementById('exportExecutiveBrief');
     if (exportBriefBtn) {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());

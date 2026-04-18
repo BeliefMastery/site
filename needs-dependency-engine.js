@@ -526,16 +526,6 @@ export class NeedsDependencyEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportBtnJson = document.getElementById('exportAnalysisJson');
-    if (exportBtnJson) {
-      exportBtnJson.addEventListener('click', () => this.exportAnalysis('json'));
-    }
-    
-    const exportBtnCsv = document.getElementById('exportAnalysisCsv');
-    if (exportBtnCsv) {
-      exportBtnCsv.addEventListener('click', () => this.exportAnalysis('csv'));
-    }
-
     const exportBriefBtn = document.getElementById('exportExecutiveBrief');
     if (exportBriefBtn) {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());

@@ -179,14 +179,12 @@
           <!-- Results will be populated by JavaScript -->
         </div>
         <div class="text-center spacing-top-lg export-section">
-          <p class="content-section">Download a single HTML file with the full report text (works offline).</p>
-          <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+          <p class="content-section">Download a single MHTML snapshot of the full report (works offline in Chromium-based browsers).</p>
+          <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (MHTML)</button>
           <button type="button" class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
           <details class="export-advanced export-advanced--center-narrow text-left">
-            <summary>Advanced export (JSON, CSV, executive brief)</summary>
+            <summary>Optional: executive brief (plain text)</summary>
             <div class="action-buttons action-buttons--push-center">
-              <button type="button" class="btn btn-secondary" id="exportJSON">Export JSON</button>
-              <button type="button" class="btn btn-secondary" id="exportCSV">Export CSV</button>
               <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
             </div>
           </details>

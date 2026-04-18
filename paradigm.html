@@ -190,16 +190,14 @@
         </div>
         <div class="results-actions export-section">
           <h3 class="tool-section-heading tool-section-heading--flush">Save your report</h3>
-          <p class="content-section">Download a single HTML file with the full report text (works offline).</p>
+          <p class="content-section">Download a single MHTML snapshot of the full report (works offline in Chromium-based browsers).</p>
           <div class="action-buttons">
-            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (MHTML)</button>
             <button type="button" class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
           </div>
           <details class="export-advanced export-advanced--top">
-            <summary>Advanced export (JSON, CSV, executive brief)</summary>
+            <summary>Optional: executive brief (plain text)</summary>
             <div class="action-buttons action-buttons--push">
-              <button type="button" class="btn btn-secondary" id="exportJSON">Export JSON</button>
-              <button type="button" class="btn btn-secondary" id="exportCSV">Export CSV</button>
               <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
             </div>
           </details>

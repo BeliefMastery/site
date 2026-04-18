@@ -2,7 +2,7 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
-import { exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
+import { downloadReportHtml } from './shared/export-utils.js';
 
 let DSM5_CATEGORIES, NODES, CHANNELS, NEEDS_VOCABULARY;
 let WILL_ANOMALY_TIERS, WILL_ANOMALY_QUESTIONS, TASTE_SKEW_OPTIONS, CONTRACT_THEMES, NODE_CONTRACT_MAP, NODE_TAINTED_EXPRESSIONS;
@@ -190,18 +190,6 @@ export class EntitiesEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportJSONBtn = document.getElementById('exportJSON');
-    const exportCSVBtn = document.getElementById('exportCSV');
-    if (exportJSONBtn) {
-      exportJSONBtn.addEventListener('click', () =>
-        downloadFile(
-          exportJSON(this.analysisData, 'entities', 'Entities Assessment'),
-          `entities-assessment-${Date.now()}.json`,
-          'application/json'
-        )
-      );
-    }
-    if (exportCSVBtn) exportCSVBtn.addEventListener('click', () => this.exportCSV());
   }
 
   exportReportHtml() {
@@ -659,31 +647,6 @@ export class EntitiesEngine {
     this.populateChannels(document.getElementById('channelSelect'), node || '');
     document.getElementById('channelSelect').value = channel || '';
     document.getElementById('rootNeedSelect').value = rootNeed || '';
-  }
-
-  exportCSV() {
-    const rows = [
-      ['Field', 'Value'],
-      ['Timestamp', this.analysisData.timestamp || ''],
-      ['Pathology Category', this.analysisData.intake?.pathologyCategory || ''],
-      ['Pathology Disorder', this.analysisData.intake?.pathologyDisorder || ''],
-      ['Node', this.analysisData.intake?.node || ''],
-      ['Channel', this.analysisData.intake?.channel || ''],
-      ['Root Need', this.analysisData.intake?.rootNeed || ''],
-      ['Tier Result', this.analysisData.tierResult || ''],
-      ['Tier Label', this.analysisData.tierSummary?.label || ''],
-      ['Primary Healing Mode', this.analysisData.tierSummary?.primaryHealingMode || ''],
-      ['Likely Contract', this.analysisData.contract?.label || ''],
-      ['Contract Description', this.analysisData.contract?.description || ''],
-      ['Taste Skew Selections', (this.analysisData.tasteSkewSelections || []).join('; ')],
-      ['Taste Skew Suggestions', (this.analysisData.tasteSkewSuggestions || []).join('; ')]
-    ];
-
-    const csv = rows
-      .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-
-    downloadFile(csv, 'entities-assessment.csv', 'text/csv');
   }
 
   resetAssessment() {

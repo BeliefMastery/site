@@ -207,18 +207,15 @@
         </div>
         <div class="export-section">
           <h3>Save your report</h3>
-          <p>Download a single HTML file with the full on-screen report (works offline). If you open deeper inquiry, use download again to include that section.</p>
+          <p>Download a single MHTML snapshot of the full on-screen report (works offline in Chromium-based browsers). If you open deeper inquiry, download again to include that section.</p>
           <div class="action-buttons">
-            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (HTML)</button>
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (MHTML)</button>
             <button type="button" class="btn btn-secondary" id="startDeeperInquiry">Deeper inquiry &amp; strategic planning</button>
             <button type="button" class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
           </div>
           <details class="export-advanced export-advanced--top">
-            <summary>Advanced export (JSON, CSV, executive brief)</summary>
-            <p class="tool-lead tool-lead--compact">Optional structured exports. You may be asked to pick an application context before JSON/CSV download.</p>
+            <summary>Optional: executive brief (plain text)</summary>
             <div class="action-buttons">
-              <button type="button" class="btn btn-secondary" id="exportProfileJSON">Export JSON</button>
-              <button type="button" class="btn btn-secondary" id="exportProfileCSV">Export CSV</button>
               <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
             </div>
           </details>
@@ -233,13 +230,11 @@
         <div class="export-section">
           <div class="action-buttons">
             <button type="button" class="btn btn-secondary" id="backToResults">← Back to Initial Results</button>
-            <button type="button" class="btn btn-primary" id="exportReportHtmlDeeper">Download report (HTML)</button>
+            <button type="button" class="btn btn-primary" id="exportReportHtmlDeeper">Download report (MHTML)</button>
           </div>
           <details class="export-advanced export-advanced--top">
-            <summary>Advanced export (JSON, CSV, executive brief)</summary>
+            <summary>Optional: executive brief (plain text)</summary>
             <div class="action-buttons">
-              <button type="button" class="btn btn-secondary" id="exportDeepProfileJSON">Export complete profile (JSON)</button>
-              <button type="button" class="btn btn-secondary" id="exportDeepProfileCSV">Export complete profile (CSV)</button>
               <button type="button" class="btn btn-secondary" id="exportExecutiveBriefDeeper">Executive brief (TXT)</button>
             </div>
           </details>

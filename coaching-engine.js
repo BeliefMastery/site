@@ -228,29 +228,9 @@ export class CoachingEngine {
       exportHtmlDeeperBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportDeepJsonBtn = document.getElementById('exportDeepProfileJSON');
-    if (exportDeepJsonBtn) {
-      exportDeepJsonBtn.addEventListener('click', () => this.exportProfile('json'));
-    }
-
-    const exportDeepCsvBtn = document.getElementById('exportDeepProfileCSV');
-    if (exportDeepCsvBtn) {
-      exportDeepCsvBtn.addEventListener('click', () => this.exportProfile('csv'));
-    }
-
     const exportBriefDeeperBtn = document.getElementById('exportExecutiveBriefDeeper');
     if (exportBriefDeeperBtn) {
       exportBriefDeeperBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-
-    const exportJSONBtn = document.getElementById('exportProfileJSON');
-    if (exportJSONBtn) {
-      exportJSONBtn.addEventListener('click', () => this.exportProfile('json'));
-    }
-    
-    const exportCSVBtn = document.getElementById('exportProfileCSV');
-    if (exportCSVBtn) {
-      exportCSVBtn.addEventListener('click', () => this.exportProfile('csv'));
     }
 
     const exportBriefBtn = document.getElementById('exportExecutiveBrief');

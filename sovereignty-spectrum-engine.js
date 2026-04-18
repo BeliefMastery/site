@@ -149,16 +149,6 @@ export class SovereigntySpectrumEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
-    const exportJSONBtn = document.getElementById('exportJSON');
-    if (exportJSONBtn) {
-      exportJSONBtn.addEventListener('click', () => this.exportAnalysis('json'));
-    }
-
-    const exportCSVBtn = document.getElementById('exportCSV');
-    if (exportCSVBtn) {
-      exportCSVBtn.addEventListener('click', () => this.exportAnalysis('csv'));
-    }
-
     const exportBriefBtn = document.getElementById('exportExecutiveBrief');
     if (exportBriefBtn) {
       exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
