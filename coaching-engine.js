@@ -160,7 +160,6 @@ export class CoachingEngine {
     obstaclesCard.dataset.section = 'obstacles';
     SecurityUtils.safeInnerHTML(obstaclesCard, `
       <h3>15 Obstacles to Sovereignty</h3>
-      <p>Identify constraints limiting your freedom, joy, and satisfaction in life. This assessment helps surface hidden and not-so-hidden forces that may be impacting your current state.</p>
     `);
     obstaclesCard.addEventListener('click', () => this.toggleSection('obstacles'));
     grid.appendChild(obstaclesCard);
@@ -171,7 +170,6 @@ export class CoachingEngine {
     domainsCard.dataset.section = 'domains';
     SecurityUtils.safeInnerHTML(domainsCard, `
       <h3>10 Satisfaction Domains</h3>
-      <p>Evaluate areas of life that determine the depth of your satisfaction. This systematic overview reveals the most impactful domains where action will directly impact your satisfaction.</p>
     `);
     domainsCard.addEventListener('click', () => this.toggleSection('domains'));
     grid.appendChild(domainsCard);
