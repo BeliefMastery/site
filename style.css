@@ -1433,6 +1433,8 @@ button,
     gap: 0.5rem;
     min-height: 44px;
     min-width: 44px;
+    -webkit-tap-highlight-color: rgba(255, 215, 0, 0.12);
+    touch-action: manipulation;
 }
 
 /* The Shine Effect Layer */
@@ -1509,6 +1511,12 @@ button.secondary:hover {
     background: var(--card-hover);
 }
 
+.choice-btn:active {
+    transform: translateY(1px) scale(0.992) !important;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.28);
+    transition-duration: 0.07s;
+}
+
 .choice-btn.selected {
     border-color: var(--accent);
     background: rgba(255, 215, 0, 0.05);
@@ -1522,6 +1530,36 @@ button:disabled,
     cursor: not-allowed;
     filter: grayscale(1);
     transform: none !important;
+}
+
+/* Pressed / touch feedback — sinks control while finger or cursor is down */
+.btn:active:not(:disabled)::before,
+button:active:not(:disabled)::before {
+    opacity: 0;
+    transition: opacity 0.06s ease;
+}
+
+.btn-primary:active:not(:disabled),
+button:not(.secondary):not(.close-btn):active:not(:disabled),
+#calculate-btn:active:not(:disabled),
+.next-btn:active:not(:disabled) {
+    transform: translateY(2px) scale(0.985) !important;
+    box-shadow:
+        inset 0 3px 10px rgba(0, 0, 0, 0.34),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+        0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    transition-duration: 0.08s;
+}
+
+.btn-outline:active:not(:disabled),
+.btn-secondary:active:not(:disabled),
+button.secondary:active:not(:disabled),
+.prev-btn:active:not(:disabled) {
+    transform: translateY(1px) scale(0.987) !important;
+    box-shadow:
+        inset 0 2px 9px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    transition-duration: 0.08s;
 }
 
 /* Section title buttons - styled headings with framing */
@@ -1666,6 +1704,8 @@ button:disabled,
     position: relative;
     overflow: hidden;
     height: 100%; /* Ensures all cards in a row are same height */
+    -webkit-tap-highlight-color: rgba(255, 215, 0, 0.1);
+    touch-action: manipulation;
 }
 
 .paradigm-card:hover,
@@ -1679,6 +1719,20 @@ button:disabled,
     border-color: var(--brand);
     transform: translateY(-4px);
     box-shadow: 0 0 30px var(--glow-blue);
+}
+
+.paradigm-card:active,
+.paradigm-option:active,
+.option-card:active,
+.section-card:active,
+.choice-box:active,
+.diagnosis-card:active,
+.assessment-card:active,
+.category-card:active,
+.pathology-card:active {
+    transform: translateY(0) scale(0.988) !important;
+    box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.32) !important;
+    transition-duration: 0.07s;
 }
 
 .paradigm-card.selected,
