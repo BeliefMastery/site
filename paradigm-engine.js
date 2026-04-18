@@ -21,7 +21,7 @@ export class ParadigmEngine {
    * Initialize the paradigm engine
    */
   constructor() {
-    this.selectedCategories = [];
+    this.selectedCategories = ['good_life', 'god'];
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -56,16 +56,16 @@ export class ParadigmEngine {
 
     this.ui = new EngineUIController({
       idle: {
-        show: ['#introSection', '#categorySelection', '#actionButtonsSection'],
+        show: ['#introSection', '#actionButtonsSection'],
         hide: ['#questionnaireSection', '#resultsSection']
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#categorySelection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#categorySelection', '#actionButtonsSection', '#questionnaireSection']
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
       }
     });
     
@@ -135,12 +135,6 @@ export class ParadigmEngine {
   }
 
   attachEventListeners() {
-    // Category selection
-    const categoryCards = document.querySelectorAll('.category-card');
-    categoryCards.forEach(card => {
-      card.addEventListener('click', () => this.toggleCategory(card.dataset.category));
-    });
-
     const startBtn = document.getElementById('startAssessment');
     if (startBtn) {
       startBtn.addEventListener('click', () => this.startAssessment());
@@ -289,33 +283,12 @@ export class ParadigmEngine {
     }
   }
 
-  toggleCategory(categoryId) {
-    const card = document.querySelector(`[data-category="${categoryId}"]`);
-    if (!card) return;
-    
-    if (this.selectedCategories.includes(categoryId)) {
-      this.selectedCategories = this.selectedCategories.filter(c => c !== categoryId);
-      card.classList.remove('selected');
-    } else {
-      this.selectedCategories.push(categoryId);
-      card.classList.add('selected');
-    }
-    
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.disabled = this.selectedCategories.length === 0;
-    }
-  }
-
   /**
    * Start the assessment with selected categories
    * @returns {Promise<void>}
    */
   async startAssessment() {
-    if (this.selectedCategories.length === 0) {
-      ErrorHandler.showUserError('Please select at least one category to assess.');
-      return;
-    }
+    this.selectedCategories = ['good_life', 'god'];
     
     try {
       await this.loadParadigmData();
@@ -325,9 +298,7 @@ export class ParadigmEngine {
       this.currentQuestionIndex = 0;
       this.answers = {};
       
-      const categorySelection = document.getElementById('categorySelection');
       const questionnaireSection = document.getElementById('questionnaireSection');
-      if (categorySelection) categorySelection.style.display = 'none';
       this.ui.transition('assessment');
       
       this.renderCurrentQuestion();
@@ -1901,6 +1872,9 @@ export class ParadigmEngine {
       if (!data) return;
 
       this.selectedCategories = data.selectedCategories || [];
+      if (this.selectedCategories.length === 0) {
+        this.selectedCategories = ['good_life', 'god'];
+      }
       this.currentPhase = data.currentPhase || 1;
       this.currentQuestionIndex = data.currentQuestionIndex || 0;
       this.answers = data.answers || {};
@@ -1920,17 +1894,6 @@ export class ParadigmEngine {
         return;
       }
       
-      // Restore category selections
-      this.selectedCategories.forEach(categoryId => {
-        const card = document.querySelector(`[data-category="${categoryId}"]`);
-        if (card) card.classList.add('selected');
-      });
-      
-      const startBtn = document.getElementById('startAssessment');
-      if (startBtn) {
-        startBtn.disabled = this.selectedCategories.length === 0;
-      }
-      
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0 && this.selectedCategories.length > 0) {
         if (this.currentPhase === 1) {
@@ -1944,9 +1907,7 @@ export class ParadigmEngine {
           await this.buildPhase3Sequence();
         }
         
-        const categorySelection = document.getElementById('categorySelection');
         const questionnaireSection = document.getElementById('questionnaireSection');
-        if (categorySelection) categorySelection.classList.add('hidden');
         if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
@@ -1957,7 +1918,7 @@ export class ParadigmEngine {
   }
 
   resetAssessment() {
-    this.selectedCategories = [];
+    this.selectedCategories = ['good_life', 'god'];
     this.reportComplete = false;
     this.dataStore.clear('progress');
     this.currentPhase = 1;
@@ -1985,17 +1946,7 @@ export class ParadigmEngine {
     sessionStorage.removeItem('paradigmProgress');
     
     // Reset UI
-    document.getElementById('categorySelection').classList.remove('hidden');
     this.ui.transition('idle');
-    
-    document.querySelectorAll('.category-card').forEach(card => {
-      card.classList.remove('selected');
-    });
-    
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.disabled = true;
-    }
   }
 }
 
