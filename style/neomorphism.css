@@ -96,6 +96,22 @@
 
     --ack-box-bg: var(--neo-dark);
     --ack-box-border: rgba(249, 115, 22, 0.25);
+
+    --interactive-chip-bg: rgba(255, 255, 255, 0.1);
+    --interactive-panel-tint: rgba(0, 0, 0, 0.16);
+    --interactive-panel-tint-weak: rgba(0, 0, 0, 0.1);
+    --interactive-border-subtle: rgba(249, 115, 22, 0.22);
+    --nested-disclosure-bg: rgba(0, 0, 0, 0.22);
+    --card-promote-a: var(--card-bg);
+    --card-promote-b: var(--neo-dark);
+    --card-promote-solid: var(--card-bg);
+    --spectrum-track-a: rgba(249, 115, 22, 0.38);
+    --spectrum-track-b: rgba(31, 40, 54, 0.88);
+    --spectrum-track-soft-a: rgba(249, 115, 22, 0.26);
+    --spectrum-track-soft-b: rgba(31, 40, 54, 0.72);
+    --question-hint-bg: rgba(249, 115, 22, 0.12);
+    --table-header-bg: rgba(249, 115, 22, 0.14);
+    --table-row-hover-bg: rgba(249, 115, 22, 0.08);
 }
 
 html {
@@ -261,6 +277,12 @@ header.site-header {
 }
 
 .archetype-table th {
-    background: var(--neo-dark) !important;
+    background: var(--table-header-bg) !important;
     color: var(--accent) !important;
+}
+
+@media (hover: hover) {
+    .archetype-table tr:hover td {
+        background: var(--table-row-hover-bg) !important;
+    }
 }

@@ -53,14 +53,17 @@
     --layout-gutter-x: clamp(0.75rem, 2.2vw + 0.35rem, 1.75rem);
     --layout-gutter-x-tight: clamp(0.65rem, 1.8vw + 0.25rem, 1.15rem);
     --layout-section-pad-y: clamp(0.65rem, 1.8vw + 0.35rem, 1.35rem);
+    /* One outer shell + one content column (sections, tools, home grids, disclosures) */
+    --layout-shell-max: 1200px;
+    --layout-content-max: 1100px;
     --tools-section-pad-y: 2.25rem;
     --tools-section-pad-x: 1rem;
     --hero-padding-y-top: 0.85rem;
     --hero-padding-y-bottom: 1.65rem;
 
-    /* Accessibility & Fluid Typography */
-    --text-primary: #111;
-    --text-secondary: #5a5a5a;
+    /* Accessibility & Fluid Typography (always track readable body/heading tones) */
+    --text-primary: var(--brand);
+    --text-secondary: var(--muted);
     --link-color: #0066cc; /* WCAG AA compliant */
     --focus-color: #0066cc;
     --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
@@ -117,6 +120,23 @@
     --tool-inset-bg: rgba(0, 0, 0, 0.2);
     --orientation-link-color: #a0c0ff;
     --heading-text-shadow: 0 2px 10px rgba(100, 160, 255, 0.2);
+
+    /* Theme-aware surfaces — layered themes override in style/light.css, forge.css, neomorphism.css */
+    --interactive-chip-bg: rgba(255, 255, 255, 0.1);
+    --interactive-panel-tint: rgba(255, 255, 255, 0.05);
+    --interactive-panel-tint-weak: rgba(255, 255, 255, 0.03);
+    --interactive-border-subtle: rgba(255, 255, 255, 0.1);
+    --nested-disclosure-bg: rgba(0, 0, 0, 0.12);
+    --card-promote-a: rgba(20, 35, 55, 0.9);
+    --card-promote-b: rgba(15, 25, 45, 0.85);
+    --card-promote-solid: rgba(20, 35, 55, 0.85);
+    --spectrum-track-a: rgba(80, 140, 255, 0.35);
+    --spectrum-track-b: rgba(20, 35, 55, 0.25);
+    --spectrum-track-soft-a: rgba(80, 140, 255, 0.25);
+    --spectrum-track-soft-b: rgba(20, 35, 55, 0.2);
+    --question-hint-bg: rgba(255, 255, 255, 0.06);
+    --table-header-bg: rgba(20, 35, 55, 0.75);
+    --table-row-hover-bg: rgba(20, 35, 55, 0.35);
 
     --ack-box-bg: rgba(15, 20, 30, 0.95);
     --ack-box-border: rgba(50, 100, 220, 0.2);
@@ -272,11 +292,11 @@ main {
 .archetype-table th {
     color: var(--accent);
     font-weight: 600;
-    background: rgba(20, 35, 55, 0.75);
+    background: var(--table-header-bg);
 }
 
 .archetype-table tr:hover td {
-    background: rgba(20, 35, 55, 0.35);
+    background: var(--table-row-hover-bg);
 }
 
 .analysis-modules-grid {
@@ -358,6 +378,183 @@ main {
     font-style: italic; /* This line adds the italics */
     border-bottom: 2px solid var(--accent);
     padding-bottom: 0.5rem;
+}
+
+/* Tools hub (tools.html): grouped “toolkit” — vertical scan, category rails, row rhythm */
+body.page-tools #main #tools .tools-toolkit {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+    max-width: min(var(--layout-content-max), 100%);
+    margin: 0 auto;
+    padding-top: 0.35rem;
+}
+
+body.page-tools #main #tools .tools-toolkit-group {
+    background: var(--glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--accent);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+body.page-tools #main #tools .tools-toolkit-group--psych {
+    border-left-color: var(--nav-group-psych-color);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--philosophical {
+    border-left-color: var(--nav-group-philosophical-color);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--defensive {
+    border-left-color: var(--nav-group-defensive-color);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--esoteric {
+    border-left-color: var(--nav-group-esoteric-color);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--tech {
+    border-left-color: var(--nav-group-tech-color);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--atlas {
+    border-left-color: var(--border-bright);
+    background: var(--tool-inset-bg);
+}
+
+body.page-tools #main #tools .tools-toolkit-group__head {
+    padding: 1.05rem 1.2rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent);
+}
+
+body.page-tools #main #tools .tools-toolkit-group__eyebrow {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+}
+
+body.page-tools #main #tools .tools-toolkit-group__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: var(--brand);
+    font-style: normal;
+}
+
+body.page-tools #main #tools .tools-toolkit-group__lede {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 62ch;
+}
+
+body.page-tools #main #tools .tools-toolkit-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body.page-tools #main #tools .tools-toolkit-item {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    gap: 0.85rem 1.1rem;
+    align-items: center;
+    padding: 0.95rem 1.15rem;
+    border-top: 1px solid var(--border-subtle);
+    transition: background var(--transition);
+}
+
+body.page-tools #main #tools .tools-toolkit-item:first-child {
+    border-top: none;
+}
+
+@media (hover: hover) {
+    body.page-tools #main #tools .tools-toolkit-item:hover {
+        background: var(--toggle-row-hover-bg);
+    }
+}
+
+body.page-tools #main #tools .tools-toolkit-item__thumb-wrap {
+    display: block;
+    line-height: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+body.page-tools #main #tools .tools-toolkit-item__thumb {
+    width: 76px;
+    height: 102px;
+    object-fit: cover;
+    display: block;
+}
+
+body.page-tools #main #tools .tools-toolkit-item__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--brand);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 0.3rem;
+}
+
+body.page-tools #main #tools .tools-toolkit-item__title:hover {
+    color: var(--accent);
+}
+
+body.page-tools #main #tools .tools-toolkit-item__desc {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+body.page-tools #main #tools .tools-toolkit-item__cta {
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-height: 44px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+body.page-tools #main #tools .tools-toolkit-item--atlas {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 640px) {
+    body.page-tools #main #tools .tools-toolkit-item {
+        grid-template-columns: 56px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+    }
+
+    body.page-tools #main #tools .tools-toolkit-item__thumb {
+        width: 56px;
+        height: 75px;
+    }
+
+    body.page-tools #main #tools .tools-toolkit-item__cta {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        width: 100%;
+    }
+
+    body.page-tools #main #tools .tools-toolkit-item--atlas {
+        grid-template-columns: 1fr;
+    }
+
+    body.page-tools #main #tools .tools-toolkit-item--atlas .tools-toolkit-item__cta {
+        grid-column: 1;
+    }
 }
 
 .tools-grid {
@@ -742,7 +939,7 @@ header.site-header {
 }
 
 .nav {
-    max-width: 1180px;
+    max-width: var(--layout-shell-max);
     margin: 0 auto;
     width: 100%;
     display: flex;
@@ -988,7 +1185,7 @@ header.site-header {
 /* Master Container (site-wide width constraint) */
 .container {
     width: 100%;
-    max-width: 1200px; /* The "Master" width for the whole site */
+    max-width: var(--layout-shell-max);
     margin: 0 auto;
     padding-left: var(--layout-gutter-x);
     padding-right: var(--layout-gutter-x);
@@ -1011,7 +1208,7 @@ header.site-header {
 .character-sheet-container,
 .diagnosis-container,
 .sovereignty-container {
-    max-width: min(900px, calc(100vw - 2 * var(--layout-gutter-x)));
+    max-width: min(var(--layout-content-max), calc(100vw - 2 * var(--layout-gutter-x)));
     margin: 2rem auto;
     padding: 2rem var(--layout-gutter-x);
     background: var(--glass);
@@ -1025,7 +1222,7 @@ header.site-header {
 .main-content {
     position: relative;
     z-index: 2;
-    max-width: 1100px;
+    max-width: var(--layout-content-max);
     margin: 0 auto;
     padding: 2rem var(--layout-gutter-x);
     box-sizing: border-box;
@@ -1095,7 +1292,7 @@ header.site-header {
     margin: 0 0 0.85rem;
     padding: 0.65rem 0.9rem;
     border-left: 3px solid var(--accent, #6b9fff);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--question-hint-bg);
 }
 
 .question-clinical-ref {
@@ -1137,7 +1334,7 @@ section {
 }
 
 .section-inner {
-    max-width: 980px;
+    max-width: var(--layout-content-max);
     margin: 0 auto;
     background: var(--glass);
     color: var(--brand);
@@ -1868,7 +2065,7 @@ section .card p {
 
 /* Tool card base - with cosmic glass effect */
 .tool-card {
-    background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%);
+    background: linear-gradient(135deg, var(--card-promote-a) 0%, var(--card-promote-b) 100%);
     border: 2px solid var(--border-medium); /* Thicker border */
     border-radius: 16px; /* Rounder edges */
     padding: 2rem; /* More padding */
@@ -2178,7 +2375,7 @@ body.home-page .home-grid-section:hover {
 
 body.home-page .home-grid-section .section-inner.minimal-section {
     padding: 0.25rem 0.75rem 0.35rem;
-    max-width: 980px;
+    max-width: min(var(--layout-content-max), 100%);
 }
 
 body.home-page #suite-info-disclosures .section-inner.minimal-section {
@@ -2248,13 +2445,13 @@ body.home-page .index-tools-grid {
     grid-auto-rows: auto;
     gap: 0.5rem;
     margin: 0.65rem auto 0;
-    max-width: min(1120px, 100%);
+    max-width: min(var(--layout-content-max), 100%);
 }
 
 /* Books: three covers per row (six titles → two rows on desktop) */
 body.home-page #books .index-tools-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    max-width: min(900px, 100%);
+    max-width: min(var(--layout-content-max), 100%);
 }
 
 @media (max-width: 960px) {
@@ -2349,7 +2546,7 @@ body.home-page main .action-btn {
 
 /* Home suite progress strip (mirrors RedPillSMV suite-progress-wrap rhythm) */
 body.home-page #suite-progress .section-inner.minimal-section {
-    max-width: 28rem;
+    max-width: min(var(--layout-content-max), 100%);
     margin-left: auto;
     margin-right: auto;
     padding: 1rem 0.5rem 1.25rem;
@@ -2441,7 +2638,7 @@ body.home-page #suite-progress-list li span {
 }
 
 .portal-card {
-    background: rgba(20, 35, 55, 0.85); /* More opaque for better contrast */
+    background: var(--card-promote-solid); /* More opaque for better contrast */
     border: 2px solid var(--border-medium);  /* More visible border */
     box-shadow: var(--shadow-md);  /* Stronger shadow for depth */
     color: var(--brand);  /* Ice blue base text */
@@ -2662,18 +2859,6 @@ body.home-page #suite-progress-list li span {
     color: var(--muted);
 }
 
-.book-bridge-content {
-    max-width: 72ch;
-    margin: 0 auto;
-    color: var(--muted);
-    line-height: 1.6;
-}
-
-.book-bridge-title {
-    text-align: center;
-    margin-bottom: 0.4rem;
-}
-
 .book-tools-lead {
     max-width: 72ch;
     text-align: center;
@@ -2683,7 +2868,7 @@ body.home-page #suite-progress-list li span {
 
 /* books.html — uniform “More Info” disclosure blocks */
 details.books-more-info {
-    max-width: min(1100px, 100%);
+    max-width: min(var(--layout-content-max), 100%);
     margin-left: auto;
     margin-right: auto;
 }
@@ -2829,7 +3014,7 @@ figure.image-card {
 }
 
 .image-card-frame {
-    background: rgba(20, 35, 55, 0.85);
+    background: var(--card-promote-solid);
     border: 2px solid var(--border-medium);
     box-shadow: var(--shadow-md);
     padding: 1rem;
@@ -3050,7 +3235,7 @@ figure.image-card a {
 
 /* Index: collapsible suite framing + consolidated per-tool disclaimers */
 .index-suite-disclosures {
-    max-width: 52rem;
+    max-width: min(var(--layout-content-max), 100%);
     margin-left: auto;
     margin-right: auto;
 }
@@ -3133,7 +3318,7 @@ figure.image-card a {
 .index-disclosure-nested > details {
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.12);
+    background: var(--nested-disclosure-bg);
 }
 
 .index-disclosure-nested > details > summary {
@@ -3174,7 +3359,7 @@ figure.image-card a {
 }
 
 .index-tools-grid .image-card {
-    background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%);
+    background: linear-gradient(135deg, var(--card-promote-a) 0%, var(--card-promote-b) 100%);
     border: 2px solid var(--border-medium);
     border-radius: 16px;
     padding: 1.5rem;
@@ -3244,7 +3429,7 @@ figure.image-card a {
     padding: 2.5rem;
     margin: 4rem auto 2rem;
     box-shadow: var(--shadow);
-    max-width: 900px;
+    max-width: min(var(--layout-content-max), 100%);
 }
 
 .orientation-block h2 {
@@ -3312,6 +3497,7 @@ figure.image-card a {
     background: var(--panel-expanded-highlight-bg);
     border-left: 4px solid var(--accent);
     margin: 1rem 0;
+    color: var(--brand);
 }
 
 /* Ensure headings inside these panels are also visible */
@@ -4901,7 +5087,7 @@ canvas {
     .sovereignty-container {
         padding: clamp(0.75rem, 2.5vw, 1.1rem) var(--layout-gutter-x);
         margin: clamp(0.4rem, 1.5vh, 0.75rem) auto;
-        max-width: min(900px, calc(100vw - 2 * var(--layout-gutter-x)));
+        max-width: min(var(--layout-content-max), calc(100vw - 2 * var(--layout-gutter-x)));
     }
     
     /* Prevent text from being too small */
@@ -5224,7 +5410,7 @@ canvas {
         padding-left: var(--edge-rail);
         padding-right: var(--edge-rail);
         margin: 0.4rem auto;
-        max-width: min(900px, calc(100vw - 2 * var(--edge-rail)));
+        max-width: min(var(--layout-content-max), calc(100vw - 2 * var(--edge-rail)));
     }
 
     .results-container,
@@ -5313,7 +5499,7 @@ canvas {
     .sovereignty-container {
         padding: clamp(0.85rem, 2vw, 1.25rem) var(--layout-gutter-x);
         margin: clamp(0.5rem, 1.5vh, 1rem) auto;
-        max-width: min(900px, calc(100vw - 2 * var(--layout-gutter-x)));
+        max-width: min(var(--layout-content-max), calc(100vw - 2 * var(--layout-gutter-x)));
     }
 
     .card,
@@ -6698,7 +6884,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     align-items: center;
     padding: 1rem;
     margin: 0.5rem 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--interactive-chip-bg);
     border: 2px solid transparent;
     border-radius: var(--radius);
     cursor: pointer;
@@ -6750,7 +6936,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .question-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     padding: 2rem;
     border-radius: var(--radius);
     margin-bottom: 2rem;
@@ -6795,7 +6981,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     display: inline-block;
     padding: 0.75rem 1rem;
     margin: 0.25rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--interactive-chip-bg);
     border: 2px solid transparent;
     border-radius: var(--radius);
     cursor: pointer;
@@ -6844,7 +7030,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .frequency-grid-row {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--interactive-border-subtle);
 }
 
 .frequency-grid-cell {
@@ -6862,7 +7048,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     display: inline-block;
     padding: 0.5rem 0.75rem;
     margin: 0.25rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--interactive-chip-bg);
     border: 2px solid transparent;
     border-radius: var(--radius);
     cursor: pointer;
@@ -6890,7 +7076,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .results-dashboard {
-    max-width: 900px;
+    max-width: min(var(--layout-content-max), 100%);
     margin: 0 auto;
 }
 
@@ -6915,7 +7101,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 
 /* Executive at-a-glance summary */
 .results-dashboard .attraction-exec-summary {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--interactive-panel-tint-weak);
     padding: 0;
     border-radius: var(--radius);
     border: 1px solid var(--border-subtle);
@@ -7069,7 +7255,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 
 /* Attraction: Bad Boy/Good Guy & Keeper-Sweeper placement */
 .results-dashboard .grid-placement {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     padding: 1.25rem;
     border-radius: var(--radius);
     margin-bottom: 1.5rem;
@@ -7101,7 +7287,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .results-dashboard .cluster-subcategory-block {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--interactive-panel-tint-weak);
     padding: 1rem;
     border-radius: var(--radius);
     margin-bottom: 1rem;
@@ -7135,7 +7321,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .results-dashboard .sub-bar {
     flex: 1 1 100%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--interactive-chip-bg);
     border-radius: 3px;
     overflow: hidden;
 }
@@ -7151,7 +7337,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .results-dashboard .guidance-block {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     padding: 1rem 1.25rem;
     border-radius: var(--radius);
     margin-bottom: 1rem;
@@ -7196,7 +7382,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .subclasses,
 .sovereignty-score,
 .attachment-mode {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     padding: 2rem;
     border-radius: var(--radius);
     margin-bottom: 2rem;
@@ -7224,7 +7410,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .subclass-card {
     margin: 1rem 0;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     border-radius: var(--radius);
 }
 
@@ -7270,7 +7456,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .score-bar {
     width: 100%;
     height: 20px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--interactive-chip-bg);
     border-radius: 10px;
     overflow: hidden;
     margin: 1rem 0;
@@ -7283,7 +7469,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .layer-profile {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     padding: 2rem;
     border-radius: var(--radius);
     margin-bottom: 2rem;
@@ -7303,7 +7489,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 
 .layer-score-item {
     padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--interactive-panel-tint-weak);
     border-radius: var(--radius);
 }
 
@@ -7339,7 +7525,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .blueprint-futureproofing {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     padding: 2rem;
     border-radius: var(--radius);
     margin-bottom: 2rem;
@@ -7412,7 +7598,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .risk-item {
     margin: 1rem 0;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     border-radius: var(--radius);
 }
 
@@ -7471,7 +7657,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .action-plan-item {
     margin: 1.5rem 0;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--interactive-panel-tint);
     border-radius: var(--radius);
 }
 
@@ -7526,7 +7712,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     display: block;
     padding: 1.5rem;
     margin: 1rem 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--interactive-chip-bg);
     border: 2px solid transparent;
     border-radius: var(--radius);
     cursor: pointer;
@@ -7582,11 +7768,14 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 }
 
 .iq-selection-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
     padding: 3rem;
     border-radius: var(--radius);
     margin-bottom: 2rem;
     text-align: center;
+    color: var(--brand);
 }
 
 .iq-selection-card h2 {
@@ -7888,7 +8077,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .temperament-spectrum {
     position: relative;
     height: 30px;
-    background: linear-gradient(to right, rgba(80, 140, 255, 0.35), rgba(20, 35, 55, 0.25));
+    background: linear-gradient(to right, var(--spectrum-track-a), var(--spectrum-track-b));
     border-radius: var(--radius);
     margin-top: 1rem;
     border: 2px solid var(--border-medium);
@@ -8041,7 +8230,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .temperament-spectrum-large {
     position: relative;
     height: 40px;
-    background: linear-gradient(to right, rgba(80, 140, 255, 0.35), rgba(20, 35, 55, 0.25));
+    background: linear-gradient(to right, var(--spectrum-track-a), var(--spectrum-track-b));
     border-radius: var(--radius);
     margin-bottom: 1rem;
     border: 2px solid var(--border-medium);
@@ -8179,7 +8368,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
 .dimension-spectrum {
     position: relative;
     height: 30px;
-    background: linear-gradient(to right, rgba(80, 140, 255, 0.25), rgba(20, 35, 55, 0.2));
+    background: linear-gradient(to right, var(--spectrum-track-soft-a), var(--spectrum-track-soft-b));
     border-radius: 4px;
     margin-bottom: 0.5rem;
 }
@@ -8479,7 +8668,7 @@ details.category-group--diagnosis[open] .category-group-header__chev {
         box-shadow:
             0 4px 16px rgba(0, 0, 0, 0.3),
             inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-        background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%) !important;
+        background: linear-gradient(135deg, var(--card-promote-a) 0%, var(--card-promote-b) 100%) !important;
         border-color: var(--border-medium) !important;
     }
 
@@ -8665,7 +8854,7 @@ body[data-bm-flat-hover="true"] .tool-card:hover {
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-    background: linear-gradient(135deg, rgba(20, 35, 55, 0.9) 0%, rgba(15, 25, 45, 0.85) 100%) !important;
+    background: linear-gradient(135deg, var(--card-promote-a) 0%, var(--card-promote-b) 100%) !important;
     border-color: var(--border-medium) !important;
 }
 

@@ -91,6 +91,22 @@
 
     --ack-box-bg: rgba(18, 8, 6, 0.92);
     --ack-box-border: var(--border-medium);
+
+    --interactive-chip-bg: rgba(255, 255, 255, 0.09);
+    --interactive-panel-tint: rgba(255, 255, 255, 0.05);
+    --interactive-panel-tint-weak: rgba(0, 0, 0, 0.22);
+    --interactive-border-subtle: rgba(255, 171, 120, 0.18);
+    --nested-disclosure-bg: rgba(0, 0, 0, 0.38);
+    --card-promote-a: rgba(14, 8, 6, 0.98);
+    --card-promote-b: rgba(10, 5, 4, 0.94);
+    --card-promote-solid: var(--card-bg);
+    --spectrum-track-a: rgba(255, 87, 34, 0.48);
+    --spectrum-track-b: rgba(14, 8, 6, 0.55);
+    --spectrum-track-soft-a: rgba(255, 112, 67, 0.32);
+    --spectrum-track-soft-b: rgba(14, 8, 6, 0.42);
+    --question-hint-bg: rgba(255, 87, 34, 0.1);
+    --table-header-bg: rgba(255, 87, 34, 0.16);
+    --table-row-hover-bg: rgba(255, 87, 34, 0.07);
 }
 
 html {
@@ -250,12 +266,12 @@ button:not(.secondary):not(.hamburger):not(.close-btn):hover {
 
 /* Tables */
 .archetype-table th {
-    background: rgba(255, 87, 34, 0.15) !important;
+    background: var(--table-header-bg) !important;
     color: var(--accent-hover) !important;
 }
 
 @media (hover: hover) {
     .archetype-table tr:hover td {
-        background: rgba(255, 87, 34, 0.06) !important;
+        background: var(--table-row-hover-bg) !important;
     }
 }

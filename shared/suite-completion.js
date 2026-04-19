@@ -39,8 +39,23 @@ function readDataStoreKey(namespace, key) {
   return null;
 }
 
+function readLegacySovereigntyProgress() {
+  try {
+    const raw = window.localStorage.getItem('sovereigntyAssessment')
+      || window.sessionStorage.getItem('sovereigntyAssessment');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function isToolComplete(def) {
-  const progress = readDataStoreKey(def.namespace, 'progress');
+  let progress = readDataStoreKey(def.namespace, 'progress');
+  if (!progress && def.id === 'sovereignty') {
+    progress = readLegacySovereigntyProgress();
+  }
   if (progress) {
     if (progress.reportComplete === true || progress.completed === true || progress.results) return true;
     if (progress.currentStage === 'results') return true;

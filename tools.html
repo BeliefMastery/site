@@ -162,178 +162,171 @@
           </div>
         </section>
 
-        <!-- Psychological Tools -->
-        <h3 class="tools-category-title"><blockquote class="portal-quote section-title-btn">Psychological</blockquote></h3>
-        <div class="tools-grid">
-          
-          <!-- Pathology Assessment Card -->
-          <div class="tool-card" id="tool-pathology">
-             <h3 class="tool-card-title">🧠 Pathology Assessment</h3> 
-            <div class="tool-card-header">
-              <a href="diagnosis.html" class="tool-card-thumb-link"><img src="./images/DSM5-cover.jpg" alt="Pathology Assessment" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Structured DSM-5 checklist that scores recent symptoms and clarifies your current state.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="diagnosis.html">Begin Pathology Assessment</a>
-          </div>
+        <!-- Grouped toolkit: vertical scan, one column per category (matches nav groupings) -->
+        <nav class="tools-toolkit" aria-label="Tools by category">
+          <section class="tools-toolkit-group tools-toolkit-group--psych" aria-labelledby="tools-cat-psych">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-psych" class="tools-toolkit-group__title">Psychological</h2>
+              <p class="tools-toolkit-group__lede">Patterns, domains, and dependency—where inner rules meet outer behavior.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-pathology">
+                <a class="tools-toolkit-item__thumb-wrap" href="diagnosis.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/DSM5-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="diagnosis.html">Pathology Assessment</a>
+                  <p class="tools-toolkit-item__desc">Structured DSM-5 checklist that scores recent symptoms and clarifies your current state.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="diagnosis.html">Begin</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-life-domain">
+                <a class="tools-toolkit-item__thumb-wrap" href="coaching.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/coaching-agent-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="coaching.html">Life Domain Review</a>
+                  <p class="tools-toolkit-item__desc">Domain-by-domain review that highlights friction points and high-leverage areas for action.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="coaching.html">Review</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-dependency-loop">
+                <a class="tools-toolkit-item__thumb-wrap" href="needs-dependency.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/dependency-loop-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="needs-dependency.html">Dependency Loop Tracer</a>
+                  <p class="tools-toolkit-item__desc">Maps behavioral loops to underlying needs and shows where relief begins.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="needs-dependency.html">Trace</a>
+              </li>
+            </ol>
+          </section>
 
-          <!-- Life Domain Review Card -->
-          <div class="tool-card" id="tool-life-domain">
-            <h3 class="tool-card-title">📋 Life Domain Review</h3>
-            <div class="tool-card-header">
-              <a href="coaching.html" class="tool-card-thumb-link"><img src="./images/coaching-agent-cover.jpg" alt="Life Domain Review" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Domain-by-domain review that highlights friction points and high-leverage areas for action.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="coaching.html">Review Life Domain</a>
-          </div>
+          <section class="tools-toolkit-group tools-toolkit-group--philosophical" aria-labelledby="tools-cat-philosophical">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-philosophical" class="tools-toolkit-group__title">Philosophical</h2>
+              <p class="tools-toolkit-group__lede">Paradigm and meaning structure—how you organize truth and sovereignty.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-sovereignty-paradigm">
+                <a class="tools-toolkit-item__thumb-wrap" href="sovereignty-spectrum.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/sovereignty-spectrum-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a>
+                  <p class="tools-toolkit-item__desc">See which worldview best matches your values and decisions.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="sovereignty-spectrum.html">Clarify</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-logos">
+                <a class="tools-toolkit-item__thumb-wrap" href="paradigm.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/paradigm-clarification-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="paradigm.html">Logos Structure</a>
+                  <p class="tools-toolkit-item__desc">Truth-dimension scoring that reveals the structure of your thinking.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="paradigm.html">Map</a>
+              </li>
+            </ol>
+          </section>
 
-          <!-- Dependency Loop Tracer Card -->
-          <div class="tool-card" id="tool-dependency-loop">
-              <h3 class="tool-card-title">🔄 Dependency Loop Tracer</h3>
-            <div class="tool-card-header">
-              <a href="needs-dependency.html" class="tool-card-thumb-link"><img src="./images/dependency-loop-cover.jpg" alt="Dependency Loop Tracer" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Maps behavioral loops to underlying needs and shows where relief begins.</p>
+          <section class="tools-toolkit-group tools-toolkit-group--defensive" aria-labelledby="tools-cat-defensive">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-defensive" class="tools-toolkit-group__title">Defensive / protective</h2>
+              <p class="tools-toolkit-group__lede">Pressure, capture, and resistance—staying the author of your cognition.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-manipulation">
+                <a class="tools-toolkit-item__thumb-wrap" href="manipulation.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/manipulation-analysis-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="manipulation.html">Manipulation Defense Decoder</a>
+                  <p class="tools-toolkit-item__desc">Spot manipulation tactics and see how they affect you.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="manipulation.html">Decode</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-resistance-capacity">
+                <a class="tools-toolkit-item__thumb-wrap" href="sovereignty.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/vulnerability-vector-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="sovereignty.html">Cognitive Resistance Capacity</a>
+                  <p class="tools-toolkit-item__desc">Measure your reliance on AI and strengthen independence.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="sovereignty.html">Assess</a>
+              </li>
+            </ol>
+          </section>
 
-            </div>
-              <a class="btn btn-primary tool-card-action" href="needs-dependency.html">Trace Dependency Loops</a>
-          </div>
+          <section class="tools-toolkit-group tools-toolkit-group--esoteric" aria-labelledby="tools-cat-esoteric">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-esoteric" class="tools-toolkit-group__title">Esoteric</h2>
+              <p class="tools-toolkit-group__lede">Channels, symbols, and will anomalies—structured inquiry beyond the literal only.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-channels">
+                <a class="tools-toolkit-item__thumb-wrap" href="channels.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/channel-analysis-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="channels.html">Channel Flow Diagnostics</a>
+                  <p class="tools-toolkit-item__desc">Scan your energy system to locate blocks and restore flow.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="channels.html">Diagnose</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-character-sheet">
+                <a class="tools-toolkit-item__thumb-wrap" href="character-sheet.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/astrology-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="character-sheet.html">Astrological Character Sheet</a>
+                  <p class="tools-toolkit-item__desc">Multi-calendar astrology profile that turns your chart into a game-style sheet.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="character-sheet.html">Create</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-entities">
+                <a class="tools-toolkit-item__thumb-wrap" href="entities.html" data-suite-gate="2" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/entities-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="entities.html" data-suite-gate="2">Will Anomaly Mapping</a>
+                  <p class="tools-toolkit-item__desc">Combine prior results to pinpoint inner conflicts and restore coherence.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="entities.html" data-suite-gate="2">Map</a>
+              </li>
+            </ol>
+          </section>
 
-        </div>
+          <section class="tools-toolkit-group tools-toolkit-group--tech" aria-labelledby="tools-cat-tech">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-tech" class="tools-toolkit-group__title">Technological / AI</h2>
+              <p class="tools-toolkit-group__lede">Capability and external agents—leverage without surrendering judgment.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-aptitude">
+                <a class="tools-toolkit-item__thumb-wrap" href="outlier-aptitude.html" data-suite-gate="3" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/aptitude-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="outlier-aptitude.html" data-suite-gate="3">Aptitude Mapping</a>
+                  <p class="tools-toolkit-item__desc">Capability scan that highlights high-leverage talents for work and income.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="outlier-aptitude.html" data-suite-gate="3">Map</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-unlocked-gpt">
+                <a class="tools-toolkit-item__thumb-wrap" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/simulacra.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Unlocked GPT</a>
+                  <p class="tools-toolkit-item__desc">Sovereignty-aligned GPT—direct access for straight answers and course correction.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Open</a>
+              </li>
+            </ol>
+          </section>
 
-        <!-- Section Divider -->
-        <hr class="tools-divider">
-
-        <!-- Philosophical Tools -->
-        <h3 class="tools-category-title"><blockquote class="portal-quote section-title-btn">Philosophical</blockquote></h3>
-        <div class="tools-grid">
-
-          <!-- Your Sovereignty Paradigm Card -->
-          <div class="tool-card" id="tool-sovereignty-paradigm">
-              <h3 class="tool-card-title">🎯 Your Sovereignty Paradigm</h3>
-            <div class="tool-card-header">
-              <a href="sovereignty-spectrum.html" class="tool-card-thumb-link"><img src="./images/sovereignty-spectrum-cover.jpg" alt="Your Sovereignty Paradigm" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>See which worldview best matches your values and decisions.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="sovereignty-spectrum.html">Clarify your Paradigm</a>
-          </div>
-
-          <!-- Logos Structure Card -->
-          <div class="tool-card" id="tool-logos">
-           <h3 class="tool-card-title">🧭 Logos Structure</h3>
-            <div class="tool-card-header">
-              <a href="paradigm.html" class="tool-card-thumb-link"><img src="./images/paradigm-clarification-cover.jpg" alt="Logos Structure" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Truth-dimension scoring that reveals the structure of your thinking.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="paradigm.html">Map Your Worldview</a>
-          </div>
-
-        </div>
-
-        <!-- Section Divider -->
-        <hr class="tools-divider">
-
-        <!-- Defensive/Protective Tools -->
-        <h3 class="tools-category-title"><blockquote class="portal-quote section-title-btn">Defensive/Protective</blockquote></h3>
-        <div class="tools-grid">
-
-          <!-- Manipulation Defense Decoder Card -->
-          <div class="tool-card" id="tool-manipulation">
-            <h3 class="tool-card-title">🔍 Manipulation Defense Decoder</h3>
-            <div class="tool-card-header">
-              <a href="manipulation.html" class="tool-card-thumb-link"><img src="./images/manipulation-analysis-cover.jpg" alt="Manipulation Defense Decoder" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Spot manipulation tactics and see how they affect you.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="manipulation.html">Decode Manipulation</a>
-          </div>
-
-          <!-- Cognitive Resistance Capacity Card -->
-          <div class="tool-card" id="tool-resistance-capacity">
-            <h3 class="tool-card-title">🛡️ Cognitive Resistance Capacity</h3>
-            <div class="tool-card-header">
-              <a href="sovereignty.html" class="tool-card-thumb-link"><img src="./images/vulnerability-vector-cover.jpg" alt="Cognitive Resistance Capacity" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Measure your reliance on AI and strengthen independence.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="sovereignty.html">Assess Resistance Capacity</a>
-          </div>
-
-        </div>
-
-        <!-- Section Divider -->
-        <hr class="tools-divider">
-
-        <!-- Esoteric Tools -->
-        <h3 class="tools-category-title"><blockquote class="portal-quote section-title-btn">Esoteric</blockquote></h3>
-        <div class="tools-grid">
-
-          <!-- Channel Flow Diagnostics Card -->
-          <div class="tool-card" id="tool-channels">
-            <h3 class="tool-card-title">🌀 Channel Flow Diagnostics</h3>
-            <div class="tool-card-header">
-              <a href="channels.html" class="tool-card-thumb-link"><img src="./images/channel-analysis-cover.jpg" alt="Channel Flow Diagnostics" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-             <p>Scan your energy system to locate blocks and restore flow.</p>
-           </div>
-              <a class="btn btn-primary tool-card-action" href="channels.html">Diagnose Channel Flow</a>
-          </div>
-
-          <!-- Astrological Character Sheet Card -->
-          <div class="tool-card" id="tool-character-sheet">
-            <h3 class="tool-card-title">⚔️ Astrological Character Sheet</h3>
-            <div class="tool-card-header">
-              <a href="character-sheet.html" class="tool-card-thumb-link"><img src="./images/astrology-cover.jpg" alt="Astrological Character Sheet" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Multi-calendar astrology profile that turns your chart into a game-style sheet.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="character-sheet.html">Create Character Sheet</a>
-          </div>
-
-          <!-- Will Anomaly Mapping Card -->
-          <div class="tool-card" id="tool-entities">
-            <h3 class="tool-card-title">🧩 Will Anomaly Mapping</h3>
-            <div class="tool-card-header">
-              <a href="entities.html" class="tool-card-thumb-link" data-suite-gate="2"><img src="./images/entities-cover.jpg" alt="Will Anomaly Mapping" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Combine prior results to pinpoint inner conflicts and restore coherence.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="entities.html" data-suite-gate="2">Map Will Anomalies</a>
-          </div>
-
-        </div>
-
-        <!-- Section Divider -->
-        <hr class="tools-divider">
-
-        <!-- Technological/AI Tools -->
-        <h3 class="tools-category-title"><blockquote class="portal-quote section-title-btn">Technological/AI</blockquote></h3>
-        <div class="tools-grid">
-
-          <!-- Aptitude Mapping Card -->
-          <div class="tool-card" id="tool-aptitude">
-            <h3 class="tool-card-title">💪 Aptitude Mapping</h3>
-            <div class="tool-card-header">
-              <a href="outlier-aptitude.html" class="tool-card-thumb-link" data-suite-gate="3"><img src="./images/aptitude-cover.jpg" alt="Aptitude Mapping" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Capability scan that highlights high-leverage talents for work and income.</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="outlier-aptitude.html" data-suite-gate="3">Map Aptitude</a>
-          </div>
-
-          <!-- Unlocked GPT Card -->
-          <div class="tool-card" id="tool-unlocked-gpt">
-            <h3 class="tool-card-title">🤖 Unlocked GPT</h3>
-            <div class="tool-card-header">
-              <a href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener" class="tool-card-thumb-link"><img src="./images/simulacra.jpg" alt="Unlocked GPT" class="tool-card-thumb" width="378" height="605" loading="lazy"></a>
-            <p>Sovereignty-aligned GPT offering straight answers and course correction.</p>
-            <p>[Direct access to the sovereign‑aligned GPT].</p>
-            </div>
-              <a class="btn btn-primary tool-card-action" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Access Unlocked GPT</a>
-          </div>
-
-        </div>
-
-        <h3 class="tools-category-title"><blockquote class="portal-quote section-title-btn">Additional Features</blockquote></h3>
-        <div class="analysis-modules-grid analysis-modules-grid--section-top">
-          <div class="card">
-            <h3>Framework Atlas</h3>
-            <p>Cross‑map book principles to engines and outputs for a scholarly reference view.</p>
-            <a class="btn btn-secondary" href="framework-atlas.html">Open Framework Atlas</a>
-          </div>
-        </div>
+          <section class="tools-toolkit-group tools-toolkit-group--atlas" aria-labelledby="tools-cat-atlas">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Reference</span>
+              <h2 id="tools-cat-atlas" class="tools-toolkit-group__title">Additional features</h2>
+              <p class="tools-toolkit-group__lede">Cross-links for readers mapping books to engines.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item tools-toolkit-item--atlas" id="tool-framework-atlas">
+                <div class="tools-toolkit-item__main tools-toolkit-item__main--full">
+                  <a class="tools-toolkit-item__title" href="framework-atlas.html">Framework Atlas</a>
+                  <p class="tools-toolkit-item__desc">Cross‑map book principles to engines and outputs for a scholarly reference view.</p>
+                </div>
+                <a class="btn btn-secondary tools-toolkit-item__cta" href="framework-atlas.html">Open</a>
+              </li>
+            </ol>
+          </section>
+        </nav>
 
       </div>
     </section>

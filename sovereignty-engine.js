@@ -2071,9 +2071,10 @@ export class SovereigntyEngine {
         questionSequence: []
       };
       
+      this.dataStore.clear('progress');
       sessionStorage.removeItem('sovereigntyAssessment');
       localStorage.removeItem('sovereigntyAssessment');
-      
+
       this.ui.transition('idle');
       
       // Show IQ bracket selection
@@ -2082,35 +2083,56 @@ export class SovereigntyEngine {
   }
 
   saveProgress() {
+    const done = this.reportComplete === true;
     const progress = {
       currentSection: this.currentSection,
       currentQuestionIndex: this.currentQuestionIndex,
       iqBracket: this.iqBracket,
       iqBracketSecondary: this.iqBracketSecondary,
-      reportComplete: this.reportComplete === true,
+      reportComplete: done,
+      completed: done,
+      currentStage: done ? 'results' : 'assessment',
       answers: this.answers,
       scores: this.scores,
       preliminaryFilters: this.preliminaryFilters,
       analysisData: this.analysisData
     };
+    if (done) progress.results = { complete: true };
+    this.dataStore.save('progress', progress);
     try {
-      localStorage.setItem('sovereigntyAssessment', JSON.stringify(progress));
-    } catch (error) {
-      sessionStorage.setItem('sovereigntyAssessment', JSON.stringify(progress));
+      localStorage.removeItem('sovereigntyAssessment');
+      sessionStorage.removeItem('sovereigntyAssessment');
+    } catch {
+      /* ignore */
     }
   }
 
   async loadStoredData() {
     try {
-      const stored = localStorage.getItem('sovereigntyAssessment')
-        || sessionStorage.getItem('sovereigntyAssessment');
-      if (stored) {
-        const progress = JSON.parse(stored);
+      let progress = this.dataStore.load('progress');
+      if (!progress) {
+        const legacyRaw = localStorage.getItem('sovereigntyAssessment')
+          || sessionStorage.getItem('sovereigntyAssessment');
+        if (legacyRaw) {
+          try {
+            const legacy = JSON.parse(legacyRaw);
+            if (legacy && typeof legacy === 'object') {
+              progress = legacy;
+              this.dataStore.save('progress', legacy);
+              localStorage.removeItem('sovereigntyAssessment');
+              sessionStorage.removeItem('sovereigntyAssessment');
+            }
+          } catch {
+            /* ignore corrupt legacy */
+          }
+        }
+      }
+      if (progress) {
         this.currentSection = progress.currentSection || 0; // Default to IQ selection
         this.currentQuestionIndex = progress.currentQuestionIndex || 0;
         this.iqBracket = progress.iqBracket || null;
         this.iqBracketSecondary = progress.iqBracketSecondary || null;
-        this.reportComplete = progress.reportComplete === true;
+        this.reportComplete = progress.reportComplete === true || progress.completed === true;
         this.answers = progress.answers || {};
         this.scores = Object.assign({
           dependency: 0,

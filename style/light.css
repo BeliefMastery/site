@@ -94,10 +94,32 @@
     --ack-box-bg: #f8fafc;
     --ack-box-border: var(--border-subtle);
 
+    /* Surfaces tokenized in style.css — light overrides for readable contrast */
+    --interactive-chip-bg: rgba(15, 23, 42, 0.07);
+    --interactive-panel-tint: #f8fafc;
+    --interactive-panel-tint-weak: rgba(15, 23, 42, 0.04);
+    --interactive-border-subtle: var(--border-subtle);
+    --nested-disclosure-bg: rgba(15, 23, 42, 0.05);
+    --card-promote-a: #ffffff;
+    --card-promote-b: #f8fafc;
+    --card-promote-solid: var(--card-bg);
+    --spectrum-track-a: rgba(185, 28, 28, 0.18);
+    --spectrum-track-b: rgba(15, 23, 42, 0.08);
+    --spectrum-track-soft-a: rgba(185, 28, 28, 0.12);
+    --spectrum-track-soft-b: rgba(15, 23, 42, 0.05);
+    --question-hint-bg: rgba(185, 28, 28, 0.06);
+    --table-header-bg: #f1f5f9;
+    --table-row-hover-bg: #f8fafc;
+
+    /* Section shell outline (use in full border shorthand so border-style is never “none”) */
+    --section-edge: 1px solid var(--border-subtle);
+
     /* Match base layout tokens (fluid side rails on tablet/phone) */
     --layout-gutter-x: clamp(0.75rem, 2.2vw + 0.35rem, 1.75rem);
     --layout-gutter-x-tight: clamp(0.65rem, 1.8vw + 0.25rem, 1.15rem);
     --layout-section-pad-y: clamp(0.65rem, 1.8vw + 0.35rem, 1.35rem);
+    --layout-shell-max: 1200px;
+    --layout-content-max: 1100px;
 }
 
 html {
@@ -154,7 +176,7 @@ header.site-header {
 }
 
 .nav {
-    max-width: 1180px;
+    max-width: var(--layout-shell-max);
     margin: 0 auto;
     width: 100%;
     display: flex;
@@ -163,11 +185,11 @@ header.site-header {
     position: relative;
 }
 
-/* Sections: thin outline on white so blocks read as distinct panels */
+/* Sections: thin outline on page bg — full shorthand so border-style is always solid */
 section {
     background: transparent !important;
     backdrop-filter: none;
-    border: 1px solid #000000;
+    border: var(--section-edge);
     box-shadow: none;
     padding: clamp(0.85rem, 2vw, 1.5rem) var(--layout-gutter-x);
     margin: clamp(0.75rem, 2vh, 1.5rem) 0;
@@ -176,7 +198,7 @@ section {
 
 @media (hover: hover) {
     section:hover {
-        border-color: #1a1a1a;
+        border-color: var(--border-bright);
     }
 }
 
@@ -199,11 +221,22 @@ section {
     box-shadow: none !important;
 }
 
-/* Home: tools card uses tokenized surface (not cosmic navy) */
-.index-tools-card {
-    border-width: 1px;
-    border-color: var(--border-subtle);
+/* Home: tools / books shell — beat base body.home-page .index-tools-card { border: none } */
+body.home-page .index-tools-card {
+    border: var(--section-edge) !important;
     box-shadow: var(--shadow-sm);
+}
+
+/* Home: outer section shells (base removes border on .home-grid-section) */
+body.home-page .home-grid-section {
+    border: var(--section-edge) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+@media (hover: hover) {
+    body.home-page .home-grid-section:hover {
+        border-color: var(--border-bright) !important;
+    }
 }
 
 /* Cards & panels */
@@ -316,13 +349,13 @@ select,
 }
 
 .archetype-table th {
-    background: #f1f5f9 !important;
+    background: var(--table-header-bg) !important;
     color: var(--accent) !important;
 }
 
 @media (hover: hover) {
     .archetype-table tr:hover td {
-        background: #f8fafc !important;
+        background: var(--table-row-hover-bg) !important;
     }
 }
 
@@ -332,7 +365,7 @@ select,
 .disclaimer-section.expanded,
 .instructions-panel.expanded {
     background: var(--accent-panel) !important;
-    border: 1px solid #000000;
+    border: var(--section-edge);
     border-left: 4px solid var(--accent) !important;
 }
 
@@ -356,6 +389,22 @@ select,
 
 .multiselect-option {
     border-left-color: var(--border-subtle) !important;
+}
+
+/* tools.html — toolkit panels: full border (border-color alone can leave style none vs base resets) */
+body.page-tools #main #tools .tools-toolkit-group {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-medium) !important;
+    border-left-width: 4px !important;
+    border-left-style: solid !important;
+}
+
+body.page-tools #main #tools .tools-toolkit-group__head {
+    background: linear-gradient(180deg, var(--accent-panel), transparent);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--atlas {
+    background: var(--accent-panel) !important;
 }
 
 @media (max-width: 768px) {
