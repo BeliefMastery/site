@@ -856,6 +856,39 @@ header.site-header {
     display: none;
 }
 
+/* Tools submenu: suite progress marks + current tool highlight */
+.dropdown-menu a.suite-nav-tool-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+}
+
+.dropdown-menu a.suite-nav-tool-link .suite-nav-tool__status {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    margin-top: 0.08em;
+    font-weight: 700;
+}
+
+.dropdown-menu a.suite-nav-tool-link--complete .suite-nav-tool__status {
+    color: var(--success);
+}
+
+.dropdown-menu a.suite-nav-tool-link--pending .suite-nav-tool__status {
+    color: var(--muted);
+    opacity: 0.85;
+}
+
+.dropdown-menu a.suite-nav-tool-link .suite-nav-tool__label {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dropdown-menu a.suite-nav-tool-link--active {
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+
 .nav-list a {
     color: var(--nav-top-link-color);
     padding: .55rem 1rem;

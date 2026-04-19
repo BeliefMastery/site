@@ -224,10 +224,22 @@
     applyTheme(readThemeFromQuery() || readStoredTheme());
   } catch (e) { /* ignore */ }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFooterControls);
-  } else {
+  function initSuiteNavToolsFromModule() {
+    if (!document.getElementById('top-nav')) return;
+    var scriptEl = document.querySelector('script[src*="theme-prefs.js"]');
+    if (!scriptEl || !scriptEl.src) return;
+    import(new URL('suite-nav-tools.js', scriptEl.src).href).catch(function () {});
+  }
+
+  function onDomReady() {
     initFooterControls();
+    initSuiteNavToolsFromModule();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onDomReady);
+  } else {
+    onDomReady();
   }
 
   window.BMThemePrefs = {
