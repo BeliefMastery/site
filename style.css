@@ -3068,6 +3068,29 @@ figure.image-card a {
     border-bottom: 1px solid var(--border-subtle);
 }
 
+.index-disclosure--home-intro > summary {
+    justify-content: center;
+    text-align: center;
+}
+
+.index-disclosure--home-intro > summary .books-intro-title {
+    margin: 0;
+    font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.books-intro--in-suite-disclosures {
+    max-width: none;
+    padding: 0.5rem 0 0;
+    text-align: center;
+}
+
+.books-intro--in-suite-disclosures .books-intro-subtitle {
+    margin-top: 0;
+}
+
 .index-disclosure__body {
     padding: 0.9rem 1rem 1.1rem;
     color: var(--muted);
