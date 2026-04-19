@@ -86,10 +86,10 @@ export class OutlierAptitudeEngine {
     if (sampleBtn) sampleBtn.addEventListener('click', () => this.generateSampleReport());
 
     const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) abandonBtn.addEventListener('click', () => this.abandonAssessment());
+    if (abandonBtn) abandonBtn.addEventListener('click', () => this.abandonAssessment(false));
 
-    const abandonResultsBtn = document.getElementById('abandonAssessmentResults');
-    if (abandonResultsBtn) abandonResultsBtn.addEventListener('click', () => this.abandonAssessment());
+    const newAssessmentBtn = document.getElementById('newAssessment');
+    if (newAssessmentBtn) newAssessmentBtn.addEventListener('click', () => this.abandonAssessment(true));
 
     const prevBtn = document.getElementById('prevQuestion');
     const nextBtn = document.getElementById('nextQuestion');
@@ -725,8 +725,11 @@ export class OutlierAptitudeEngine {
     }
   }
 
-  async abandonAssessment() {
-    if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+  async abandonAssessment(fromCompletedReport = false) {
+    const message = fromCompletedReport
+      ? 'Start a new assessment? Your saved report will be cleared.'
+      : 'Are you sure you want to abandon this assessment? All progress will be lost.';
+    if (await showConfirm(message)) {
       this.resetAssessment();
     }
   }

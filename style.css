@@ -49,6 +49,10 @@
     --section-padding: 22px;
     --section-margin-y: 24px;
     --section-inner-pad: 1.75rem;
+    /* Horizontal gutters: avoid edge-jam on phones, avoid excessive side waste on tablet */
+    --layout-gutter-x: clamp(0.75rem, 2.2vw + 0.35rem, 1.75rem);
+    --layout-gutter-x-tight: clamp(0.65rem, 1.8vw + 0.25rem, 1.15rem);
+    --layout-section-pad-y: clamp(0.65rem, 1.8vw + 0.35rem, 1.35rem);
     --tools-section-pad-y: 2.25rem;
     --tools-section-pad-x: 1rem;
     --hero-padding-y-top: 0.85rem;
@@ -170,6 +174,7 @@ main {
     z-index: 2;
     padding-top: 88px;
     background: rgba(0, 0, 0, 0.0);
+    overflow-x: clip;
 }
 
 /* Utility Classes */
@@ -982,10 +987,12 @@ header.site-header {
 /* ========== CONTAINERS & SECTIONS ========== */
 /* Master Container (site-wide width constraint) */
 .container {
-    width: 90%;
+    width: 100%;
     max-width: 1200px; /* The "Master" width for the whole site */
     margin: 0 auto;
-    padding: 0 2rem;
+    padding-left: var(--layout-gutter-x);
+    padding-right: var(--layout-gutter-x);
+    box-sizing: border-box;
 }
 
 /* Universal Tool Containers */
@@ -1004,13 +1011,14 @@ header.site-header {
 .character-sheet-container,
 .diagnosis-container,
 .sovereignty-container {
-    max-width: 900px; /* Matches the "Books" page feel */
+    max-width: min(900px, calc(100vw - 2 * var(--layout-gutter-x)));
     margin: 2rem auto;
-    padding: 2rem;
+    padding: 2rem var(--layout-gutter-x);
     background: var(--glass);
     border-radius: var(--radius);
     border: 1px solid var(--border-subtle);
     box-shadow: var(--shadow-lg);
+    box-sizing: border-box;
 }
 
 
@@ -1019,15 +1027,17 @@ header.site-header {
     z-index: 2;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 2rem var(--layout-gutter-x);
+    box-sizing: border-box;
 }
 
 /* Content Sections (text-heavy pages) */
 .content-section {
     max-width: 72ch;
     margin: 0 auto;
-    padding: 2rem 0;
+    padding: 2rem var(--layout-gutter-x-tight);
     color: var(--brand); /* Sets base color for everything inside */
+    box-sizing: border-box;
 }
 
 .content-section h1,
@@ -1111,8 +1121,9 @@ section {
     backdrop-filter: blur(8px) saturate(1.2);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
-    padding: var(--section-padding);
+    padding: var(--section-padding) var(--layout-gutter-x);
     margin: var(--section-margin-y) 0;
+    box-sizing: border-box;
     box-shadow: var(--shadow-md), inset 0 1px 0 var(--section-inset-line);
     color: var(--brand);
     transition: border-color 0.18s ease;
@@ -2332,7 +2343,7 @@ body.home-page main .action-btn {
 /* page-fullbleed zeroes section-inner padding ≤820px — restore gutters on home so titles/grid clear the viewport edge */
 @media (max-width: 820px) {
     body.page-fullbleed.home-page .home-grid-section .section-inner.minimal-section {
-        padding: 0.5rem 0.85rem 0.4rem;
+        padding: clamp(0.45rem, 1.5vw, 0.65rem) var(--layout-gutter-x) clamp(0.4rem, 1.2vw, 0.55rem);
     }
 }
 
@@ -4815,15 +4826,14 @@ img[data-src].loaded {
     top: 0;
 }
 
-/* Prevent horizontal overflow on mobile */
-* {
+/* Prevent horizontal overflow without breaking flex/grid intrinsic sizing */
+img,
+video,
+iframe,
+svg,
+canvas {
     max-width: 100%;
-    box-sizing: border-box;
-}
-
-img {
     height: auto;
-    max-width: 100%;
 }
 
 /* Mobile-specific improvements */
@@ -4833,6 +4843,8 @@ img {
         --tools-section-pad-x: 0.75rem;
         --hero-padding-y-top: 0.65rem;
         --hero-padding-y-bottom: 1.25rem;
+        --layout-gutter-x: clamp(0.75rem, 3.5vw, 1.25rem);
+        --layout-gutter-x-tight: clamp(0.65rem, 3vw, 1rem);
     }
 
     /* Larger touch targets on mobile */
@@ -4851,20 +4863,21 @@ img {
     }
     
     section {
-        padding: 8px 6px;
-        margin: 6px 0;
+        padding: var(--layout-section-pad-y) var(--layout-gutter-x);
+        margin: 0.5rem 0;
     }
 
     .container {
-        padding: 0 6px;
+        padding-left: var(--layout-gutter-x);
+        padding-right: var(--layout-gutter-x);
     }
 
     .minimal-section {
-        padding: 0.75rem 6px;
+        padding: 0.75rem var(--layout-gutter-x);
     }
 
     .section-inner-padded {
-        padding: 0.5rem;
+        padding: 0.65rem var(--layout-gutter-x-tight);
     }
     
     .question-block {
@@ -4886,8 +4899,9 @@ img {
     .character-sheet-container,
     .diagnosis-container,
     .sovereignty-container {
-        padding: 0.75rem;
-        margin: 0.5rem 0;
+        padding: clamp(0.75rem, 2.5vw, 1.1rem) var(--layout-gutter-x);
+        margin: clamp(0.4rem, 1.5vh, 0.75rem) auto;
+        max-width: min(900px, calc(100vw - 2 * var(--layout-gutter-x)));
     }
     
     /* Prevent text from being too small */
@@ -5001,16 +5015,20 @@ img {
     }
 }
 
-/* Cellphone: minimal left/right buffer so cards use full width (all engines) */
+/* Narrow phones: keep a readable side rail (avoid 4px edge jam) */
 @media (max-width: 640px) {
+    :root {
+        --edge-rail: clamp(10px, 3.5vw, 16px);
+    }
+
     .container {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .main-content {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .tool-container,
@@ -5028,8 +5046,8 @@ img {
     .character-sheet-container,
     .diagnosis-container,
     .sovereignty-container {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
         margin-left: 0;
         margin-right: 0;
     }
@@ -5037,16 +5055,16 @@ img {
     section,
     .minimal-section,
     .section-inner-padded {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .questionnaire-section.active,
     .results-section.active,
     .instructions-panel.expanded,
     .disclaimer-section.expanded {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .results-container,
@@ -5063,25 +5081,25 @@ img {
     .action-strategy,
     .content-section,
     .question-block {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .archetype-card {
-        padding-left: 0.25rem !important;
-        padding-right: 0.25rem !important;
+        padding-left: var(--edge-rail) !important;
+        padding-right: var(--edge-rail) !important;
     }
 
     .archetype-report-card {
-        padding-left: 0.25rem !important;
-        padding-right: 0.25rem !important;
+        padding-left: var(--edge-rail) !important;
+        padding-right: var(--edge-rail) !important;
     }
 
     .questionnaire-container,
     #questionnaire-form,
     .tool-wrapper {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
         margin-left: 0;
         margin-right: 0;
     }
@@ -5089,8 +5107,8 @@ img {
     .paradigm-result-card,
     .sea-matrix-card,
     .analysis-module-card {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     /* Assessment process: question and option cards (all assessments) */
@@ -5108,8 +5126,8 @@ img {
     .assessment-card,
     .category-card,
     .pathology-card {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .options-container,
@@ -5132,26 +5150,30 @@ img {
         grid-template-columns: 1fr;
     }
 
-    /* Absolute minimum padding for small phones */
+    :root {
+        --edge-rail: clamp(8px, 3.2vw, 14px);
+    }
+
     section {
-        padding: 6px 4px;
-        margin: 4px 0;
+        padding: var(--layout-section-pad-y) var(--edge-rail);
+        margin: 0.35rem 0;
     }
 
     .container {
-        padding: 0 4px;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .minimal-section {
-        padding: 0.5rem 4px;
+        padding: 0.5rem var(--edge-rail);
     }
 
     .question-card,
     .card {
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
         margin: 0.4rem 0;
     }
 
@@ -5167,8 +5189,8 @@ img {
     .assessment-card,
     .category-card,
     .pathology-card {
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .options-container,
@@ -5199,9 +5221,10 @@ img {
     .spectrum-container,
     .needs-dependency-container,
     .dependency-container {
-        padding-left: 4px;
-        padding-right: 4px;
-        margin: 0.4rem 0;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
+        margin: 0.4rem auto;
+        max-width: min(900px, calc(100vw - 2 * var(--edge-rail)));
     }
 
     .results-container,
@@ -5213,22 +5236,22 @@ img {
     .need-chain-section,
     .recommendations-section,
     .need-chain-visualization {
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-left: var(--edge-rail);
+        padding-right: var(--edge-rail);
     }
 
     .archetype-card {
-        padding-left: 4px !important;
-        padding-right: 4px !important;
+        padding-left: var(--edge-rail) !important;
+        padding-right: var(--edge-rail) !important;
     }
 
     .archetype-report-card {
-        padding-left: 4px !important;
-        padding-right: 4px !important;
+        padding-left: var(--edge-rail) !important;
+        padding-right: var(--edge-rail) !important;
     }
 
     .question-block {
-        padding: 0.5rem 4px;
+        padding: 0.5rem var(--edge-rail);
         margin-bottom: 0.5rem;
     }
 
@@ -5252,25 +5275,26 @@ img {
     }
 }
 
-/* Tablet: reduced buffers for more screen real-estate */
+/* Tablet / small laptop: full-width shell, fluid gutters, less vertical slack than desktop */
 @media (max-width: 1024px) {
     .container {
         width: 100%;
         max-width: 100%;
-        padding: 0 0.75rem;
+        padding-left: var(--layout-gutter-x);
+        padding-right: var(--layout-gutter-x);
     }
 
     section {
-        padding: 12px 10px;
-        margin: 12px 0;
+        padding: clamp(0.65rem, 1.5vw, 1rem) var(--layout-gutter-x);
+        margin: clamp(0.5rem, 1.5vh, 1rem) 0;
     }
 
     .minimal-section {
-        padding: 1rem 0.75rem;
+        padding: 1rem var(--layout-gutter-x);
     }
 
     .section-inner-padded {
-        padding: 1rem;
+        padding: 1rem var(--layout-gutter-x-tight);
     }
 
     .tool-container,
@@ -5287,13 +5311,14 @@ img {
     .character-sheet-container,
     .diagnosis-container,
     .sovereignty-container {
-        padding: 1rem;
-        margin: 1rem 0;
+        padding: clamp(0.85rem, 2vw, 1.25rem) var(--layout-gutter-x);
+        margin: clamp(0.5rem, 1.5vh, 1rem) auto;
+        max-width: min(900px, calc(100vw - 2 * var(--layout-gutter-x)));
     }
 
     .card,
     .question-card {
-        padding: 1rem;
+        padding: clamp(0.85rem, 2vw, 1.1rem) var(--layout-gutter-x-tight);
         margin: 0.75rem 0;
     }
 }
@@ -5302,12 +5327,13 @@ img {
     .container {
         width: 100%;
         max-width: 100%;
-        padding: 0 0.75rem;
+        padding-left: var(--layout-gutter-x);
+        padding-right: var(--layout-gutter-x);
     }
 
     .main-content {
         max-width: 100%;
-        padding: 1.5rem 0.75rem;
+        padding: 1.5rem var(--layout-gutter-x);
     }
 
     .section-inner,
@@ -5319,7 +5345,7 @@ img {
     section {
         border-radius: 0;
         margin: 1rem 0;
-        padding: 1.5rem 1rem;
+        padding: 1.5rem var(--layout-gutter-x);
     }
 
     .section-inner {
@@ -5327,12 +5353,13 @@ img {
     }
 
     .section-inner-padded {
-        padding: 0;
+        padding: var(--layout-gutter-x-tight) var(--layout-gutter-x);
         border-radius: 0;
     }
 
     .page-fullbleed .container {
-        padding: 0;
+        padding-left: var(--layout-gutter-x);
+        padding-right: var(--layout-gutter-x);
     }
 
     .page-fullbleed section {
@@ -5385,7 +5412,8 @@ img {
 @media (max-width: 820px) {
     .page-fullbleed .container,
     .page-fullbleed .example-container {
-        padding: 0;
+        padding-left: var(--layout-gutter-x);
+        padding-right: var(--layout-gutter-x);
     }
 
     .page-fullbleed section,
@@ -5394,7 +5422,10 @@ img {
     .page-fullbleed .example-header,
     .page-fullbleed .results-content {
         margin: 0;
-        padding: 0;
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 0;
+        padding-bottom: 0;
         border-radius: 0;
         background: transparent;
     }

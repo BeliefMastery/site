@@ -1,6 +1,7 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
+import { showConfirm } from './shared/confirm-modal.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { downloadReportHtml } from './shared/export-utils.js';
 
@@ -190,6 +191,27 @@ export class EntitiesEngine {
       exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
     }
 
+    const abandonBtn = document.getElementById('abandonAssessment');
+    if (abandonBtn) {
+      abandonBtn.addEventListener('click', () => this.promptAbandonDuringAssessment());
+    }
+
+    const newBtn = document.getElementById('newAssessment');
+    if (newBtn) {
+      newBtn.addEventListener('click', () => this.promptStartNewFromReport());
+    }
+  }
+
+  async promptAbandonDuringAssessment() {
+    if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
+      this.resetAssessment();
+    }
+  }
+
+  async promptStartNewFromReport() {
+    if (await showConfirm('Start a new assessment? Your saved report will be cleared.')) {
+      this.resetAssessment();
+    }
   }
 
   exportReportHtml() {
@@ -495,6 +517,7 @@ export class EntitiesEngine {
     };
 
     this.reportComplete = true;
+    this.currentStage = 'results';
     this.renderResults();
     this.ui.transition('results');
     this.saveProgress();
@@ -569,15 +592,18 @@ export class EntitiesEngine {
   }
 
   saveProgress() {
+    const done = this.reportComplete === true;
     const progress = {
       currentQuestionIndex: this.currentQuestionIndex,
       currentStage: this.currentStage,
-      reportComplete: this.reportComplete === true,
+      reportComplete: done,
+      completed: done,
       answers: this.answers,
       tasteSkews: this.tasteSkews,
       intake: this.intake,
       analysisData: this.analysisData
     };
+    if (done) progress.results = { complete: true };
     this.dataStore.save('progress', progress);
   }
 
@@ -590,7 +616,7 @@ export class EntitiesEngine {
       }
       this.currentQuestionIndex = progress.currentQuestionIndex || 0;
       this.currentStage = progress.currentStage || 'tier';
-      this.reportComplete = progress.reportComplete === true;
+      this.reportComplete = progress.reportComplete === true || progress.completed === true;
       this.answers = progress.answers || {};
       this.tasteSkews = progress.tasteSkews || [];
       this.intake = progress.intake || this.intake;

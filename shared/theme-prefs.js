@@ -72,9 +72,9 @@
   }
 
   function normalizeThemeKey(themeKey) {
-    if (!themeKey) return 'cosmic';
+    if (!themeKey) return 'light';
     var key = String(themeKey).toLowerCase();
-    return THEMES[key] ? key : (LEGACY_THEME_MAP[key] || 'cosmic');
+    return THEMES[key] ? key : (LEGACY_THEME_MAP[key] || 'light');
   }
 
   function readThemeFromQuery() {
@@ -139,10 +139,10 @@
 
   function readStoredTheme() {
     try {
-      var t = localStorage.getItem(STORAGE_THEME) || 'cosmic';
+      var t = localStorage.getItem(STORAGE_THEME) || 'light';
       return normalizeThemeKey(t);
     } catch (e) {
-      return 'cosmic';
+      return 'light';
     }
   }
 
@@ -174,8 +174,8 @@
     themeSelect.id = 'bm-theme-select';
     themeSelect.className = 'footer-theme-prefs__select';
     [
-      { value: 'cosmic', label: 'Cosmic (default)' },
-      { value: 'light', label: 'Light v2' },
+      { value: 'light', label: 'Light (default)' },
+      { value: 'cosmic', label: 'Cosmic' },
       { value: 'forge', label: 'Matrix Forge v2' },
       { value: 'neomorphism', label: 'Neomorphism v2' }
     ].forEach(function (opt) {

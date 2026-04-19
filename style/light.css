@@ -93,6 +93,11 @@
 
     --ack-box-bg: #f8fafc;
     --ack-box-border: var(--border-subtle);
+
+    /* Match base layout tokens (fluid side rails on tablet/phone) */
+    --layout-gutter-x: clamp(0.75rem, 2.2vw + 0.35rem, 1.75rem);
+    --layout-gutter-x-tight: clamp(0.65rem, 1.8vw + 0.25rem, 1.15rem);
+    --layout-section-pad-y: clamp(0.65rem, 1.8vw + 0.35rem, 1.35rem);
 }
 
 html {
@@ -108,6 +113,7 @@ body {
 main {
     padding-top: 88px;
     background: transparent;
+    overflow-x: clip;
 }
 
 a {
@@ -157,20 +163,21 @@ header.site-header {
     position: relative;
 }
 
-/* Sections: no extra panel behind content (avoids double white + odd contrast) */
+/* Sections: thin outline on white so blocks read as distinct panels */
 section {
     background: transparent !important;
     backdrop-filter: none;
-    border: none;
+    border: 1px solid #000000;
     box-shadow: none;
-    padding: 24px 16px;
-    margin: 24px 0;
-    border-radius: 0;
+    padding: clamp(0.85rem, 2vw, 1.5rem) var(--layout-gutter-x);
+    margin: clamp(0.75rem, 2vh, 1.5rem) 0;
+    border-radius: var(--radius);
 }
 
-section:hover {
-    box-shadow: none;
-    border-color: transparent;
+@media (hover: hover) {
+    section:hover {
+        border-color: #1a1a1a;
+    }
 }
 
 .section-inner {
@@ -325,7 +332,8 @@ select,
 .disclaimer-section.expanded,
 .instructions-panel.expanded {
     background: var(--accent-panel) !important;
-    border-left-color: var(--accent) !important;
+    border: 1px solid #000000;
+    border-left: 4px solid var(--accent) !important;
 }
 
 /* Typography: remove dark-cosmic glow */
