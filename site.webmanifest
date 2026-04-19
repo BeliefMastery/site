@@ -21,21 +21,27 @@
       "purpose": "any"
     },
     {
-      "src": "images/icoBM48.gif",
+      "src": "images/icoBM48.png",
       "sizes": "48x48",
-      "type": "image/gif",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "images/icoBM180.gif",
+      "src": "images/icoBM180.png",
       "sizes": "180x180",
-      "type": "image/gif",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "images/icoBM192.gif",
+      "src": "images/icoBM192.png",
       "sizes": "192x192",
-      "type": "image/gif",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icoBM512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     }
   ]
