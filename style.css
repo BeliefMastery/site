@@ -2620,6 +2620,63 @@ body.home-page #suite-progress-list li span {
     margin-bottom: 1rem;
 }
 
+/* books.html — uniform “More Info” disclosure blocks */
+details.books-more-info {
+    max-width: min(1100px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+details.books-more-info > summary.books-more-info__summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brand);
+    background: var(--glass-light);
+    border: 2px solid var(--border-medium);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    -webkit-tap-highlight-color: rgba(255, 215, 0, 0.12);
+    touch-action: manipulation;
+}
+
+details.books-more-info > summary.books-more-info__summary::-webkit-details-marker {
+    display: none;
+}
+
+details.books-more-info > summary.books-more-info__summary::after {
+    content: "▾";
+    font-size: 0.75rem;
+    opacity: 0.85;
+    transition: transform 0.2s ease;
+}
+
+details.books-more-info[open] > summary.books-more-info__summary::after {
+    transform: rotate(-180deg);
+}
+
+details.books-more-info > summary.books-more-info__summary:hover {
+    border-color: var(--brand);
+    color: var(--accent);
+}
+
+details.books-more-info > summary.books-more-info__summary:active {
+    transform: translateY(1px) scale(0.988) !important;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.28) !important;
+}
+
+details.books-more-info .books-more-info__body {
+    margin-top: 1rem;
+}
+
 .book-note-spaced {
     margin-bottom: 1rem;
 }
