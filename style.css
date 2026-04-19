@@ -2539,6 +2539,23 @@ body.home-page #suite-progress-list li span {
     text-align: center;
 }
 
+.home-page .books-intro--home {
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+}
+
+.books-intro--compact {
+    padding: 2rem 1rem 1.5rem;
+}
+
+.books-intro--compact .books-intro-title {
+    margin-bottom: 1rem;
+}
+
+.books-intro--compact .books-intro-subtitle {
+    margin-bottom: 1rem;
+}
+
 .book-section-title {
     text-align: center;
     margin: 0 0 0.4rem 0;
