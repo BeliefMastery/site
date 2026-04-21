@@ -3,10 +3,516 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tools - Belief Mastery</title>
-  <meta http-equiv="refresh" content="0; url=/site/v3/dist-v3-app/#/tools" />
+    <meta name="author" content="Warwick Marshall">
+  <meta name="keywords" content="Warwick Marshall, Golden Bay, New Zealand, Belief Mastery, Sovereign of Mind">
+  <meta name="geo.placename" content="Golden Bay, New Zealand">
+  <meta name="geo.region" content="NZ">
+<base href="https://beliefmastery.github.io/site/">
+  <!-- Favicon & app icons (Belief Mastery mark) -->
+  <link rel="icon" href="images/icoBM32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="images/icoBM16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="images/icoBM48.png" sizes="48x48" type="image/png">
+  <link rel="icon" href="images/icoBM192.png" sizes="192x192" type="image/png">
+  <link rel="icon" href="images/icoBM512.png" sizes="512x512" type="image/png">
+  <link rel="apple-touch-icon" href="images/icoBM180.png" sizes="180x180">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#050a15">
+  <title>🧰 Online Sovereignty Tools — Cognitive Defense & Analysis Frameworks</title>
+  <meta name="description" content="Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, channel flow diagnostics, logos structure, pathology assessment, life domain review, dependency loop tracing, and more. Diagnostic clarity for the cognitively vigilant. Warwick Marshall, Golden Bay, New Zealand.">
+
+  <!-- Open Graph / Twitter Cards for social previews -->
+  <meta property="og:title" content="🧰 Online Sovereignty Tools — Cognitive Defense & Analysis Frameworks">
+  <meta property="og:description" content="Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, channel flow diagnostics, logos structure, pathology assessment, life domain review, dependency loop tracing, and more. Diagnostic clarity for the cognitively vigilant. Warwick Marshall, Golden Bay, New Zealand.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/coaching-agent-cover.jpg">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/tools.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🧰 Online Sovereignty Tools — Cognitive Defense & Analysis Frameworks">
+  <meta name="twitter:description" content="Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, channel flow diagnostics, logos structure, pathology assessment, life domain review, dependency loop tracing, and more. Diagnostic clarity for the cognitively vigilant. Warwick Marshall, Golden Bay, New Zealand.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/coaching-agent-cover.jpg">
+
+  <link rel="stylesheet" href="fonts/fonts.css" id="bm-local-fonts">
+
+  <!-- Shared stylesheet -->
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
+  <!-- Universal background styles -->
+  <link rel="stylesheet" href="./shared/background.css">
+
+  <!-- Structured Data: JSON-LD for Books (SEO enhancement for discoverability) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Belief Mastery & Sovereign of Mind",
+    "description": "Secular armor for the cognitively vigilant. A technical framework for those who sense the silent structural war for human agency. Provides language, structure, and method for what many have intuited but struggled to frame—a framework for standing guard over the mind itself.",
+    "author": {
+      "@type": "Person",
+      "name": "Warwick Marshall"
+    },
+    "mainEntity": [
+      {
+        "@type": "Book",
+        "name": "Belief Mastery",
+        "description": "A structural method for those who sense something essential is under pressure: agency, clarity, integrity of perception. Reveals how subconscious belief structures form under pressure, how they are exploited, and how they can be consciously dismantled and fortified.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P",
+        "image": "https://beliefmastery.github.io/site/images/BM-cover.jpg",
+        "genre": "Self-Help",
+        "datePublished": "2024"
+      },
+      {
+        "@type": "Book",
+        "name": "Sovereign of Mind",
+        "description": "Cognitive defense addressing manipulation, ideological capture, and psychological warfare in contemporary culture. For those who sense an active contest for the human mind and seek to fortify the inner terrain where meaning and agency are decided.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911",
+        "image": "https://beliefmastery.github.io/site/images/SoM-cover.jpg",
+        "genre": "Philosophy",
+        "datePublished": "2024"
+      },
+      {
+        "@type": "Book",
+        "name": "The Sovereignty-Distortion Codex",
+        "description": "Structural mapping of distortions that erode will and coherence. Diagnostic framework for identifying cognitive hijacking patterns and restoring authorship through structural precision.",
+        "author": {
+          "@type": "Person",
+          "name": "Warwick Marshall"
+        },
+        "url": "https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794",
+        "image": "https://beliefmastery.github.io/site/images/SDC-cover.jpg",
+        "genre": "Psychology",
+        "datePublished": "2024"
+      }
+    ]
+  }
+  </script>
+
 </head>
-<body>
-  <p>Redirecting to UI V3... <a href="/site/v3/dist-v3-app/#/tools">Continue</a></p>
+<body class="page-fullbleed page-tools" data-bm-swipe-nav="true" data-bm-flat-hover="true">
+
+  <!-- Nebula-style cosmic background -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+    <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none" class="dropdown-group group-neutral"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="entities.html">Will Anomaly Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="outlier-aptitude.html">Aptitude Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container" id="main">
+    <!-- All Tools Section -->
+    <section id="tools" data-bg="./images/BM-cover.jpg" aria-labelledby="tools-title">
+      <div class="section-inner tools-section-inner">
+        
+        <h1 id="tools-title" class="tools-page-title section-title-btn">Sovereignty Tools</h1>
+        <div class="disclaimer-acknowledgement" id="privacyToggle">
+          <div class="disclaimer-acknowledgement-text">
+            <span>🔒 Complete Privacy & Data Security</span>
+          </div>
+        </div>
+        <section class="disclaimer-section" id="privacyPanel">
+          <div class="tools-privacy">
+            <h3 class="tools-privacy-title">
+              <span>🔒</span> Complete Privacy & Data Security
+            </h3>
+            <p class="tools-privacy-text">
+              <strong class="tools-privacy-emphasis">Important:</strong> <strong class="tools-privacy-highlight">NO DATA is stored in a database</strong> as a result of engaging with any analysis tool. All data is stored <strong>purely locally in your browser</strong> and is only available in the export you can generate at the end of each assessment. This is <strong>completely private</strong>—your responses never leave your device unless you explicitly choose to export them.
+            </p>
+          </div>
+        </section>
+
+        <!-- Grouped toolkit: vertical scan, one column per category (matches nav groupings) -->
+        <nav class="tools-toolkit" aria-label="Tools by category">
+          <section class="tools-toolkit-group tools-toolkit-group--psych" aria-labelledby="tools-cat-psych">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-psych" class="tools-toolkit-group__title">Psychological</h2>
+              <p class="tools-toolkit-group__lede">Patterns, domains, and dependency—where inner rules meet outer behavior.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-pathology">
+                <a class="tools-toolkit-item__thumb-wrap" href="diagnosis.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/DSM5-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="diagnosis.html">Pathology Assessment</a>
+                  <p class="tools-toolkit-item__desc">Structured DSM-5 checklist that scores recent symptoms and clarifies your current state.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="diagnosis.html">Begin</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-life-domain">
+                <a class="tools-toolkit-item__thumb-wrap" href="coaching.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/coaching-agent-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="coaching.html">Life Domain Review</a>
+                  <p class="tools-toolkit-item__desc">Domain-by-domain review that highlights friction points and high-leverage areas for action.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="coaching.html">Review</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-dependency-loop">
+                <a class="tools-toolkit-item__thumb-wrap" href="needs-dependency.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/dependency-loop-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="needs-dependency.html">Dependency Loop Tracer</a>
+                  <p class="tools-toolkit-item__desc">Maps behavioral loops to underlying needs and shows where relief begins.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="needs-dependency.html">Trace</a>
+              </li>
+            </ol>
+          </section>
+
+          <section class="tools-toolkit-group tools-toolkit-group--philosophical" aria-labelledby="tools-cat-philosophical">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-philosophical" class="tools-toolkit-group__title">Philosophical</h2>
+              <p class="tools-toolkit-group__lede">Paradigm and meaning structure—how you organize truth and sovereignty.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-sovereignty-paradigm">
+                <a class="tools-toolkit-item__thumb-wrap" href="sovereignty-spectrum.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/sovereignty-spectrum-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a>
+                  <p class="tools-toolkit-item__desc">See which worldview best matches your values and decisions.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="sovereignty-spectrum.html">Clarify</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-logos">
+                <a class="tools-toolkit-item__thumb-wrap" href="paradigm.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/paradigm-clarification-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="paradigm.html">Logos Structure</a>
+                  <p class="tools-toolkit-item__desc">Truth-dimension scoring that reveals the structure of your thinking.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="paradigm.html">Map</a>
+              </li>
+            </ol>
+          </section>
+
+          <section class="tools-toolkit-group tools-toolkit-group--defensive" aria-labelledby="tools-cat-defensive">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-defensive" class="tools-toolkit-group__title">Defensive / protective</h2>
+              <p class="tools-toolkit-group__lede">Pressure, capture, and resistance—staying the author of your cognition.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-manipulation">
+                <a class="tools-toolkit-item__thumb-wrap" href="manipulation.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/manipulation-analysis-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="manipulation.html">Manipulation Defense Decoder</a>
+                  <p class="tools-toolkit-item__desc">Spot manipulation tactics and see how they affect you.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="manipulation.html">Decode</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-resistance-capacity">
+                <a class="tools-toolkit-item__thumb-wrap" href="sovereignty.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/vulnerability-vector-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="sovereignty.html">Cognitive Resistance Capacity</a>
+                  <p class="tools-toolkit-item__desc">Measure your reliance on AI and strengthen independence.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="sovereignty.html">Assess</a>
+              </li>
+            </ol>
+          </section>
+
+          <section class="tools-toolkit-group tools-toolkit-group--esoteric" aria-labelledby="tools-cat-esoteric">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-esoteric" class="tools-toolkit-group__title">Esoteric</h2>
+              <p class="tools-toolkit-group__lede">Channels, symbols, and will anomalies—structured inquiry beyond the literal only.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-channels">
+                <a class="tools-toolkit-item__thumb-wrap" href="channels.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/channel-analysis-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="channels.html">Channel Flow Diagnostics</a>
+                  <p class="tools-toolkit-item__desc">Scan your energy system to locate blocks and restore flow.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="channels.html">Diagnose</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-character-sheet">
+                <a class="tools-toolkit-item__thumb-wrap" href="character-sheet.html" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/astrology-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="character-sheet.html">Astrological Character Sheet</a>
+                  <p class="tools-toolkit-item__desc">Multi-calendar astrology profile that turns your chart into a game-style sheet.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="character-sheet.html">Create</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-entities">
+                <a class="tools-toolkit-item__thumb-wrap" href="entities.html" data-suite-gate="2" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/entities-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="entities.html" data-suite-gate="2">Will Anomaly Mapping</a>
+                  <p class="tools-toolkit-item__desc">Combine prior results to pinpoint inner conflicts and restore coherence.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="entities.html" data-suite-gate="2">Map</a>
+              </li>
+            </ol>
+          </section>
+
+          <section class="tools-toolkit-group tools-toolkit-group--tech" aria-labelledby="tools-cat-tech">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Category</span>
+              <h2 id="tools-cat-tech" class="tools-toolkit-group__title">Technological / AI</h2>
+              <p class="tools-toolkit-group__lede">Capability and external agents—leverage without surrendering judgment.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item" id="tool-aptitude">
+                <a class="tools-toolkit-item__thumb-wrap" href="outlier-aptitude.html" data-suite-gate="3" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/aptitude-cover.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="outlier-aptitude.html" data-suite-gate="3">Aptitude Mapping</a>
+                  <p class="tools-toolkit-item__desc">Capability scan that highlights high-leverage talents for work and income.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="outlier-aptitude.html" data-suite-gate="3">Map</a>
+              </li>
+              <li class="tools-toolkit-item" id="tool-unlocked-gpt">
+                <a class="tools-toolkit-item__thumb-wrap" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="tools-toolkit-item__thumb" src="./images/simulacra.jpg" alt="" width="120" height="160" loading="lazy"></a>
+                <div class="tools-toolkit-item__main">
+                  <a class="tools-toolkit-item__title" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Unlocked GPT</a>
+                  <p class="tools-toolkit-item__desc">Sovereignty-aligned GPT—direct access for straight answers and course correction.</p>
+                </div>
+                <a class="btn btn-primary tools-toolkit-item__cta" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noopener">Open</a>
+              </li>
+            </ol>
+          </section>
+
+          <section class="tools-toolkit-group tools-toolkit-group--atlas" aria-labelledby="tools-cat-atlas">
+            <header class="tools-toolkit-group__head">
+              <span class="tools-toolkit-group__eyebrow">Reference</span>
+              <h2 id="tools-cat-atlas" class="tools-toolkit-group__title">Additional features</h2>
+              <p class="tools-toolkit-group__lede">Cross-links for readers mapping books to engines.</p>
+            </header>
+            <ol class="tools-toolkit-list">
+              <li class="tools-toolkit-item tools-toolkit-item--atlas" id="tool-framework-atlas">
+                <div class="tools-toolkit-item__main tools-toolkit-item__main--full">
+                  <a class="tools-toolkit-item__title" href="framework-atlas.html">Framework Atlas</a>
+                  <p class="tools-toolkit-item__desc">Cross‑map book principles to engines and outputs for a scholarly reference view.</p>
+                </div>
+                <a class="btn btn-secondary tools-toolkit-item__cta" href="framework-atlas.html">Open</a>
+              </li>
+            </ol>
+          </section>
+        </nav>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener">Facebook</a>
+    </p>
+  </footer>
+
+  <!-- ---------- Scripts (deferred via placement at bottom; non-blocking) ---------- -->
+  <script>
+    function setupToggle(toggleId, panelId) {
+      const toggle = document.getElementById(toggleId);
+      const panel = document.getElementById(panelId);
+      if (!toggle || !panel) return;
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('expanded');
+        panel.classList.toggle('expanded');
+      });
+    }
+
+    setupToggle('privacyToggle', 'privacyPanel');
+
+    // Background crossfade per visible section
+    (function(){
+      const sections = Array.from(document.querySelectorAll('section[data-bg]'));
+      if(!sections.length) return;
+      const bgA = document.getElementById('bgA');
+      const bgB = document.getElementById('bgB');
+      if (!bgA || !bgB) return;
+      let front = bgA, back = bgB;
+
+      // Initialize front background to the first section
+      front.style.backgroundImage = `url('${sections[0].dataset.bg}')`;
+      back.style.backgroundImage = `url('${sections[0].dataset.bg}')`;
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting && entry.intersectionRatio > 0.45){
+            const url = entry.target.dataset.bg || sections[0].dataset.bg;
+            back.style.backgroundImage = `url('${url}')`;
+            back.classList.remove('hidden'); // bring in
+            front.classList.add('hidden');   // push out
+            // swap references
+            [front, back] = [back, front];
+          }
+        });
+      }, { threshold: [0.45], rootMargin: '0px 0px -20% 0px' });
+
+      sections.forEach(s => io.observe(s));
+    })();
+
+    // Active nav highlighting based on center intersection
+    (function(){
+      const navLinks = document.querySelectorAll('#top-nav a[data-target]');
+      const sections = Array.from(document.querySelectorAll('section[id]'));
+      function setActive(id){
+        navLinks.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if(e.isIntersecting){
+            setActive(e.target.id);
+          }
+        });
+      }, { threshold: [0.5] });
+      sections.forEach(s => observer.observe(s));
+    })();
+
+    // Portal card click handler (for whole-card navigation, avoiding nested anchors)
+    (function(){
+      document.querySelectorAll('.portal-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          const link = card.querySelector('a.btn');
+          if (link && !e.target.closest('a')) {
+            link.click();
+          }
+        });
+      });
+    })();
+
+    // Subscribe/contact form
+    (function(){
+      const form = document.getElementById('subscribe-form');
+      const status = document.getElementById('status');
+      if(!form) return;
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const emailEl = document.getElementById('email');
+        const raw = (emailEl.value || '').trim();
+        if(!raw){ status.textContent = 'Enter an email address'; return; }
+        const email = encodeURIComponent(raw);
+        const url = `https://script.google.com/macros/s/AKfycbxuwyKiJDUM0aj9hJFM2CJry7XoztiPuh4YD3Ir55xlDt7EzwRGgpT_K0ZZyw5W1Ss9Ww/exec?email=${email}`;
+        fetch(url, { method:'GET', mode:'no-cors' })
+          .then(()=>{ status.textContent = '✅ Thank you — message received'; form.reset(); })
+          .catch(err=>{ console.error('Submission error:', err); status.textContent = '❌ Submission failed'; });
+      });
+    })();
+
+    // Hamburger menu toggle
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const navList = document.querySelector('.nav-list');
+      if(!hamburger || !navList) return;
+      hamburger.addEventListener('click', () => {
+        const isOpen = navList.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+        hamburger.textContent = isOpen ? '✕' : '☰';
+      });
+      // Close menu when a link is clicked
+      navList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navList.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.textContent = '☰';
+        });
+      });
+    })();
+
+    // Dropdown menu toggle (prevent navigation on toggle click)
+    (function(){
+      const dropdownToggle = document.querySelector('.dropdown-toggle');
+      if(!dropdownToggle) return;
+      dropdownToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const dropdown = dropdownToggle.closest('.nav-dropdown');
+        if(dropdown) {
+          dropdown.classList.toggle('active');
+        }
+      });
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if(!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+    })();
+    
+    // Scroll to tool section when arriving via hash (e.g. from index tools grid)
+    (function(){
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) {
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        }
+      }
+    })();
+
+    // Tool card toggle functionality
+    function toggleToolCard(card) {
+      const details = card.querySelector('.tool-details');
+      const indicator = card.querySelector('.tool-expand-indicator');
+      if (details.classList.contains('expanded')) {
+        details.classList.remove('expanded');
+        if (indicator) indicator.textContent = 'Click to expand &#9660;';
+        card.style.transform = 'scale(1)';
+      } else {
+        details.classList.add('expanded');
+        if (indicator) indicator.textContent = 'Click to collapse ▲';
+        card.style.transform = 'scale(1.02)';
+      }
+    }
+  </script>
+<!-- Universal background JavaScript -->
+
+<script src="./shared/background.js"></script>
+<script type="module" src="./shared/swipe-nav.js"></script>
+<script type="module" src="./shared/suite-nav-gates.js"></script>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
