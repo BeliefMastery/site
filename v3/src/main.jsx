@@ -1,14 +1,14 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import App from "./App";
 import "./styles/tokens.css";
 import "./styles/global.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter basename="/site/v3">
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>
 );
