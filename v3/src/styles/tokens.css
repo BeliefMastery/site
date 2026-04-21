@@ -1,0 +1,45 @@
+:root {
+  --v3-bg: #040915;
+  --v3-surface: rgba(14, 24, 40, 0.88);
+  --v3-surface-border: rgba(118, 164, 255, 0.3);
+  --v3-text: #e8f0f8;
+  --v3-muted: #98abc2;
+  --v3-accent: #ffd35a;
+  --v3-accent-strong: #ffb800;
+  --v3-radius: 14px;
+  --v3-space-1: 0.5rem;
+  --v3-space-2: 0.75rem;
+  --v3-space-3: 1rem;
+  --v3-space-4: 1.5rem;
+  --v3-space-5: 2rem;
+}
+
+.theme-light {
+  --v3-bg: #f1f5f9;
+  --v3-surface: #ffffff;
+  --v3-surface-border: #cbd5e1;
+  --v3-text: #0f172a;
+  --v3-muted: #475569;
+  --v3-accent: #b91c1c;
+  --v3-accent-strong: #991b1b;
+}
+
+.theme-forge {
+  --v3-bg: #070303;
+  --v3-surface: rgba(20, 10, 8, 0.92);
+  --v3-surface-border: rgba(255, 128, 90, 0.35);
+  --v3-text: #fff5f0;
+  --v3-muted: #c4b5a8;
+  --v3-accent: #ff7043;
+  --v3-accent-strong: #ff5722;
+}
+
+.theme-neomorphism {
+  --v3-bg: #2d3a4f;
+  --v3-surface: #323f56;
+  --v3-surface-border: rgba(249, 115, 22, 0.22);
+  --v3-text: #e8eef7;
+  --v3-muted: #8b9cb8;
+  --v3-accent: #fb923c;
+  --v3-accent-strong: #f97316;
+}

@@ -4,12 +4,21 @@
   "version": "1.0.0",
   "description": "Belief Mastery static site and assessment engines",
   "scripts": {
-    "lint": "eslint . --ext .js",
-    "test": "node --test tests/outlier-aptitude-scoring.test.mjs"
+    "lint": "eslint . --ext .js,.jsx",
+    "test": "node --test tests/outlier-aptitude-scoring.test.mjs",
+    "v3:dev": "vite --config v3/vite.config.js",
+    "v3:build": "vite build --config v3/vite.config.js",
+    "v3:preview": "vite preview --config v3/vite.config.js"
   },
   "type": "module",
   "devDependencies": {
     "eslint": "^8.57.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.1",
+    "vite": "^8.0.9"
   }
 }
-
