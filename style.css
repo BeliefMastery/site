@@ -2847,13 +2847,16 @@ body.home-page #suite-progress-list li span {
 }
 
 .book-cover {
-    max-width: 440px;
+    width: min(100%, 378px);
+    max-width: 378px;
+    height: auto;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .book-cover--medium {
-    max-width: 420px;
+    width: min(100%, 378px);
+    max-width: 378px;
 }
 
 .book-lead {
