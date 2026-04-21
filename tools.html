@@ -146,21 +146,6 @@
       <div class="section-inner tools-section-inner">
         
         <h1 id="tools-title" class="tools-page-title section-title-btn">Sovereignty Tools</h1>
-        <div class="disclaimer-acknowledgement" id="privacyToggle">
-          <div class="disclaimer-acknowledgement-text">
-            <span>🔒 Complete Privacy & Data Security</span>
-          </div>
-        </div>
-        <section class="disclaimer-section" id="privacyPanel">
-          <div class="tools-privacy">
-            <h3 class="tools-privacy-title">
-              <span>🔒</span> Complete Privacy & Data Security
-            </h3>
-            <p class="tools-privacy-text">
-              <strong class="tools-privacy-emphasis">Important:</strong> <strong class="tools-privacy-highlight">NO DATA is stored in a database</strong> as a result of engaging with any analysis tool. All data is stored <strong>purely locally in your browser</strong> and is only available in the export you can generate at the end of each assessment. This is <strong>completely private</strong>—your responses never leave your device unless you explicitly choose to export them.
-            </p>
-          </div>
-        </section>
 
         <!-- Grouped toolkit: vertical scan, one column per category (matches nav groupings) -->
         <nav class="tools-toolkit" aria-label="Tools by category">
@@ -310,22 +295,6 @@
             </ol>
           </section>
 
-          <section class="tools-toolkit-group tools-toolkit-group--atlas" aria-labelledby="tools-cat-atlas">
-            <header class="tools-toolkit-group__head">
-              <span class="tools-toolkit-group__eyebrow">Reference</span>
-              <h2 id="tools-cat-atlas" class="tools-toolkit-group__title">Additional features</h2>
-              <p class="tools-toolkit-group__lede">Cross-links for readers mapping books to engines.</p>
-            </header>
-            <ol class="tools-toolkit-list">
-              <li class="tools-toolkit-item tools-toolkit-item--atlas" id="tool-framework-atlas">
-                <div class="tools-toolkit-item__main tools-toolkit-item__main--full">
-                  <a class="tools-toolkit-item__title" href="framework-atlas.html">Framework Atlas</a>
-                  <p class="tools-toolkit-item__desc">Cross‑map book principles to engines and outputs for a scholarly reference view.</p>
-                </div>
-                <a class="btn btn-secondary tools-toolkit-item__cta" href="framework-atlas.html">Open</a>
-              </li>
-            </ol>
-          </section>
         </nav>
 
       </div>
@@ -351,8 +320,6 @@
         panel.classList.toggle('expanded');
       });
     }
-
-    setupToggle('privacyToggle', 'privacyPanel');
 
     // Background crossfade per visible section
     (function(){

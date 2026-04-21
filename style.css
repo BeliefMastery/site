@@ -466,7 +466,7 @@ body.page-tools #main #tools .tools-toolkit-list {
 
 body.page-tools #main #tools .tools-toolkit-item {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr) auto;
+    grid-template-columns: 88px minmax(0, 1fr) auto;
     gap: 0.85rem 1.1rem;
     align-items: center;
     padding: 0.95rem 1.15rem;
@@ -493,8 +493,8 @@ body.page-tools #main #tools .tools-toolkit-item__thumb-wrap {
 }
 
 body.page-tools #main #tools .tools-toolkit-item__thumb {
-    width: 76px;
-    height: 102px;
+    width: 88px;
+    height: 118px;
     object-fit: cover;
     display: block;
 }
@@ -533,13 +533,13 @@ body.page-tools #main #tools .tools-toolkit-item--atlas {
 
 @media (max-width: 640px) {
     body.page-tools #main #tools .tools-toolkit-item {
-        grid-template-columns: 56px minmax(0, 1fr);
+        grid-template-columns: 64px minmax(0, 1fr);
         grid-template-rows: auto auto;
     }
 
     body.page-tools #main #tools .tools-toolkit-item__thumb {
-        width: 56px;
-        height: 75px;
+        width: 64px;
+        height: 86px;
     }
 
     body.page-tools #main #tools .tools-toolkit-item__cta {
@@ -759,6 +759,36 @@ body.page-tools #main #tools .tool-card-header p {
 .about-author-link {
     color: var(--brand);
     font-weight: 600;
+}
+
+/* About page performance mode: remove expensive blur/glow layers */
+body.page-about-author header.site-header {
+    backdrop-filter: none;
+    box-shadow: var(--shadow-sm);
+}
+
+body.page-about-author .dropdown-menu {
+    backdrop-filter: none;
+    box-shadow: var(--shadow-sm);
+}
+
+body.page-about-author section {
+    backdrop-filter: none;
+    box-shadow: var(--shadow-sm);
+}
+
+body.page-about-author .section-inner,
+body.page-about-author .section-inner-padded,
+body.page-about-author .about-author-photo-frame {
+    box-shadow: var(--shadow-sm);
+}
+
+body.page-about-author .about-author-photo-frame::after {
+    content: none;
+}
+
+body.page-about-author * {
+    transition-duration: 0s !important;
 }
 
 .text-left {
