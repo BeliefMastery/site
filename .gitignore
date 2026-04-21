@@ -26,6 +26,9 @@ yarn-error.log*
 # Capacitor generated
 apps/red-pill-relationships/www/
 
+# Vite: obsolete root output (V3 builds to v3/app/)
+dist-v3/
+
 # Node modules (if any)
 node_modules/
 package-lock.json
