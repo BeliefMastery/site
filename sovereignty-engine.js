@@ -1783,20 +1783,21 @@ export class SovereigntyEngine {
             ${attachmentMode === 'independent' ? 'You maintain clear boundaries with AI tools.' :
               attachmentMode === 'tool' ? 'You use AI as a practical tool without emotional attachment.' :
               attachmentMode === 'companion' ? 'You may be forming emotional attachments to AI. Be mindful of boundaries.' :
-              'You may be treating AI as an authority. Consider developing independent critical thinking.'}
+              'Your responses suggest a tendency to defer to AI in some contexts. Consider strengthening independent critical thinking.'}
           </p>
         </div>
 
         ${risks.length > 0 ? `
           <div class="vulnerability-risks">
-            <h3 class="section-title">Top Vulnerability Risks</h3>
+            <h3 class="section-title">Top Areas to Strengthen</h3>
             ${risks.map((risk, idx) => {
               const severityClass = risk.severity === 'critical' ? 'critical' : 'high';
+              const severityLabel = risk.severity === 'critical' ? 'high-priority' : (risk.severity === 'high' ? 'moderate' : 'watch');
               return `
                 <div class="risk-item ${severityClass}">
                   <h4 class="risk-title">
                     ${idx + 1}. ${SecurityUtils.sanitizeHTML(risk.name || '')}
-                    <span class="risk-badge ${severityClass}">${SecurityUtils.sanitizeHTML(risk.severity || '')}</span>
+                    <span class="risk-badge ${severityClass}">${SecurityUtils.sanitizeHTML(severityLabel)}</span>
                   </h4>
                   <p class="risk-description">${SecurityUtils.sanitizeHTML(risk.description || '')}</p>
                 </div>
@@ -1807,7 +1808,8 @@ export class SovereigntyEngine {
 
         <div class="action-plan">
           <h3 class="section-title">Recommended Action Plan</h3>
-          <p class="action-plan-intro">Based on your profile, here are priority interventions:</p>
+          <p class="action-plan-intro">Based on your profile, here are high-priority and moderate candidate next steps:</p>
+          <p class="form-help">This estimate is based on self-report patterns and should be interpreted as directional guidance, not a definitive judgment.</p>
           ${this.generateActionPlan()}
         </div>
 

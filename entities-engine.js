@@ -534,6 +534,7 @@ export class EntitiesEngine {
 
     resultsContainer.innerHTML = `
       <div class="panel panel-outline-accent">
+        <p class="form-help">This estimate is based on structured self-report patterns and should be interpreted as directional guidance, not definitive judgment.</p>
         <h3 class="panel-title">Intake Summary</h3>
         <ul class="feature-list">
           <li><strong>Pathology:</strong> ${SecurityUtils.sanitizeHTML(pathologyName || '—')} — ${SecurityUtils.sanitizeHTML(this.intake.pathologyDisorder || '—')}</li>

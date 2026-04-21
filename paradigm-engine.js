@@ -1547,6 +1547,7 @@ export class ParadigmEngine {
     let html = '<div class="paradigm-summary">';
     html += '<h3>Your Current Dominant Framing</h3>';
     html += '<p>Based on your responses, here are your primary paradigm alignments. Remember: paradigms commonly shift with life stage, pressure, and responsibility. This map reflects your current organization of meaning, not a fixed identity.</p>';
+    html += '<p class="form-help">This estimate is based on self-report patterns and should be interpreted as directional guidance, not definitive judgment.</p>';
     html += '</div>';
     
     // Display Good Life results
@@ -1774,7 +1775,7 @@ export class ParadigmEngine {
     if (primaryGoodLife) {
       html += '<div style="margin-bottom: 1.5rem;">';
       html += `<h4 style="color: var(--brand); margin-bottom: 0.5rem;">What This Alignment Makes Easy</h4>`;
-      html += `<p style="color: var(--muted); margin: 0;">Your current dominant framing of "The Good Life" as <strong>${primaryGoodLife.name}</strong> naturally supports certain ways of engaging with meaning, action, and satisfaction. This alignment makes it easier to find coherence in experiences that match this paradigm.</p>`;
+      html += `<p style="color: var(--muted); margin: 0;">Your current strongest framing of "The Good Life" as <strong>${primaryGoodLife.name}</strong> can support certain ways of engaging with meaning, action, and satisfaction. This alignment may make it easier to find coherence in experiences that match this paradigm.</p>`;
       html += '</div>';
       
       html += '<div style="margin-bottom: 1.5rem;">';
@@ -1784,21 +1785,21 @@ export class ParadigmEngine {
       
       html += '<div style="margin-bottom: 1.5rem;">';
       html += `<h4 style="color: var(--brand); margin-bottom: 0.5rem;">What to Watch For Under Stress</h4>`;
-      html += `<p style="color: var(--muted); margin: 0;">Under pressure, your primary paradigm may become rigid. Watch for patterns where <strong>${primaryGoodLife.name}</strong> becomes the only valid way of engaging, excluding other valid approaches.</p>`;
+      html += `<p style="color: var(--muted); margin: 0;">Under pressure, your primary paradigm may become less flexible. Watch for patterns where <strong>${primaryGoodLife.name}</strong> is treated as the only valid way of engaging, which can crowd out other useful approaches.</p>`;
       html += '</div>';
     }
     
     if (primaryGod) {
       html += '<div style="margin-bottom: 1.5rem;">';
       html += `<h4 style="color: var(--brand); margin-bottom: 0.5rem;">God Perspective Integration</h4>`;
-      html += `<p style="color: var(--muted); margin: 0;">Your current dominant framing of God as <strong>${primaryGod.name}</strong> shapes how you engage with ultimate questions. Remember: this is an interpretive frame, not a claim about ultimate reality. Under stress, this perspective may become dogmatic or defensive.</p>`;
+      html += `<p style="color: var(--muted); margin: 0;">Your current strongest framing of God as <strong>${primaryGod.name}</strong> shapes how you engage with ultimate questions. Remember: this is an interpretive frame, not a claim about ultimate reality. Under stress, this perspective can become more rigid or defensive for some people.</p>`;
       html += '</div>';
     }
     
     // Translation Capacity
     if (this.analysisData.translationCapacity !== null) {
       html += '<div style="background: rgba(255, 184, 0, 0.1); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin-top: 1.5rem;">';
-      html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Translation Capacity:</strong> ${this.analysisData.translationCapacity.toFixed(1)}/7. This measures your ability to hold meaning across multiple dimensions. Higher capacity indicates greater flexibility in engaging with different modes of apprehension.</p>`;
+      html += `<p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted);"><strong style="color: var(--accent);">Estimated Translation Capacity:</strong> ${this.analysisData.translationCapacity.toFixed(1)}/7. This approximate self-report estimate reflects your ability to hold meaning across multiple dimensions. Higher capacity indicates greater flexibility in engaging with different modes of apprehension.</p>`;
       html += '</div>';
     }
     

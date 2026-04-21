@@ -847,7 +847,7 @@ export class CharacterSheetEngine {
   }
 
   determineClass(astrologyData) {
-    // Class is determined by the highest stat and astrological influences
+    // Class is estimated from strongest stat signals and astrological influences
     const stats = this.calculateBaseStats(astrologyData);
     const maxStat = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
     
@@ -935,10 +935,10 @@ export class CharacterSheetEngine {
     const guidingSummary = summarize(guidingTraits);
 
     const sentences = [];
-    sentences.push(`${name} is a ${safeRace} whose character centers on ${coreSummary.join(', ') || 'quiet resolve'}.`);
+    sentences.push(`${name} is a ${safeRace} whose profile emphasizes ${coreSummary.join(', ') || 'quiet resolve'}.`);
 
     if (innerSummary.length) {
-      sentences.push(`At their core, they are ${innerSummary.join(' and ')}, which shapes how they process experience.`);
+      sentences.push(`They often show ${innerSummary.join(' and ')}, which can shape how they process experience.`);
     }
 
     if (outwardSummary.length) {
@@ -1433,6 +1433,7 @@ export class CharacterSheetEngine {
       <div class="character-sheet">
         <h2>${SecurityUtils.sanitizeHTML(character.name || '')}</h2>
         <p class="character-subtitle">${SecurityUtils.sanitizeHTML(character.race || '')} ${SecurityUtils.sanitizeHTML(character.characterClass || '')}</p>
+        <p class="form-help">This profile is a self-inquiry interpretation generated from input patterns and should be treated as directional, not definitive.</p>
         
         <section class="astrology-summary">
           <h3 style="margin-top: 0; color: var(--brand);">Astrological Profile</h3>

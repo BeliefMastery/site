@@ -1352,7 +1352,8 @@ export class SovereigntySpectrumEngine {
     if (this.analysisData.paradigmConflicts && this.analysisData.paradigmConflicts.length > 0) {
       html += '<div class="paradigm-conflicts">';
       html += '<h4>Paradigm Tensions & Resolutions</h4>';
-      html += '<p class="content-section">When two paradigms pull in opposite directions, the dominant paradigm is the deciding lens and the other becomes a modifier rather than a competing rule.</p>';
+      html += '<p class="content-section">When two paradigms pull in opposite directions, one paradigm may currently have stronger influence while the other acts as a modifier rather than a competing rule.</p>';
+      html += '<p class="form-help">This estimate is based on self-report patterns and should be interpreted as directional, not definitive.</p>';
       this.analysisData.paradigmConflicts.forEach(conflict => {
         html += '<div class="paradigm-result-card" style="background: var(--glass); border-left: 3px solid var(--brand);">';
         html += `<h5>${SecurityUtils.sanitizeHTML(conflict.primaryName)} ⇄ ${SecurityUtils.sanitizeHTML(conflict.secondaryName)}</h5>`;
@@ -1383,7 +1384,7 @@ export class SovereigntySpectrumEngine {
         const percentage = (score / Math.abs(derailer.penalty)) * 100;
         html += `<div class="derailer-item">`;
         html += `<strong>${SecurityUtils.sanitizeHTML(derailer.name)}:</strong> `;
-        html += `${percentage.toFixed(1)}% (${score.toFixed(1)}/${Math.abs(derailer.penalty)} penalty points)`;
+        html += `${percentage.toFixed(1)}% (${score.toFixed(1)}/${Math.abs(derailer.penalty)} impact points)`;
         html += `<p class="derailer-desc">${SecurityUtils.sanitizeHTML(derailer.description)}</p>`;
         html += `</div>`;
       }
@@ -1396,8 +1397,9 @@ export class SovereigntySpectrumEngine {
       html += '<h4>Recommended Remediation Paths</h4>';
       this.analysisData.remediationPaths.forEach(path => {
         const priorityClass = path.priority === 'critical' ? 'critical' : path.priority === 'high' ? 'high' : 'medium';
+        const priorityLabel = path.priority === 'critical' ? 'high-priority' : (path.priority === 'high' ? 'moderate' : 'watch');
         html += `<div class="remediation-item ${priorityClass}">`;
-        html += `<strong>[${path.priority.toUpperCase()}] ${SecurityUtils.sanitizeHTML(path.type)}:</strong> `;
+        html += `<strong>[${priorityLabel.toUpperCase()}] ${SecurityUtils.sanitizeHTML(path.type)}:</strong> `;
         html += `<p>${SecurityUtils.sanitizeHTML(path.action)}</p>`;
         html += `</div>`;
       });

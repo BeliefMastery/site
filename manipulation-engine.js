@@ -1232,7 +1232,8 @@ renderCurrentQuestion() {
       
       let html = '<div class="manipulation-summary">';
       html += '<h3>Manipulation Vector Analysis Results</h3>';
-      html += '<p>Based on your responses, here are the manipulation vectors identified and recommended strategies.</p>';
+      html += '<p>Based on your responses, here are patterns that may be consistent with manipulation vectors and suggested strategies to strengthen your position.</p>';
+      html += '<p class="form-help">This estimate is based on self-report patterns and is directional rather than definitive.</p>';
       html += '</div>';
       
       // Primary vector
@@ -1299,7 +1300,7 @@ renderCurrentQuestion() {
             ` : ''}
             ${tactic.leverage ? `
               <div class="tactic-detail">
-                <strong>How it controls you:</strong>
+                <strong>How it can influence your choices:</strong>
                 <p>${SecurityUtils.sanitizeHTML(tactic.leverage || '')}</p>
               </div>
             ` : ''}

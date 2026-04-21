@@ -1558,18 +1558,18 @@ export class DiagnosisEngine {
     // Determine overall alignment level
     if (vector.primaryAlignment >= SCORING_THRESHOLDS.high_probability) {
       vector.overallAlignment = 'high';
-      vector.recommendation = 'High pathology indicators detected. Consider professional evaluation for clinical assessment.';
+      vector.recommendation = 'Higher symptom-pattern intensity was indicated in this self-report. Consider a professional evaluation for a fuller assessment.';
     } else if (vector.primaryAlignment >= SCORING_THRESHOLDS.moderate_probability) {
       vector.overallAlignment = 'moderate';
-      vector.recommendation = 'Moderate pathology indicators. Professional consultation recommended for accurate assessment.';
+      vector.recommendation = 'Moderate symptom-pattern intensity was indicated in this self-report. Professional consultation is recommended for a fuller assessment.';
     } else {
       vector.overallAlignment = 'low';
-      vector.recommendation = 'Low pathology indicators. Continue self-monitoring and reflection.';
+      vector.recommendation = 'Lower symptom-pattern intensity was indicated in this self-report. Continue self-monitoring and reflection.';
     }
     
     // Add comorbidity note to recommendation
     if (vector.comorbidity.length > 0) {
-      vector.recommendation += ' Multiple pattern matches detected - professional differential assessment recommended.';
+      vector.recommendation += ' Multiple pattern signals were observed; a professional differential assessment is recommended.';
     }
     
     // Calculate validation consistency
@@ -1710,7 +1710,8 @@ export class DiagnosisEngine {
       });
     });
     
-    html += '<h3 class="diagnosis-results-heading">Pathology Assessment Results by Category</h3>';
+    html += '<h3 class="diagnosis-results-heading">Self-Report Symptom Pattern Results by Category</h3>';
+    html += '<p class="form-help">These results are pattern estimates from self-report responses and do not constitute a diagnosis.</p>';
     
     Object.keys(categoryGroups).forEach(categoryName => {
       const slug = this.slugDiagnosisCategory(categoryName);
@@ -1769,9 +1770,9 @@ export class DiagnosisEngine {
     if (vector.comorbidity && vector.comorbidity.length > 0) {
       html += `
         <div class="comorbidity-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--accent-panel); border: 2px solid var(--accent); border-radius: var(--radius);">
-          <h4 style="margin-bottom: 1rem; color: var(--brand);">🔗 Multi-Branching / Comorbidity Detected</h4>
+          <h4 style="margin-bottom: 1rem; color: var(--brand);">🔗 Multi-Branching / Possible Comorbidity Signals</h4>
           <p style="margin-bottom: 1rem; line-height: 1.6;">
-            The assessment detected potential <strong>comorbidity</strong> (multiple disorders that commonly co-occur). This requires careful differential diagnosis.
+            The assessment observed potential <strong>comorbidity signals</strong> (multiple patterns that can co-occur). This warrants careful differential evaluation.
           </p>
           ${vector.comorbidity.map(group => `
             <div style="margin-bottom: 1rem; padding: 1rem; background: var(--glass); border-radius: var(--radius);">
@@ -1780,7 +1781,7 @@ export class DiagnosisEngine {
               <em style="font-size: 0.9rem; color: var(--muted);">${SecurityUtils.sanitizeHTML(group.message || '')}</em>
             </div>
           `).join('')}
-          <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Note:</strong> Professional evaluation is essential for accurate differential diagnosis when multiple disorders are suspected.</p>
+          <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Note:</strong> Professional evaluation is recommended for accurate differential diagnosis when multiple disorders are suspected.</p>
         </div>
       `;
     }

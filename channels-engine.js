@@ -783,7 +783,7 @@ export class ChannelsEngine {
           <h4>Your Node Assessment Summary</h4>
           ${weakNodes.length > 0 ? `<p><strong>Areas needing support:</strong> ${weakNodes.join(', ')}</p>` : ''}
           ${strongNodes.length > 0 ? `<p><strong>Areas of strength:</strong> ${strongNodes.join(', ')}</p>` : ''}
-          <p>Based on this assessment, we've identified critical channels that may reveal blockages. Select 2-3 areas you'd like to explore in depth.</p>
+          <p>Based on this assessment, we've identified priority channels that may reveal friction points. Select 2-3 areas you'd like to explore in depth.</p>
         </div>
         <h3 class="question-text">${SecurityUtils.sanitizeHTML(question.question || '')}</h3>
         <p class="selection-limit">Select up to ${maxSelections}</p>
@@ -1172,7 +1172,8 @@ export class ChannelsEngine {
       
       let html = '<div class="channel-summary">';
       html += '<h3>Your Channel Analysis Results</h3>';
-      html += '<p>Based on your responses, here are the channel blockages identified and recommended remediation strategies.</p>';
+      html += '<p>Based on your responses, here are possible channel friction points and suggested remediation strategies.</p>';
+      html += '<p class="form-help">This estimate is based on self-report patterns and should be interpreted as directional, not definitive.</p>';
       html += '</div>';
     
     // Node summary (collapsible)
@@ -1193,7 +1194,7 @@ export class ChannelsEngine {
     // Channel results
     if (this.analysisData.finalChannels.length > 0) {
       html += '<div class="channel-results">';
-      html += '<h4>Identified Channel Blockages</h4>';
+      html += '<h4>Possible Channel Friction Points</h4>';
       
       this.analysisData.finalChannels.forEach(channelData => {
         const channel = channelData.channel;
@@ -1204,10 +1205,10 @@ export class ChannelsEngine {
         
         html += `
           <div class="channel-result">
-            <h3>Channel Issue: ${SecurityUtils.sanitizeHTML(channel.name || '')}</h3>
+            <h3>Channel Friction: ${SecurityUtils.sanitizeHTML(channel.name || '')}</h3>
             <p><strong>Flow direction:</strong> ${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}</p>
             <p><strong>Relationship focus:</strong> ${SecurityUtils.sanitizeHTML(channel.description || '')}</p>
-            <p><strong>Blockage symptoms:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
+            <p><strong>Common signs of reduced flow:</strong> ${SecurityUtils.sanitizeHTML(channel.blocked || 'Disconnect between these nodes')}</p>
             ${remediationHighlights.length > 0 ? `
               <div style="margin-top: 1rem;">
                 <strong>Channel-Informed Actions for Greater Flow:</strong>

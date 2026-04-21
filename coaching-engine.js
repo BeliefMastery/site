@@ -947,7 +947,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         .map(([key, data]) => ({ key, ...data }))
         .sort((a, b) => b.weightedScore - a.weightedScore);
       sortedObstacles.forEach(obstacle => {
-        const severity = obstacle.rawScore >= 7 ? 'High' : obstacle.rawScore >= 4 ? 'Moderate' : 'Low';
+        const severity = obstacle.rawScore >= 7 ? 'high-priority' : obstacle.rawScore >= 4 ? 'moderate' : 'watch';
         html += `
           <div class="obstacle-item">
             <strong>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</strong> - Score: ${obstacle.rawScore}/10 (${severity})
@@ -963,7 +963,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         .map(([key, data]) => ({ key, ...data }))
         .sort((a, b) => b.combinedScore - a.combinedScore);
       sortedDomains.forEach(domain => {
-        const satisfaction = domain.combinedScore >= 7 ? 'High' : domain.combinedScore >= 4 ? 'Moderate' : 'Low';
+        const satisfaction = domain.combinedScore >= 7 ? 'high' : domain.combinedScore >= 4 ? 'moderate' : 'watch';
         html += `
           <div class="domain-item">
             <strong>${SecurityUtils.sanitizeHTML(domain.name || '')}</strong> - Satisfaction: ${domain.combinedScore.toFixed(1)}/10 (${satisfaction})
@@ -995,12 +995,13 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       <div>
         <h3>Orientation → Selection → Application</h3>
         <div>
-          <p>This coaching profile is complete. You have received a map of your current constraints and satisfaction domains, along with a primary coaching axis.</p>
+          <p>This coaching profile is complete. You have received a map of your current pressure points and satisfaction domains, along with a primary coaching axis.</p>
           <div>
-            <p><strong class="error-text">Exit Cue:</strong> Do not re-run this assessment immediately. Apply the primary axis for 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
+            <p><strong class="error-text">Exit Cue:</strong> Consider applying the primary axis for about 30 days, then reassess if needed. This profile serves orientation—return to lived action.</p>
           </div>
           <div>
-            <p><strong>What this engine is not:</strong> Therapy replacement, diagnosis, or truth oracle. This is a self-inquiry tool for sovereignty support.</p>
+            <p><strong>What this engine is not:</strong> Therapy replacement or diagnosis. This is a structured self-inquiry tool for sovereignty support.</p>
+            <p class="form-help">This estimate is based on self-report patterns and should be interpreted as directional, not definitive.</p>
           </div>
         </div>
       </div>

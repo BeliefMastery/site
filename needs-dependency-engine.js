@@ -1486,6 +1486,7 @@ export class NeedsDependencyEngine {
       }
       
       let html = '<div class="results-content">';
+      html += '<p class="form-help">These results are based on self-report patterns and should be interpreted as directional guidance, not definitive judgment.</p>';
 
       // Primary Loop
       if (this.analysisData.primaryLoop) {
@@ -1779,7 +1780,7 @@ export class NeedsDependencyEngine {
           <details class="closure-section">
             <summary><strong>Why addressing the loop need matters</strong></summary>
             <div class="closure-content">
-              <p><strong>First step — consciously address and disclose the primary dependency.</strong> The loop is what presents in the situation and is often mistaken for the root. Addressing it is absolutely necessary: a ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} loop reflects an unhealthy dynamic around ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} — for example, taking others' ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, taking too much ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} away from others, or some other variation. This must be resolved. The primary dependency is the visible and consequential issue: it causes a draining impact — depletion in others, their withdrawal, or compulsive attendance to undesired situations — depending on whether it manifests as a compulsion or aversion. However, addressing the loop only mitigates in the moment. The resolution comes from tracing to the root to stop the systemic construction of the dynamic.</p>
+              <p><strong>First step — consciously address and disclose the primary dependency.</strong> The loop is what presents in the situation and is often mistaken for the root. Addressing it is often a necessary early step: a ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} loop can reflect an unhealthy dynamic around ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} — for example, taking others' ${SecurityUtils.sanitizeHTML(loopNeedDisplay)}, taking too much ${SecurityUtils.sanitizeHTML(loopNeedDisplay)} away from others, or some other variation. The primary dependency is the visible and consequential issue: it can create a draining impact — depletion in others, their withdrawal, or compulsive attendance to undesired situations — depending on whether it manifests as a compulsion or aversion. However, addressing the loop only mitigates in the moment. Lasting resolution comes from tracing to the root to interrupt the systemic construction of the dynamic.</p>
               <p>This need can be resolved by disclosing it to yourself and others — gaining conscious consent for external resourcing — and taking conscious, deliberate action to restore agency.</p>
             </div>
           </details>
@@ -1815,7 +1816,7 @@ export class NeedsDependencyEngine {
 
     let readinessNote = '';
     if (severity >= 5 && readiness <= 3) {
-      readinessNote = '<p class="readiness-note"><strong>Given the severity of this pattern and your current readiness,</strong> consider supplementing self-work with professional support — a therapist, coach, or counsellor familiar with needs-based work can help you move through this more safely.</p>';
+      readinessNote = '<p class="readiness-note"><strong>If this pattern feels significantly disruptive and readiness is currently low,</strong> consider supplementing self-work with professional support — a therapist, coach, or counsellor familiar with needs-based work can help you move through this more safely.</p>';
     } else if (readiness >= 5) {
       readinessNote = '<p class="readiness-note"><strong>You expressed strong readiness to engage.</strong> That is the most valuable asset you have. You can begin the practical actions in the section above immediately.</p>';
     } else if (severity < 3 && severity > 0) {
