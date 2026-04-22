@@ -9,7 +9,7 @@
 // - Architecture prepared for storage abstraction layer (see docs/FIREBASE_INTEGRATION_PLAN.md)
 // - Current implementation remains insecure/public - suitable for educational/demo purposes
 //
-import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
+import { setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
@@ -200,11 +200,10 @@ export class DiagnosisEngine {
     }
 
     try {
-      // Load DSM-5 categories and questions data
-      const dsm5Module = await loadDataModule(
-        './dsm5-data/index.js',
-        'DSM-5 Data'
-      );
+      // Load DSM-5 categories and questions data.
+      // Use import() from this file (not shared/data-loader's import.meta) so Vite's bundle resolves
+      // dsm5-data/ next to diagnosis-engine.js; the data-loader path breaks in v3/app/assets chunks.
+      const dsm5Module = await import('./dsm5-data/index.js');
       DSM5_CATEGORIES = dsm5Module.DSM5_CATEGORIES;
       QUESTION_TEMPLATES = dsm5Module.QUESTION_TEMPLATES;
       PLAIN_LANGUAGE_HINTS = dsm5Module.PLAIN_LANGUAGE_HINTS || {};
@@ -218,18 +217,12 @@ export class DiagnosisEngine {
       DIFFERENTIAL_QUESTIONS = dsm5Module.DIFFERENTIAL_QUESTIONS;
 
       // Load category guide data
-      const categoryGuideModule = await loadDataModule(
-        './dsm5-data/category-guide.js',
-        'Category Guide'
-      );
+      const categoryGuideModule = await import('./dsm5-data/category-guide.js');
       CATEGORY_GUIDE_QUESTIONS = categoryGuideModule.CATEGORY_GUIDE_QUESTIONS;
       CATEGORY_DESCRIPTIONS = categoryGuideModule.CATEGORY_DESCRIPTIONS;
 
       // Load treatment database
-      const treatmentModule = await loadDataModule(
-        './treatment-database.js',
-        'Treatment Database'
-      );
+      const treatmentModule = await import('./treatment-database.js');
       TREATMENT_DATABASE = treatmentModule.TREATMENT_DATABASE;
 
       this.debugReporter.logEvent('DataLoader', 'All diagnosis data loaded successfully');
