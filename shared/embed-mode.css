@@ -1,0 +1,17 @@
+/**
+ * When a tool page is loaded inside UI V3 (?bm_embed=1), hide duplicate site chrome
+ * so the assessment runs cleanly inside the V3 shell iframe.
+ */
+html.bm-embed .site-header,
+html.bm-embed footer {
+  display: none !important;
+}
+
+html.bm-embed .bg-gradient,
+html.bm-embed #nebula-canvas {
+  display: none !important;
+}
+
+html.bm-embed body {
+  min-height: 100%;
+}

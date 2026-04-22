@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { engineRoutes } from "@/routes";
 import EngineAdapterView from "@/engines/EngineAdapterView";
+import DiagnosisEnginePage from "@/engines/DiagnosisEnginePage";
 
 export default function EngineRoutePage() {
   const { engineId } = useParams();
@@ -16,6 +17,10 @@ export default function EngineRoutePage() {
         </article>
       </section>
     );
+  }
+
+  if (engineId === "diagnosis") {
+    return <DiagnosisEnginePage />;
   }
 
   return <EngineAdapterView label={routeConfig.label} legacyPage={routeConfig.legacyPage} />;

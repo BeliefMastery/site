@@ -30,8 +30,16 @@ const DIAGNOSIS_SLIDER_STEP = 0.5;
 export class DiagnosisEngine {
   /**
    * Initialize the diagnosis engine
+   * @param {{ externalUI?: boolean, onNotify?: (event: string, payload?: *) => void }} [options] - When externalUI is true, skip legacy DOM wiring (UI V3 / React host).
    */
-  constructor() {
+  constructor(options = {}) {
+    this.externalUI = Boolean(options && options.externalUI);
+    this._externalNotify =
+      options && typeof options.onNotify === 'function' ? options.onNotify : null;
+    this._externalResultsMount = null;
+    this._externalRefinementGroups = null;
+    this._externalQuestionSnapshot = null;
+
     this.selectedCategories = [];
     this.currentCategoryIndex = 0;
     this.currentQuestionIndex = 0;
@@ -56,20 +64,22 @@ export class DiagnosisEngine {
       conclusionVector: {}
     };
 
-    this.ui = new EngineUIController({
-      idle: {
-        show: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
-      },
-      assessment: {
-        show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection', '#resultsSection']
-      },
-      results: {
-        show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection', '#questionnaireSection']
-      }
-    });
+    this.ui = this.externalUI
+      ? { transition() {} }
+      : new EngineUIController({
+          idle: {
+            show: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection'],
+            hide: ['#questionnaireSection', '#resultsSection']
+          },
+          assessment: {
+            show: ['#questionnaireSection'],
+            hide: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection', '#resultsSection']
+          },
+          results: {
+            show: ['#resultsSection'],
+            hide: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection', '#questionnaireSection']
+          }
+        });
     
     // Initialize debug reporter (integrate with existing debug system)
     this.debugReporter = createDebugReporter('DiagnosisEngine');
@@ -79,7 +89,35 @@ export class DiagnosisEngine {
     // Initialize data store
     this.dataStore = new DataStore('diagnosis-assessment', '1.0.0');
     
-    this.init();
+    this.ready = this.init();
+  }
+
+  _emitExternal(event, payload) {
+    try {
+      this._externalNotify?.(event, payload);
+    } catch (e) {
+      console.warn('DiagnosisEngine external notify:', e);
+    }
+  }
+
+  /**
+   * Host container for results HTML when running in externalUI mode.
+   * @param {HTMLElement|null} el
+   */
+  setExternalResultsMount(el) {
+    this._externalResultsMount = el;
+  }
+
+  /**
+   * After restore from storage, render results into a host element (no duplicate saveResults).
+   * @param {HTMLElement} containerEl
+   * @returns {Promise<void>}
+   */
+  async hydrateResultsView(containerEl) {
+    if (!containerEl) return;
+    this._externalResultsMount = containerEl;
+    await this.loadDiagnosisData();
+    await this.renderResults(containerEl);
   }
 
   /**
@@ -132,19 +170,24 @@ export class DiagnosisEngine {
 
   /**
    * Initialize the engine
+   * @returns {Promise<void>}
    */
-  init() {
-    this.renderCategorySelection().catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
+  async init() {
+    if (!this.externalUI) {
+      this.renderCategorySelection().catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
+      this.attachEventListeners();
+    }
+    try {
+      await this.loadStoredData();
+      if (!this.externalUI && this.shouldAutoGenerateSample()) {
         this.generateSampleReport();
       }
-    }).catch(error => {
+    } catch (error) {
       this.debugReporter.logError(error, 'init');
-    });
+    }
+    this._emitExternal('init');
   }
 
   /**
@@ -195,6 +238,24 @@ export class DiagnosisEngine {
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
       throw error;
     }
+  }
+
+  /**
+   * Category list for external (React) selection UI — same data as legacy cards.
+   * @returns {Promise<Array<{ key: string, name: string, disorderCount: number, suggested: boolean }>>}
+   */
+  async getCategorySelectionModel() {
+    await this.loadDiagnosisData();
+    if (!DSM5_CATEGORIES) return [];
+    return Object.keys(DSM5_CATEGORIES).map((categoryKey) => {
+      const category = DSM5_CATEGORIES[categoryKey];
+      return {
+        key: categoryKey,
+        name: category.name,
+        disorderCount: Object.keys(category.disorders || {}).length,
+        suggested: this.suggestedCategories.includes(categoryKey)
+      };
+    });
   }
 
   /**
@@ -544,13 +605,18 @@ export class DiagnosisEngine {
     const index = this.selectedCategories.indexOf(categoryKey);
     if (index > -1) {
       this.selectedCategories.splice(index, 1);
-      cardElement.classList.remove('selected');
+      if (cardElement) cardElement.classList.remove('selected');
     } else {
       this.selectedCategories.push(categoryKey);
-      cardElement.classList.add('selected');
+      if (cardElement) cardElement.classList.add('selected');
     }
     
-    document.getElementById('startAssessment').disabled = this.selectedCategories.length === 0;
+    const startAssessmentBtn = document.getElementById('startAssessment');
+    if (startAssessmentBtn) startAssessmentBtn.disabled = this.selectedCategories.length === 0;
+
+    if (this.externalUI) {
+      this._emitExternal('selection', { selectedCategories: [...this.selectedCategories] });
+    }
   }
 
   attachEventListeners() {
@@ -982,6 +1048,20 @@ export class DiagnosisEngine {
         this.completeAssessment();
         return;
       }
+
+      if (this.externalUI) {
+        this._externalQuestionSnapshot = {
+          question,
+          currentIndex: this.currentQuestionIndex,
+          totalQuestions
+        };
+        this.saveProgress();
+        this._emitExternal('question');
+        const renderDuration = performance.now() - renderStart;
+        this.debugReporter.recordRender('question', renderDuration);
+        this.logDebug('Rendered question (external)', { questionId: question.id, index: this.currentQuestionIndex });
+        return;
+      }
       
       const container = document.getElementById('questionContainer');
       if (!container) {
@@ -1069,12 +1149,113 @@ export class DiagnosisEngine {
     const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
     const totalQuestions = this.questionSequence.length + (isInRefinement ? this.refinedQuestionSequence.length : 0);
     const progress = totalQuestions > 0 ? ((this.currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
-    document.getElementById('progressFill').style.width = `${progress}%`;
+    const el = document.getElementById('progressFill');
+    if (el) el.style.width = `${progress}%`;
   }
 
   updateNavigationButtons() {
-    document.getElementById('prevQuestion').disabled = this.currentQuestionIndex === 0;
-    document.getElementById('nextQuestion').disabled = false;
+    const prevEl = document.getElementById('prevQuestion');
+    const nextEl = document.getElementById('nextQuestion');
+    if (prevEl) prevEl.disabled = this.currentQuestionIndex === 0;
+    if (nextEl) nextEl.disabled = false;
+  }
+
+  /**
+   * Advance from external UI with explicit slider value (same persistence as nextQuestion).
+   * @param {number} value
+   */
+  nextQuestionFromExternal(value) {
+    const totalMainQuestions = this.questionSequence.length;
+    const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
+
+    let currentQuestion;
+    if (this.currentQuestionIndex < totalMainQuestions) {
+      currentQuestion = this.questionSequence[this.currentQuestionIndex];
+    } else if (isInRefinement) {
+      currentQuestion = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions];
+    }
+
+    if (currentQuestion) {
+      const answerKey = isInRefinement && this.currentQuestionIndex >= totalMainQuestions
+        ? 'refinedAnswers'
+        : 'answers';
+      if (!this.analysisData[answerKey]) this.analysisData[answerKey] = {};
+      const answerValue = parseFloat(value);
+      this.analysisData[answerKey][currentQuestion.id] = answerValue;
+      this.answers[currentQuestion.id] = answerValue;
+    }
+
+    this.currentQuestionIndex++;
+    this.updateProgress();
+    this.saveProgress();
+
+    const totalQuestions = totalMainQuestions + (isInRefinement ? this.refinedQuestionSequence.length : 0);
+    if (this.currentQuestionIndex < totalQuestions) {
+      this.renderCurrentQuestion();
+    } else {
+      this.completeAssessment();
+    }
+  }
+
+  /**
+   * Go back from external UI, persisting the current value first.
+   * @param {number} value
+   */
+  prevQuestionFromExternal(value) {
+    if (this.currentQuestionIndex <= 0) return;
+
+    const totalMainQuestions = this.questionSequence.length;
+    const isInRefinement = this.refinementRequested && this.refinedQuestionSequence && this.refinedQuestionSequence.length > 0;
+
+    let currentQuestion;
+    if (this.currentQuestionIndex < totalMainQuestions) {
+      currentQuestion = this.questionSequence[this.currentQuestionIndex];
+    } else if (isInRefinement) {
+      currentQuestion = this.refinedQuestionSequence[this.currentQuestionIndex - totalMainQuestions];
+    }
+
+    if (currentQuestion) {
+      const answerKey = isInRefinement && this.currentQuestionIndex >= totalMainQuestions
+        ? 'refinedAnswers'
+        : 'answers';
+      if (!this.analysisData[answerKey]) this.analysisData[answerKey] = {};
+      const answerValue = parseFloat(value);
+      this.analysisData[answerKey][currentQuestion.id] = answerValue;
+      this.answers[currentQuestion.id] = answerValue;
+    }
+
+    this.currentQuestionIndex--;
+    this.updateProgress();
+    this.saveProgress();
+    this.renderCurrentQuestion();
+  }
+
+  /**
+   * Continue into refined questions (external UI). Mirrors legacy confirm + pass counting.
+   * @returns {Promise<void>}
+   */
+  async proceedWithRefinementFromExternal() {
+    if (this.analysisData.refinementPasses >= this.analysisData.maxRefinementPasses) {
+      ErrorHandler.showUserError('Maximum refinement passes reached. Proceeding to results.');
+      await this.showResults();
+      return;
+    }
+    if (!(await showConfirm('This step sharpens distinctions for learning clarity. Proceed?'))) {
+      return;
+    }
+    this.refinementRequested = true;
+    this.analysisData.refinementPasses++;
+    this._externalRefinementGroups = null;
+    this.startRefinementQuestions();
+  }
+
+  /**
+   * Skip refinement and show results (external UI).
+   * @returns {Promise<void>}
+   */
+  async skipRefinementToResultsFromExternal() {
+    this._externalRefinementGroups = null;
+    await this.showResults();
   }
 
   nextQuestion() {
@@ -1162,6 +1343,11 @@ export class DiagnosisEngine {
       
       // If comorbidity detected and refined questions available, offer refinement
       if (this.multiBranchingDetected && hasRefinedQuestions && !this.refinementRequested) {
+        if (this.externalUI) {
+          this._externalRefinementGroups = comorbidityGroups;
+          this._emitExternal('refinement-offer', { groups: comorbidityGroups });
+          return;
+        }
         this.offerRefinement(comorbidityGroups);
         return;
       }
@@ -1265,16 +1451,22 @@ export class DiagnosisEngine {
   async showResults() {
     try {
       await this.loadDiagnosisData(); // Ensure all data is loaded
-      
+
       this.currentStage = 'results';
-      const questionnaireSection = document.getElementById('questionnaireSection');
-      const resultsSection = document.getElementById('resultsSection');
-      
-      if (questionnaireSection) questionnaireSection.classList.remove('active');
-      if (resultsSection) resultsSection.classList.add('active');
-      
-      await this.renderResults();
+      if (!this.externalUI) {
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        if (questionnaireSection) questionnaireSection.classList.remove('active');
+        if (resultsSection) resultsSection.classList.add('active');
+      }
+
+      const resultsContainer = this.externalUI
+        ? this._externalResultsMount
+        : document.getElementById('resultsContainer');
+      await this.renderResults(resultsContainer);
       this.saveResults();
+      if (this.externalUI) this._emitExternal('results');
     } catch (error) {
       this.debugReporter.logError(error, 'showResults');
       ErrorHandler.showUserError('Failed to show results. Please try again.');
@@ -1635,18 +1827,18 @@ export class DiagnosisEngine {
    * Render assessment results
    * @returns {Promise<void>}
    */
-  async renderResults() {
+  async renderResults(resultsContainerOverride = null) {
     try {
       await this.loadDiagnosisData(); // Ensure all data is loaded
-      
-      const container = document.getElementById('resultsContainer');
+
+      const container = resultsContainerOverride || document.getElementById('resultsContainer');
       if (!container) {
         ErrorHandler.showUserError('Results container not found.');
         return;
       }
 
-      this.ui.transition('results');
-      
+      if (!this.externalUI) this.ui.transition('results');
+
       const vector = this.analysisData.conclusionVector;
       const primaryPattern = vector.primaryPatternMatch;
     
@@ -2060,14 +2252,16 @@ export class DiagnosisEngine {
       if (reportComplete && this.selectedCategories.length > 0 && hasResultsPayload) {
         this.currentStage = 'results';
         await this.loadDiagnosisData();
-        this.selectedCategories.forEach(categoryKey => {
-          const card = document.querySelector(`[data-category="${categoryKey}"]`);
-          if (card) card.classList.add('selected');
-        });
-        const startAssessmentBtn = document.getElementById('startAssessment');
-        if (startAssessmentBtn) startAssessmentBtn.disabled = false;
-        this.ui.transition('results');
-        await this.renderResults();
+        if (!this.externalUI) {
+          this.selectedCategories.forEach(categoryKey => {
+            const card = document.querySelector(`[data-category="${categoryKey}"]`);
+            if (card) card.classList.add('selected');
+          });
+          const startAssessmentBtn = document.getElementById('startAssessment');
+          if (startAssessmentBtn) startAssessmentBtn.disabled = false;
+          this.ui.transition('results');
+          await this.renderResults();
+        }
         return;
       }
 
@@ -2075,21 +2269,25 @@ export class DiagnosisEngine {
       if (this.selectedCategories.length > 0) {
         await this.loadDiagnosisData();
         
-        this.selectedCategories.forEach(categoryKey => {
-          const card = document.querySelector(`[data-category="${categoryKey}"]`);
-          if (card) card.classList.add('selected');
-        });
-        
-        const startAssessmentBtn = document.getElementById('startAssessment');
-        if (startAssessmentBtn) startAssessmentBtn.disabled = false;
+        if (!this.externalUI) {
+          this.selectedCategories.forEach(categoryKey => {
+            const card = document.querySelector(`[data-category="${categoryKey}"]`);
+            if (card) card.classList.add('selected');
+          });
+          
+          const startAssessmentBtn = document.getElementById('startAssessment');
+          if (startAssessmentBtn) startAssessmentBtn.disabled = false;
+        }
       }
       
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0 && this.selectedCategories.length > 0) {
         await this.buildQuestionSequence();
         
-        const questionnaireSection = document.getElementById('questionnaireSection');
-        if (questionnaireSection) questionnaireSection.classList.add('active');
+        if (!this.externalUI) {
+          const questionnaireSection = document.getElementById('questionnaireSection');
+          if (questionnaireSection) questionnaireSection.classList.add('active');
+        }
         this.renderCurrentQuestion();
       }
     } catch (error) {
@@ -2098,11 +2296,11 @@ export class DiagnosisEngine {
     }
   }
 
-  exportReportHtml() {
+  exportReportHtml(rootSelector = '#resultsSection') {
     const ok = downloadReportHtml({
       title: 'Pathology Assessment — Results',
       filenameBase: `diagnosis-analysis-${Date.now()}`,
-      rootSelector: '#resultsSection'
+      rootSelector
     });
     if (!ok) {
       ErrorHandler.showUserError('Could not build report file. Open results and try again.');
@@ -2171,6 +2369,8 @@ export class DiagnosisEngine {
     this.currentGuideQuestion = 0;
     this.suggestedCategories = [];
     this.refinementRequested = false;
+    this._externalQuestionSnapshot = null;
+    this._externalRefinementGroups = null;
     this.analysisData = {
       timestamp: new Date().toISOString(),
       categories: [],
@@ -2190,6 +2390,11 @@ export class DiagnosisEngine {
     
     sessionStorage.removeItem('diagnosisProgress');
     this.dataStore.clear('progress');
+
+    if (this.externalUI) {
+      this._emitExternal('reset');
+      return;
+    }
     
     // Reset UI
     const categorySelection = document.getElementById('categorySelection');
@@ -2218,12 +2423,21 @@ export class DiagnosisEngine {
   }
 }
 
-// Initialize engine when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.diagnosisEngine = new DiagnosisEngine();
-  });
-} else {
+function shouldAutoBootDiagnosisEngine() {
+  if (typeof document === 'undefined') return false;
+  // Legacy diagnosis.html defines this container; V3 SPA does not — avoids double init when bundled.
+  return Boolean(document.getElementById('questionContainer'));
+}
+
+function bootDiagnosisEngine() {
+  if (!shouldAutoBootDiagnosisEngine()) return;
   window.diagnosisEngine = new DiagnosisEngine();
+}
+
+// Initialize engine when DOM is ready (legacy page only)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootDiagnosisEngine);
+} else {
+  bootDiagnosisEngine();
 }
 
