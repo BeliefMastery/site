@@ -5,9 +5,19 @@
 body {
   margin: 0;
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at 20% 0, rgba(70, 120, 255, 0.2), transparent 35%), var(--v3-bg);
+  background:
+    radial-gradient(circle at 20% 0, var(--v3-bg-glow), transparent 35%),
+    linear-gradient(180deg, var(--v3-bg-soft) 0%, transparent 60%),
+    var(--v3-bg);
   color: var(--v3-text);
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--v3-heading);
 }
 
 a {
@@ -30,7 +40,7 @@ a {
   top: 0;
   z-index: 20;
   backdrop-filter: blur(10px);
-  background: rgba(6, 12, 24, 0.75);
+  background: var(--v3-nav-bg);
   border-bottom: 1px solid var(--v3-surface-border);
 }
 
@@ -153,11 +163,13 @@ a {
   margin: 0 0 var(--v3-space-2);
   font-size: clamp(1.75rem, 3vw, 2.35rem);
   line-height: 1.15;
+  color: var(--v3-heading);
 }
 
 .v3-section-title {
   margin: 0 0 var(--v3-space-2);
   font-size: 1.35rem;
+  color: var(--v3-heading-soft);
 }
 
 .v3-section-title a {
@@ -181,7 +193,7 @@ a {
 }
 
 .v3-hero {
-  background: linear-gradient(135deg, rgba(80, 120, 255, 0.12), transparent 55%);
+  background: linear-gradient(135deg, var(--v3-hero-tint-a), var(--v3-hero-tint-b) 55%);
 }
 
 .v3-cover-grid {
@@ -353,7 +365,7 @@ a {
 }
 
 .v3-tools-hero {
-  background: radial-gradient(circle at 10% 20%, rgba(120, 200, 255, 0.12), transparent 40%);
+  background: radial-gradient(circle at 10% 20%, var(--v3-tools-tint-a), transparent 40%);
 }
 
 .v3-tool-category {
@@ -475,7 +487,7 @@ a {
 }
 
 .v3-books-intro {
-  background: linear-gradient(120deg, rgba(255, 200, 120, 0.08), transparent 50%);
+  background: linear-gradient(120deg, var(--v3-books-tint-a), transparent 50%);
 }
 
 .v3-about-hero__grid {
