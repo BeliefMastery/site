@@ -5,11 +5,8 @@
 body {
   margin: 0;
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  background:
-    radial-gradient(circle at 20% 0, var(--v3-bg-glow), transparent 35%),
-    linear-gradient(180deg, var(--v3-bg-soft) 0%, transparent 60%),
-    var(--v3-bg);
-  color: var(--v3-text);
+  background: #040915;
+  color: #e8f0f8;
   min-height: 100vh;
 }
 
@@ -27,6 +24,11 @@ a {
 
 .app {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 0, var(--v3-bg-glow), transparent 35%),
+    linear-gradient(180deg, var(--v3-bg-soft) 0%, transparent 60%),
+    var(--v3-bg);
+  color: var(--v3-text);
 }
 
 .container {
@@ -282,38 +284,116 @@ a {
   margin-top: var(--v3-space-2);
 }
 
-.v3-portal-card {
+.v3-portal-banner {
   border: 1px solid var(--v3-surface-border);
   border-radius: var(--v3-radius);
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--v3-surface) 85%, transparent);
+  padding: var(--v3-space-3);
+  display: grid;
+  gap: var(--v3-space-2);
 }
 
-.v3-portal-card__summary {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  color: inherit;
-  padding: var(--v3-space-3);
+.v3-portal-slide-wrap {
+  overflow: hidden;
   cursor: pointer;
+  border-radius: 10px;
+}
+
+.v3-portal-slide {
+  animation: v3PortalFade 360ms ease;
+}
+
+@keyframes v3PortalFade {
+  from {
+    opacity: 0.35;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.v3-portal-kicker {
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--v3-muted);
+  font-size: 0.72rem;
 }
 
 .v3-portal-quote {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-style: italic;
   color: var(--v3-text);
 }
 
-.v3-portal-card__body {
-  padding: 0 var(--v3-space-3) var(--v3-space-3);
+.v3-portal-support {
+  margin: 0.65rem 0 0;
+  color: var(--v3-muted);
+  line-height: 1.5;
+  max-width: 74ch;
+}
+
+.v3-portal-extended {
+  margin: 0.7rem 0 0;
+  color: var(--v3-text);
+  line-height: 1.55;
+}
+
+.v3-portal-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
   color: var(--v3-muted);
 }
 
-.v3-portal-card__body .v3-btn {
+.v3-portal-cta {
   margin-top: var(--v3-space-2);
+}
+
+.v3-portal-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--v3-space-2);
+  flex-wrap: wrap;
+}
+
+.v3-portal-dots {
   display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.v3-portal-dot {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  border: 1px solid var(--v3-surface-border);
+  background: transparent;
+  cursor: pointer;
+}
+
+.v3-portal-dot.is-active {
+  background: var(--v3-accent);
+  border-color: var(--v3-accent);
+}
+
+.v3-portal-dot:focus-visible {
+  outline: 2px solid var(--v3-accent);
+  outline-offset: 2px;
+}
+
+.v3-portal-slide-wrap:focus-visible {
+  outline: 2px solid var(--v3-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v3-portal-slide {
+    animation: none;
+  }
 }
 
 .v3-btn {
@@ -542,4 +622,28 @@ a {
   border: 0;
   display: block;
   background: var(--v3-bg);
+}
+
+/* Diagnosis V3: ensure category card contrast is readable across themes */
+.diagnosis-v3-root .category-card {
+  background: var(--v3-surface);
+  border: 1px solid var(--v3-surface-border);
+  color: var(--v3-text);
+}
+
+.diagnosis-v3-root .category-card h3 {
+  color: var(--v3-heading);
+}
+
+.diagnosis-v3-root .category-card p {
+  color: var(--v3-text);
+}
+
+.diagnosis-v3-root .category-card .suggested-badge {
+  color: var(--v3-accent);
+}
+
+.diagnosis-v3-root .category-card.selected {
+  background: color-mix(in srgb, var(--v3-accent) 18%, var(--v3-surface));
+  border-color: var(--v3-accent);
 }

@@ -117,7 +117,17 @@ export default function BooksPage() {
 
       <BookHero id="unspeakables-grimoire" title="The Unspeakables Grimoire" subtitle="Structured language for what resists ordinary narration." cover="U-cover.jpg" alt="The Unspeakables Grimoire cover">
         <p className="v3-book-lead">
-          A grimoire in the classical sense: a working notebook of precise terms, postures, and operations for engaging territory that mainstream maps tend to blur, sanitize, or deny.
+          A grimoire in the classical sense: a working notebook of terms, postures, and operations for engaging territory that mainstream maps tend to blur, sanitize, or deny.
+        </p>
+        <ul className="v3-feature-list">
+          <li>Define nuanced inner and interpersonal phenomena without sensational language.</li>
+          <li>Use structural naming conventions to reduce confusion and projection.</li>
+          <li>Track repeating symbolic, emotional, and relational patterns over time.</li>
+          <li>Convert vague unease into clear inquiry prompts and practical boundaries.</li>
+          <li>Bridge mythic intuition with disciplined epistemic hygiene.</li>
+        </ul>
+        <p className="v3-book-note">
+          Built as a field manual, this text privileges precision over drama so difficult territory can be examined without collapse into superstition or denial.
         </p>
       </BookHero>
 
@@ -128,11 +138,35 @@ export default function BooksPage() {
         cover="SID-cover.jpg"
         alt="Sovereign Integral Devotionalism cover"
       >
-        <p className="v3-book-lead">A framework for depth, awe, and loyalty-to-truth that refuses coercion, confusion, and counterfeit ultimatum.</p>
+        <p className="v3-book-lead">
+          A framework for depth, awe, and loyalty-to-truth that refuses coercion, confusion, and counterfeit ultimatum.
+        </p>
+        <ul className="v3-feature-list">
+          <li>Practice devotion without outsourcing conscience or critical thought.</li>
+          <li>Integrate reason, reverence, embodiment, and moral accountability.</li>
+          <li>Discern authentic surrender from dependency or performative piety.</li>
+          <li>Identify coercive spiritual dynamics and rebuild healthy agency.</li>
+          <li>Anchor devotion in verifiable conduct, not ideological theater.</li>
+        </ul>
+        <p className="v3-book-note">
+          This is devotional architecture for mature discernment: spiritually serious, psychologically grounded, and structurally resistant to manipulation.
+        </p>
       </BookHero>
 
       <BookHero id="peer-counseling-manual" title="The Peer-Counseling Manual" subtitle="Relational clarity under pressure." cover="PC-cover.jpg" alt="The Peer-Counseling Manual cover">
-        <p className="v3-book-lead">Practical peer frameworks for reflection, mediation, and stabilization in high-stakes interpersonal dynamics.</p>
+        <p className="v3-book-lead">
+          Practical peer frameworks for reflection, mediation, and stabilization in high-stakes interpersonal dynamics.
+        </p>
+        <ul className="v3-feature-list">
+          <li>Run clean listening and mirroring protocols without overreach.</li>
+          <li>De-escalate conflict while preserving dignity and boundaries.</li>
+          <li>Differentiate support, accountability, and referral thresholds.</li>
+          <li>Use structured debriefs to reduce reenactment and role confusion.</li>
+          <li>Strengthen peer containers for trust, clarity, and follow-through.</li>
+        </ul>
+        <p className="v3-book-note">
+          Designed for real conversations under pressure, the manual emphasizes process integrity so peers can help effectively without drifting into amateur therapy.
+        </p>
       </BookHero>
     </div>
   );

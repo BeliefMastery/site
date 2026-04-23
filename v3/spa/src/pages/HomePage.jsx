@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { engineRoutes } from "@/routes";
 import { toolMeta, SITE_IMAGES } from "@/data/toolsCatalog";
@@ -29,18 +29,120 @@ function ToolCoverLink({ to, src, alt }) {
   );
 }
 
-function PortalCard({ quote, children, href, cta }) {
-  const [open, setOpen] = useState(false);
+const PORTAL_SLIDES = [
+  {
+    id: "belief-mastery",
+    statement: "The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do.",
+    supporting:
+      "Subconscious beliefs form in moments of overwhelm. Belief Mastery rewrites those buried rules through a precise step-by-step inference and transformation process.",
+    extended:
+      "Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops. Belief Mastery rewrites those buried rules through a precise step-by-step inference and transformation process.",
+    href: "/books#belief-mastery",
+    cta: "Explore Inner Architecture",
+  },
+  {
+    id: "sovereign-of-mind",
+    statement: "Your thoughts may not always be your own.",
+    supporting:
+      "In a world built for persuasion, mimicry, and dependency, Sovereign of Mind fortifies the architecture that thinking stands on and secures authorship.",
+    extended:
+      "In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. Sovereign of Mind is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.",
+    href: "/books#sovereign-of-mind",
+    cta: "Fortify Cognitive Structure",
+  },
+];
+
+function PortalBanner() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const slideCount = PORTAL_SLIDES.length;
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion || isPaused || slideCount <= 1) return undefined;
+    const timer = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % slideCount);
+    }, 6000);
+    return () => window.clearInterval(timer);
+  }, [reducedMotion, isPaused, slideCount]);
+
+  const activeSlide = useMemo(() => PORTAL_SLIDES[activeIndex], [activeIndex]);
+  const next = () => {
+    setExpanded(false);
+    setActiveIndex((prev) => (prev + 1) % slideCount);
+  };
+  const prev = () => {
+    setExpanded(false);
+    setActiveIndex((prev) => (prev - 1 + slideCount) % slideCount);
+  };
+
   return (
-    <article className={`v3-portal-card ${open ? "v3-portal-card--open" : ""}`}>
-      <button type="button" className="v3-portal-card__summary" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-        <blockquote className="v3-portal-quote">{quote}</blockquote>
-      </button>
-      <div className="v3-portal-card__body" hidden={!open}>
-        {children}
-        <Link className="v3-btn v3-btn--primary" to={href}>
-          {cta}
-        </Link>
+    <article
+      className="v3-portal-banner"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={() => setIsPaused(false)}
+      aria-label="Introductory portal highlights"
+    >
+      <div
+        className="v3-portal-slide-wrap"
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        aria-label="Toggle extended portal explanation"
+        onClick={() => setExpanded((v) => !v)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setExpanded((v) => !v);
+          }
+        }}
+      >
+        <div className="v3-portal-slide" key={activeSlide.id}>
+          <p className="v3-portal-kicker">Portal {activeIndex + 1} of {slideCount}</p>
+          <blockquote className="v3-portal-quote">{activeSlide.statement}</blockquote>
+          <p className="v3-portal-support">{activeSlide.supporting}</p>
+          <p className={`v3-portal-extended ${expanded ? "is-open" : ""}`} hidden={!expanded}>
+            {activeSlide.extended}
+          </p>
+          <p className="v3-portal-hint">{expanded ? "Click to collapse details." : "Click banner for full explanation."}</p>
+          <Link className="v3-btn v3-btn--primary v3-portal-cta" to={activeSlide.href}>
+            {activeSlide.cta}
+          </Link>
+        </div>
+      </div>
+      <div className="v3-portal-controls" aria-label="Portal controls">
+        <button type="button" className="v3-btn v3-btn--ghost" onClick={prev} aria-label="Show previous portal statement">
+          Previous
+        </button>
+        <div className="v3-portal-dots" role="tablist" aria-label="Select portal statement">
+          {PORTAL_SLIDES.map((slide, index) => (
+            <button
+              key={slide.id}
+              type="button"
+              className={`v3-portal-dot ${index === activeIndex ? "is-active" : ""}`}
+              onClick={() => {
+                setExpanded(false);
+                setActiveIndex(index);
+              }}
+              aria-label={`Show portal ${index + 1}`}
+              aria-current={index === activeIndex ? "true" : "false"}
+            />
+          ))}
+        </div>
+        <button type="button" className="v3-btn v3-btn--ghost" onClick={next} aria-label="Show next portal statement">
+          Next
+        </button>
       </div>
     </article>
   );
@@ -108,24 +210,7 @@ export default function HomePage() {
         <details className="v3-details" open>
           <summary>Introductory portals</summary>
           <div className="v3-details__body">
-            <div className="grid v3-portal-grid">
-              <PortalCard
-                quote="The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do."
-                href="/books#belief-mastery"
-                cta="Explore Inner Architecture"
-              >
-                <p>
-                  Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops.{" "}
-                  <strong>Belief Mastery</strong> rewrites those buried rules through a precise step-by-step inference and transformation process.
-                </p>
-              </PortalCard>
-              <PortalCard quote="Your thoughts may not always be your own." href="/books#sovereign-of-mind" cta="Fortify Cognitive Structure">
-                <p>
-                  In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. <strong>Sovereign of Mind</strong> is the structural antidote.
-                  Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.
-                </p>
-              </PortalCard>
-            </div>
+            <PortalBanner />
           </div>
         </details>
 
