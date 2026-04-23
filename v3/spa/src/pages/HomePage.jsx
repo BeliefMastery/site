@@ -33,8 +33,7 @@ const PORTAL_SLIDES = [
   {
     id: "belief-mastery",
     statement: "The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do.",
-    supporting:
-      "Subconscious beliefs form in moments of overwhelm. Belief Mastery rewrites those buried rules through a precise step-by-step inference and transformation process.",
+    supporting: "Belief Mastery exposes the hidden rules driving emotional loops and dependency, then walks a precise rewrite process.",
     extended:
       "Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops. Belief Mastery rewrites those buried rules through a precise step-by-step inference and transformation process.",
     href: "/books#belief-mastery",
@@ -43,8 +42,7 @@ const PORTAL_SLIDES = [
   {
     id: "sovereign-of-mind",
     statement: "Your thoughts may not always be your own.",
-    supporting:
-      "In a world built for persuasion, mimicry, and dependency, Sovereign of Mind fortifies the architecture that thinking stands on and secures authorship.",
+    supporting: "Sovereign of Mind strengthens discernment and protects conscious authorship under pressure from manipulation systems.",
     extended:
       "In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. Sovereign of Mind is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.",
     href: "/books#sovereign-of-mind",
@@ -76,14 +74,6 @@ function PortalBanner() {
   }, [reducedMotion, isPaused, slideCount]);
 
   const activeSlide = useMemo(() => PORTAL_SLIDES[activeIndex], [activeIndex]);
-  const next = () => {
-    setExpanded(false);
-    setActiveIndex((prev) => (prev + 1) % slideCount);
-  };
-  const prev = () => {
-    setExpanded(false);
-    setActiveIndex((prev) => (prev - 1 + slideCount) % slideCount);
-  };
 
   return (
     <article
@@ -115,34 +105,10 @@ function PortalBanner() {
           <p className={`v3-portal-extended ${expanded ? "is-open" : ""}`} hidden={!expanded}>
             {activeSlide.extended}
           </p>
-          <p className="v3-portal-hint">{expanded ? "Click to collapse details." : "Click banner for full explanation."}</p>
           <Link className="v3-btn v3-btn--primary v3-portal-cta" to={activeSlide.href}>
             {activeSlide.cta}
           </Link>
         </div>
-      </div>
-      <div className="v3-portal-controls" aria-label="Portal controls">
-        <button type="button" className="v3-btn v3-btn--ghost" onClick={prev} aria-label="Show previous portal statement">
-          Previous
-        </button>
-        <div className="v3-portal-dots" role="tablist" aria-label="Select portal statement">
-          {PORTAL_SLIDES.map((slide, index) => (
-            <button
-              key={slide.id}
-              type="button"
-              className={`v3-portal-dot ${index === activeIndex ? "is-active" : ""}`}
-              onClick={() => {
-                setExpanded(false);
-                setActiveIndex(index);
-              }}
-              aria-label={`Show portal ${index + 1}`}
-              aria-current={index === activeIndex ? "true" : "false"}
-            />
-          ))}
-        </div>
-        <button type="button" className="v3-btn v3-btn--ghost" onClick={next} aria-label="Show next portal statement">
-          Next
-        </button>
       </div>
     </article>
   );
@@ -156,6 +122,7 @@ export default function HomePage() {
         <h1 className="v3-hero-title">Structure Your Mind — Author Your Life.</h1>
         <p className="v3-lead">Excavate your hidden rules and fortify your cognitive defenses.</p>
       </section>
+      <PortalBanner />
 
       <section className="surface">
         <div className="v3-section-head">
@@ -208,13 +175,6 @@ export default function HomePage() {
         </details>
 
         <details className="v3-details" open>
-          <summary>Introductory portals</summary>
-          <div className="v3-details__body">
-            <PortalBanner />
-          </div>
-        </details>
-
-        <details className="v3-details">
           <summary>{generalDisclaimer.title}</summary>
           <div className="v3-details__body">
             <p className="v3-form-help">{generalDisclaimer.general}</p>
