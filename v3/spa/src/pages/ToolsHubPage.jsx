@@ -9,10 +9,9 @@ export default function ToolsHubPage() {
     <div className="stack">
       <section className="surface v3-tools-hero">
         <p className="kicker">Toolkit</p>
-        <h1 className="v3-hero-title">Sovereignty Tools</h1>
+        <h1 className="v3-hero-title">Tools for reflection</h1>
         <p className="v3-lead">
-          Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation pattern awareness, channel flow diagnostics, logos structure, structured self-report review, life domain review,
-          dependency loop tracing, and more.
+          Pick a tool below—life review, pattern maps, gentle check-ins, and more. Everything saves in your browser the same way as on the main site.
         </p>
       </section>
 
@@ -52,8 +51,8 @@ export default function ToolsHubPage() {
       </nav>
 
       <section className="surface">
-        <h2 className="v3-section-title">External</h2>
-        <p className="v3-muted">Unlocked GPT opens in a new tab.</p>
+        <h2 className="v3-section-title">Elsewhere</h2>
+        <p className="v3-muted">Unlocked GPT opens in a new tab so you can keep this page open.</p>
         <a className="v3-btn v3-btn--ghost" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank" rel="noreferrer">
           Open Unlocked GPT
         </a>

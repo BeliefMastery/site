@@ -40,14 +40,14 @@ export default function EngineAdapterView({ label, legacyPage }) {
   return (
     <section className="stack v3-engine-route">
       <article className="surface v3-engine-route__intro">
-        <p className="kicker">Assessment</p>
+        <p className="kicker">Tool</p>
         <h1 className="v3-hero-title">{label}</h1>
         <p className="v3-muted">
-          The full engine runs below inside the V3 shell. Progress, scoring, exports, and storage are unchanged (same browser storage keys as the standalone tool page).
+          The full experience runs below. Your answers and progress are saved the same way as on the regular site page.
         </p>
         <p>
           <a className="v3-btn v3-btn--ghost" href={standaloneHref} target="_blank" rel="noreferrer">
-            Open standalone page
+            Open full page
           </a>
         </p>
       </article>

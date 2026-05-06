@@ -14,29 +14,29 @@ const SITE_NAME = "Belief Mastery";
 const DEFAULT_META = {
   title: `${SITE_NAME} — V3`,
   description:
-    "Cognitive sovereignty as learnable structure: books, reflection tools, and a free cognitive audit entry—capacity, coherence, and structural clarity in one suite.",
+    "Freedom is achievable. Books, online tools, and gentle structure for Belief Mastery, Sovereign of Mind, and peer counseling—in one place.",
 };
 
 const STATIC_ROUTE_META = {
   "/": {
     title: `${SITE_NAME} — V3`,
     description:
-      "Cognitive sovereignty is learnable structure. Explore internal capacity framing, a free cognitive audit, books, and online sovereignty tools in Belief Mastery V3.",
+      "Freedom is achievable. Explore books, free tools, and a simple life review to get oriented—Belief Mastery V3.",
   },
   "/tools": {
     title: `Online tools | ${SITE_NAME} — V3`,
     description:
-      "Run the Belief Mastery diagnostic and reflection tools in the V3 suite—pattern tracing, resistance mapping, and structured self-inquiry.",
+      "Self-guided tools: life review, pattern maps, and more—same saves as the full site, in a calmer V3 layout.",
   },
   "/books": {
     title: `Books | ${SITE_NAME} — V3`,
     description:
-      "Belief Mastery, Sovereign of Mind, the Sovereignty-Distortion Codex, and companion works—frameworks for rewriting hidden rules and defending authorship.",
+      "Belief Mastery, Sovereign of Mind, the Codex, and more—practical language for real change.",
   },
   "/about": {
     title: `About the author | ${SITE_NAME} — V3`,
     description:
-      "Warwick Marshall—systems architect and author—structural diagnostics, internal capacity, and coherence across technical, behavioral, and organizational domains.",
+      "Warwick Marshall—author and practitioner—books, tools, and sessions for people ready to look honestly at their patterns.",
   },
 };
 
@@ -55,7 +55,7 @@ export function resolvePageMeta(pathname) {
     const ogImage = tm?.thumb ? `${SITE_ORIGIN}/site/images/${tm.thumb}` : DEFAULT_OG_IMAGE;
     return {
       title: `${label} | ${SITE_NAME} — V3`,
-      description: `Run ${label} in the Belief Mastery V3 suite—structured self-inquiry with the same persistence model as the standalone tool where applicable.`,
+      description: `Run ${label} here—your progress is saved the same way as on the full tool page.`,
       canonical: `${V3_APP_BASE}/#${path}`,
       ogImage,
     };

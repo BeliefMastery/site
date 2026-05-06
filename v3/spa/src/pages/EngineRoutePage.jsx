@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { engineRoutes } from "@/routes";
 import EngineAdapterView from "@/engines/EngineAdapterView";
-import DiagnosisEnginePage from "@/engines/DiagnosisEnginePage";
 
 export default function EngineRoutePage() {
   const { engineId } = useParams();
@@ -12,15 +11,11 @@ export default function EngineRoutePage() {
     return (
       <section className="stack">
         <article className="surface">
-          <h2>Engine not found</h2>
-          <p>Check route configuration in V3 engine mappings.</p>
+          <h2>Tool not found</h2>
+          <p>That link may be out of date. Try the Tools page from the menu.</p>
         </article>
       </section>
     );
-  }
-
-  if (engineId === "diagnosis") {
-    return <DiagnosisEnginePage />;
   }
 
   return <EngineAdapterView label={routeConfig.label} legacyPage={routeConfig.legacyPage} />;

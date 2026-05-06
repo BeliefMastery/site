@@ -1,31 +1,31 @@
-/** Home page hero and bridge copy (cognitive sovereignty / capacity framing). */
+/** Home page hero and bridge copy — plain, approachable tone. */
 
 export const homeHero = {
-  thesis: "Cognitive sovereignty is learnable structure.",
+  thesis: "Freedom is achievable.",
 };
 
 export const homeBridge = {
-  title: "Internal capacity, made explicit.",
+  title: "Room to grow—with clear steps.",
   intro:
-    "The same structural discipline used to debug complex systems—dependency mapping, fault isolation, root-cause correction—applied to the rules that run your attention, choices, and coherence.",
+    "Belief Mastery, Sovereign of Mind, and peer counseling all point toward the same thing: seeing the patterns behind your life so you can choose what comes next. You are not broken; you are unwinding what no longer fits.",
   bullets: [
     {
-      label: "Repeating loops",
-      text: "Surface the hidden rules so old patterns stop commanding new days.",
+      label: "Old habits",
+      text: "Notice what keeps them in place—without piling on shame.",
     },
     {
-      label: "Persuasion pressure",
-      text: "Strengthen authorship when narratives, urgency, or influence pile on.",
+      label: "Pressure from others",
+      text: "Stay grounded when narratives, urgency, or influence run high.",
     },
     {
-      label: "Overwhelm and scatter",
-      text: "Move from noise to coherence—fewer leaks, clearer priorities.",
+      label: "Feeling scattered",
+      text: "Find steadier ground and fewer leaks in your attention.",
     },
     {
-      label: "High-stakes environments",
-      text: "Targeted correction instead of endless coping or surface fixes.",
+      label: "Ready for honest work",
+      text: "Books, tools, or sessions—pick the door that fits you today.",
     },
   ],
-  ctaPrimary: { label: "Start a free cognitive audit", to: "/engines/coaching" },
-  ctaSecondary: { label: "Map your meaning structure", to: "/engines/paradigm" },
+  ctaPrimary: { label: "Start a free life review", to: "/engines/coaching" },
+  ctaSecondary: { label: "Try the meaning map", to: "/engines/paradigm" },
 };

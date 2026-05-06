@@ -2,7 +2,7 @@ import { useLayoutEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import TopNav from "./TopNav";
 import SeoHead from "./SeoHead";
-import { loadTheme, saveTheme, themes } from "@/lib/themeStore";
+import { loadTheme, saveTheme, syncLegacySiteThemeStorage, themes } from "@/lib/themeStore";
 
 function syncDocumentTheme(theme) {
   const root = document.documentElement;
@@ -17,6 +17,7 @@ export default function LayoutShell() {
 
   useLayoutEffect(() => {
     syncDocumentTheme(theme);
+    syncLegacySiteThemeStorage(theme);
   }, [theme]);
 
   function onThemeChange(next) {

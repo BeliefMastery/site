@@ -11,17 +11,26 @@ export const themeLabels = {
   neomorphism: "Neomorphism",
 };
 
-/**
- * Legacy static tool pages only support these theme keys via shared/theme-prefs.js.
- * Earth maps to light as the closest calm palette.
- */
+/** Maps V3 shell themes to keys consumed by shared/theme-prefs.js on static engine pages. */
 const LEGACY_SITE_THEME_MAP = {
-  earth: "light",
+  earth: "earth",
   cosmic: "cosmic",
   light: "light",
   forge: "forge",
   neomorphism: "neomorphism",
 };
+
+const SITE_THEME_STORAGE = "bm_site_theme";
+
+/** Keep legacy static pages’ theme storage aligned with the V3 picker (same origin). */
+export function syncLegacySiteThemeStorage(v3Theme) {
+  const legacy = toLegacySiteTheme(v3Theme);
+  try {
+    localStorage.setItem(SITE_THEME_STORAGE, legacy);
+  } catch (e) {
+    /* ignore */
+  }
+}
 
 export function loadTheme() {
   const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -31,6 +40,7 @@ export function loadTheme() {
 export function saveTheme(theme) {
   if (!themes.includes(theme)) return;
   window.localStorage.setItem(STORAGE_KEY, theme);
+  syncLegacySiteThemeStorage(theme);
   window.dispatchEvent(new CustomEvent("bm-v3-theme-change", { detail: { theme } }));
 }
 

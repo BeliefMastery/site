@@ -34,21 +34,21 @@ function ToolCoverLink({ to, src, alt }) {
 const PORTAL_SLIDES = [
   {
     id: "belief-mastery",
-    statement: "Joy stays scarce when hidden rules keep steering you toward what you never chose.",
-    supporting: "Belief Mastery maps those rules and walks a precise rewrite—capacity first, drama second.",
+    statement: "When old beliefs run the show, joy and real choice can feel out of reach.",
+    supporting: "Belief Mastery walks you through seeing those beliefs clearly—and updating them at a pace you can hold.",
     extended:
-      "Beliefs formed under overwhelm act like protective code; they narrow what you can feel and do. Inference and dismantling make that code legible so it can change.",
+      "Many beliefs formed when you were overwhelmed. They made sense then; they may narrow you now. The book offers a step-by-step way to notice them and work with them honestly.",
     href: "/books#belief-mastery",
-    cta: "Explore Inner Architecture",
+    cta: "Explore Belief Mastery",
   },
   {
     id: "sovereign-of-mind",
-    statement: "Not every thought arrives with your signature on it.",
-    supporting: "Sovereign of Mind is the field manual for authorship when persuasion and mimicry run hot.",
+    statement: "Your mind deserves to feel like yours.",
+    supporting: "Sovereign of Mind is about clarity, influence, and standing in your own judgment—not someone else’s script.",
     extended:
-      "Borrowed scaffolding—trauma, culture, urgency—can wear your voice. This work fortifies the structure thinking stands on so ownership stays yours.",
+      "Pressure, noise, and persuasion can sound like your own voice. This book helps you tell the difference and stay steady.",
     href: "/books#sovereign-of-mind",
-    cta: "Fortify Cognitive Structure",
+    cta: "Explore Sovereign of Mind",
   },
 ];
 
@@ -102,7 +102,7 @@ function PortalBanner() {
       >
         <div className="v3-portal-slide" key={activeSlide.id}>
           <p className="v3-portal-kicker">
-            Two doorways in · {activeIndex + 1} of {slideCount}
+            Two books · {activeIndex + 1} of {slideCount}
           </p>
           <blockquote className="v3-portal-quote">{activeSlide.statement}</blockquote>
           <p className="v3-portal-support">{activeSlide.supporting}</p>
@@ -154,7 +154,7 @@ export default function HomePage() {
       <section className="surface v3-section--breathable">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
-            <Link to="/tools">Online Sovereignty Tools and Analysis</Link>
+            <Link to="/tools">Tools you can use online</Link>
           </h2>
         </div>
         <div className="v3-cover-grid">
@@ -186,22 +186,22 @@ export default function HomePage() {
 
       <section className="surface v3-disclosures v3-section--breathable">
         <details className="v3-details">
-          <summary>How these works connect</summary>
+          <summary>How these works fit together</summary>
           <div className="v3-details__body">
-            <p>These works operate as a <strong>coherent suite</strong>, not isolated products.</p>
+            <p>They are meant to work as one family—not separate fixes.</p>
             <p>
-              <strong>Belief Mastery</strong> excavates the subconscious logic that shapes choices and reorders behavior through a disciplined inference and dismantling process.
+              <strong>Belief Mastery</strong> focuses on the beliefs and patterns underneath daily life.
             </p>
             <p>
-              <strong>Sovereign of Mind</strong> fortifies perception and supplies tools for resisting cognitive hijack.
+              <strong>Sovereign of Mind</strong> focuses on clear thinking when the world pushes hard.
             </p>
             <p>
-              The <strong>Codex</strong> exposes recurring structural deformations so readers can recognize systemic pressure early and respond with clarity and agency.
+              The <strong>Codex</strong> names common distortions so you can spot them early and respond with steadiness.
             </p>
           </div>
         </details>
 
-        <details className="v3-details" open>
+        <details className="v3-details">
           <summary>{generalDisclaimer.title}</summary>
           <div className="v3-details__body">
             <p className="v3-form-help">{generalDisclaimer.general}</p>

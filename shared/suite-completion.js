@@ -4,17 +4,17 @@
  */
 
 export const SUITE_TOOL_DEFS = [
-  { id: 'diagnosis', label: 'Pathology Assessment', href: 'diagnosis.html', namespace: 'diagnosis-assessment' },
-  { id: 'coaching', label: 'Life Domain Review', href: 'coaching.html', namespace: 'coaching-assessment' },
-  { id: 'needs-dependency', label: 'Dependency Loop Tracer', href: 'needs-dependency.html', namespace: 'needs-dependency-assessment' },
-  { id: 'sovereignty-spectrum', label: 'Your Sovereignty Paradigm', href: 'sovereignty-spectrum.html', namespace: 'spectrum-assessment' },
-  { id: 'paradigm', label: 'Logos Structure', href: 'paradigm.html', namespace: 'paradigm-assessment' },
-  { id: 'manipulation', label: 'Manipulation Defense Decoder', href: 'manipulation.html', namespace: 'manipulation-assessment' },
-  { id: 'sovereignty', label: 'Cognitive Resistance Capacity', href: 'sovereignty.html', namespace: 'sovereignty-assessment' },
-  { id: 'channels', label: 'Channel Flow Diagnostics', href: 'channels.html', namespace: 'channels-assessment' },
-  { id: 'character-sheet', label: 'Astrological Character Sheet', href: 'character-sheet.html', namespace: 'character-sheet' },
-  { id: 'entities', label: 'Will Anomaly Mapping', href: 'entities.html', namespace: 'entities-assessment' },
-  { id: 'outlier-aptitude', label: 'Aptitude Mapping', href: 'outlier-aptitude.html', namespace: 'outlier-aptitude-assessment' }
+  { id: 'diagnosis', label: 'Symptom checklist', href: 'diagnosis.html', namespace: 'diagnosis-assessment' },
+  { id: 'coaching', label: 'Life areas review', href: 'coaching.html', namespace: 'coaching-assessment' },
+  { id: 'needs-dependency', label: 'Dependency loops', href: 'needs-dependency.html', namespace: 'needs-dependency-assessment' },
+  { id: 'sovereignty-spectrum', label: 'Your sovereignty lens', href: 'sovereignty-spectrum.html', namespace: 'spectrum-assessment' },
+  { id: 'paradigm', label: 'Meaning map', href: 'paradigm.html', namespace: 'paradigm-assessment' },
+  { id: 'manipulation', label: 'Influence patterns', href: 'manipulation.html', namespace: 'manipulation-assessment' },
+  { id: 'sovereignty', label: 'Mental steadiness', href: 'sovereignty.html', namespace: 'sovereignty-assessment' },
+  { id: 'channels', label: 'Inner channel flow', href: 'channels.html', namespace: 'channels-assessment' },
+  { id: 'character-sheet', label: 'Character sheet', href: 'character-sheet.html', namespace: 'character-sheet' },
+  { id: 'entities', label: 'Will and edges', href: 'entities.html', namespace: 'entities-assessment' },
+  { id: 'outlier-aptitude', label: 'Aptitude map', href: 'outlier-aptitude.html', namespace: 'outlier-aptitude-assessment' }
 ];
 
 function unwrapPayload(parsed) {

@@ -20,9 +20,9 @@ export default function SuiteProgressCard() {
 
   return (
     <article className="surface progress-card v3-section--breathable">
-      <h2 className="v3-section-title">Tool Progress</h2>
+      <h2 className="v3-section-title">Your tools</h2>
       <p className="v3-muted">
-        {completeCount}/{totalCount} tools completed
+        {completeCount} of {totalCount} completed
       </p>
       <div className="progress-track" aria-label="Completion progress">
         <span className="progress-fill" style={{ width: `${pct}%` }} />

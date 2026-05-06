@@ -214,6 +214,14 @@ a {
   color: var(--v3-heading-soft);
 }
 
+.v3-testimonial__quote p {
+  margin: 0 0 0.85em;
+}
+
+.v3-testimonial__quote p:last-child {
+  margin-bottom: 0;
+}
+
 .v3-testimonial__by {
   margin: 0.7rem 0 0 1.15rem;
   font-family: var(--v3-font-body);
@@ -708,28 +716,4 @@ a {
   border: 0;
   display: block;
   background: var(--v3-bg);
-}
-
-/* Diagnosis V3: ensure category card contrast is readable across themes */
-.diagnosis-v3-root .category-card {
-  background: var(--v3-surface);
-  border: 1px solid var(--v3-surface-border);
-  color: var(--v3-text);
-}
-
-.diagnosis-v3-root .category-card h3 {
-  color: var(--v3-heading);
-}
-
-.diagnosis-v3-root .category-card p {
-  color: var(--v3-text);
-}
-
-.diagnosis-v3-root .category-card .suggested-badge {
-  color: var(--v3-accent);
-}
-
-.diagnosis-v3-root .category-card.selected {
-  background: color-mix(in srgb, var(--v3-accent) 18%, var(--v3-surface));
-  border-color: var(--v3-accent);
 }

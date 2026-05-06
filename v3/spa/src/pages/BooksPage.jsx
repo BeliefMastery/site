@@ -31,142 +31,142 @@ export default function BooksPage() {
     <div className="stack">
       <section className="surface v3-books-intro">
         <p className="kicker">Catalog</p>
-        <h1 className="v3-hero-title">Books &amp; frameworks</h1>
+        <h1 className="v3-hero-title">Books</h1>
         <p className="v3-lead">
-          Secular armor for the cognitively vigilant: language, structure, and method for standing guard over the mind itself—without surrendering discernment or agency.
+          Straightforward writing for people who want real change—belief work, mental clarity, and frameworks you can actually use.
         </p>
       </section>
 
       <BookHero
         id="belief-mastery"
         title="Belief Mastery"
-        subtitle="A Structural Method for Rewriting Your Hidden Rules"
+        subtitle="Rewriting the rules underneath your life"
         cover="BM-cover.jpg"
         alt="Belief Mastery cover"
         action={
           <a className="v3-btn v3-btn--outline" href="https://www.amazon.com/Belief-Mastery-Identifying-Transforming-Subconscious-ebook/dp/B0FG1B174P" target="_blank" rel="noreferrer">
-            Purchase Belief Mastery
+            Buy on Amazon
           </a>
         }
       >
         <p className="v3-book-lead">
-          Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops. <strong>Belief Mastery</strong>{" "}
-          rewrites those buried rules through a precise step-by-step inference and transformation process.
+          Old beliefs often formed when you were overwhelmed—they helped then and may limit you now. <strong>Belief Mastery</strong> is a step-by-step way to see those beliefs clearly and work with them kindly.
         </p>
         <ul className="v3-feature-list">
-          <li>Trace recurring problems to their root need.</li>
-          <li>Expose the belief holding each pattern in place.</li>
-          <li>Navigate a 12-step inference process to transform it.</li>
-          <li>Re-parent the parts that once had no choice.</li>
-          <li>Master pattern tracing through detailed case studies.</li>
+          <li>Find the need behind repeating problems.</li>
+          <li>Name the belief that keeps a pattern stuck.</li>
+          <li>Walk a clear inference process instead of guessing.</li>
+          <li>Gentle inner work with room for real-life examples.</li>
         </ul>
         <p className="v3-book-note">
-          Blending right-brain visualization (<em>The Journey Home</em>) with left-brain logic (<em>The Belief Inference Process</em>), this book delivers surgeon-level clarity with witness-level compassion.
+          Pairs guided imagery (<em>The Journey Home</em>) with a logical sequence (<em>The Belief Inference Process</em>) so head and heart can move together.
         </p>
       </BookHero>
 
       <BookHero
         id="sovereign-of-mind"
         title="Sovereign of Mind"
-        subtitle="Cognitive Sovereignty in a Manipulated World"
+        subtitle="Keeping your mind yours in a noisy world"
         cover="SoM-cover.jpg"
         alt="Sovereign of Mind cover"
         action={
           <a className="v3-btn v3-btn--outline" href="https://www.amazon.com/Sovereign-Mind-Cognitive-Manipulation-Authorship-ebook/dp/B0F9VJK911" target="_blank" rel="noreferrer">
-            Purchase Sovereign of Mind
+            Buy on Amazon
           </a>
         }
       >
         <p className="v3-book-lead">
-          Your thoughts may not always be your own. In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology.{" "}
-          <strong>Sovereign of Mind</strong> is the structural antidote.
+          Not every thought arrives with your name on it. <strong>Sovereign of Mind</strong> is a readable field guide to influence, clarity, and owning your judgment again.
         </p>
         <ul className="v3-feature-list">
-          <li>Secure conscious authorship of thought and will.</li>
-          <li>Expand perception and discernment.</li>
-          <li>Build your paradigm deliberately upon frameworks that can withstand contradiction.</li>
-          <li>Recognize and neutralize manipulation vectors.</li>
-          <li>Master relational dynamics without surrendering sovereignty.</li>
-          <li>Map internal architecture to restore coherence and integrity.</li>
+          <li>Tell pressure apart from your own voice.</li>
+          <li>Strengthen discernment without turning cynical.</li>
+          <li>Build a worldview that can hold real-life contradiction.</li>
+          <li>See manipulation patterns for what they are.</li>
+          <li>Stay steady in relationships without giving yourself away.</li>
         </ul>
-        <p className="v3-book-note">Sovereign of Mind forges cognitive infrastructure—the sword and sheath for those who choose to think, live, and act by structures of their own design.</p>
+        <p className="v3-book-note">For anyone who wants mental habits that feel steady—not borrowed.</p>
       </BookHero>
 
       <BookHero
         id="distortion-codex"
         title="The Sovereignty-Distortion Codex"
-        subtitle="A structural exposure of sovereignty obstruction patterns and archetypal manipulation machinery."
+        subtitle="Spotting patterns that quietly steal clarity"
         cover="SDC-cover.jpg"
         alt="Sovereignty-Distortion Codex cover"
         action={
           <a className="v3-btn v3-btn--outline" href="https://www.amazon.com/Structural-Demonology-Taxonomy-Sovereignty-Distortion-Codex/dp/B0FHG1M794" target="_blank" rel="noreferrer">
-            View on Amazon
+            Buy on Amazon
           </a>
         }
       >
         <p className="v3-book-lead">
-          Structural distortions erode will and hijack perception long before they arrive as argument or politics. <strong>The Sovereignty-Distortion Codex</strong> reads myth, history, and collapse as impersonal
-          patterns—maps the machinery, names the seduction, and points toward reclamation.
+          Some forces bend perception before they show up as an argument. The <strong>Codex</strong> names those patterns—in culture, myth, and groups—so you can see them earlier and respond with both eyes open.
         </p>
         <ul className="v3-feature-list">
-          <li>Recognition heuristics for collapse sequences and mimicry patterns</li>
-          <li>Seduction strategy analysis to reveal how ideals or beauty can be co-opted</li>
-          <li>Diagnostic flows for early intervention in group or individual dynamics</li>
+          <li>Simple “if this, watch for that” recognition cues.</li>
+          <li>How beauty and ideals get used against you.</li>
+          <li>Early moves when dynamics in a group or relationship turn sour.</li>
         </ul>
       </BookHero>
 
-      <BookHero id="unspeakables-grimoire" title="The Unspeakables Grimoire" subtitle="Structured language for what resists ordinary narration." cover="U-cover.jpg" alt="The Unspeakables Grimoire cover">
+      <BookHero
+        id="unspeakables-grimoire"
+        title="The Unspeakables Grimoire"
+        subtitle="Plain words for hard-to-name experience"
+        cover="U-cover.jpg"
+        alt="The Unspeakables Grimoire cover"
+      >
         <p className="v3-book-lead">
-          A grimoire in the classical sense: a working notebook of terms, postures, and operations for engaging territory that mainstream maps tend to blur, sanitize, or deny.
+          A working notebook for inner and relational territory that usual language skips past—without hype or fear-mongering.
         </p>
         <ul className="v3-feature-list">
-          <li>Define nuanced inner and interpersonal phenomena without sensational language.</li>
-          <li>Use structural naming conventions to reduce confusion and projection.</li>
-          <li>Track repeating symbolic, emotional, and relational patterns over time.</li>
-          <li>Convert vague unease into clear inquiry prompts and practical boundaries.</li>
-          <li>Bridge mythic intuition with disciplined epistemic hygiene.</li>
+          <li>Name subtle states without dramatizing them.</li>
+          <li>Reduce mix-ups between intuition and old fear.</li>
+          <li>Track symbols, moods, and repeats over time.</li>
+          <li>Turn “something’s off” into clear next questions.</li>
         </ul>
-        <p className="v3-book-note">
-          Built as a field manual, this text privileges precision over drama so difficult territory can be examined without collapse into superstition or denial.
-        </p>
+        <p className="v3-book-note">Precision over spectacle—so you can look honestly and stay grounded.</p>
       </BookHero>
 
       <BookHero
         id="sovereign-integral-devotionalism"
         title="Sovereign Integral Devotionalism"
-        subtitle="Devotional practice without surrendering epistemic adulthood."
+        subtitle="Depth and awe without giving your mind away"
         cover="SID-cover.jpg"
         alt="Sovereign Integral Devotionalism cover"
       >
         <p className="v3-book-lead">
-          A framework for depth, awe, and loyalty-to-truth that refuses coercion, confusion, and counterfeit ultimatum.
+          For people who want reverence <em>and</em> adulthood—room for mystery without pressure, confusion, or spiritual bullying.
         </p>
         <ul className="v3-feature-list">
-          <li>Practice devotion without outsourcing conscience or critical thought.</li>
-          <li>Integrate reason, reverence, embodiment, and moral accountability.</li>
-          <li>Discern authentic surrender from dependency or performative piety.</li>
-          <li>Identify coercive spiritual dynamics and rebuild healthy agency.</li>
-          <li>Anchor devotion in verifiable conduct, not ideological theater.</li>
+          <li>Love the sacred without shutting down your mind.</li>
+          <li>Hold reason, body, and ethics in one frame.</li>
+          <li>Tell real openness apart from people-pleasing faith.</li>
+          <li>Spot coercion dressed as “higher truth.”</li>
+          <li>Let practice show up in how you treat people.</li>
         </ul>
-        <p className="v3-book-note">
-          This is devotional architecture for mature discernment: spiritually serious, psychologically grounded, and structurally resistant to manipulation.
-        </p>
+        <p className="v3-book-note">Serious about spirit, serious about clarity.</p>
       </BookHero>
 
-      <BookHero id="peer-counseling-manual" title="The Peer-Counseling Manual" subtitle="Relational clarity under pressure." cover="PC-cover.jpg" alt="The Peer-Counseling Manual cover">
+      <BookHero
+        id="peer-counseling-manual"
+        title="The Peer-Counseling Manual"
+        subtitle="Helping friends well—without playing therapist"
+        cover="PC-cover.jpg"
+        alt="The Peer-Counseling Manual cover"
+      >
         <p className="v3-book-lead">
-          Practical peer frameworks for reflection, mediation, and stabilization in high-stakes interpersonal dynamics.
+          Simple structures for listening, mediation, and steadying hard conversations—peer to peer, with clear boundaries.
         </p>
         <ul className="v3-feature-list">
-          <li>Run clean listening and mirroring protocols without overreach.</li>
-          <li>De-escalate conflict while preserving dignity and boundaries.</li>
-          <li>Differentiate support, accountability, and referral thresholds.</li>
-          <li>Use structured debriefs to reduce reenactment and role confusion.</li>
-          <li>Strengthen peer containers for trust, clarity, and follow-through.</li>
+          <li>Listen and reflect without taking over.</li>
+          <li>Cool things down while keeping dignity intact.</li>
+          <li>Know when support ends and a referral begins.</li>
+          <li>Short debriefs that reduce repeat drama.</li>
+          <li>Build trust that lasts past one heavy talk.</li>
         </ul>
-        <p className="v3-book-note">
-          Designed for real conversations under pressure, the manual emphasizes process integrity so peers can help effectively without drifting into amateur therapy.
-        </p>
+        <p className="v3-book-note">Built so help stays honest and within scope—not amateur therapy in disguise.</p>
       </BookHero>
     </div>
   );

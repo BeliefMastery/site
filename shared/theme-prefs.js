@@ -17,6 +17,7 @@
 
   var THEMES = {
     cosmic: { type: 'layered', file: null },
+    earth: { type: 'layered', file: 'style/earth.css' },
     light: { type: 'layered', file: 'style/light.css' },
     forge: { type: 'layered', file: 'style/forge.css' },
     neomorphism: { type: 'layered', file: 'style/neomorphism.css' }
@@ -174,7 +175,8 @@
     themeSelect.id = 'bm-theme-select';
     themeSelect.className = 'footer-theme-prefs__select';
     [
-      { value: 'light', label: 'Light (default)' },
+      { value: 'earth', label: 'Earth (warm)' },
+      { value: 'light', label: 'Light' },
       { value: 'cosmic', label: 'Cosmic' },
       { value: 'forge', label: 'Matrix Forge v2' },
       { value: 'neomorphism', label: 'Neomorphism v2' }

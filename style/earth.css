@@ -1,0 +1,419 @@
+/* ============================================================
+   THEME "EARTH" — warm paper, terracotta accent (matches V3 Earth)
+   Layered over style.css like light.css
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --brand: #3a342f;
+    --muted: #6b635a;
+    --accent: #8b5c3a;
+    --accent-hover: #6d4628;
+
+    --bg: #f2ebe3;
+    --glass: #fffcf8;
+    --glass-light: #fffefb;
+    --card-bg: #fffcf8;
+    --card-hover: #f5ede4;
+
+    --accent-panel: rgba(139, 92, 58, 0.08);
+    --accent-panel-strong: rgba(139, 92, 58, 0.14);
+    --brand-panel: rgba(60, 48, 40, 0.06);
+
+    --border-subtle: rgba(92, 77, 60, 0.22);
+    --border-medium: rgba(92, 77, 60, 0.32);
+    --border-bright: rgba(92, 77, 60, 0.45);
+
+    --glow-blue: rgba(139, 92, 58, 0.12);
+    --glow-bright: rgba(139, 92, 58, 0.2);
+    --glow-accent: rgba(139, 92, 58, 0.2);
+
+    --shadow-sm: 0 1px 2px rgba(37, 32, 25, 0.06);
+    --shadow-md: 0 4px 14px rgba(37, 32, 25, 0.08);
+    --shadow-lg: 0 12px 28px rgba(37, 32, 25, 0.1);
+    --shadow: var(--shadow-md);
+
+    --success: #059669;
+    --warning: #d97706;
+    --error: #dc2626;
+
+    --radius: 10px;
+    --transition: all 0.18s ease-out;
+
+    --text-primary: var(--brand);
+    --text-secondary: var(--muted);
+    --link-color: #6d4628;
+    --focus-color: #8b5c3a;
+    --font-size-base: clamp(0.94rem, 0.9rem + 0.35vw, 1.05rem);
+
+    /* v2: sections are transparent shells; content lives in cards */
+    --surface-section: transparent;
+    --section-inset-line: transparent;
+    --section-inset-line-strong: transparent;
+
+    /* Form fields: explicit light surfaces (fixes dark rgba() from base) */
+    --input-bg: #fffefb;
+    --input-bg-focus: #f5ede4;
+    --range-track: rgba(92, 77, 60, 0.25);
+    --range-thumb-bg: #fffcf8;
+    --range-thumb-shadow: 0 1px 3px rgba(37, 32, 25, 0.18);
+
+    /* Nav + home tools + tool panels (readable on light header / cards) */
+    --nav-dropdown-bg: #fffcf8;
+    --nav-dropdown-shadow: var(--shadow-lg);
+    --nav-dropdown-link-color: #3a342f;
+    --nav-dropdown-link-hover-bg: var(--accent-panel);
+    --nav-top-link-color: #6b635a;
+    --nav-top-link-hover-color: #8b5c3a;
+    --nav-top-link-active-color: #6d4628;
+    --nav-top-link-hover-bg: var(--accent-panel);
+    --nav-top-link-active-bg: var(--accent-panel-strong);
+    --nav-group-neutral-bg: transparent;
+    --nav-group-neutral-color: #3a342f;
+    --nav-group-psych-bg: rgba(30, 64, 175, 0.08);
+    --nav-group-psych-color: #1e3a8a;
+    --nav-group-relational-bg: rgba(157, 23, 77, 0.08);
+    --nav-group-relational-color: #831843;
+    --nav-group-philosophical-bg: rgba(5, 122, 85, 0.1);
+    --nav-group-philosophical-color: #064e3b;
+    --nav-group-defensive-bg: rgba(139, 92, 58, 0.1);
+    --nav-group-defensive-color: #5c3d2e;
+    --nav-group-esoteric-bg: rgba(180, 83, 9, 0.1);
+    --nav-group-esoteric-color: #78350f;
+    --nav-group-tech-bg: rgba(51, 65, 85, 0.1);
+    --nav-group-tech-color: #1e293b;
+
+    --index-tools-card-bg: #fffcf8;
+    --panel-expanded-highlight-bg: var(--accent-panel);
+    --toggle-row-hover-bg: var(--accent-panel);
+    --tool-inset-bg: rgba(60, 48, 40, 0.06);
+    --orientation-link-color: #6d4628;
+    --heading-text-shadow: none;
+
+    --ack-box-bg: #f5ede4;
+    --ack-box-border: var(--border-subtle);
+
+    /* Surfaces tokenized in style.css — light overrides for readable contrast */
+    --interactive-chip-bg: rgba(60, 48, 40, 0.07);
+    --interactive-panel-tint: #f5ede4;
+    --interactive-panel-tint-weak: rgba(60, 48, 40, 0.04);
+    --interactive-border-subtle: var(--border-subtle);
+    --nested-disclosure-bg: rgba(60, 48, 40, 0.05);
+    --card-promote-a: #fffcf8;
+    --card-promote-b: #f5ede4;
+    --card-promote-solid: var(--card-bg);
+    --spectrum-track-a: rgba(139, 92, 58, 0.22);
+    --spectrum-track-b: rgba(60, 48, 40, 0.08);
+    --spectrum-track-soft-a: rgba(139, 92, 58, 0.14);
+    --spectrum-track-soft-b: rgba(60, 48, 40, 0.05);
+    --question-hint-bg: rgba(139, 92, 58, 0.08);
+    --table-header-bg: #ede4d8;
+    --table-row-hover-bg: #f5ede4;
+
+    /* Section shell outline (use in full border shorthand so border-style is never “none”) */
+    --section-edge: 1px solid var(--border-subtle);
+
+    /* Match base layout tokens (fluid side rails on tablet/phone) */
+    --layout-gutter-x: clamp(0.75rem, 2.2vw + 0.35rem, 1.75rem);
+    --layout-gutter-x-tight: clamp(0.65rem, 1.8vw + 0.25rem, 1.15rem);
+    --layout-section-pad-y: clamp(0.65rem, 1.8vw + 0.35rem, 1.35rem);
+    --layout-shell-max: 1200px;
+    --layout-content-max: 1100px;
+}
+
+html {
+    color-scheme: light;
+}
+
+html,
+body {
+    background: var(--bg) !important;
+    color: var(--brand);
+}
+
+main {
+    padding-top: 88px;
+    background: transparent;
+    overflow-x: clip;
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+img {
+    filter: none;
+    box-shadow: var(--shadow-md);
+}
+
+img:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+}
+
+/* Header */
+header.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.85rem;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.97) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav {
+    max-width: var(--layout-shell-max);
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Sections: thin outline on page bg — full shorthand so border-style is always solid */
+section {
+    background: transparent !important;
+    backdrop-filter: none;
+    border: var(--section-edge);
+    box-shadow: none;
+    padding: clamp(0.85rem, 2vw, 1.5rem) var(--layout-gutter-x);
+    margin: clamp(0.75rem, 2vh, 1.5rem) 0;
+    border-radius: var(--radius);
+}
+
+@media (hover: hover) {
+    section:hover {
+        border-color: var(--border-bright);
+    }
+}
+
+.section-inner {
+    background: transparent;
+    color: var(--brand);
+}
+
+.section-inner-padded {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.minimal-section.section-inner-padded,
+.section-inner.minimal-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Home: tools / books shell — beat base body.home-page .index-tools-card { border: none } */
+body.home-page .index-tools-card {
+    border: var(--section-edge) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Home: outer section shells (base removes border on .home-grid-section) */
+body.home-page .home-grid-section {
+    border: var(--section-edge) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+@media (hover: hover) {
+    body.home-page .home-grid-section:hover {
+        border-color: var(--border-bright) !important;
+    }
+}
+
+/* Cards & panels */
+.panel,
+.card,
+.tool-container,
+.question-block,
+.likert-option {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-sm);
+    color: var(--brand);
+}
+
+.panel-accent-left {
+    background: var(--accent-panel);
+    border-left: 4px solid var(--accent);
+}
+
+.tool-card,
+.image-card.tool-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-medium) !important;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: none;
+}
+
+.tool-card::before,
+.portal-card::before {
+    background: linear-gradient(90deg, var(--accent), rgba(139, 92, 58, 0.2), transparent) !important;
+}
+
+.tool-card:hover,
+.image-card.tool-card:hover {
+    background: var(--card-hover) !important;
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-bright) !important;
+}
+
+.portal-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+/* Buttons */
+.btn-primary,
+button:not(.secondary):not(.hamburger):not(.close-btn) {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover,
+button:not(.secondary):not(.hamburger):not(.close-btn):hover {
+    background: var(--accent-hover) !important;
+    color: #ffffff !important;
+}
+
+.btn-secondary,
+.secondary {
+    background: #ffffff !important;
+    color: var(--brand) !important;
+    border: 1px solid var(--border-medium) !important;
+}
+
+/* Forms */
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group input[type="email"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea,
+.footer-theme-prefs__select,
+.text-input-container textarea,
+input[type="email"] {
+    background: var(--input-bg) !important;
+    color: var(--brand) !important;
+    border-color: var(--border-medium) !important;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.text-input-container textarea::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.footer-theme-prefs__select:focus,
+.text-input-container textarea:focus,
+input[type="email"]:focus {
+    border-color: var(--accent) !important;
+    background: var(--input-bg-focus) !important;
+    box-shadow: 0 0 0 3px var(--glow-accent) !important;
+}
+
+select,
+.footer-theme-prefs__select {
+    appearance: auto;
+}
+
+/* Tables */
+.archetype-table {
+    background: var(--card-bg);
+    color: var(--brand);
+}
+
+.archetype-table th {
+    background: var(--table-header-bg) !important;
+    color: var(--accent) !important;
+}
+
+@media (hover: hover) {
+    .archetype-table tr:hover td {
+        background: var(--table-row-hover-bg) !important;
+    }
+}
+
+/* Questionnaire active states */
+.questionnaire-section.active,
+.results-section.active,
+.disclaimer-section.expanded,
+.instructions-panel.expanded {
+    background: var(--accent-panel) !important;
+    border: var(--section-edge);
+    border-left: 4px solid var(--accent) !important;
+}
+
+/* Typography: remove dark-cosmic glow */
+.content-section h1,
+.content-section h2,
+.content-section h3,
+.hero h1 {
+    text-shadow: none;
+    color: var(--brand);
+}
+
+.hero h2,
+.hero p {
+    color: var(--muted);
+}
+
+.radio-group label:hover {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.multiselect-option {
+    border-left-color: var(--border-subtle) !important;
+}
+
+/* tools.html — toolkit panels: full border (border-color alone can leave style none vs base resets) */
+body.page-tools #main #tools .tools-toolkit-group {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-medium) !important;
+    border-left-width: 4px !important;
+    border-left-style: solid !important;
+}
+
+body.page-tools #main #tools .tools-toolkit-group__head {
+    background: linear-gradient(180deg, var(--accent-panel), transparent);
+}
+
+body.page-tools #main #tools .tools-toolkit-group--atlas {
+    background: var(--accent-panel) !important;
+}
+
+@media (max-width: 768px) {
+    header.site-header {
+        height: auto;
+        min-height: 56px;
+    }
+
+    main {
+        padding-top: 58px;
+    }
+}
