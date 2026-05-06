@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { engineRoutes } from "@/routes";
 import { toolMeta, SITE_IMAGES } from "@/data/toolsCatalog";
 import { generalDisclaimer, toolDisclaimerSections } from "@/data/homeDisclaimers";
+import { homeBridge, homeHero } from "@/data/homeCopy";
 import SuiteProgressCard from "@/components/SuiteProgressCard";
+import TestimonialStack from "@/components/TestimonialStack";
 
 const UNLOCKED_GPT = {
   href: "https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition",
@@ -32,19 +34,19 @@ function ToolCoverLink({ to, src, alt }) {
 const PORTAL_SLIDES = [
   {
     id: "belief-mastery",
-    statement: "The reason you're not full of joy is because your subconscious is wired to get you to do things you don't want to do.",
-    supporting: "Belief Mastery exposes the hidden rules driving emotional loops and dependency, then walks a precise rewrite process.",
+    statement: "Joy stays scarce when hidden rules keep steering you toward what you never chose.",
+    supporting: "Belief Mastery maps those rules and walks a precise rewrite—capacity first, drama second.",
     extended:
-      "Subconscious beliefs form in moments of overwhelm—protecting the child but limiting the adult. They distort perception, drive hidden dependency, and repeat emotional loops. Belief Mastery rewrites those buried rules through a precise step-by-step inference and transformation process.",
+      "Beliefs formed under overwhelm act like protective code; they narrow what you can feel and do. Inference and dismantling make that code legible so it can change.",
     href: "/books#belief-mastery",
     cta: "Explore Inner Architecture",
   },
   {
     id: "sovereign-of-mind",
-    statement: "Your thoughts may not always be your own.",
-    supporting: "Sovereign of Mind strengthens discernment and protects conscious authorship under pressure from manipulation systems.",
+    statement: "Not every thought arrives with your signature on it.",
+    supporting: "Sovereign of Mind is the field manual for authorship when persuasion and mimicry run hot.",
     extended:
-      "In a world built for persuasion, mimicry, and dependency, most minds operate on borrowed scaffolding—trauma, culture, ideology. Sovereign of Mind is the structural antidote. Part field manual, part philosophical defense, it fortifies the architecture that thinking stands on—securing authorship against systems and interests that seek to claim it.",
+      "Borrowed scaffolding—trauma, culture, urgency—can wear your voice. This work fortifies the structure thinking stands on so ownership stays yours.",
     href: "/books#sovereign-of-mind",
     cta: "Fortify Cognitive Structure",
   },
@@ -99,7 +101,9 @@ function PortalBanner() {
         }}
       >
         <div className="v3-portal-slide" key={activeSlide.id}>
-          <p className="v3-portal-kicker">Portal {activeIndex + 1} of {slideCount}</p>
+          <p className="v3-portal-kicker">
+            Two doorways in · {activeIndex + 1} of {slideCount}
+          </p>
           <blockquote className="v3-portal-quote">{activeSlide.statement}</blockquote>
           <p className="v3-portal-support">{activeSlide.supporting}</p>
           <p className={`v3-portal-extended ${expanded ? "is-open" : ""}`} hidden={!expanded}>
@@ -117,14 +121,37 @@ function PortalBanner() {
 export default function HomePage() {
   return (
     <div className="stack v3-home">
-      <section className="surface v3-hero">
-        <p className="kicker">Sovereign of Mind</p>
-        <h1 className="v3-hero-title">Structure Your Mind — Author Your Life.</h1>
-        <p className="v3-lead">Excavate your hidden rules and fortify your cognitive defenses.</p>
+      <section className="surface v3-hero v3-hero--statement">
+        <div className="v3-hero__inner">
+          <h1 className="v3-hero-title v3-hero-title--single">{homeHero.thesis}</h1>
+        </div>
       </section>
+
+      <section className="surface v3-section--breathable v3-bridge">
+        <h2 className="v3-section-title">{homeBridge.title}</h2>
+        <p className="v3-lead v3-bridge__intro">{homeBridge.intro}</p>
+        <ul className="v3-bridge-list">
+          {homeBridge.bullets.map((item) => (
+            <li key={item.label}>
+              <strong>{item.label}.</strong> {item.text}
+            </li>
+          ))}
+        </ul>
+        <div className="v3-audit-cta">
+          <Link className="v3-btn v3-btn--primary" to={homeBridge.ctaPrimary.to}>
+            {homeBridge.ctaPrimary.label}
+          </Link>
+          <Link className="v3-btn v3-btn--outline" to={homeBridge.ctaSecondary.to}>
+            {homeBridge.ctaSecondary.label}
+          </Link>
+        </div>
+      </section>
+
       <PortalBanner />
 
-      <section className="surface">
+      <TestimonialStack />
+
+      <section className="surface v3-section--breathable">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/tools">Online Sovereignty Tools and Analysis</Link>
@@ -142,7 +169,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface">
+      <section className="surface v3-section--breathable">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/books">Books</Link>
@@ -157,7 +184,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-disclosures">
+      <section className="surface v3-disclosures v3-section--breathable">
         <details className="v3-details">
           <summary>How these works connect</summary>
           <div className="v3-details__body">

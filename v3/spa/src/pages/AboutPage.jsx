@@ -12,6 +12,9 @@ export default function AboutPage() {
             <p className="kicker">Author</p>
             <h1 className="v3-hero-title">Warwick Marshall</h1>
             <p className="v3-lead">Identifies the hidden logic that causes high-stakes systems—technical, behavioral, organizational—to stall or fail.</p>
+            <p className="v3-lead v3-about-capacity">
+              In everyday language: this is work on <strong>internal capacity</strong> and <strong>coherence</strong>—making the governing rules visible so responses become chosen rather than automatic. The method does not change; only how you describe it to yourself and others.
+            </p>
           </div>
         </div>
       </section>

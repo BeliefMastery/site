@@ -1,4 +1,36 @@
+/* Shared layout tokens (non-theme). Theme colors live on html.theme-*. */
 :root {
+  --v3-radius: 14px;
+  --v3-space-1: 0.5rem;
+  --v3-space-2: 0.75rem;
+  --v3-space-3: 1rem;
+  --v3-space-4: 1.5rem;
+  --v3-space-5: 2rem;
+  --v3-font-display: "Fraunces", "Georgia", "Times New Roman", serif;
+  --v3-font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html.theme-earth {
+  --v3-bg: #f2ebe3;
+  --v3-bg-glow: rgba(156, 92, 64, 0.14);
+  --v3-bg-soft: rgba(60, 48, 40, 0.05);
+  --v3-surface: rgba(255, 252, 248, 0.94);
+  --v3-surface-border: rgba(92, 77, 60, 0.2);
+  --v3-nav-bg: rgba(242, 235, 227, 0.92);
+  --v3-text: #3a342f;
+  --v3-heading: #252019;
+  --v3-heading-soft: #3d362e;
+  --v3-muted: #6b635a;
+  --v3-accent: #8b5c3a;
+  --v3-accent-strong: #6d4628;
+  --v3-on-accent: #fffef9;
+  --v3-hero-tint-a: rgba(139, 92, 58, 0.1);
+  --v3-hero-tint-b: rgba(255, 252, 248, 0.5);
+  --v3-tools-tint-a: rgba(107, 125, 95, 0.12);
+  --v3-books-tint-a: rgba(156, 92, 64, 0.1);
+}
+
+html.theme-cosmic {
   --v3-bg: #040915;
   --v3-bg-glow: rgba(70, 120, 255, 0.2);
   --v3-bg-soft: rgba(255, 255, 255, 0.02);
@@ -11,19 +43,14 @@
   --v3-muted: #98abc2;
   --v3-accent: #ffd35a;
   --v3-accent-strong: #ffb800;
+  --v3-on-accent: #050915;
   --v3-hero-tint-a: rgba(80, 120, 255, 0.12);
   --v3-hero-tint-b: transparent;
   --v3-tools-tint-a: rgba(120, 200, 255, 0.12);
   --v3-books-tint-a: rgba(255, 200, 120, 0.08);
-  --v3-radius: 14px;
-  --v3-space-1: 0.5rem;
-  --v3-space-2: 0.75rem;
-  --v3-space-3: 1rem;
-  --v3-space-4: 1.5rem;
-  --v3-space-5: 2rem;
 }
 
-.theme-light {
+html.theme-light {
   --v3-bg: #f1f5f9;
   --v3-bg-glow: rgba(59, 130, 246, 0.18);
   --v3-bg-soft: rgba(15, 23, 42, 0.04);
@@ -36,13 +63,14 @@
   --v3-muted: #475569;
   --v3-accent: #b91c1c;
   --v3-accent-strong: #991b1b;
+  --v3-on-accent: #fffefe;
   --v3-hero-tint-a: rgba(59, 130, 246, 0.12);
   --v3-hero-tint-b: rgba(255, 255, 255, 0.35);
   --v3-tools-tint-a: rgba(37, 99, 235, 0.1);
   --v3-books-tint-a: rgba(14, 116, 144, 0.08);
 }
 
-.theme-forge {
+html.theme-forge {
   --v3-bg: #070303;
   --v3-bg-glow: rgba(255, 87, 34, 0.22);
   --v3-bg-soft: rgba(255, 112, 67, 0.06);
@@ -55,13 +83,14 @@
   --v3-muted: #c4b5a8;
   --v3-accent: #ff7043;
   --v3-accent-strong: #ff5722;
+  --v3-on-accent: #1a0a06;
   --v3-hero-tint-a: rgba(255, 112, 67, 0.14);
   --v3-hero-tint-b: transparent;
   --v3-tools-tint-a: rgba(255, 152, 112, 0.12);
   --v3-books-tint-a: rgba(255, 180, 120, 0.08);
 }
 
-.theme-neomorphism {
+html.theme-neomorphism {
   --v3-bg: #2d3a4f;
   --v3-bg-glow: rgba(251, 146, 60, 0.16);
   --v3-bg-soft: rgba(255, 255, 255, 0.03);
@@ -74,6 +103,7 @@
   --v3-muted: #8b9cb8;
   --v3-accent: #fb923c;
   --v3-accent-strong: #f97316;
+  --v3-on-accent: #1a1008;
   --v3-hero-tint-a: rgba(147, 197, 253, 0.14);
   --v3-hero-tint-b: transparent;
   --v3-tools-tint-a: rgba(251, 146, 60, 0.12);

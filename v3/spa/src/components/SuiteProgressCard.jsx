@@ -19,7 +19,7 @@ export default function SuiteProgressCard() {
   const pct = Math.round((completeCount / totalCount) * 100);
 
   return (
-    <article className="surface progress-card">
+    <article className="surface progress-card v3-section--breathable">
       <h2 className="v3-section-title">Tool Progress</h2>
       <p className="v3-muted">
         {completeCount}/{totalCount} tools completed

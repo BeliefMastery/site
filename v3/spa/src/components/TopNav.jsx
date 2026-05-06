@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { navItems } from "@/routes";
+import { themeLabels } from "@/lib/themeStore";
 
 export default function TopNav({ theme, themes, onThemeChange }) {
   return (
@@ -25,7 +26,7 @@ export default function TopNav({ theme, themes, onThemeChange }) {
             <select id="theme-picker" value={theme} onChange={(e) => onThemeChange(e.target.value)}>
               {themes.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {themeLabels[item] ?? item}
                 </option>
               ))}
             </select>

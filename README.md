@@ -3,6 +3,9 @@
 ## Live Site
 **https://beliefmastery.github.io/site/**
 
+### Portfolio / LinkedIn
+For a concise, copy-ready summary of site function and assessment engines (written for featured-project fields, **max 2000 characters**), see [`docs/SHOWCASE_DESCRIPTION.md`](docs/SHOWCASE_DESCRIPTION.md).
+
 ## What This Project Is
 
 This repository contains the official website for **Belief Mastery** and **Sovereign of Mind**, a collection of books and diagnostic tools by Warwick Marshall focused on mental sovereignty, cognitive defense, and inner authorship.
@@ -59,7 +62,7 @@ cd site
 2. **Life Domain Review** (`coaching.html`) - Sovereign of Mind + Belief Mastery obstacles/satisfaction mapping
 3. **Dependency Loop Tracer** (`needs-dependency.html`) - Belief Mastery Chapter 5 needs/dependency tracing
 4. **Manipulation Defense Decoder** (`manipulation.html`) - Sovereign of Mind manipulation vectors/tactics mapping
-5. **Technical Title for your Sovereignty Paradigm** (`sovereignty-spectrum.html`) - Philosophical paradigm alignment
+5. **Your Sovereignty Paradigm** (`sovereignty-spectrum.html`) - Philosophical paradigm alignment
 6. **Logos Structure** (`paradigm.html`) - Worldview foundation mapping (Good Life/God lenses)
 7. **Channel Flow Diagnostics** (`channels.html`) - Energy channel blockage identification
 8. **Astrological Character Sheet** (`character-sheet.html`) - Western/Chinese/Mayan + Numerology RPG conversion
@@ -68,10 +71,12 @@ cd site
 11. **Unlocked GPT** - External link to custom GPT interface
 12. **Cognitive Resistance Capacity Assessment** (`sovereignty.html`) - AI dependency resistance assessment
 
+**In-repo engines (11):** `diagnosis-engine.js`, `coaching-engine.js`, `needs-dependency-engine.js`, `sovereignty-spectrum-engine.js`, `paradigm-engine.js`, `manipulation-engine.js`, `sovereignty-engine.js`, `channels-engine.js`, `character-sheet-engine.js`, `entities-engine.js`, `outlier-aptitude-engine.js`. **Unlocked GPT** is an external ChatGPT custom GPT; it is listed as a tool but has no engine file in this repository.
+
 ### Key Files
 - `style.css` - Shared stylesheet for all pages
 - `shared/` - Shared background, utilities, and diagnostics
-- `*-engine.js` - Individual tool engines (one per tool)
+- `*-engine.js` - Client-side assessment engines (ES modules); one primary engine per in-repo tool (see list below)
 - `*-data/` - Data modules for each tool
 - `images/` - All site images
 - `books/` and `tools/` - Source text files for book and tool materials (not public pages)
@@ -85,14 +90,12 @@ cd site
 - GitHub Pages deployment
 
 ### Architecture
-- Static site with client-side JavaScript
-- No server required
-- All data stored in JS modules
-- Results exportable as JSON/CSV + Executive Brief
-- Export metadata includes framework alignment and versioning
+- Static site with client-side JavaScript (ES modules; no bundler required for authoring)
+- No server required; GitHub Pages deployment
+- Tool content and scoring inputs live in JS data modules beside each engine
+- Results exportable as JSON/CSV per tool, with executive-style briefs where implemented
+- Export metadata includes framework alignment and versioning where applicable
 - Resume last assessment is user-triggered (no auto-restore by default)
-- All data stored in JS data modules
-- Results exportable as JSON/CSV (per-tool)
 
 ### Browser Support
 - Modern browsers (Chrome, Firefox, Safari, Edge)

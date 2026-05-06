@@ -2,6 +2,10 @@
 
 This index tracks the primary architecture and implementation references for BeliefMastery.
 
+## Portfolio / public summary
+
+- [Showcase description (LinkedIn / featured project)](SHOWCASE_DESCRIPTION.md) — site purpose, engine inventory, and stack in under 2000 characters (copy-ready).
+
 ## Core architecture
 
 - [UI and Platform Architecture](UI_AND_PLATFORM_ARCHITECTURE.md) - cross-cutting shell behavior, current implementation, and v2 parity roadmap.
