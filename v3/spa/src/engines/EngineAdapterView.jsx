@@ -1,18 +1,31 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { loadTheme, toLegacySiteTheme } from "@/lib/themeStore";
 
-function embedUrl(legacyPage) {
+function embedUrl(legacyPage, v3Theme) {
+  const legacyTheme = toLegacySiteTheme(v3Theme);
   try {
     const u = new URL(legacyPage, window.location.origin);
     u.searchParams.set("bm_embed", "1");
+    u.searchParams.set("theme", legacyTheme);
     return `${u.pathname}${u.search}${u.hash}`;
   } catch {
     const sep = legacyPage.includes("?") ? "&" : "?";
-    return `${legacyPage}${sep}bm_embed=1`;
+    return `${legacyPage}${sep}bm_embed=1&theme=${encodeURIComponent(legacyTheme)}`;
   }
 }
 
 export default function EngineAdapterView({ label, legacyPage }) {
-  const iframeSrc = useMemo(() => embedUrl(legacyPage), [legacyPage]);
+  const [theme, setTheme] = useState(loadTheme);
+
+  useEffect(() => {
+    function onThemeChange(e) {
+      setTheme(e?.detail?.theme || loadTheme());
+    }
+    window.addEventListener("bm-v3-theme-change", onThemeChange);
+    return () => window.removeEventListener("bm-v3-theme-change", onThemeChange);
+  }, []);
+
+  const iframeSrc = useMemo(() => embedUrl(legacyPage, theme), [legacyPage, theme]);
 
   const standaloneHref = useMemo(() => {
     try {
@@ -39,7 +52,7 @@ export default function EngineAdapterView({ label, legacyPage }) {
         </p>
       </article>
       <div className="v3-engine-shell">
-        <iframe className="v3-engine-frame" title={label} src={iframeSrc} loading="lazy" />
+        <iframe className="v3-engine-frame" title={label} src={iframeSrc} loading="lazy" key={`${label}-${theme}`} />
       </div>
     </section>
   );
