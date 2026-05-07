@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { engineRoutes } from "@/routes";
 import { toolMeta, SITE_IMAGES } from "@/data/toolsCatalog";
@@ -31,92 +30,6 @@ function ToolCoverLink({ to, src, alt }) {
   );
 }
 
-const PORTAL_SLIDES = [
-  {
-    id: "belief-mastery",
-    statement: "When old beliefs run the show, joy and real choice can feel out of reach.",
-    supporting: "Belief Mastery walks you through seeing those beliefs clearly—and updating them at a pace you can hold.",
-    extended:
-      "Many beliefs formed when you were overwhelmed. They made sense then; they may narrow you now. The book offers a step-by-step way to notice them and work with them honestly.",
-    href: "/books#belief-mastery",
-    cta: "Explore Belief Mastery",
-  },
-  {
-    id: "sovereign-of-mind",
-    statement: "Your mind deserves to feel like yours.",
-    supporting: "Sovereign of Mind is about clarity, influence, and standing in your own judgment—not someone else’s script.",
-    extended:
-      "Pressure, noise, and persuasion can sound like your own voice. This book helps you tell the difference and stay steady.",
-    href: "/books#sovereign-of-mind",
-    cta: "Explore Sovereign of Mind",
-  },
-];
-
-function PortalBanner() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const slideCount = PORTAL_SLIDES.length;
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion || isPaused || slideCount <= 1) return undefined;
-    const timer = window.setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % slideCount);
-    }, 6000);
-    return () => window.clearInterval(timer);
-  }, [reducedMotion, isPaused, slideCount]);
-
-  const activeSlide = useMemo(() => PORTAL_SLIDES[activeIndex], [activeIndex]);
-
-  return (
-    <article
-      className="v3-portal-banner"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocusCapture={() => setIsPaused(true)}
-      onBlurCapture={() => setIsPaused(false)}
-      aria-label="Introductory portal highlights"
-    >
-      <div
-        className="v3-portal-slide-wrap"
-        role="button"
-        tabIndex={0}
-        aria-expanded={expanded}
-        aria-label="Toggle extended portal explanation"
-        onClick={() => setExpanded((v) => !v)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setExpanded((v) => !v);
-          }
-        }}
-      >
-        <div className="v3-portal-slide" key={activeSlide.id}>
-          <p className="v3-portal-kicker">
-            Two books · {activeIndex + 1} of {slideCount}
-          </p>
-          <blockquote className="v3-portal-quote">{activeSlide.statement}</blockquote>
-          <p className="v3-portal-support">{activeSlide.supporting}</p>
-          <p className={`v3-portal-extended ${expanded ? "is-open" : ""}`} hidden={!expanded}>
-            {activeSlide.extended}
-          </p>
-          <Link className="v3-btn v3-btn--primary v3-portal-cta" to={activeSlide.href}>
-            {activeSlide.cta}
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -146,8 +59,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
-      <PortalBanner />
 
       <TestimonialStack />
 

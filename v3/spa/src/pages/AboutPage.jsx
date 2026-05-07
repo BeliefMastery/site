@@ -66,6 +66,10 @@ export default function AboutPage() {
             beliefmastery.github.io
           </a>{" "}
           |
+          <a href="https://www.linkedin.com/in/warwick-marshall-49798887/" target="_blank" rel="noreferrer">
+            LinkedIn
+          </a>{" "}
+          |
           <a href="https://instagram.com/belief.mastery" target="_blank" rel="noreferrer">
             Instagram @belief.mastery
           </a>{" "}
