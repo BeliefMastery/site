@@ -7,7 +7,7 @@ export const homeHero = {
 export const homeBridge = {
   title: "Room to grow—with clear steps.",
   intro:
-    "Belief Mastery, Sovereign of Mind, and peer counseling all point toward the same thing: seeing the patterns behind your life so you can choose what comes next. You are not broken; you are unwinding what no longer fits.",
+    "Belief Mastery, Sovereign of Mind, and peer counseling all point toward the same thing: seeing the patterns behind your life so you can choose what comes next.",
   bullets: [
     {
       label: "Old habits",
