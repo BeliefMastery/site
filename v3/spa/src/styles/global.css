@@ -118,22 +118,22 @@ a {
 }
 
 .v3-home.stack {
-  gap: clamp(1.35rem, 2.8vw, 2.25rem);
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 .v3-section--breathable {
-  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  padding: clamp(1.15rem, 2.4vw, 1.85rem);
 }
 
 .v3-hero--statement {
   position: relative;
   overflow: hidden;
-  min-height: min(44vh, 24rem);
+  min-height: min(31vh, 17rem);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: clamp(2rem, 6vw, 4rem) var(--v3-space-4);
+  padding: clamp(1.15rem, 3.4vw, 2.1rem) var(--v3-space-4);
   background:
     radial-gradient(ellipse 85% 65% at 50% 0%, var(--v3-hero-tint-a), transparent 58%),
     linear-gradient(175deg, var(--v3-hero-tint-b), transparent 70%),
@@ -717,3 +717,4 @@ a {
   display: block;
   background: var(--v3-bg);
 }
+
