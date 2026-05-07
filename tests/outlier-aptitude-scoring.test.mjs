@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import {
   scoreDimensionsFromAnswers,
   acuitySlidersToVector,
+  acuityScenarioAnswersToSliders,
   blendQuestionnaireAndAcuity,
   computeRoleFit,
   buildSortedMarketProjection,
@@ -35,25 +36,42 @@ test('ACUITY_PARTITION covers each aptitude dimension exactly once', () => {
   assert.equal(seen.size, DIM_IDS.length);
 });
 
-test('scoreDimensionsFromAnswers: all neutral (3) maps to 3/5 on each dimension', () => {
+test('scoreDimensionsFromAnswers: all mid scenario choices (…_b) land near mid-high band', () => {
   const answers = {};
   APTITUDE_QUESTIONS.forEach(q => {
-    answers[q.id] = 3;
+    const mid = q.choices?.find(c => c.id.endsWith('_b'));
+    answers[q.id] = mid ? mid.id : 3;
   });
   const scores = scoreDimensionsFromAnswers(answers, APTITUDE_QUESTIONS, DIM_IDS);
-  assert.ok(Math.abs(scores.systems - 0.6) < 0.02, `systems ~0.6 got ${scores.systems}`);
-  assert.ok(Math.abs(scores.eq - 0.6) < 0.02);
+  assert.ok(scores.systems > 0.35 && scores.systems < 0.85, `systems in band got ${scores.systems}`);
+  assert.ok(scores.eq > 0.35 && scores.eq < 0.85);
 });
 
-test('scoreDimensionsFromAnswers: golden all-strong (5) — key dimensions at ceiling', () => {
+test('scoreDimensionsFromAnswers: all strongest scenario (…_d) — key dimensions at ceiling', () => {
   const answers = {};
   APTITUDE_QUESTIONS.forEach(q => {
-    answers[q.id] = 5;
+    const top = q.choices?.find(c => c.id.endsWith('_d'));
+    answers[q.id] = top ? top.id : 5;
   });
   const scores = scoreDimensionsFromAnswers(answers, APTITUDE_QUESTIONS, DIM_IDS);
   assert.equal(scores.systems, 1);
   assert.equal(scores.diagnostics, 1);
   assert.ok(scores.technical > 0.92);
+});
+
+test('scoreDimensionsFromAnswers: likert fallback still works when type omitted', () => {
+  const questions = [{ id: 'legacy', text: 'x', weights: { systems: 1 } }];
+  const scores = scoreDimensionsFromAnswers({ legacy: 3 }, questions, ['systems']);
+  assert.ok(Math.abs(scores.systems - 0.6) < 1e-9);
+});
+
+test('acuityScenarioAnswersToSliders: choice ids map to bounded 0–10', () => {
+  const domains = [
+    { id: 'iq', scenarioChoices: [{ id: 'iq_a', sliderValue: 9 }, { id: 'iq_d', sliderValue: 2 }] }
+  ];
+  assert.equal(acuityScenarioAnswersToSliders({ iq: 'iq_a' }, domains).iq, 9);
+  assert.equal(acuityScenarioAnswersToSliders({ iq: 'iq_d' }, domains).iq, 2);
+  assert.equal(acuityScenarioAnswersToSliders({ iq: 7 }, domains).iq, 7);
 });
 
 test('blendQuestionnaireAndAcuity: alpha=0 ignores acuity', () => {

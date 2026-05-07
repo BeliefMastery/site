@@ -18,8 +18,8 @@ export const ACUITY_PARTITION = {
 const ACUITY_DOMAIN_IDS = Object.keys(ACUITY_PARTITION);
 
 /**
- * @param {Record<string, number>} answers questionId -> 1-5
- * @param {Array<{ id: string, weights?: Record<string, number> }>} questions
+ * @param {Record<string, number|string>} answers questionId -> 1-5 (likert) or choice id (scenario)
+ * @param {Array<{ id: string, type?: string, weights?: Record<string, number>, choices?: Array<{ id: string, weights: Record<string, number> }> }>} questions
  * @param {string[]} dimensionIds
  * @returns {Record<string, number>} 0-1 per dimension
  */
@@ -30,20 +30,78 @@ export function scoreDimensionsFromAnswers(answers, questions, dimensionIds) {
     scores[id] = 0;
     totals[id] = 0;
   });
+
+  const applyWeights = (weightMap) => {
+    Object.entries(weightMap || {}).forEach(([dimId, weight]) => {
+      if (scores[dimId] === undefined) return;
+      scores[dimId] += weight;
+    });
+  };
+
+  const addScenarioTotals = (choices) => {
+    const maxByDim = {};
+    (choices || []).forEach(ch => {
+      Object.entries(ch.weights || {}).forEach(([dimId, w]) => {
+        const prev = maxByDim[dimId] ?? 0;
+        maxByDim[dimId] = Math.max(prev, w);
+      });
+    });
+    Object.entries(maxByDim).forEach(([dimId, mx]) => {
+      if (totals[dimId] !== undefined) totals[dimId] += mx;
+    });
+  };
+
   questions.forEach(question => {
     const answer = answers[question.id];
     if (answer == null) return;
+
+    if (question.type === 'scenario' && question.choices?.length) {
+      const choice = question.choices.find(c => c.id === answer);
+      if (!choice) return;
+      addScenarioTotals(question.choices);
+      applyWeights(choice.weights);
+      return;
+    }
+
+    const likert = typeof answer === 'number' ? answer : Number(answer);
+    if (!Number.isFinite(likert) || likert < 1 || likert > 5) return;
     Object.entries(question.weights || {}).forEach(([dimId, weight]) => {
       if (scores[dimId] === undefined) return;
-      scores[dimId] += answer * weight;
+      scores[dimId] += likert * weight;
       totals[dimId] += weight * 5;
     });
   });
+
   const normalized = {};
   dimensionIds.forEach(dimId => {
     normalized[dimId] = totals[dimId] ? scores[dimId] / totals[dimId] : 0;
   });
   return normalized;
+}
+
+/**
+ * Map acuity step scenario answers (domainId -> choice id) to 0–10 slider values for acuitySlidersToVector.
+ * @param {Record<string, number|string>} answers domain id -> choice id or legacy 0–10 number
+ * @param {Array<{ id: string, scenarioChoices?: Array<{ id: string, sliderValue: number }> }>} domains
+ */
+export function acuityScenarioAnswersToSliders(answers, domains) {
+  const out = {};
+  (domains || []).forEach(d => {
+    const raw = answers[d.id];
+    if (typeof raw === 'number' && Number.isFinite(raw)) {
+      out[d.id] = Math.max(0, Math.min(10, raw));
+      return;
+    }
+    if (typeof raw === 'string' && d.scenarioChoices?.length) {
+      const ch = d.scenarioChoices.find(c => c.id === raw);
+      if (ch && typeof ch.sliderValue === 'number') {
+        out[d.id] = Math.max(0, Math.min(10, ch.sliderValue));
+        return;
+      }
+    }
+    out[d.id] = 5;
+  });
+  return out;
 }
 
 /**

@@ -7,6 +7,7 @@ import { downloadReportHtml } from './shared/export-utils.js';
 import {
   scoreDimensionsFromAnswers,
   acuitySlidersToVector,
+  acuityScenarioAnswersToSliders,
   blendQuestionnaireAndAcuity,
   buildSortedMarketProjection,
   pickDiverseTopRoles
@@ -103,6 +104,43 @@ export class OutlierAptitudeEngine {
 
   }
 
+  sanitizeQuestionnaireAnswers(answers) {
+    const out = {};
+    (APTITUDE_QUESTIONS || []).forEach(q => {
+      const v = answers[q.id];
+      if (q.type === 'scenario' && q.choices?.length) {
+        if (q.choices.some(c => c.id === v)) out[q.id] = v;
+        return;
+      }
+      if (typeof v === 'number' && v >= 1 && v <= 5) out[q.id] = v;
+    });
+    return out;
+  }
+
+  sanitizeAcuityScores(scores) {
+    const out = {};
+    (APTITUDE_ACUITY_DOMAINS || []).forEach(d => {
+      const v = scores[d.id];
+      if (d.scenarioChoices?.some(c => c.id === v)) {
+        out[d.id] = v;
+        return;
+      }
+      if (typeof v === 'number' && v >= 0 && v <= 10 && d.scenarioChoices?.length) {
+        let best = d.scenarioChoices[0];
+        let bestDiff = Infinity;
+        d.scenarioChoices.forEach(ch => {
+          const diff = Math.abs(ch.sliderValue - v);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            best = ch;
+          }
+        });
+        if (best) out[d.id] = best.id;
+      }
+    });
+    return out;
+  }
+
   exportReportHtml() {
     const ok = downloadReportHtml({
       title: 'Outlier Aptitude Report',
@@ -156,31 +194,54 @@ export class OutlierAptitudeEngine {
       progressFill.style.width = `${((this.currentQuestionIndex + 1) / APTITUDE_QUESTIONS.length) * 100}%`;
     }
 
-    const options = [
-      { value: 1, label: 'Strongly Disagree' },
-      { value: 2, label: 'Disagree' },
-      { value: 3, label: 'Neutral' },
-      { value: 4, label: 'Agree' },
-      { value: 5, label: 'Strongly Agree' }
-    ];
     const selected = this.answers[question.id];
-    questionContainer.innerHTML = `
-      <div class="question-block">
-        <h3>${SecurityUtils.sanitizeHTML(question.text)}</h3>
-        <div class="options-container">
-          ${options.map(option => `
-            <label class="option-label ${selected === option.value ? 'selected' : ''}">
-              <input type="radio" name="question_${question.id}" value="${option.value}" ${selected === option.value ? 'checked' : ''}>
-              <span>${option.label}</span>
-            </label>
-          `).join('')}
+    const isScenario = question.type === 'scenario' && question.choices?.length;
+
+    if (isScenario) {
+      questionContainer.innerHTML = `
+        <div class="question-block">
+          <h3>${SecurityUtils.sanitizeHTML(question.text)}</h3>
+          <p class="form-help">Choose the option that best matches what you would most likely do—not what sounds most impressive.</p>
+          <div class="options-container">
+            ${question.choices.map(choice => `
+              <label class="option-label ${selected === choice.id ? 'selected' : ''}">
+                <input type="radio" name="question_${question.id}" value="${SecurityUtils.sanitizeHTML(choice.id)}" ${selected === choice.id ? 'checked' : ''}>
+                <span>${SecurityUtils.sanitizeHTML(choice.label)}</span>
+              </label>
+            `).join('')}
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      const options = [
+        { value: 1, label: 'Strongly Disagree' },
+        { value: 2, label: 'Disagree' },
+        { value: 3, label: 'Neutral' },
+        { value: 4, label: 'Agree' },
+        { value: 5, label: 'Strongly Agree' }
+      ];
+      questionContainer.innerHTML = `
+        <div class="question-block">
+          <h3>${SecurityUtils.sanitizeHTML(question.text)}</h3>
+          <div class="options-container">
+            ${options.map(option => `
+              <label class="option-label ${selected === option.value ? 'selected' : ''}">
+                <input type="radio" name="question_${question.id}" value="${option.value}" ${selected === option.value ? 'checked' : ''}>
+                <span>${option.label}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
 
     questionContainer.querySelectorAll('input[type="radio"]').forEach(input => {
       input.addEventListener('change', () => {
-        this.answers[question.id] = parseInt(input.value, 10);
+        if (isScenario) {
+          this.answers[question.id] = input.value;
+        } else {
+          this.answers[question.id] = parseInt(input.value, 10);
+        }
         this.saveProgress();
       });
     });
@@ -241,7 +302,10 @@ export class OutlierAptitudeEngine {
       return;
     }
     const question = APTITUDE_QUESTIONS[this.currentQuestionIndex];
-    if (!question || typeof this.answers[question.id] !== 'number') {
+    const ans = this.answers[question.id];
+    const scenarioOk = question.type === 'scenario' && question.choices?.some(c => c.id === ans);
+    const likertOk = typeof ans === 'number' && ans >= 1 && ans <= 5;
+    if (!question || (!scenarioOk && !likertOk)) {
       ErrorHandler.showUserError('Please select a response to continue.');
       return;
     }
@@ -357,27 +421,24 @@ export class OutlierAptitudeEngine {
     const questionCount = document.getElementById('questionCount');
     const progressFill = document.getElementById('progressFill');
     if (!questionContainer) return;
-    if (questionCount) questionCount.textContent = 'Acuity Self‑Evaluation';
+    if (questionCount) questionCount.textContent = 'Workplace scenarios — acuity signals';
     if (progressFill) progressFill.style.width = '100%';
 
     const scores = this.acuityProfile?.scores || {};
-    const slidersHtml = APTITUDE_ACUITY_DOMAINS.map(domain => {
-      const val = scores[domain.id] !== undefined ? scores[domain.id] : 5;
-      const desc = domain.sliderDescription || domain.description;
+    const blocksHtml = APTITUDE_ACUITY_DOMAINS.map(domain => {
+      const choices = domain.scenarioChoices || [];
+      const selected = scores[domain.id];
       return `
-        <div class="form-group acuity-slider-group">
-          <label for="acuity-${domain.id}">${SecurityUtils.sanitizeHTML(domain.name)}</label>
-          <p class="acuity-slider-desc">${SecurityUtils.sanitizeHTML(desc)}</p>
-          <div class="scale-container">
-            <div class="scale-input">
-              <input type="range" min="0" max="10" value="${val}" class="slider" id="acuity-${domain.id}" data-domain="${domain.id}" step="1">
-              <div class="scale-labels">
-                <span>0 — Low</span>
-                <span>5 — Moderate</span>
-                <span>10 — Very high</span>
-              </div>
-            </div>
-            <span class="scale-value acuity-value" id="acuity-val-${domain.id}">${val}</span>
+        <div class="form-group acuity-scenario-group">
+          <h4 class="acuity-domain-title">${SecurityUtils.sanitizeHTML(domain.name)}</h4>
+          <p class="acuity-slider-desc">${SecurityUtils.sanitizeHTML(domain.scenarioStem || domain.description)}</p>
+          <div class="options-container">
+            ${choices.map(choice => `
+              <label class="option-label ${selected === choice.id ? 'selected' : ''}">
+                <input type="radio" name="acuity_${domain.id}" value="${SecurityUtils.sanitizeHTML(choice.id)}" data-domain="${SecurityUtils.sanitizeHTML(domain.id)}" ${selected === choice.id ? 'checked' : ''}>
+                <span>${SecurityUtils.sanitizeHTML(choice.label)}</span>
+              </label>
+            `).join('')}
           </div>
         </div>
       `;
@@ -385,30 +446,21 @@ export class OutlierAptitudeEngine {
 
     questionContainer.innerHTML = `
       <div class="question-block">
-        <h3>Self‑Evaluate Your Competence by Domain</h3>
-        <p class="form-help">Rate your competence in each domain from 0 (low) to 10 (very high). Use the descriptions and your experience to gauge where you stand relative to peers.</p>
-        ${slidersHtml}
-        <div class="panel panel-outline acuity-bias-panel">
-          <h4 class="panel-title">Bias‑Mitigating Prompts</h4>
-          <ul class="feature-list">
-            ${APTITUDE_ACUITY_DOMAINS.map(domain => `<li><strong>${SecurityUtils.sanitizeHTML(domain.name)}:</strong> ${SecurityUtils.sanitizeHTML(domain.biasPrompt)}</li>`).join('')}
-          </ul>
-        </div>
+        <h3>Situational acuity</h3>
+        <p class="form-help">For each area, pick the response that best matches how you usually act—not how you wish you were seen.</p>
+        ${blocksHtml}
       </div>
     `;
 
-    APTITUDE_ACUITY_DOMAINS.forEach(domain => {
-      const slider = document.getElementById(`acuity-${domain.id}`);
-      const valueSpan = document.getElementById(`acuity-val-${domain.id}`);
-      if (slider && valueSpan) {
-        slider.oninput = () => {
-          valueSpan.textContent = slider.value;
-          this.acuityProfile = this.acuityProfile || { scores: {} };
-          this.acuityProfile.scores = this.acuityProfile.scores || {};
-          this.acuityProfile.scores[domain.id] = parseInt(slider.value, 10);
-          this.saveProgress();
-        };
-      }
+    questionContainer.querySelectorAll('input[type="radio"][data-domain]').forEach(input => {
+      input.addEventListener('change', () => {
+        const domainId = input.getAttribute('data-domain');
+        if (!domainId) return;
+        this.acuityProfile = this.acuityProfile || { scores: {} };
+        this.acuityProfile.scores = this.acuityProfile.scores || {};
+        this.acuityProfile.scores[domainId] = input.value;
+        this.saveProgress();
+      });
     });
 
     this.updateNavButtons();
@@ -416,6 +468,15 @@ export class OutlierAptitudeEngine {
   }
 
   validateAcuitySelections() {
+    const scores = this.acuityProfile?.scores || {};
+    for (const domain of APTITUDE_ACUITY_DOMAINS) {
+      const v = scores[domain.id];
+      const ok = domain.scenarioChoices?.some(c => c.id === v);
+      if (!ok) {
+        ErrorHandler.showUserError(`Please choose an option for each scenario (${domain.name}).`);
+        return false;
+      }
+    }
     return true;
   }
 
@@ -433,7 +494,8 @@ export class OutlierAptitudeEngine {
         else scores[d.id] = 3;
       });
     }
-    const sorted = APTITUDE_ACUITY_DOMAINS.map(d => ({ id: d.id, score: scores[d.id] !== undefined ? scores[d.id] : 5 }))
+    const resolved = acuityScenarioAnswersToSliders(scores, APTITUDE_ACUITY_DOMAINS);
+    const sorted = APTITUDE_ACUITY_DOMAINS.map(d => ({ id: d.id, score: resolved[d.id] !== undefined ? resolved[d.id] : 5 }))
       .sort((a, b) => b.score - a.score);
     return {
       primary: sorted[0]?.id || '',
@@ -478,7 +540,8 @@ export class OutlierAptitudeEngine {
   completeAssessment() {
     const dimensionIds = APTITUDE_DIMENSIONS.map(d => d.id);
     const questionnaireScores = scoreDimensionsFromAnswers(this.answers, APTITUDE_QUESTIONS, dimensionIds);
-    const acuityVec = acuitySlidersToVector(this.acuityProfile?.scores || {});
+    const acuitySliders = acuityScenarioAnswersToSliders(this.acuityProfile?.scores || {}, APTITUDE_ACUITY_DOMAINS);
+    const acuityVec = acuitySlidersToVector(acuitySliders);
     const dimensionScores = blendQuestionnaireAndAcuity(questionnaireScores, acuityVec, dimensionIds, 0.28);
     const projection = this.buildMarketProjection(dimensionScores);
     const projectionDisplay = pickDiverseTopRoles(projection, 7, 2);
@@ -488,11 +551,11 @@ export class OutlierAptitudeEngine {
 
     this.analysisData = {
       timestamp: new Date().toISOString(),
-      scoringVersion: '2.0',
+      scoringVersion: '2.1',
       earlyInputs: this.earlyInputs || this.getEmptyAnalysisData().earlyInputs,
       dimensionScores,
       questionnaireScores,
-      acuityProfile: { scores: this.acuityProfile?.scores || {}, ...this.deriveAcuityRankFromScores() },
+      acuityProfile: { scores: { ...this.acuityProfile?.scores }, resolvedSliders: acuitySliders, ...this.deriveAcuityRankFromScores() },
       topDimensions: sortedDims.slice(0, 4),
       projection,
       projectionDisplay,
@@ -656,10 +719,18 @@ export class OutlierAptitudeEngine {
     };
     this.analysisData.earlyInputs = this.earlyInputs;
     APTITUDE_QUESTIONS.forEach(question => {
-      this.answers[question.id] = Math.floor(Math.random() * 5) + 1;
+      if (question.type === 'scenario' && question.choices?.length) {
+        const pick = question.choices[Math.floor(Math.random() * question.choices.length)];
+        this.answers[question.id] = pick.id;
+      } else {
+        this.answers[question.id] = Math.floor(Math.random() * 5) + 1;
+      }
     });
     const scores = {};
-    APTITUDE_ACUITY_DOMAINS.forEach((d, i) => { scores[d.id] = Math.min(10, Math.max(0, 4 + Math.floor(Math.random() * 5))); });
+    APTITUDE_ACUITY_DOMAINS.forEach(d => {
+      const ch = d.scenarioChoices;
+      if (ch?.length) scores[d.id] = ch[Math.floor(Math.random() * ch.length)].id;
+    });
     this.acuityProfile = { scores };
     this.completeAssessment();
   }
@@ -702,8 +773,12 @@ export class OutlierAptitudeEngine {
       this.currentQuestionIndex = progress.currentQuestionIndex || 0;
       this.currentStage = progress.currentStage || 'questions';
       this.reportComplete = progress.reportComplete === true;
-      this.answers = progress.answers || {};
-      this.acuityProfile = progress.acuityProfile || { primary: '', secondary: '', tertiary: '', additional: [] };
+      this.answers = this.sanitizeQuestionnaireAnswers(progress.answers || {});
+      const rawAcuity = progress.acuityProfile || { primary: '', secondary: '', tertiary: '', additional: [] };
+      this.acuityProfile = {
+        ...rawAcuity,
+        scores: this.sanitizeAcuityScores(rawAcuity.scores || {})
+      };
       this.earlyInputs = progress.earlyInputs || this.getEmptyAnalysisData().earlyInputs;
       this.analysisData = progress.analysisData || this.analysisData;
       this._storageAppliedUi = false;

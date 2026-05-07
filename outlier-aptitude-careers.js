@@ -1,6 +1,9 @@
 /**
  * Full career database (180 paths) from outlier-aptitude/career-database-tables.md
  * Each career: id, name, sector, educationMin, growth, automationResistance, automationResistanceScore, aptitudes, archetypeFit
+ *
+ * Market labels (growth, automationResistance, automationResistanceScore): editorial pass May 2026.
+ * Heuristic directional themes only (AI tooling, demographic demand, cyclical hiring)—not predictive statistics.
  */
 
 // Aptitude profiles by cluster (from aptitude-mapping-structure.md)
@@ -114,31 +117,31 @@ function withDifferentiatedAptitudes(role) {
 
 // Tech & Engineering (25)
 const TECH = [
-  career('tech_001', 'AI/ML Engineer', 'technology', 'masters', 'High', 'Medium', 0.55, 'tech', ['Gamma Male']),
-  career('tech_002', 'Cloud Solutions Architect', 'technology', 'bachelors', 'High', 'Medium', 0.6, 'tech', ['Gamma Male', 'Sigma Male']),
-  career('tech_003', 'Cybersecurity Analyst', 'technology', 'bachelors', 'High', 'High', 0.75, 'tech', ['Gamma Male']),
-  career('tech_004', 'DevOps Engineer', 'technology', 'bachelors', 'High', 'Medium', 0.58, 'tech', ['Gamma Male', 'Sigma Male']),
-  career('tech_005', 'Full Stack Developer', 'technology', 'bachelors', 'Moderate', 'Medium-Low', 0.45, 'tech', ['Gamma Male', 'Sigma Male']),
-  career('tech_006', 'Data Scientist', 'technology', 'masters', 'Moderate', 'Medium', 0.52, 'research', ['Gamma Male']),
-  career('tech_007', 'UX/UI Designer', 'technology', 'bachelors', 'Moderate', 'Medium', 0.6, 'creative', ['Gamma-Nu Male', 'Sigma-Lambda Male']),
-  career('tech_008', 'Mobile App Developer', 'technology', 'bachelors', 'Moderate', 'Low', 0.4, 'tech', ['Gamma Male', 'Sigma Male']),
-  career('tech_009', 'Robotics Engineer', 'technology', 'masters', 'High', 'High', 0.7, 'tech', ['Gamma Male']),
-  career('tech_010', 'IoT Specialist', 'technology', 'bachelors', 'High', 'Medium-High', 0.65, 'tech', ['Gamma Male']),
-  career('tech_011', 'Quantum Computing Researcher', 'technology', 'doctorate', 'High', 'Very High', 0.85, 'research', ['Gamma Male']),
-  career('tech_012', 'Blockchain Developer', 'technology', 'bachelors', 'Moderate', 'Medium', 0.55, 'tech', ['Gamma Male', 'Gamma-Pi Male']),
-  career('tech_013', 'Systems Integration Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'tech', ['Gamma Male']),
-  career('tech_014', 'Network Engineer', 'technology', 'bachelors', 'Stable', 'Medium', 0.58, 'tech', ['Beta Male']),
-  career('tech_015', 'Hardware Engineer', 'technology', 'bachelors', 'Stable', 'Medium-High', 0.65, 'tech', ['Gamma Male', 'Delta Male']),
-  career('tech_016', 'Embedded Systems Developer', 'technology', 'bachelors', 'Moderate', 'High', 0.72, 'tech', ['Gamma Male']),
-  career('tech_017', 'AR/VR Developer', 'technology', 'bachelors', 'High', 'Medium-High', 0.67, 'tech', ['Gamma Male', 'Gamma-Nu Male']),
-  career('tech_018', 'Site Reliability Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.66, 'tech', ['Gamma Male', 'Sigma Male']),
-  career('tech_019', 'Database Administrator', 'technology', 'bachelors', 'Stable', 'Low', 0.42, 'tech', ['Beta Male']),
-  career('tech_020', 'IT Support Specialist', 'technology', 'associates', 'Declining', 'Very Low', 0.25, 'tech', ['Beta Male']),
-  career('tech_021', 'Renewable Energy Engineer', 'technology', 'bachelors', 'High', 'High', 0.78, 'tech', ['Gamma Male', 'Delta Male']),
-  career('tech_022', 'EV Systems Engineer', 'technology', 'bachelors', 'High', 'High', 0.75, 'tech', ['Gamma Male']),
-  career('tech_023', 'Biomedical Engineer', 'technology', 'bachelors', 'Moderate', 'High', 0.7, 'tech', ['Gamma Male']),
-  career('tech_024', 'Mechatronics Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'tech', ['Gamma Male', 'Delta Male']),
-  career('tech_025', 'CAD/3D Modeling Specialist', 'technology', 'associates', 'Stable', 'Low', 0.38, 'tech', ['Delta Male'])
+  career('tech_001', 'AI/ML Engineer', 'technology', 'masters', 'High', 'Medium', 0.52, 'tech', ['Gamma Male']),
+  career('tech_002', 'Cloud Solutions Architect', 'technology', 'bachelors', 'High', 'Medium-High', 0.62, 'tech', ['Gamma Male', 'Sigma Male']),
+  career('tech_003', 'Cybersecurity Analyst', 'technology', 'bachelors', 'High', 'High', 0.78, 'tech', ['Gamma Male']),
+  career('tech_004', 'DevOps Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.6, 'tech', ['Gamma Male', 'Sigma Male']),
+  career('tech_005', 'Full Stack Developer', 'technology', 'bachelors', 'Moderate', 'Medium-Low', 0.42, 'tech', ['Gamma Male', 'Sigma Male']),
+  career('tech_006', 'Data Scientist', 'technology', 'masters', 'Moderate', 'Medium-Low', 0.48, 'research', ['Gamma Male']),
+  career('tech_007', 'UX/UI Designer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.62, 'creative', ['Gamma-Nu Male', 'Sigma-Lambda Male']),
+  career('tech_008', 'Mobile App Developer', 'technology', 'bachelors', 'Moderate', 'Medium', 0.5, 'tech', ['Gamma Male', 'Sigma Male']),
+  career('tech_009', 'Robotics Engineer', 'technology', 'masters', 'High', 'High', 0.72, 'tech', ['Gamma Male']),
+  career('tech_010', 'IoT Specialist', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.62, 'tech', ['Gamma Male']),
+  career('tech_011', 'Quantum Computing Researcher', 'technology', 'doctorate', 'High', 'Very High', 0.86, 'research', ['Gamma Male']),
+  career('tech_012', 'Blockchain Developer', 'technology', 'bachelors', 'Stable', 'Medium', 0.52, 'tech', ['Gamma Male', 'Gamma-Pi Male']),
+  career('tech_013', 'Systems Integration Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.66, 'tech', ['Gamma Male']),
+  career('tech_014', 'Network Engineer', 'technology', 'bachelors', 'Stable', 'Medium', 0.55, 'tech', ['Beta Male']),
+  career('tech_015', 'Hardware Engineer', 'technology', 'bachelors', 'Stable', 'Medium-High', 0.62, 'tech', ['Gamma Male', 'Delta Male']),
+  career('tech_016', 'Embedded Systems Developer', 'technology', 'bachelors', 'Moderate', 'High', 0.7, 'tech', ['Gamma Male']),
+  career('tech_017', 'AR/VR Developer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.64, 'tech', ['Gamma Male', 'Gamma-Nu Male']),
+  career('tech_018', 'Site Reliability Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.64, 'tech', ['Gamma Male', 'Sigma Male']),
+  career('tech_019', 'Database Administrator', 'technology', 'bachelors', 'Declining', 'Low', 0.38, 'tech', ['Beta Male']),
+  career('tech_020', 'IT Support Specialist', 'technology', 'associates', 'Declining', 'Very Low', 0.22, 'tech', ['Beta Male']),
+  career('tech_021', 'Renewable Energy Engineer', 'technology', 'bachelors', 'High', 'High', 0.8, 'tech', ['Gamma Male', 'Delta Male']),
+  career('tech_022', 'EV Systems Engineer', 'technology', 'bachelors', 'High', 'High', 0.76, 'tech', ['Gamma Male']),
+  career('tech_023', 'Biomedical Engineer', 'technology', 'bachelors', 'Moderate', 'High', 0.68, 'tech', ['Gamma Male']),
+  career('tech_024', 'Mechatronics Engineer', 'technology', 'bachelors', 'Moderate', 'Medium-High', 0.66, 'tech', ['Gamma Male', 'Delta Male']),
+  career('tech_025', 'CAD/3D Modeling Specialist', 'technology', 'associates', 'Stable', 'Medium-Low', 0.42, 'tech', ['Delta Male'])
 ];
 
 // Healthcare & Life Sciences (30)
@@ -154,14 +157,14 @@ const HEALTHCARE = [
   career('health_009', 'Mental Health Counselor', 'healthcare', 'masters', 'Moderate', 'Very High', 0.92, 'healthcare', ['Beta-Iota Male', 'Gamma-Theta Male']),
   career('health_010', 'Clinical Psychologist', 'healthcare', 'doctorate', 'Moderate', 'Very High', 0.9, 'healthcare', ['Beta-Iota Male']),
   career('health_011', 'Psychiatrist', 'healthcare', 'md', 'Moderate', 'Very High', 0.88, 'healthcare', ['Alpha Male']),
-  career('health_012', 'Pharmacist', 'healthcare', 'doctorate', 'Stable', 'Medium', 0.52, 'healthcare', ['Beta Male']),
-  career('health_013', 'Pharmacy Technician', 'healthcare', 'certificate', 'Declining', 'Low', 0.35, 'healthcare', ['Beta Male']),
+  career('health_012', 'Pharmacist', 'healthcare', 'doctorate', 'Stable', 'Medium-Low', 0.48, 'healthcare', ['Beta Male']),
+  career('health_013', 'Pharmacy Technician', 'healthcare', 'certificate', 'Declining', 'Low', 0.32, 'healthcare', ['Beta Male']),
   career('health_014', 'Medical Lab Technician', 'healthcare', 'associates', 'Stable', 'Medium', 0.55, 'healthcare', ['Beta Male']),
   career('health_015', 'Biomedical Technician', 'healthcare', 'associates', 'Moderate', 'High', 0.72, 'healthcare', ['Beta Male', 'Delta Male']),
   career('health_016', 'Ultrasound Technician', 'healthcare', 'associates', 'Stable', 'Medium-High', 0.65, 'healthcare', ['Beta Male']),
   career('health_017', 'Dental Hygienist', 'healthcare', 'associates', 'Stable', 'Medium-High', 0.68, 'healthcare', ['Beta Male']),
   career('health_018', 'Paramedic/EMT', 'healthcare', 'certificate', 'Stable', 'High', 0.78, 'healthcare', ['Alpha-Xi Male']),
-  career('health_019', 'Medical Records Specialist', 'healthcare', 'certificate', 'Declining', 'Very Low', 0.22, 'healthcare', ['Beta Male']),
+  career('health_019', 'Medical Records Specialist', 'healthcare', 'certificate', 'Declining', 'Very Low', 0.2, 'healthcare', ['Beta Male']),
   career('health_020', 'Healthcare Administrator', 'healthcare', 'masters', 'Moderate', 'Medium-High', 0.66, 'business', ['Alpha Male', 'Beta Male']),
   career('health_021', 'Clinical Research Coordinator', 'healthcare', 'bachelors', 'Moderate', 'High', 0.7, 'research', ['Gamma Male']),
   career('health_022', 'Epidemiologist', 'healthcare', 'masters', 'Moderate', 'High', 0.72, 'research', ['Gamma Male']),
@@ -172,25 +175,25 @@ const HEALTHCARE = [
   career('health_027', 'Audiologist', 'healthcare', 'doctorate', 'Stable', 'High', 0.75, 'healthcare', ['Delta-Mu Male']),
   career('health_028', 'Genetic Lab Technician', 'healthcare', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'research', ['Gamma Male']),
   career('health_029', 'Medical Illustrator', 'healthcare', 'masters', 'Stable', 'Medium-High', 0.65, 'creative', ['Gamma-Nu Male']),
-  career('health_030', 'Telemedicine Coordinator', 'healthcare', 'bachelors', 'High', 'Medium', 0.6, 'healthcare', ['Beta Male'])
+  career('health_030', 'Telemedicine Coordinator', 'healthcare', 'bachelors', 'High', 'Medium-Low', 0.56, 'healthcare', ['Beta Male'])
 ];
 
 // Business & Finance (25)
 const BUSINESS = [
-  career('biz_001', 'Management Consultant', 'business', 'masters', 'Stable', 'Medium-High', 0.68, 'business', ['Alpha Male']),
-  career('biz_002', 'Financial Analyst', 'business', 'bachelors', 'Stable', 'Medium', 0.48, 'business', ['Gamma Male', 'Gamma-Pi Male']),
-  career('biz_003', 'Investment Banker', 'business', 'bachelors', 'Stable', 'Medium', 0.52, 'business', ['Alpha Male']),
-  career('biz_004', 'Accountant (CPA)', 'business', 'bachelors', 'Declining', 'Low', 0.38, 'business', ['Beta Male']),
-  career('biz_005', 'Financial Planner', 'business', 'bachelors', 'Stable', 'Medium-High', 0.7, 'business', ['Gamma-Pi Male']),
-  career('biz_006', 'Actuary', 'business', 'bachelors', 'Moderate', 'Medium', 0.55, 'research', ['Gamma Male']),
-  career('biz_007', 'Data Analyst (Business)', 'business', 'bachelors', 'Moderate', 'Medium', 0.5, 'research', ['Gamma Male']),
-  career('biz_008', 'Business Intelligence Analyst', 'business', 'bachelors', 'Moderate', 'Medium', 0.52, 'business', ['Gamma Male']),
-  career('biz_009', 'Product Manager', 'business', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'business', ['Alpha Male', 'Gamma Male']),
-  career('biz_010', 'Project Manager', 'business', 'bachelors', 'Stable', 'Medium', 0.55, 'business', ['Beta Male']),
-  career('biz_011', 'Operations Manager', 'business', 'bachelors', 'Stable', 'Medium', 0.58, 'business', ['Beta Male', 'Alpha Male']),
-  career('biz_012', 'Supply Chain Manager', 'business', 'bachelors', 'Stable', 'Medium', 0.6, 'business', ['Beta Male']),
-  career('biz_013', 'HR Specialist', 'business', 'bachelors', 'Stable', 'Medium', 0.5, 'business', ['Beta Male']),
-  career('biz_014', 'Recruiter/Talent Acquisition', 'business', 'bachelors', 'Stable', 'Medium', 0.55, 'sales', ['Gamma-Pi Male']),
+  career('biz_001', 'Management Consultant', 'business', 'masters', 'Moderate', 'Medium-High', 0.66, 'business', ['Alpha Male']),
+  career('biz_002', 'Financial Analyst', 'business', 'bachelors', 'Moderate', 'Medium-Low', 0.44, 'business', ['Gamma Male', 'Gamma-Pi Male']),
+  career('biz_003', 'Investment Banker', 'business', 'bachelors', 'Stable', 'Medium', 0.5, 'business', ['Alpha Male']),
+  career('biz_004', 'Accountant (CPA)', 'business', 'bachelors', 'Declining', 'Low', 0.35, 'business', ['Beta Male']),
+  career('biz_005', 'Financial Planner', 'business', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'business', ['Gamma-Pi Male']),
+  career('biz_006', 'Actuary', 'business', 'bachelors', 'Moderate', 'Medium', 0.52, 'research', ['Gamma Male']),
+  career('biz_007', 'Data Analyst (Business)', 'business', 'bachelors', 'Moderate', 'Medium-Low', 0.46, 'research', ['Gamma Male']),
+  career('biz_008', 'Business Intelligence Analyst', 'business', 'bachelors', 'Moderate', 'Medium-Low', 0.48, 'business', ['Gamma Male']),
+  career('biz_009', 'Product Manager', 'business', 'bachelors', 'High', 'Medium-High', 0.66, 'business', ['Alpha Male', 'Gamma Male']),
+  career('biz_010', 'Project Manager', 'business', 'bachelors', 'Moderate', 'Medium', 0.54, 'business', ['Beta Male']),
+  career('biz_011', 'Operations Manager', 'business', 'bachelors', 'Stable', 'Medium', 0.56, 'business', ['Beta Male', 'Alpha Male']),
+  career('biz_012', 'Supply Chain Manager', 'business', 'bachelors', 'Stable', 'Medium', 0.58, 'business', ['Beta Male']),
+  career('biz_013', 'HR Specialist', 'business', 'bachelors', 'Stable', 'Medium-Low', 0.46, 'business', ['Beta Male']),
+  career('biz_014', 'Recruiter/Talent Acquisition', 'business', 'bachelors', 'Stable', 'Medium-Low', 0.48, 'sales', ['Gamma-Pi Male']),
   career('biz_015', 'Organizational Development', 'business', 'masters', 'Moderate', 'High', 0.72, 'business', ['Alpha Male']),
   career('biz_016', 'Strategy Consultant', 'business', 'masters', 'Moderate', 'High', 0.74, 'business', ['Sigma-Kappa Male']),
   career('biz_017', 'Risk Manager', 'business', 'bachelors', 'Moderate', 'Medium-High', 0.66, 'business', ['Alpha-Rho Male']),
@@ -200,17 +203,17 @@ const BUSINESS = [
   career('biz_021', 'Franchise Owner', 'business', 'bachelors', 'Stable', 'Medium-High', 0.65, 'business', ['Gamma-Pi Male']),
   career('biz_022', 'ESG Analyst', 'business', 'masters', 'High', 'Medium-High', 0.68, 'business', ['Gamma Male']),
   career('biz_023', 'Sustainability Consultant', 'business', 'masters', 'High', 'High', 0.72, 'business', ['Gamma Male']),
-  career('biz_024', 'M&A Analyst', 'business', 'masters', 'Stable', 'Medium-High', 0.64, 'business', ['Alpha Male']),
+  career('biz_024', 'M&A Analyst', 'business', 'masters', 'Moderate', 'Medium-High', 0.62, 'business', ['Alpha Male']),
   career('biz_025', 'Corporate Trainer', 'business', 'bachelors', 'Stable', 'Medium-High', 0.66, 'education', ['Beta Male'])
 ];
 
 // Education & Research (20)
 const EDUCATION = [
-  career('edu_001', 'K-12 Teacher', 'education', 'bachelors', 'Stable', 'High', 0.75, 'education', ['Delta-Mu Male', 'Beta-Iota Male']),
+  career('edu_001', 'K-12 Teacher', 'education', 'bachelors', 'Moderate', 'High', 0.76, 'education', ['Delta-Mu Male', 'Beta-Iota Male']),
   career('edu_002', 'Special Education Teacher', 'education', 'bachelors', 'Stable', 'Very High', 0.85, 'education', ['Delta-Mu Male', 'Beta-Iota Male']),
   career('edu_003', 'ESL/TESOL Instructor', 'education', 'bachelors', 'Stable', 'High', 0.72, 'education', ['Beta-Iota Male']),
   career('edu_004', 'University Professor', 'education', 'doctorate', 'Stable', 'Medium-High', 0.68, 'research', ['Gamma Male']),
-  career('edu_005', 'Instructional Designer', 'education', 'masters', 'Moderate', 'Medium', 0.58, 'education', ['Gamma Male']),
+  career('edu_005', 'Instructional Designer', 'education', 'masters', 'Moderate', 'Medium-Low', 0.52, 'education', ['Gamma Male']),
   career('edu_006', 'Education Technology Specialist', 'education', 'bachelors', 'Moderate', 'Medium-High', 0.65, 'tech', ['Gamma Male']),
   career('edu_007', 'Corporate Trainer', 'education', 'bachelors', 'Stable', 'Medium-High', 0.66, 'education', ['Beta Male']),
   career('edu_008', 'Academic Advisor', 'education', 'masters', 'Stable', 'High', 0.7, 'education', ['Beta-Iota Male']),
@@ -222,7 +225,7 @@ const EDUCATION = [
   career('edu_014', 'Librarian (Academic)', 'education', 'masters', 'Declining', 'Medium', 0.55, 'education', ['Beta-Iota Male']),
   career('edu_015', 'Museum Educator', 'education', 'masters', 'Stable', 'High', 0.72, 'education', ['Beta-Iota Male']),
   career('edu_016', 'Education Policy Analyst', 'education', 'masters', 'Stable', 'High', 0.7, 'legal', ['Alpha-Rho Male']),
-  career('edu_017', 'Online Course Creator', 'education', 'bachelors', 'High', 'Medium', 0.58, 'education', ['Sigma Male', 'Gamma-Nu Male']),
+  career('edu_017', 'Online Course Creator', 'education', 'bachelors', 'Moderate', 'Medium-Low', 0.52, 'education', ['Sigma Male', 'Gamma-Nu Male']),
   career('edu_018', 'Tutoring Service Owner', 'education', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'education', ['Sigma Male']),
   career('edu_019', 'Educational Consultant', 'education', 'masters', 'Moderate', 'High', 0.72, 'business', ['Sigma-Kappa Male']),
   career('edu_020', 'Learning & Development Manager', 'education', 'masters', 'Moderate', 'Medium-High', 0.68, 'education', ['Alpha Male'])
@@ -233,9 +236,9 @@ const CREATIVE = [
   career('creative_001', 'Graphic Designer', 'creative', 'bachelors', 'Stable', 'Medium', 0.5, 'creative', ['Sigma-Lambda Male', 'Gamma-Nu Male']),
   career('creative_002', 'UI/UX Designer', 'creative', 'bachelors', 'Moderate', 'Medium-High', 0.65, 'creative', ['Gamma-Nu Male']),
   career('creative_003', 'Art Director', 'creative', 'bachelors', 'Stable', 'Medium-High', 0.68, 'creative', ['Gamma-Nu Male']),
-  career('creative_004', 'Copywriter', 'creative', 'bachelors', 'Declining', 'Low', 0.4, 'creative', ['Gamma-Nu Male']),
+  career('creative_004', 'Copywriter', 'creative', 'bachelors', 'Declining', 'Low', 0.34, 'creative', ['Gamma-Nu Male']),
   career('creative_005', 'Content Strategist', 'creative', 'bachelors', 'Moderate', 'Medium', 0.58, 'creative', ['Gamma Male']),
-  career('creative_006', 'Social Media Manager', 'creative', 'bachelors', 'Stable', 'Medium', 0.52, 'creative', ['Gamma-Pi Male']),
+  career('creative_006', 'Social Media Manager', 'creative', 'bachelors', 'Stable', 'Medium-Low', 0.46, 'creative', ['Gamma-Pi Male']),
   career('creative_007', 'Video Editor', 'creative', 'bachelors', 'Stable', 'Medium', 0.48, 'creative', ['Sigma-Lambda Male']),
   career('creative_008', 'Motion Graphics Designer', 'creative', 'bachelors', 'Moderate', 'Medium-High', 0.62, 'creative', ['Gamma-Nu Male']),
   career('creative_009', 'Photographer', 'creative', 'bachelors', 'Declining', 'Medium', 0.55, 'creative', ['Gamma-Nu Male', 'Sigma-Lambda Male']),
@@ -245,7 +248,7 @@ const CREATIVE = [
   career('creative_013', 'Industrial Designer', 'creative', 'bachelors', 'Stable', 'Medium', 0.58, 'creative', ['Gamma Male']),
   career('creative_014', 'Fashion Designer', 'creative', 'bachelors', 'Stable', 'Medium', 0.52, 'creative', ['Gamma-Nu Male']),
   career('creative_015', 'Interior Designer', 'creative', 'bachelors', 'Stable', 'Medium-High', 0.62, 'creative', ['Gamma-Nu Male']),
-  career('creative_016', 'Technical Writer', 'creative', 'bachelors', 'Stable', 'Medium', 0.5, 'creative', ['Gamma Male']),
+  career('creative_016', 'Technical Writer', 'creative', 'bachelors', 'Moderate', 'Medium-Low', 0.46, 'creative', ['Gamma Male']),
   career('creative_017', 'Grant Writer', 'creative', 'bachelors', 'Stable', 'Medium-High', 0.65, 'creative', ['Beta Male']),
   career('creative_018', 'Podcast Producer', 'creative', 'bachelors', 'Moderate', 'Medium-High', 0.66, 'creative', ['Sigma Male']),
   career('creative_019', 'Brand Strategist', 'creative', 'bachelors', 'Moderate', 'High', 0.7, 'business', ['Gamma-Nu Male']),
@@ -253,7 +256,7 @@ const CREATIVE = [
   career('creative_021', 'Museum Curator', 'creative', 'masters', 'Stable', 'High', 0.75, 'creative', ['Beta-Iota Male']),
   career('creative_022', 'Music Producer', 'creative', 'bachelors', 'Stable', 'Medium-High', 0.65, 'creative', ['Gamma-Nu Male', 'Sigma-Lambda Male']),
   career('creative_023', 'Set Designer', 'creative', 'bachelors', 'Stable', 'High', 0.7, 'creative', ['Sigma-Lambda Male']),
-  career('creative_024', 'Digital Marketer', 'creative', 'bachelors', 'Moderate', 'Medium', 0.54, 'sales', ['Gamma-Pi Male']),
+  career('creative_024', 'Digital Marketer', 'creative', 'bachelors', 'Moderate', 'Medium-Low', 0.48, 'sales', ['Gamma-Pi Male']),
   career('creative_025', 'Influencer/Content Creator', 'creative', 'bachelors', 'Moderate', 'Medium', 0.58, 'creative', ['Sigma Male'])
 ];
 
@@ -261,8 +264,8 @@ const CREATIVE = [
 const LEGAL = [
   career('legal_001', 'Corporate Lawyer', 'legal', 'jd', 'Stable', 'Medium-High', 0.68, 'legal', ['Alpha Male']),
   career('legal_002', 'Public Defender', 'legal', 'jd', 'Stable', 'High', 0.75, 'legal', ['Alpha Male']),
-  career('legal_003', 'Paralegal', 'legal', 'associates', 'Declining', 'Low', 0.35, 'legal', ['Beta Male']),
-  career('legal_004', 'Legal Technology Specialist', 'legal', 'bachelors', 'Moderate', 'Medium', 0.6, 'tech', ['Gamma Male']),
+  career('legal_003', 'Paralegal', 'legal', 'associates', 'Declining', 'Low', 0.3, 'legal', ['Beta Male']),
+  career('legal_004', 'Legal Technology Specialist', 'legal', 'bachelors', 'High', 'Medium-Low', 0.52, 'tech', ['Gamma Male']),
   career('legal_005', 'Compliance Attorney', 'legal', 'jd', 'Stable', 'Medium-High', 0.68, 'legal', ['Alpha-Rho Male']),
   career('legal_006', 'Patent Attorney', 'legal', 'jd', 'Stable', 'Medium-High', 0.7, 'legal', ['Gamma Male']),
   career('legal_007', 'Immigration Lawyer', 'legal', 'jd', 'Stable', 'High', 0.72, 'legal', ['Alpha-Rho Male']),
@@ -286,7 +289,7 @@ const TRADES = [
   career('trades_003', 'HVAC Technician', 'trades', 'certificate', 'Moderate', 'High', 0.75, 'trades', ['Delta Male']),
   career('trades_004', 'Carpenter', 'trades', 'certificate', 'Stable', 'High', 0.72, 'trades', ['Delta Male']),
   career('trades_005', 'Welder', 'trades', 'certificate', 'Stable', 'Medium-High', 0.68, 'trades', ['Delta Male']),
-  career('trades_006', 'Auto Mechanic', 'trades', 'certificate', 'Declining', 'Medium', 0.58, 'trades', ['Delta Male']),
+  career('trades_006', 'Auto Mechanic', 'trades', 'certificate', 'Stable', 'Medium-High', 0.64, 'trades', ['Delta Male']),
   career('trades_007', 'Diesel Mechanic', 'trades', 'certificate', 'Stable', 'Medium-High', 0.65, 'trades', ['Delta Male']),
   career('trades_008', 'Aircraft Mechanic', 'trades', 'certificate', 'Stable', 'High', 0.75, 'trades', ['Delta Male']),
   career('trades_009', 'Wind Turbine Technician', 'trades', 'certificate', 'High', 'Very High', 0.88, 'trades', ['Delta Male']),
@@ -333,9 +336,9 @@ const SALES = [
   career('sales_007', 'Customer Success Manager', 'sales', 'bachelors', 'Moderate', 'Medium-High', 0.68, 'sales', ['Beta Male']),
   career('sales_008', 'Business Development Rep', 'sales', 'bachelors', 'Moderate', 'Medium-High', 0.65, 'sales', ['Gamma-Pi Male']),
   career('sales_009', 'Sales Trainer', 'sales', 'bachelors', 'Stable', 'Medium-High', 0.68, 'education', ['Alpha Male']),
-  career('sales_010', 'Inside Sales Rep', 'sales', 'none', 'Declining', 'Low', 0.38, 'sales', ['Omega Male']),
+  career('sales_010', 'Inside Sales Rep', 'sales', 'none', 'Declining', 'Low', 0.34, 'sales', ['Omega Male']),
   career('sales_011', 'Territory Manager', 'sales', 'bachelors', 'Stable', 'Medium-High', 0.65, 'sales', ['Gamma-Pi Male']),
-  career('sales_012', 'E-commerce Manager', 'sales', 'bachelors', 'Moderate', 'Medium', 0.58, 'business', ['Gamma Male'])
+  career('sales_012', 'E-commerce Manager', 'sales', 'bachelors', 'Moderate', 'Medium-Low', 0.5, 'business', ['Gamma Male'])
 ];
 
 // Agriculture & Environmental (10)
