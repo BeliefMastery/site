@@ -54,9 +54,6 @@ export default function HomePage() {
         aria-labelledby="home-hero-thesis"
       >
         <div className="v3-home-hero__frame">
-          <p className="v3-home-hero__kicker" aria-hidden="true">
-            <span className="v3-home-hero__kicker-inner">Home</span>
-          </p>
           <div className="v3-hero__inner">
             <h1 id="home-hero-thesis" className="v3-hero-title v3-hero-title--single">
               {homeHero.thesis}
