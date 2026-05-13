@@ -34,8 +34,12 @@ html.theme-earth {
   --v3-hero-tint-b: rgba(255, 252, 248, 0.5);
   --v3-tools-tint-a: rgba(107, 125, 95, 0.12);
   --v3-books-tint-a: rgba(156, 92, 64, 0.1);
-  /* Solid home bands: slight transparency so backdrop reads like gradient bands */
-  --v3-band-solid-bg: color-mix(in srgb, #fffefb 88%, transparent);
+  /* Solid bands: warmer than pure white, pulled toward page bg, more translucent vs gradients */
+  --v3-band-solid-bg: color-mix(
+    in srgb,
+    color-mix(in srgb, #fff6ec 64%, var(--v3-bg) 36%) 62%,
+    transparent
+  );
 }
 
 html.theme-cosmic {
@@ -83,8 +87,12 @@ html.theme-light {
   --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent) 5%, var(--v3-bg));
   --v3-tools-tint-a: rgba(37, 99, 235, 0.1);
   --v3-books-tint-a: rgba(14, 116, 144, 0.08);
-  /* Solid home bands (light): match gradient strips — faint wash over page bg */
-  --v3-band-solid-bg: color-mix(in srgb, rgb(255 255 255) 86%, transparent);
+  /* Solid bands: cool paper (not pure white), blended with page bg, more translucent */
+  --v3-band-solid-bg: color-mix(
+    in srgb,
+    color-mix(in srgb, #f6f8fc 82%, var(--v3-bg) 18%) 60%,
+    transparent
+  );
 }
 
 html.theme-forge {

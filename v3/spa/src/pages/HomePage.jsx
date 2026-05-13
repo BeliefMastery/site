@@ -49,17 +49,25 @@ const bridgeCtaClass = (variant) => {
 export default function HomePage() {
   return (
     <div className="stack v3-home">
-      <section className="surface v3-hero--statement v3-section-band--solid" aria-labelledby="home-hero-thesis">
-        <div className="v3-hero__inner">
-          <h1 id="home-hero-thesis" className="v3-hero-title v3-hero-title--single">
-            {homeHero.thesis}
-          </h1>
-          <div className="v3-hero__subtitle-stack">
-            <h2 className="v3-hero__subtitle v3-hero__subtitle--works">{homeHero.subtitleWorks}</h2>
-            <h3 className="v3-hero__subtitle v3-hero__subtitle--pivot">{homeHero.subtitlePivot}</h3>
-            <h3 className="v3-hero__subtitle v3-hero__subtitle--promise">
-              <em>{homeHero.subtitlePromise}</em>
-            </h3>
+      <section
+        className="surface v3-home-hero v3-hero--statement v3-section-band--solid"
+        aria-labelledby="home-hero-thesis"
+      >
+        <div className="v3-home-hero__frame">
+          <p className="v3-home-hero__kicker" aria-hidden="true">
+            <span className="v3-home-hero__kicker-inner">Home</span>
+          </p>
+          <div className="v3-hero__inner">
+            <h1 id="home-hero-thesis" className="v3-hero-title v3-hero-title--single">
+              {homeHero.thesis}
+            </h1>
+            <div className="v3-hero__subtitle-stack">
+              <h2 className="v3-hero__subtitle v3-hero__subtitle--works">{homeHero.subtitleWorks}</h2>
+              <h3 className="v3-hero__subtitle v3-hero__subtitle--pivot">{homeHero.subtitlePivot}</h3>
+              <h3 className="v3-hero__subtitle v3-hero__subtitle--promise">
+                <em>{homeHero.subtitlePromise}</em>
+              </h3>
+            </div>
           </div>
         </div>
       </section>

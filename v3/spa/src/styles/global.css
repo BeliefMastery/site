@@ -184,6 +184,57 @@ a {
     );
 }
 
+/* Section titles on busy gradient bands: readable “chip” + full heading color */
+.surface.v3-section-band--gradient .v3-section-title {
+  color: var(--v3-heading);
+  display: inline-block;
+  padding: 0.4rem 1.05rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--v3-surface) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--v3-surface-border) 88%, transparent);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--v3-bg) 45%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--v3-heading) 6%, transparent);
+  backdrop-filter: saturate(140%) blur(10px);
+}
+
+.surface.v3-section-band--gradient .v3-section-title a {
+  color: inherit;
+}
+
+.surface.v3-section-band--gradient .v3-section-title a:hover {
+  color: var(--v3-accent-strong);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .surface.v3-section-band--gradient .v3-section-title {
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--v3-surface) 94%, transparent);
+  }
+}
+
+.surface.v3-section-band--gradient .v3-testimonials__hint {
+  color: var(--v3-text);
+  opacity: 0.9;
+}
+
+.surface.v3-section-band--gradient .v3-tool-category__eyebrow {
+  color: color-mix(in srgb, var(--v3-text) 78%, var(--v3-muted));
+}
+
+.surface.v3-section-band--gradient .v3-tool-category__title {
+  color: var(--v3-heading);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--v3-surface) 55%, transparent);
+}
+
+.surface.v3-section-band--gradient .v3-tool-category__lede {
+  color: color-mix(in srgb, var(--v3-text) 55%, var(--v3-muted));
+}
+
+article.surface.progress-card.v3-section-band--gradient > .v3-muted {
+  color: color-mix(in srgb, var(--v3-text) 88%, var(--v3-muted));
+}
+
 .v3-section-band--gradient::before {
   content: "";
   position: absolute;
@@ -212,13 +263,17 @@ a {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: clamp(1.35rem, 3.6vw, 2.35rem) var(--v3-space-4);
+  /* Horizontal buffer so long hero lines can use nearly full row without touching edges */
+  --v3-hero-inline-buffer: clamp(1rem, 4vw, 2rem);
+  padding: clamp(1.35rem, 3.6vw, 2.35rem) var(--v3-hero-inline-buffer);
 }
 
 .v3-hero__inner {
   position: relative;
   z-index: 1;
-  max-width: min(40rem, 100%);
+  width: 100%;
+  /* ~70ch fits longest subtitle line (serif) on one row at current sizes; never exceed viewport minus buffer */
+  max-width: min(70ch, calc(100vw - 2 * var(--v3-hero-inline-buffer)));
   margin: 0 auto;
 }
 
@@ -234,7 +289,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  max-width: min(34rem, 100%);
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -268,6 +323,57 @@ a {
   font-style: italic;
   font-weight: 500;
   color: var(--v3-heading-soft);
+}
+
+/* Home index only: unmistakable “portal” frame + HOME kicker */
+.v3-home-hero.v3-hero--statement {
+  isolation: isolate;
+  border-radius: calc(var(--v3-radius) + 8px);
+  border: 1px solid color-mix(in srgb, var(--v3-accent) 28%, var(--v3-surface-border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--v3-accent) 11%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--v3-heading) 9%, transparent),
+    0 20px 48px color-mix(in srgb, var(--v3-bg) 42%, transparent);
+}
+
+.v3-home-hero.v3-hero--statement::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background: radial-gradient(
+    ellipse 110% 75% at 50% -5%,
+    color-mix(in srgb, var(--v3-accent) 18%, transparent),
+    transparent 58%
+  );
+}
+
+.v3-home-hero__frame {
+  position: relative;
+  z-index: 1;
+}
+
+.v3-home-hero__kicker {
+  margin: 0 0 0.75rem;
+  display: flex;
+  justify-content: center;
+}
+
+.v3-home-hero__kicker-inner {
+  display: inline-block;
+  font-family: var(--v3-font-body);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v3-accent-strong);
+  padding: 0.32rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--v3-accent) 40%, var(--v3-surface-border));
+  background: color-mix(in srgb, var(--v3-accent) 10%, var(--v3-surface));
 }
 
 .v3-bridge-list {
