@@ -5,7 +5,7 @@ import { toolMeta } from "@/data/toolsCatalog";
 export const SITE_ORIGIN = "https://beliefmastery.github.io";
 
 /** Vite `base` for the SPA; hash routes follow `#/…`. */
-export const V3_APP_BASE = `${SITE_ORIGIN}/site/v3/app`;
+export const V3_APP_BASE = `${SITE_ORIGIN}/site`;
 
 export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/site/images/BM-cover.jpg`;
 

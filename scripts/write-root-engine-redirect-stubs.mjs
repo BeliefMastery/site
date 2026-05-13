@@ -22,12 +22,12 @@ for (const [file, id, title] of engines) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>${title} — redirect</title>
-  <meta http-equiv="refresh" content="0; url=/site/v3/app/#/engines/${id}" />
-  <link rel="canonical" href="https://beliefmastery.github.io/site/v3/app/#/engines/${id}" />
-  <script>window.location.replace("/site/v3/app/#/engines/${id}");</script>
+  <meta http-equiv="refresh" content="0; url=/site/#/engines/${id}" />
+  <link rel="canonical" href="https://beliefmastery.github.io/site/#/engines/${id}" />
+  <script>window.location.replace("/site/#/engines/${id}");</script>
 </head>
 <body>
-  <p>Redirecting to <strong>${title}</strong>… <a href="/site/v3/app/#/engines/${id}">continue</a></p>
+  <p>Redirecting to <strong>${title}</strong>… <a href="/site/#/engines/${id}">continue</a></p>
   <p><small>Legacy HTML preserved at <a href="archive/legacy-root-html/${legacy}">archive/legacy-root-html/${legacy}</a></small></p>
 </body>
 </html>

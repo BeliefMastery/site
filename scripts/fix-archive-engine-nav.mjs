@@ -20,13 +20,13 @@ const engineMap = [
 for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".html"))) {
   const fp = path.join(dir, f);
   let s = fs.readFileSync(fp, "utf8");
-  s = s.replace(/href="index\.html"/g, 'href="/site/v3/app/#/"');
-  s = s.replace(/href="books\.html([^"]*)"/g, 'href="/site/v3/app/#/books$1"');
-  s = s.replace(/href="tools\.html([^"]*)"/g, 'href="/site/v3/app/#/tools$1"');
+  s = s.replace(/href="index\.html"/g, 'href="/site/#/"');
+  s = s.replace(/href="books\.html([^"]*)"/g, 'href="/site/#/books$1"');
+  s = s.replace(/href="tools\.html([^"]*)"/g, 'href="/site/#/tools$1"');
   s = s.replace(/href="about-the-author\.html"/g, 'href="/site/v3/about-the-author.html"');
   for (const [file, id] of engineMap) {
     const re = new RegExp(`href="${file.replace(".", "\\.")}"`, "g");
-    s = s.replace(re, `href="/site/v3/app/#/engines/${id}"`);
+    s = s.replace(re, `href="/site/#/engines/${id}"`);
   }
   fs.writeFileSync(fp, s);
 }

@@ -202,7 +202,7 @@ export class DiagnosisEngine {
     try {
       // Load DSM-5 categories and questions data.
       // Use import() from this file (not shared/data-loader's import.meta) so Vite's bundle resolves
-      // dsm5-data/ next to diagnosis-engine.js; the data-loader path breaks in v3/app/assets chunks.
+      // dsm5-data/ next to diagnosis-engine.js; the data-loader path breaks in /site/assets/ Vite chunks.
       const dsm5Module = await import('./dsm5-data/index.js');
       DSM5_CATEGORIES = dsm5Module.DSM5_CATEGORIES;
       QUESTION_TEMPLATES = dsm5Module.QUESTION_TEMPLATES;

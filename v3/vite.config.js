@@ -6,7 +6,7 @@ const repoRoot = fileURLToPath(new URL("../", import.meta.url));
 
 export default defineConfig({
   root: fileURLToPath(new URL("./spa", import.meta.url)),
-  base: "/site/v3/app/",
+  base: "/site/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -20,7 +20,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: fileURLToPath(new URL("./app", import.meta.url)),
-    emptyOutDir: true,
+    outDir: repoRoot,
+    emptyOutDir: false,
   },
 });

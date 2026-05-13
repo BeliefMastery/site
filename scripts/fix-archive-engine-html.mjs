@@ -9,7 +9,7 @@ for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".html"))) {
   let s = fs.readFileSync(fp, "utf8");
   s = s.replace(
     /href="\.\.\/\.\.\/index\.html#tool-disclaimers"/g,
-    'href="/site/v3/app/#/"',
+    'href="/site/#/"',
   );
   const og = `${base}${f}`;
   s = s.replace(

@@ -2,11 +2,11 @@
 
 ## Live Site
 
-**Canonical experience:** [https://beliefmastery.github.io/site/v3/app/](https://beliefmastery.github.io/site/v3/app/) (React SPA). Repository root [`index.html`](index.html) redirects visitors there.
+**Canonical experience:** [https://beliefmastery.github.io/site/](https://beliefmastery.github.io/site/) (React SPA at repository root). Old URLs under `/site/v3/app/` redirect to `/site/` via [`v3/app/index.html`](v3/app/index.html).
 
 **Legacy HTML:** Engine pages previously under `v3/*.html` now live in [`archive/v3-engines/`](archive/v3-engines/) and are embedded from in-app routes (`#/engines/...`). The former large root home page is at [`archive/legacy-root-html/index-full-legacy.html`](archive/legacy-root-html/index-full-legacy.html).
 
-**https://beliefmastery.github.io/site/** — root URL (redirects into the SPA).
+**https://beliefmastery.github.io/site/** — root URL (serves the SPA: `index.html` + `assets/`).
 
 ### Portfolio / LinkedIn
 For a concise, copy-ready summary of site function and assessment engines (written for featured-project fields, **max 2000 characters**), see [`docs/SHOWCASE_DESCRIPTION.md`](docs/SHOWCASE_DESCRIPTION.md).

@@ -1,6 +1,6 @@
 # UI V3 Engine Migration Matrix
 
-Static engine HTML is published at **`/site/archive/v3-engines/*.html`** (archived from `v3/`). In-app routes use the React SPA (`/site/v3/app/#/engines/:id`) with an iframe adapter until a row is ported to **`nativeEngineViews`** in [`v3/spa/src/routes.js`](../v3/spa/src/routes.js) (see [`EngineRoutePage.jsx`](../v3/spa/src/pages/EngineRoutePage.jsx)).
+Static engine HTML is published at **`/site/archive/v3-engines/*.html`** (archived from `v3/`). In-app routes use the React SPA (`/site/#/engines/:id`) with an iframe adapter until a row is ported to **`nativeEngineViews`** in [`v3/spa/src/routes.js`](../v3/spa/src/routes.js) (see [`EngineRoutePage.jsx`](../v3/spa/src/pages/EngineRoutePage.jsx)).
 
 **Suggested port order** (same as table): Pathology → Life Domain Review → Dependency Loop → Sovereignty Spectrum → Logos Structure → Manipulation → Cognitive Resistance → Channels → Character Sheet → Entities → Aptitude.
 
