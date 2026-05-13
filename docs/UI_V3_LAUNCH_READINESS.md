@@ -9,7 +9,7 @@
 
 ## Rollback
 - Keep legacy static pages unchanged at root.
-- Deploy V3 under `/site/v3/` until final cutover.
+- Deploy V3 SPA at `/site/v3/app/` as the canonical site; static engine HTML is served from `/site/archive/v3-engines/` (iframe embed).
 - If release issue occurs, disable V3 entry links and retain legacy routing.
 
 ## Post-launch hardening

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Favicon & app icons (Belief Mastery mark) -->
+  <link rel="icon" href="../../images/icoBM32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../../images/icoBM16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="../../images/icoBM48.png" sizes="48x48" type="image/png">
+  <link rel="icon" href="../../images/icoBM192.png" sizes="192x192" type="image/png">
+  <link rel="icon" href="../../images/icoBM512.png" sizes="512x512" type="image/png">
+  <link rel="apple-touch-icon" href="../../images/icoBM180.png" sizes="180x180">
+  <link rel="manifest" href="../../site.webmanifest">
+  <meta name="theme-color" content="#050a15">
+    <meta name="author" content="Warwick Marshall">
+  <meta name="keywords" content="Warwick Marshall, Golden Bay, New Zealand, Belief Mastery, Sovereign of Mind">
+  <meta name="geo.placename" content="Golden Bay, New Zealand">
+  <meta name="geo.region" content="NZ">
+<title>👁️ Will Anomaly Mapping</title>
+  <meta name="description" content="Will anomaly mapping integrating pathology, nodes/channels, and root-need contracts—structured sovereignty restoration guide.">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/archive/v3-engines/entities.html">
+  <meta property="og:title" content="👁️ Will Anomaly Mapping">
+  <meta property="og:description" content="Will anomaly mapping integrating pathology, nodes/channels, and root-need contracts—structured sovereignty restoration guide.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/entities-cover.jpg">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/archive/v3-engines/entities.html">
+  <meta name="twitter:title" content="👁️ Will Anomaly Mapping">
+  <meta name="twitter:description" content="Will anomaly mapping integrating pathology, nodes/channels, and root-need contracts—structured sovereignty restoration guide.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/entities-cover.jpg">
+
+  <link rel="stylesheet" href="../../fonts/fonts.css" id="bm-local-fonts">
+  <link rel="stylesheet" href="../../style.css" id="bm-theme-base">
+  <script src="../../shared/theme-prefs.js"></script>
+  <link rel="stylesheet" href="../../shared/background.css">
+  <link rel="stylesheet" href="../../shared/embed-mode.css">
+  <script>(function(){try{if(new URLSearchParams(location.search).get('bm_embed')==='1')document.documentElement.classList.add('bm-embed');}catch(e){}})();</script>
+
+  <link rel="modulepreload" href="../../entities-engine.js">
+  <link rel="modulepreload" href="../../shared/data-loader.js">
+  <link rel="modulepreload" href="../../shared/debug-reporter.js">
+  <link rel="modulepreload" href="../../shared/utils.js">
+  <link rel="modulepreload" href="../../shared/performance-monitor.js">
+</head>
+<body data-bm-swipe-nav="true" data-bm-flat-hover="true">
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="/site/v3/app/#/">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="/site/v3/app/#/books" class="dropdown-toggle">Books <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books">All Books</a></li>
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="/site/v3/app/#/books#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="/site/v3/app/#/tools" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none" class="dropdown-group group-neutral"><a role="menuitem" href="/site/v3/app/#/tools">All Tools</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="/site/v3/app/#/engines/diagnosis">Pathology Assessment</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="/site/v3/app/#/engines/coaching">Life Domain Review</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="/site/v3/app/#/engines/needs-dependency">Dependency Loop Tracer</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="/site/v3/app/#/engines/sovereignty-spectrum">Your Sovereignty Paradigm</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="/site/v3/app/#/engines/paradigm">Logos Structure</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="/site/v3/app/#/engines/manipulation">Manipulation Defense Decoder</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="/site/v3/app/#/engines/sovereignty">Cognitive Resistance Capacity</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="/site/v3/app/#/engines/channels">Channel Flow Diagnostics</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="/site/v3/app/#/engines/character-sheet">Astrological Character Sheet</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="/site/v3/app/#/engines/entities">Will Anomaly Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="/site/v3/app/#/engines/outlier-aptitude">Aptitude Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="/site/v3/about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="channels-container">
+      <section class="intro-section" id="introSection">
+        <h2 class="section-title-btn">Will Anomaly Mapping</h2>
+        <div class="hero-image"><img src="../../images/entities-cover.jpg" alt="Will Anomaly Mapping" class="hero-img" width="378" height="605">
+      </div>
+        <p class="lead-text">
+          Tiered will-anomaly matrix from pathology, channels, and needs inputs—structured inquiry, not metaphysical proof.
+        </p>
+
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
+        </div>
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <p>Map distortions of will using pathology signals, node/channel stress points, and core unmet needs. Clarify tier, contract, and reclamation strategy.</p>
+            <p>This assessment is derived from the Entities chapter and provides a structured lens for differentiating internal distortions from contracted or entrenched foreign will patterns.</p>
+          </div>
+          <div class="content-section">
+            <div class="ack-box">
+              <p><strong>Safety Note:</strong> This is a sovereignty-aligned inquiry tool. It is not a clinical diagnosis, nor a replacement for professional support.</p>
+            </div>
+            <p>
+              <strong>Framing Note:</strong> This is a secular-aligned paradigm that uses spiritual language as a functional framing while leaving space for literal potentiality. The goal is structural clarity of will, not metaphysical enforcement.
+            </p>
+            <p>
+              <strong>Decision Matrix:</strong> The tier model is a comparative lens for sorting experiences of volition—distinguishing contorted self, contracted overlay, or entrenched override by felt authorship and behavioral signature.
+            </p>
+            <div class="ack-box">
+              <p>
+                <strong>Orientation Conviction:</strong> “Only spirit that is of me may reside within me.”
+              </p>
+            </div>
+            <p class="feature-list-header">This engine helps you:</p>
+            <ul class="feature-list">
+              <li>Integrate results from Pathology, Channels, and Dependency Loop Tracer</li>
+              <li>Clarify will anomaly tier and quality of authorship displacement</li>
+              <li>Identify taste skew consequences and likely contract themes</li>
+              <li>Generate an actionable reclamation strategy</li>
+            </ul>
+            <p class="feature-list-header">How to use this responsibly:</p>
+            <ul class="feature-list">
+              <li>Use the language that best fits your worldview (clinical, psychological, spiritual, or symbolic).</li>
+              <li>Prioritize stabilization over interpretation when in acute distress.</li>
+              <li>Cross-check conclusions against observable patterns, not only internal sensation.</li>
+            </ul>
+            <p class="feature-list-header">Complementary modalities:</p>
+            <ul class="feature-list">
+              <li><strong>IFS:</strong> Highly compatible with Tier-1 work (sub-personality integration).</li>
+              <li><strong>EMDR:</strong> Relevant across tiers for trauma processing and stabilization.</li>
+            </ul>
+          </div>
+          <p class="form-help"><a href="/site/v3/app/#/">Disclaimers &amp; notices for this tool</a> are listed on the home page.</p>
+        </div>
+      </section>
+
+      <section class="content-section" id="intakeSection">
+        <h3>Input Prior Results</h3>
+        <p class="form-help">Begin with the key outputs from Pathology, Channels, and Dependency Loop Tracer.</p>
+        <div class="form-group">
+          <label for="pathologyCategory">Pathology Category</label>
+          <select id="pathologyCategory">
+            <option value="">Select a pathology category</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="pathologyDisorder">Pathology Disorder</label>
+          <select id="pathologyDisorder">
+            <option value="">Select a disorder</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="nodeSelect">Primary Node</label>
+          <select id="nodeSelect">
+            <option value="">Select a primary node</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="channelSelect">Primary Channel</label>
+          <select id="channelSelect">
+            <option value="">Select a channel</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rootNeedSelect">Root Need (Causal Chain)</label>
+          <select id="rootNeedSelect">
+            <option value="">Select a root need</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="content-section" id="actionButtonsSection">
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="generateSampleReport">Generate Sample</button>
+          <button class="btn btn-primary" id="startAssessment">Begin Entities Assessment</button>
+        </div>
+      </section>
+
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="questionCount"></span>
+        </div>
+        <div id="questionContainer"></div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion">Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div class="abandon-link">
+          <button type="button" class="btn btn-secondary" id="abandonAssessment">Abandon / Restart</button>
+        </div>
+      </section>
+
+      <section class="results-section" id="resultsSection">
+        <h2>Entities Assessment Results</h2>
+        <div id="resultsContainer"></div>
+        <div class="export-section">
+          <p class="tool-lead tool-lead--flush">Download a single MHTML snapshot of the full report (works offline in Chromium-based browsers).</p>
+          <div class="action-buttons">
+            <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (MHTML)</button>
+            <button type="button" class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="../../shared/background.js"></script>
+  <script type="module" src="../../shared/swipe-nav.js"></script>
+  <script>
+    function setupToggle(toggleId, panelId) {
+      const toggle = document.getElementById(toggleId);
+      const panel = document.getElementById(panelId);
+      if (!toggle || !panel) return;
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('expanded');
+        panel.classList.toggle('expanded');
+      });
+    }
+
+    setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+  </script>
+  <script type="module" src="../../entities-engine.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

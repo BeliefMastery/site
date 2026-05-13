@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Favicon & app icons (Belief Mastery mark) -->
+  <link rel="icon" href="./images/icoBM32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="./images/icoBM16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="./images/icoBM48.png" sizes="48x48" type="image/png">
+  <link rel="icon" href="./images/icoBM192.png" sizes="192x192" type="image/png">
+  <link rel="icon" href="./images/icoBM512.png" sizes="512x512" type="image/png">
+  <link rel="apple-touch-icon" href="./images/icoBM180.png" sizes="180x180">
+  <link rel="manifest" href="./site.webmanifest">
+  <meta name="theme-color" content="#050a15">
+    <meta name="author" content="Warwick Marshall">
+  <meta name="keywords" content="Warwick Marshall, Golden Bay, New Zealand, Belief Mastery, Sovereign of Mind">
+  <meta name="geo.placename" content="Golden Bay, New Zealand">
+  <meta name="geo.region" content="NZ">
+<title>🛡️ Cognitive Resistance Capacity</title>
+  <meta name="description" content="Cognitive resistance capacity scan for sovereignty and AI dependency risk—rapid resilience audit.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beliefmastery.github.io/site/sovereignty.html">
+  <meta property="og:title" content="🛡️ Cognitive Resistance Capacity">
+  <meta property="og:description" content="Cognitive resistance capacity scan for sovereignty and AI dependency risk—rapid resilience audit.">
+  <meta property="og:image" content="https://beliefmastery.github.io/site/images/vulnerability-vector-cover.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://beliefmastery.github.io/site/sovereignty.html">
+  <meta name="twitter:title" content="🛡️ Cognitive Resistance Capacity">
+  <meta name="twitter:description" content="Cognitive resistance capacity scan for sovereignty and AI dependency risk—rapid resilience audit.">
+  <meta name="twitter:image" content="https://beliefmastery.github.io/site/images/vulnerability-vector-cover.jpg">
+  
+  <!-- CRITICAL: Universal styles MUST load first -->
+  <link rel="stylesheet" href="fonts/fonts.css" id="bm-local-fonts">
+  <link rel="stylesheet" href="style.css" id="bm-theme-base">
+  <script src="./shared/theme-prefs.js"></script>
+  <link rel="stylesheet" href="./shared/background.css">
+  
+  <!-- Performance: Preload critical resources -->
+  <link rel="modulepreload" href="./sovereignty-engine.js">
+  <link rel="modulepreload" href="./shared/data-loader.js">
+  <link rel="modulepreload" href="./shared/debug-reporter.js">
+  <link rel="modulepreload" href="./shared/utils.js">
+  <link rel="modulepreload" href="./shared/performance-monitor.js">
+
+</head>
+<body data-bm-flat-hover="true">
+
+  <!-- Cosmic background (from universal system) -->
+  <div class="bg-gradient"></div>
+  <canvas id="nebula-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="hamburger" aria-expanded="false" aria-controls="top-nav" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-list" id="top-nav" role="menubar">
+        <li role="none"><a role="menuitem" href="index.html">Home</a></li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="books.html" class="dropdown-toggle">Books <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a role="menuitem" href="books.html">All Books</a></li>
+            <li role="none"><a role="menuitem" href="books.html#belief-mastery">Belief Mastery</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-of-mind">Sovereign of Mind</a></li>
+            <li role="none"><a role="menuitem" href="books.html#distortion-codex">Distortion Codex</a></li>
+            <li role="none"><a role="menuitem" href="books.html#unspeakables-grimoire">The Unspeakables Grimoire</a></li>
+            <li role="none"><a role="menuitem" href="books.html#sovereign-integral-devotionalism">Sovereign Integral Devotionalism</a></li>
+            <li role="none"><a role="menuitem" href="books.html#peer-counseling-manual">Peer-Counseling Manual</a></li>
+          </ul>
+        </li>
+        <li role="none" class="nav-dropdown">
+          <a role="menuitem" href="tools.html" class="dropdown-toggle active">Tools <span>&#9660;</span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none" class="dropdown-group group-neutral"><a role="menuitem" href="tools.html">All Tools</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="diagnosis.html">Pathology Assessment</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="coaching.html">Life Domain Review</a></li>
+            <li role="none" class="dropdown-group group-psych"><a role="menuitem" href="needs-dependency.html">Dependency Loop Tracer</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a></li>
+            <li role="none" class="dropdown-group group-philosophical"><a role="menuitem" href="paradigm.html">Logos Structure</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="manipulation.html">Manipulation Defense Decoder</a></li>
+            <li role="none" class="dropdown-group group-defensive"><a role="menuitem" href="sovereignty.html">Cognitive Resistance Capacity</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="channels.html">Channel Flow Diagnostics</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="character-sheet.html">Astrological Character Sheet</a></li>
+            <li role="none" class="dropdown-group group-esoteric"><a role="menuitem" href="entities.html">Will Anomaly Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="outlier-aptitude.html">Aptitude Mapping</a></li>
+            <li role="none" class="dropdown-group group-tech"><a role="menuitem" href="https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition" target="_blank">Unlocked GPT</a></li>
+          </ul>
+        </li>
+        <li role="none"><a role="menuitem" href="about-the-author.html">About the Author</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Universal Tool Container (matches diagnosis.html structure) -->
+    <div class="sovereignty-container">
+      
+      <!-- Hero Image Section -->
+      <div class="hero-image">
+        <img src="./images/vulnerability-vector-cover.jpg" alt="Cognitive Resistance Capacity" class="hero-img" width="378" height="605">
+      </div>
+      
+      <!-- Intro Section -->
+      <section class="intro-section" id="introSection">
+        <h2 class="section-title-btn">Cognitive Resistance Capacity</h2>
+        
+        <p class="lead-text">
+          Seven-layer sovereignty and resistance profile—cognitive through identity, client-side only.
+        </p>
+
+        <!-- Extended Explanation Toggle -->
+        <div class="extended-explanation-toggle" id="extendedExplanationToggle">
+          <div class="extended-explanation-toggle-text">
+            <span>Extended Explanation</span>
+          </div>
+        </div>
+
+        <div class="extended-explanation-panel" id="extendedExplanationPanel">
+          <div class="content-section">
+            <p><strong>What is your capacity for full-spectrum sovereignty?</strong> Are you building resilience across all seven layers—cognitive, economic, material, embodied, social, AI-fluent, and identity?</p>
+            <p>This assessment measures your sovereignty capacity across seven critical layers—from cognitive sovereignty (non-negotiable foundation) through economic independence, material competence, embodied strength, social architecture, AI fluency, and identity integrity. The engine analyzes your patterns to identify strengths, gaps, and vulnerability vectors in a world where traditional career tracks are fragile and algorithmic pressure is rising.</p>
+          </div>
+          <div class="content-section">
+            <!-- Hook Quote -->
+            <div class="hook-quote">
+              "The sovereign split is underway. Let's use the 80/20 rule: 80% will queue up to be Borgified - liberated from the hardship of independent thought. Of the remaining 20%, the sovereign inclined - 80% of them will choose comfort over the hardship just to get the economic relief that comes from being optimized. That leaves only 4%, almost all of which will have to be religious about their sovereignty in order to resist the ever more seductive nature of the machine. If you are reading this then you are part of the 20% sovereign inclined... but that doesn't mean you can resist the compromise for comfort."
+            </div>
+            
+            <p><strong>The 7-Layer Sovereignty Framework</strong></p>
+            <p>Developed for a post-job world where traditional career tracks are fragile, algorithmic pressure is rising, and supply chains can hiccup. Each layer builds resilience; gaps create vulnerability.</p>
+            
+            <ul class="feature-list">
+              <li><strong>Layer 1 — Cognitive sovereignty (non-negotiable):</strong> Formal reasoning, manipulation detection, narrative vs. facts, independent learning, critical AI use. Outcome: Trusts own judgment under uncertainty. Prevents becoming psychologically decorative.</li>
+              <li><strong>Layer 2 — Economic independence:</strong> Portable value creation—digital leverage, remote capability, financial literacy, small-scale entrepreneurship, negotiation. Outcome: Income optionality rather than employment dependency.</li>
+              <li><strong>Layer 3 — Material competence:</strong> Supply chain resilience—cooking from raw ingredients, basic repair, first aid, outdoor navigation, logistics. Outcome: Never panics when systems hiccup. Most modern adults fail here.</li>
+              <li><strong>Layer 4 — Embodied strength:</strong> Strength, endurance, coordination, self-defense or martial discipline, somatic regulation. Outcome: Lower victimization risk, higher psychological stability.</li>
+              <li><strong>Layer 5 — Social architecture:</strong> Group facilitation, conflict resolution, reading character, boundary setting, reciprocal alliances. Outcome: Can form functional micro-communities. That's future wealth.</li>
+              <li><strong>Layer 6 — AI fluency (not dependence):</strong> AI as tractor (multiplies labor) not oracle (replaces thinking). Understands model failure, verification, automation pipelines. Outcome: 10× productivity without cognitive atrophy.</li>
+              <li><strong>Layer 7 — Identity integrity:</strong> Self-authorship, long attention span, solitude tolerance, values clarity, purpose not tied to external validation. Outcome: Low susceptibility to digital hive pressure.</li>
+            </ul>
+            
+            <p><strong>What you'll discover:</strong></p>
+            <ul class="feature-list">
+              <li><strong>7-Layer Profile:</strong> Your strength and gaps across each sovereignty layer</li>
+              <li><strong>Your Cognitive Band:</strong> Where you fall in the IQ/cognitive complexity spectrum (based on thinking patterns, not formal testing)</li>
+              <li><strong>Your Subclass:</strong> Specific patterns within your band (e.g., "Fluency Addict," "Mirror Loop Risk," "Sovereignty Core")</li>
+              <li><strong>Your Attachment Mode:</strong> How you relate to AI (Tool, Companion, Authority, or Independent)</li>
+              <li><strong>Your Vulnerability Risks:</strong> Top areas where you're most at risk for dependency or identity drift</li>
+              <li><strong>Your Sovereign Split Position:</strong> Are you in the 80% Queue, 16% Compromising, or 4% Core?</li>
+              <li><strong>Your Resistance Capacity Score:</strong> 0-100 rating of your ability to resist cognitive hijack and maintain independent thought</li>
+              <li><strong>Personalized Action Plan:</strong> Layer-specific counter-structures to maintain or build sovereignty</li>
+              <li><strong>Export:</strong> JSON/CSV output for AI integration</li>
+            </ul>
+            
+            <div class="ack-box">
+              <p>
+                <strong>Assessment Structure:</strong> This multi-dimensional evaluation consists of 5 sections covering AI Usage, Cognitive Style, Attachment & Identity, Sovereignty Indicators, and Resilience Layers (economic, material, embodied, social). Estimated time: 25-35 minutes. All computation happens client-side for privacy—no data is sent to servers.
+              </p>
+            </div>
+            
+            <p class="follow-up-invite">Ready to map your sovereignty profile? <a href="#actionButtonsSection">Begin the assessment</a> below—or explore <a href="manipulation.html">Manipulation Defense Decoder</a> and <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a> for related tools.</p>
+          </div>
+          <div class="content-section">
+            <div class="ack-box">
+              <h4>Methodology</h4>
+              <ul class="feature-list">
+                <li><strong>Belief Mastery:</strong> Belief architecture, pattern recognition, calibrated change.</li>
+                <li><strong>Sovereign of Mind:</strong> Sovereignty, consent, and authorship in decision-making.</li>
+                <li><strong>Distortion Codex:</strong> Distortion detection, reality testing, and corrective clarity.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="form-help"><a href="./index.html#tool-disclaimers">Disclaimers &amp; notices for this tool</a> are listed on the home page.</p>
+        </div>
+      </section>
+
+      <!-- Assessment Selection Section -->
+      <section class="content-section" id="actionButtonsSection">
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="startAssessment">Begin Resistance Capacity Assessment</button>
+          <button class="btn btn-secondary" id="generateSampleReport">Generate Sample Report</button>
+        </div>
+      </section>
+
+      <!-- Questionnaire Section (hidden by default, shown via JS) -->
+      <section class="questionnaire-section" id="questionnaireSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-text">
+          <span id="questionCounter"></span>
+        </div>
+        <div id="questionContainer">
+          <!-- Questions populated by JavaScript -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" id="prevQuestion">Previous</button>
+          <button class="btn btn-primary" id="nextQuestion">Next</button>
+        </div>
+        <div class="abandon-link">
+          <button class="btn btn-secondary" id="abandonAssessment">Abandon / Restart</button>
+        </div>
+      </section>
+
+      <!-- Results Section (hidden by default) -->
+      <section class="results-section" id="resultsContainer">
+        <div id="resultsContent">
+          <!-- Results populated by JavaScript -->
+        </div>
+        <div class="export-section action-buttons">
+          <button type="button" class="btn btn-primary" id="exportReportHtml">Download report (MHTML)</button>
+          <button type="button" class="btn btn-secondary" id="newAssessment">Start New Assessment</button>
+          <details class="export-advanced export-advanced--block">
+            <summary>Optional: executive brief (plain text)</summary>
+            <div class="action-buttons action-buttons--push">
+              <button type="button" class="btn btn-secondary" id="exportExecutiveBrief">Executive brief (TXT)</button>
+            </div>
+          </details>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Belief Mastery &amp; Sovereign of Mind. All rights reserved.</p>
+    <p>
+      <a href="https://instagram.com/belief.mastery" target="_blank" rel="noopener" class="footer-link">@belief.mastery</a> on Instagram | 
+      <a href="https://www.facebook.com/war.mars.9" target="_blank" rel="noopener" class="footer-link">Facebook</a>
+    </p>
+  </footer>
+  
+  <script type="module">
+    import { SovereigntyEngine } from './sovereignty-engine.js';
+    import { PerformanceMonitor } from './shared/performance-monitor.js';
+    
+    // Initialize performance monitoring
+    const perfMonitor = new PerformanceMonitor('SovereigntyEngine');
+    
+    // Initialize engine when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle helper function
+      const setupToggle = (btnId, panelId) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId);
+        if (btn && panel) {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('expanded');
+          });
+        }
+      };
+
+      // Setup toggles
+      setupToggle('extendedExplanationToggle', 'extendedExplanationPanel');
+      try {
+        perfMonitor.markInit();
+        window.sovereigntyEngine = new SovereigntyEngine();
+        
+        // Track first question render
+        const originalRender = window.sovereigntyEngine.renderCurrentQuestion;
+        if (originalRender) {
+          window.sovereigntyEngine.renderCurrentQuestion = function() {
+            const start = performance.now();
+            const result = originalRender.call(this);
+            const duration = performance.now() - start;
+            perfMonitor.trackQuestionRender(duration);
+            if (!perfMonitor.metrics.firstQuestionTime) {
+              perfMonitor.markFirstQuestion();
+            }
+            return result;
+          };
+        }
+        
+        // Store monitor for completion tracking
+        window.sovereigntyEngine.perfMonitor = perfMonitor;
+      } catch (error) {
+        console.error('Failed to initialize SovereigntyEngine:', error);
+      }
+    });
+  </script>
+  
+  <script>
+    // Hamburger menu toggle
+    (function(){
+      const hamburger = document.querySelector('.hamburger');
+      const nav = document.querySelector('#top-nav');
+      if(!hamburger || !nav) return;
+      
+      hamburger.addEventListener('click', () => {
+        const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+        hamburger.setAttribute('aria-expanded', !isExpanded);
+        nav.classList.toggle('active');
+      });
+    })();
+
+    // Dropdown menu toggle
+    (function(){
+      const dropdownToggles = document.querySelectorAll('.nav-dropdown .dropdown-toggle');
+      if(!dropdownToggles.length) return;
+
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dropdown = toggle.closest('.nav-dropdown');
+          if(dropdown) {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              if (dd !== dropdown) {
+                dd.classList.remove('active');
+              }
+            });
+            dropdown.classList.toggle('active');
+          }
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if(!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+          });
+        }
+      });
+    })();
+  </script>
+  
+  <!-- Universal background JavaScript -->
+  <script src="./shared/background.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

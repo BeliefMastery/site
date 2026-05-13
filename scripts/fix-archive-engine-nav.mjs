@@ -1,0 +1,32 @@
+import fs from "node:fs";
+import path from "node:path";
+
+const dir = "archive/v3-engines";
+
+const engineMap = [
+  ["diagnosis.html", "diagnosis"],
+  ["coaching.html", "coaching"],
+  ["needs-dependency.html", "needs-dependency"],
+  ["sovereignty-spectrum.html", "sovereignty-spectrum"],
+  ["paradigm.html", "paradigm"],
+  ["manipulation.html", "manipulation"],
+  ["sovereignty.html", "sovereignty"],
+  ["channels.html", "channels"],
+  ["character-sheet.html", "character-sheet"],
+  ["entities.html", "entities"],
+  ["outlier-aptitude.html", "outlier-aptitude"],
+];
+
+for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".html"))) {
+  const fp = path.join(dir, f);
+  let s = fs.readFileSync(fp, "utf8");
+  s = s.replace(/href="index\.html"/g, 'href="/site/v3/app/#/"');
+  s = s.replace(/href="books\.html([^"]*)"/g, 'href="/site/v3/app/#/books$1"');
+  s = s.replace(/href="tools\.html([^"]*)"/g, 'href="/site/v3/app/#/tools$1"');
+  s = s.replace(/href="about-the-author\.html"/g, 'href="/site/v3/about-the-author.html"');
+  for (const [file, id] of engineMap) {
+    const re = new RegExp(`href="${file.replace(".", "\\.")}"`, "g");
+    s = s.replace(re, `href="/site/v3/app/#/engines/${id}"`);
+  }
+  fs.writeFileSync(fp, s);
+}

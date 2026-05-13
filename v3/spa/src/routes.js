@@ -5,8 +5,13 @@ export const navItems = [
   { label: "About", to: "/about" },
 ];
 
-/** Published static engines under the parallel /site/v3/ tree */
-const legacyV3 = (file) => `/site/v3/${file}`;
+/** Published static engines (archived HTML; iframe embed). */
+const legacyV3 = (file) => `/site/archive/v3-engines/${file}`;
+
+/**
+ * Phase 2: map engine id → React component to replace iframe. Empty until ported.
+ */
+export const nativeEngineViews = {};
 
 export const engineRoutes = [
   {

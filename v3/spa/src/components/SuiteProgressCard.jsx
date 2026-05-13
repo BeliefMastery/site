@@ -44,7 +44,7 @@ export default function SuiteProgressCard() {
                   {label} <span className="suite-progress-status">{status}</span>
                 </Link>
               ) : (
-                <a href={`/site/v3/${item.href}`}>
+                <a href={`/site/archive/v3-engines/${item.href}`}>
                   {label} <span className="suite-progress-status">{status}</span>
                 </a>
               )}

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { engineRoutes } from "@/routes";
+import { engineRoutes, nativeEngineViews } from "@/routes";
 import EngineAdapterView from "@/engines/EngineAdapterView";
 
 export default function EngineRoutePage() {
@@ -16,6 +16,11 @@ export default function EngineRoutePage() {
         </article>
       </section>
     );
+  }
+
+  const NativeView = engineId ? nativeEngineViews[engineId] : undefined;
+  if (typeof NativeView === "function") {
+    return <NativeView label={routeConfig.label} />;
   }
 
   return <EngineAdapterView label={routeConfig.label} legacyPage={routeConfig.legacyPage} />;
