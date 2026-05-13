@@ -7,32 +7,44 @@ export const homeHero = {
   subtitlePromise: "Seeing the patterns behind your life so you can choose what comes next.",
 };
 
+/** One slide = situation copy + single primary CTA (home engagement carousel). */
 export const homeBridge = {
-  bullets: [
+  engageSlides: [
     {
-      label: "Old habits",
-      text: "Notice what keeps them in place—without piling on shame.",
+      id: "old-habits",
+      headline: "Old habits",
+      body: "Notice what keeps them in place—without piling on shame.",
+      cta: { label: "Start a free life review", to: "/engines/coaching", variant: "primary" },
     },
     {
-      label: "Pressure from others",
-      text: "Stay grounded when narratives, urgency, or influence run high.",
+      id: "pressure",
+      headline: "Pressure from others",
+      body: "Stay grounded when narratives, urgency, or influence run high.",
+      cta: { label: "Try the meaning map", to: "/engines/paradigm", variant: "outline" },
     },
     {
-      label: "Feeling scattered",
-      text: "Find steadier ground and fewer leaks in your attention.",
+      id: "scattered",
+      headline: "Feeling scattered",
+      body: "Find steadier ground and fewer leaks in your attention.",
+      cta: { label: "Spot symptom patterns", to: "/engines/diagnosis", variant: "soft" },
     },
     {
-      label: "Ready for honest work",
-      text: "Books, tools, or sessions—pick the door that fits you today.",
+      id: "honest-work",
+      headline: "Ready for honest work",
+      body: "Books, tools, or sessions—pick the door that fits you today.",
+      cta: { label: "Trace dependency loops", to: "/engines/needs-dependency", variant: "ghost" },
     },
-  ],
-  /** Low-friction entry points — mix of engines and hub pages */
-  ctas: [
-    { label: "Start a free life review", to: "/engines/coaching", variant: "primary" },
-    { label: "Try the meaning map", to: "/engines/paradigm", variant: "outline" },
-    { label: "Spot symptom patterns", to: "/engines/diagnosis", variant: "soft" },
-    { label: "Trace dependency loops", to: "/engines/needs-dependency", variant: "ghost" },
-    { label: "Browse all tools", to: "/tools", variant: "outline" },
-    { label: "Explore books", to: "/books", variant: "soft" },
+    {
+      id: "browse-tools",
+      headline: "Want a clear path through the tools?",
+      body: "Every online engine is listed in one place—jump in where your attention lands.",
+      cta: { label: "Browse all tools", to: "/tools", variant: "outline" },
+    },
+    {
+      id: "explore-books",
+      headline: "Prefer to read on your own time?",
+      body: "The books and frameworks sit alongside the tools—not instead of them.",
+      cta: { label: "Explore books", to: "/books", variant: "soft" },
+    },
   ],
 };

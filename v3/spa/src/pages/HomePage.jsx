@@ -3,6 +3,7 @@ import { engineRoutes } from "@/routes";
 import { toolMeta, SITE_IMAGES } from "@/data/toolsCatalog";
 import { generalDisclaimer, toolDisclaimerSections } from "@/data/homeDisclaimers";
 import { homeBridge, homeHero } from "@/data/homeCopy";
+import HomeEngageSlider from "@/components/HomeEngageSlider";
 import SuiteProgressCard from "@/components/SuiteProgressCard";
 import TestimonialStack from "@/components/TestimonialStack";
 
@@ -29,22 +30,6 @@ function ToolCoverLink({ to, src, alt }) {
     </Link>
   );
 }
-
-const bridgeCtaClass = (variant) => {
-  const base = "v3-btn";
-  switch (variant) {
-    case "primary":
-      return `${base} v3-btn--primary`;
-    case "ghost":
-      return `${base} v3-btn--ghost`;
-    case "soft":
-      return `${base} v3-btn--soft`;
-    case "outline":
-    default:
-      return `${base} v3-btn--outline`;
-  }
-};
-
 
 export default function HomePage() {
   return (
@@ -89,22 +74,14 @@ export default function HomePage() {
 
       <section
         className="surface v3-section--breathable v3-bridge v3-section-band--solid"
-        aria-label="Common situations and ways to begin"
+        aria-labelledby="engage-section-title"
       >
-        <ul className="v3-bridge-list v3-bridge-list--layered">
-          {homeBridge.bullets.map((item, i) => (
-            <li key={item.label} style={{ "--v3-bridge-layer": i }}>
-              <strong>{item.label}.</strong> {item.text}
-            </li>
-          ))}
-        </ul>
-        <div className="v3-bridge-cta">
-          {homeBridge.ctas.map((cta) => (
-            <Link key={cta.label} className={bridgeCtaClass(cta.variant)} to={cta.to}>
-              {cta.label}
-            </Link>
-          ))}
+        <div className="v3-section-head">
+          <h2 id="engage-section-title" className="v3-section-title">
+            Where to start
+          </h2>
         </div>
+        <HomeEngageSlider slides={homeBridge.engageSlides} />
       </section>
 
       <section className="surface v3-section--breathable v3-section-band--gradient">
