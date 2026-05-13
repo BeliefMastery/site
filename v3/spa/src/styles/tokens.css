@@ -32,8 +32,9 @@ html.theme-earth {
   --v3-on-accent: #fffef9;
   --v3-hero-tint-a: rgba(139, 92, 58, 0.1);
   --v3-hero-tint-b: rgba(255, 252, 248, 0.5);
-  --v3-tools-tint-a: rgba(107, 125, 95, 0.12);
-  --v3-books-tint-a: rgba(156, 92, 64, 0.1);
+  /* Tools/Books page title bands — hue from theme accent */
+  --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 14%, transparent);
+  --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 12%, transparent);
   /* Solid bands: warmer than pure white, pulled toward page bg, more translucent vs gradients */
   --v3-band-solid-bg: color-mix(
     in srgb,
@@ -61,8 +62,8 @@ html.theme-cosmic {
   --v3-on-accent: #050915;
   --v3-hero-tint-a: color-mix(in srgb, var(--v3-accent) 12%, transparent);
   --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent-strong) 6%, transparent);
-  --v3-tools-tint-a: rgba(120, 200, 255, 0.12);
-  --v3-books-tint-a: rgba(255, 200, 120, 0.08);
+  --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 16%, transparent);
+  --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 10%, transparent);
 }
 
 html.theme-light {
@@ -85,8 +86,8 @@ html.theme-light {
   --v3-on-accent: #fffefe;
   --v3-hero-tint-a: color-mix(in srgb, var(--v3-accent) 11%, transparent);
   --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent) 5%, var(--v3-bg));
-  --v3-tools-tint-a: rgba(37, 99, 235, 0.1);
-  --v3-books-tint-a: rgba(14, 116, 144, 0.08);
+  --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 12%, transparent);
+  --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 10%, transparent);
   /* Solid bands: cool paper (not pure white), blended with page bg, more translucent */
   --v3-band-solid-bg: color-mix(
     in srgb,
@@ -114,8 +115,8 @@ html.theme-forge {
   --v3-on-accent: #1a0a06;
   --v3-hero-tint-a: rgba(255, 112, 67, 0.14);
   --v3-hero-tint-b: transparent;
-  --v3-tools-tint-a: rgba(255, 152, 112, 0.12);
-  --v3-books-tint-a: rgba(255, 180, 120, 0.08);
+  --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 15%, transparent);
+  --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 11%, transparent);
 }
 
 html.theme-neomorphism {
@@ -137,6 +138,6 @@ html.theme-neomorphism {
   --v3-on-accent: #1a1008;
   --v3-hero-tint-a: color-mix(in srgb, var(--v3-accent) 11%, transparent);
   --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent-strong) 7%, transparent);
-  --v3-tools-tint-a: rgba(251, 146, 60, 0.12);
-  --v3-books-tint-a: rgba(250, 204, 21, 0.08);
+  --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 14%, transparent);
+  --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 10%, transparent);
 }
