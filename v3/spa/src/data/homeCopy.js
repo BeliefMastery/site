@@ -5,8 +5,8 @@ export const homeHero = {
 };
 
 export const homeBridge = {
-  intro:
-    "Belief Mastery, Sovereign of Mind, and Peer-Counseling all point toward the same thing: seeing the patterns behind your life so you can choose what comes next.",
+  introLine1: "Belief Mastery, Sovereign of Mind, and Peer-Counseling all point toward the same thing:",
+  introLine2: "seeing the patterns behind your life so you can choose what comes next.",
   bullets: [
     {
       label: "Old habits",

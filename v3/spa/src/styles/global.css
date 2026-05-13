@@ -206,16 +206,31 @@ a {
   letter-spacing: -0.02em;
 }
 
-.v3-bridge__intro {
-  max-width: 65ch;
+.v3-bridge__intro-heading {
+  margin: 0 auto;
+  max-width: 100%;
+  text-align: center;
+  font-family: var(--v3-font-display);
+  font-weight: 700;
+  line-height: 1.28;
+  color: var(--v3-heading);
 }
 
-.v3-bridge__intro--center {
-  margin: 0 auto;
-  text-align: center;
-  font-size: clamp(1.05rem, 2.1vw, 1.2rem);
-  line-height: 1.55;
-  color: var(--v3-muted);
+.v3-bridge__intro-heading__line {
+  display: block;
+  font-weight: 700;
+}
+
+.v3-bridge__intro-heading__line--lead {
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  margin-bottom: 0.5rem;
+  color: var(--v3-heading-soft);
+}
+
+.v3-bridge__intro-heading__line--focus {
+  font-size: clamp(1.45rem, 3.2vw, 2.05rem);
+  letter-spacing: -0.02em;
+  color: var(--v3-heading);
 }
 
 .v3-bridge-list {
@@ -246,7 +261,6 @@ a {
   color: var(--v3-text);
 }
 
-.v3-bridge-cta,
 .v3-audit-cta {
   display: flex;
   flex-wrap: wrap;
@@ -256,7 +270,17 @@ a {
 }
 
 .v3-bridge-cta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+  gap: var(--v3-space-2);
   margin-top: var(--v3-space-1);
+  justify-items: stretch;
+  align-items: stretch;
+}
+
+.v3-bridge-cta .v3-btn {
+  width: 100%;
+  text-align: center;
 }
 
 .v3-testimonial-list {
@@ -401,11 +425,6 @@ a {
   color: var(--v3-muted);
   margin: 0;
   max-width: 70ch;
-}
-
-/* Home bridge thesis: one line until the viewport is narrower than the sentence */
-.v3-lead.v3-bridge__intro--center {
-  max-width: 100%;
 }
 
 .v3-about-capacity {

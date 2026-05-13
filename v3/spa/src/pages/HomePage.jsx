@@ -49,13 +49,13 @@ const bridgeCtaClass = (variant) => {
 export default function HomePage() {
   return (
     <div className="stack v3-home">
-      <section className="surface v3-hero--statement v3-section-band--gradient">
+      <section className="surface v3-hero--statement v3-section-band--solid">
         <div className="v3-hero__inner">
           <h1 className="v3-hero-title v3-hero-title--single">{homeHero.thesis}</h1>
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-section-band--solid">
+      <section className="surface v3-section--breathable v3-section-band--gradient">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/tools">Tools you can use online</Link>
@@ -73,8 +73,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-bridge v3-section-band--gradient" aria-label="Introduction">
-        <p className="v3-lead v3-bridge__intro v3-bridge__intro--center">{homeBridge.intro}</p>
+      <section className="surface v3-section--breathable v3-bridge v3-section-band--solid" aria-labelledby="bridge-intro-heading">
+        <h2 id="bridge-intro-heading" className="v3-bridge__intro-heading">
+          <span className="v3-bridge__intro-heading__line v3-bridge__intro-heading__line--lead">{homeBridge.introLine1}</span>
+          <span className="v3-bridge__intro-heading__line v3-bridge__intro-heading__line--focus">{homeBridge.introLine2}</span>
+        </h2>
         <ul className="v3-bridge-list v3-bridge-list--layered">
           {homeBridge.bullets.map((item, i) => (
             <li key={item.label} style={{ "--v3-bridge-layer": i }}>
@@ -91,7 +94,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-section-band--solid">
+      <section className="surface v3-section--breathable v3-section-band--gradient">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/books">Books</Link>
@@ -106,9 +109,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <TestimonialStack />
-
-      <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid">
+      <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid" aria-label="How these works fit together">
         <details className="v3-details">
           <summary>How these works fit together</summary>
           <div className="v3-details__body">
@@ -124,7 +125,11 @@ export default function HomePage() {
             </p>
           </div>
         </details>
+      </section>
 
+      <TestimonialStack />
+
+      <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid" aria-label="Disclaimers and privacy">
         <details className="v3-details">
           <summary>{generalDisclaimer.title}</summary>
           <div className="v3-details__body">
