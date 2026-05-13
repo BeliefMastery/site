@@ -8,9 +8,15 @@
   --v3-space-5: 2rem;
   --v3-font-display: "Fraunces", "Georgia", "Times New Roman", serif;
   --v3-font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* Desktop full-bleed art (.app::before); overridden per html.theme-* */
+  --v3-backdrop-art-filter: none;
+  --v3-backdrop-art-opacity: 0.5;
 }
 
 html.theme-earth {
+  /* Blue nebula → warm umber / terracotta to match earth accent */
+  --v3-backdrop-art-filter: hue-rotate(158deg) saturate(1.12) brightness(0.52);
+  --v3-backdrop-art-opacity: 0.4;
   --v3-bg: #f2ebe3;
   --v3-bg-glow: rgba(156, 92, 64, 0.14);
   --v3-bg-soft: rgba(60, 48, 40, 0.05);
@@ -33,6 +39,9 @@ html.theme-earth {
 }
 
 html.theme-cosmic {
+  /* Source art is already blue-on-black; light touch only */
+  --v3-backdrop-art-filter: saturate(1.06) brightness(0.92);
+  --v3-backdrop-art-opacity: 1;
   --v3-bg: #040915;
   --v3-bg-glow: rgba(70, 120, 255, 0.2);
   --v3-bg-soft: rgba(255, 255, 255, 0.02);
@@ -53,6 +62,10 @@ html.theme-cosmic {
 }
 
 html.theme-light {
+  /* Invert for light canvas, then rotate hue toward slate / accent family */
+  --v3-backdrop-art-filter: invert(1) hue-rotate(198deg) saturate(0.48) contrast(1.05)
+    brightness(0.95);
+  --v3-backdrop-art-opacity: 0.26;
   --v3-bg: #f1f5f9;
   --v3-bg-glow: rgba(59, 130, 246, 0.18);
   --v3-bg-soft: rgba(15, 23, 42, 0.04);
@@ -73,6 +86,9 @@ html.theme-light {
 }
 
 html.theme-forge {
+  /* Shift cool blues toward ember / forge orange */
+  --v3-backdrop-art-filter: hue-rotate(168deg) saturate(1.18) brightness(0.48) contrast(1.08);
+  --v3-backdrop-art-opacity: 0.88;
   --v3-bg: #070303;
   --v3-bg-glow: rgba(255, 87, 34, 0.22);
   --v3-bg-soft: rgba(255, 112, 67, 0.06);
@@ -93,6 +109,9 @@ html.theme-forge {
 }
 
 html.theme-neomorphism {
+  /* Cool nebula toward amber–violet to sit with slate surfaces + orange accent */
+  --v3-backdrop-art-filter: hue-rotate(118deg) saturate(1.08) brightness(0.58);
+  --v3-backdrop-art-opacity: 0.52;
   --v3-bg: #2d3a4f;
   --v3-bg-glow: rgba(251, 146, 60, 0.16);
   --v3-bg-soft: rgba(255, 255, 255, 0.03);
