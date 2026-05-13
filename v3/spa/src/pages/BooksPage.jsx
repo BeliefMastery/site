@@ -52,18 +52,18 @@ function StandardBookSection({ data, moreInfoLead }) {
           height={605}
           loading="lazy"
         />
-        <div>
+        <div className="v3-book-hero__col">
           <p className="v3-book-lead">{data.lead}</p>
           <Link className="v3-btn v3-btn--outline" to={purchaseLink(data.purchaseCta.hash)}>
             {data.purchaseCta.label}
           </Link>
+          <ul className="v3-feature-list v3-feature-list--in-hero">
+            {data.features.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
         </div>
       </div>
-      <ul className="v3-feature-list">
-        {data.features.map((t) => (
-          <li key={t}>{t}</li>
-        ))}
-      </ul>
       {"note" in data && data.note != null ? (
         <p className="v3-book-note">{data.note}</p>
       ) : null}

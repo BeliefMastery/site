@@ -125,10 +125,15 @@ a {
   padding: clamp(1.15rem, 2.4vw, 1.85rem);
 }
 
-/* Same treatment as the home hero: soft radial + layered tints + light grain */
+/* Same treatment as the home hero: soft radial + layered tints + light grain.
+   Must use .surface.v3-section-band--* — plain .surface { background } is declared
+   later and would otherwise override a single-class band rule. */
 .v3-section-band--gradient {
   position: relative;
   overflow: hidden;
+}
+
+.surface.v3-section-band--gradient {
   background:
     radial-gradient(ellipse 85% 65% at 50% 0%, var(--v3-hero-tint-a), transparent 58%),
     linear-gradient(175deg, var(--v3-hero-tint-b), transparent 70%),
@@ -151,7 +156,7 @@ a {
   }
 }
 
-.v3-section-band--solid {
+.surface.v3-section-band--solid {
   background: var(--v3-band-solid-bg, var(--v3-surface));
 }
 
@@ -186,7 +191,6 @@ a {
 
 .v3-bridge__intro--center {
   margin: 0 auto;
-  max-width: min(52ch, 100%);
   text-align: center;
   font-size: clamp(1.05rem, 2.1vw, 1.2rem);
   line-height: 1.55;
@@ -376,6 +380,11 @@ a {
   color: var(--v3-muted);
   margin: 0;
   max-width: 70ch;
+}
+
+/* Home bridge thesis: one line until the viewport is narrower than the sentence */
+.v3-lead.v3-bridge__intro--center {
+  max-width: 100%;
 }
 
 .v3-about-capacity {
@@ -605,6 +614,10 @@ a {
   background: radial-gradient(circle at 10% 20%, var(--v3-tools-tint-a), transparent 40%);
 }
 
+.v3-tools-page-title {
+  margin-bottom: var(--v3-space-4);
+}
+
 .v3-tool-category {
   margin-bottom: var(--v3-space-4);
 }
@@ -694,6 +707,18 @@ a {
   grid-template-columns: minmax(0, 240px) 1fr;
   gap: var(--v3-space-4);
   align-items: start;
+}
+
+.v3-book-hero__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v3-space-2);
+  min-width: 0;
+}
+
+.v3-feature-list--in-hero {
+  margin-top: var(--v3-space-1);
+  margin-bottom: 0;
 }
 
 @media (max-width: 840px) {

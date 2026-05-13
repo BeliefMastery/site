@@ -26,7 +26,7 @@ const STATIC_ROUTE_META = {
   "/tools": {
     title: `Online tools | ${SITE_NAME} — V3`,
     description:
-      "Self-guided tools: life review, pattern maps, and more—same saves as the full site, in a calmer V3 layout.",
+      "Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, channel flow diagnostics, logos structure, pathology assessment, life domain review, dependency loop tracing, and more. Diagnostic clarity for the cognitively vigilant. Warwick Marshall, Golden Bay, New Zealand.",
   },
   "/books": {
     title: `Books | ${SITE_NAME} — V3`,
