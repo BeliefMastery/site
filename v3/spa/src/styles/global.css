@@ -40,6 +40,18 @@ a {
   color: var(--v3-text);
 }
 
+/* Static full-bleed art on large viewports (see /site/images/SupernovaBLUE.jpg) */
+@media (min-width: 1024px) {
+  .app {
+    background-color: var(--v3-bg);
+    background-image: url("/site/images/SupernovaBLUE.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
 .container {
   max-width: 1120px;
   margin: 0 auto;
@@ -135,15 +147,25 @@ a {
 
 .surface.v3-section-band--gradient {
   background:
-    linear-gradient(to bottom right, var(--v3-hero-tint-a), transparent 52%),
-    linear-gradient(to bottom right, transparent 35%, var(--v3-hero-tint-b));
+    linear-gradient(
+      to bottom right,
+      color-mix(in srgb, var(--v3-accent) 38%, transparent) 0%,
+      color-mix(in srgb, var(--v3-accent) 10%, transparent) 44%,
+      transparent 58%
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent 36%,
+      color-mix(in srgb, var(--v3-accent) 28%, transparent) 100%
+    ),
+    linear-gradient(to bottom right, var(--v3-hero-tint-a), transparent 48%, var(--v3-hero-tint-b));
 }
 
 .v3-section-band--gradient::before {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.055;
+  opacity: 0.09;
   pointer-events: none;
   mix-blend-mode: soft-light;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -151,7 +173,7 @@ a {
 
 @media (prefers-reduced-motion: reduce) {
   .v3-section-band--gradient::before {
-    opacity: 0.04;
+    opacity: 0.06;
   }
 }
 
@@ -645,6 +667,11 @@ a {
   padding: 0;
   display: grid;
   gap: var(--v3-space-2);
+}
+
+/* Opaque rows so parent section gradients never read through the “cards” */
+.v3-tools-page .v3-tool-row {
+  background: var(--v3-surface);
 }
 
 .v3-tool-row {

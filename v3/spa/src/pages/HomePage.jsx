@@ -55,26 +55,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-bridge v3-section-band--solid" aria-label="Introduction">
-        <p className="v3-lead v3-bridge__intro v3-bridge__intro--center">{homeBridge.intro}</p>
-        <ul className="v3-bridge-list v3-bridge-list--layered">
-          {homeBridge.bullets.map((item, i) => (
-            <li key={item.label} style={{ "--v3-bridge-layer": i }}>
-              <strong>{item.label}.</strong> {item.text}
-            </li>
-          ))}
-        </ul>
-        <div className="v3-bridge-cta">
-          {homeBridge.ctas.map((cta) => (
-            <Link key={cta.label} className={bridgeCtaClass(cta.variant)} to={cta.to}>
-              {cta.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <TestimonialStack />
-
       <section className="surface v3-section--breathable v3-section-band--solid">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
@@ -93,7 +73,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-section-band--gradient">
+      <section className="surface v3-section--breathable v3-bridge v3-section-band--gradient" aria-label="Introduction">
+        <p className="v3-lead v3-bridge__intro v3-bridge__intro--center">{homeBridge.intro}</p>
+        <ul className="v3-bridge-list v3-bridge-list--layered">
+          {homeBridge.bullets.map((item, i) => (
+            <li key={item.label} style={{ "--v3-bridge-layer": i }}>
+              <strong>{item.label}.</strong> {item.text}
+            </li>
+          ))}
+        </ul>
+        <div className="v3-bridge-cta">
+          {homeBridge.ctas.map((cta) => (
+            <Link key={cta.label} className={bridgeCtaClass(cta.variant)} to={cta.to}>
+              {cta.label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="surface v3-section--breathable v3-section-band--solid">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/books">Books</Link>
@@ -107,6 +105,8 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      <TestimonialStack />
 
       <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid">
         <details className="v3-details">
