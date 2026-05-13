@@ -55,8 +55,8 @@ html.theme-cosmic {
   --v3-accent: #ffd35a;
   --v3-accent-strong: #ffb800;
   --v3-on-accent: #050915;
-  --v3-hero-tint-a: rgba(80, 120, 255, 0.12);
-  --v3-hero-tint-b: transparent;
+  --v3-hero-tint-a: color-mix(in srgb, var(--v3-accent) 12%, transparent);
+  --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent-strong) 6%, transparent);
   --v3-tools-tint-a: rgba(120, 200, 255, 0.12);
   --v3-books-tint-a: rgba(255, 200, 120, 0.08);
 }
@@ -79,8 +79,8 @@ html.theme-light {
   --v3-accent: #b91c1c;
   --v3-accent-strong: #991b1b;
   --v3-on-accent: #fffefe;
-  --v3-hero-tint-a: rgba(59, 130, 246, 0.12);
-  --v3-hero-tint-b: rgba(255, 255, 255, 0.35);
+  --v3-hero-tint-a: color-mix(in srgb, var(--v3-accent) 11%, transparent);
+  --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent) 5%, var(--v3-bg));
   --v3-tools-tint-a: rgba(37, 99, 235, 0.1);
   --v3-books-tint-a: rgba(14, 116, 144, 0.08);
 }
@@ -125,8 +125,8 @@ html.theme-neomorphism {
   --v3-accent: #fb923c;
   --v3-accent-strong: #f97316;
   --v3-on-accent: #1a1008;
-  --v3-hero-tint-a: rgba(147, 197, 253, 0.14);
-  --v3-hero-tint-b: transparent;
+  --v3-hero-tint-a: color-mix(in srgb, var(--v3-accent) 11%, transparent);
+  --v3-hero-tint-b: color-mix(in srgb, var(--v3-accent-strong) 7%, transparent);
   --v3-tools-tint-a: rgba(251, 146, 60, 0.12);
   --v3-books-tint-a: rgba(250, 204, 21, 0.08);
 }

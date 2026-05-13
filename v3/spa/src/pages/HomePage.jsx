@@ -74,10 +74,15 @@ export default function HomePage() {
       </section>
 
       <section className="surface v3-section--breathable v3-bridge v3-section-band--solid" aria-labelledby="bridge-intro-heading">
-        <h2 id="bridge-intro-heading" className="v3-bridge__intro-heading">
-          <span className="v3-bridge__intro-heading__line v3-bridge__intro-heading__line--lead">{homeBridge.introLine1}</span>
-          <span className="v3-bridge__intro-heading__line v3-bridge__intro-heading__line--focus">{homeBridge.introLine2}</span>
-        </h2>
+        <div className="v3-section-head">
+          <h2 id="bridge-intro-heading" className="v3-section-title">
+            Introduction
+          </h2>
+        </div>
+        <div className="v3-bridge__intro-copy">
+          <p className="v3-bridge__intro-copy__line">{homeBridge.introLine1}</p>
+          <p className="v3-bridge__intro-copy__line">{homeBridge.introLine2}</p>
+        </div>
         <ul className="v3-bridge-list v3-bridge-list--layered">
           {homeBridge.bullets.map((item, i) => (
             <li key={item.label} style={{ "--v3-bridge-layer": i }}>
