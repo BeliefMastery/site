@@ -125,7 +125,7 @@ a {
   padding: clamp(1.15rem, 2.4vw, 1.85rem);
 }
 
-/* Same treatment as the home hero: soft radial + layered tints + light grain.
+/* Diagonal wash (top-left → bottom-right) + light grain.
    Must use .surface.v3-section-band--* — plain .surface { background } is declared
    later and would otherwise override a single-class band rule. */
 .v3-section-band--gradient {
@@ -135,9 +135,8 @@ a {
 
 .surface.v3-section-band--gradient {
   background:
-    radial-gradient(ellipse 85% 65% at 50% 0%, var(--v3-hero-tint-a), transparent 58%),
-    linear-gradient(175deg, var(--v3-hero-tint-b), transparent 70%),
-    linear-gradient(135deg, var(--v3-hero-tint-a), var(--v3-hero-tint-b) 55%);
+    linear-gradient(to bottom right, var(--v3-hero-tint-a), transparent 52%),
+    linear-gradient(to bottom right, transparent 35%, var(--v3-hero-tint-b));
 }
 
 .v3-section-band--gradient::before {

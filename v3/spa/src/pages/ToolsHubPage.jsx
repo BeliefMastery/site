@@ -67,7 +67,7 @@ function ToolkitRow({ id }) {
 export default function ToolsHubPage() {
   return (
     <div className="stack v3-tools-page">
-      <section className="surface v3-tools-page-section" id="tools" aria-labelledby="tools-title">
+      <section className="surface v3-tools-page-section v3-section-band--gradient" id="tools" aria-labelledby="tools-title">
         <h1 id="tools-title" className="v3-hero-title v3-tools-page-title">
           Sovereignty Tools
         </h1>
