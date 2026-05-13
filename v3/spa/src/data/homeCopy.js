@@ -2,11 +2,12 @@
 
 export const homeHero = {
   thesis: "Freedom is achievable.",
+  subtitleWorks: "Belief Mastery, Sovereign of Mind, and Peer-Counseling",
+  subtitlePivot: "all point toward the same thing:",
+  subtitlePromise: "Seeing the patterns behind your life so you can choose what comes next.",
 };
 
 export const homeBridge = {
-  introLine1: "Belief Mastery, Sovereign of Mind, and Peer-Counseling all point toward the same thing:",
-  introLine2: "Seeing the patterns behind your life so you can choose what comes next.",
   bullets: [
     {
       label: "Old habits",

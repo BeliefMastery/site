@@ -49,9 +49,18 @@ const bridgeCtaClass = (variant) => {
 export default function HomePage() {
   return (
     <div className="stack v3-home">
-      <section className="surface v3-hero--statement v3-section-band--solid">
+      <section className="surface v3-hero--statement v3-section-band--solid" aria-labelledby="home-hero-thesis">
         <div className="v3-hero__inner">
-          <h1 className="v3-hero-title v3-hero-title--single">{homeHero.thesis}</h1>
+          <h1 id="home-hero-thesis" className="v3-hero-title v3-hero-title--single">
+            {homeHero.thesis}
+          </h1>
+          <div className="v3-hero__subtitle-stack">
+            <h2 className="v3-hero__subtitle v3-hero__subtitle--works">{homeHero.subtitleWorks}</h2>
+            <h3 className="v3-hero__subtitle v3-hero__subtitle--pivot">{homeHero.subtitlePivot}</h3>
+            <h3 className="v3-hero__subtitle v3-hero__subtitle--promise">
+              <em>{homeHero.subtitlePromise}</em>
+            </h3>
+          </div>
         </div>
       </section>
 
@@ -73,16 +82,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-bridge v3-section-band--solid" aria-labelledby="bridge-intro-heading">
-        <div className="v3-section-head">
-          <h2 id="bridge-intro-heading" className="v3-section-title">
-            Introduction
-          </h2>
-        </div>
-        <div className="v3-bridge__intro-copy">
-          <p className="v3-bridge__intro-copy__line">{homeBridge.introLine1}</p>
-          <p className="v3-bridge__intro-copy__line">{homeBridge.introLine2}</p>
-        </div>
+      <section
+        className="surface v3-section--breathable v3-bridge v3-section-band--solid"
+        aria-label="Common situations and ways to begin"
+      >
         <ul className="v3-bridge-list v3-bridge-list--layered">
           {homeBridge.bullets.map((item, i) => (
             <li key={item.label} style={{ "--v3-bridge-layer": i }}>

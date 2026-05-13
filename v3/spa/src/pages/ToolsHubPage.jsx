@@ -63,15 +63,21 @@ function ToolkitRow({ id }) {
   );
 }
 
-/** Body matches v3/tools.html: title, category blocks, toolkit rows (incl. Unlocked GPT in tech). */
+/** Body matches v3/tools.html: hero title, category blocks, toolkit rows (incl. Unlocked GPT in tech). */
 export default function ToolsHubPage() {
   return (
     <div className="stack v3-tools-page">
-      <section className="surface v3-tools-page-section v3-section-band--gradient" id="tools" aria-labelledby="tools-title">
-        <h1 id="tools-title" className="v3-hero-title v3-tools-page-title">
+      <section
+        className="surface v3-book-section v3-tools-intro v3-tools-page-section"
+        id="tools-overview"
+        aria-labelledby="tools-title"
+      >
+        <h1 id="tools-title" className="v3-hero-title">
           Sovereignty Tools
         </h1>
+      </section>
 
+      <section className="surface v3-book-section v3-tools-page-section v3-section-band--gradient" id="tools" aria-label="Tool catalog">
         <nav className="tools-toolkit v3-tools-nav" aria-label="Tools by category">
           {toolCategories.map((cat) => (
             <section

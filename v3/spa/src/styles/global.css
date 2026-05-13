@@ -207,18 +207,18 @@ a {
 .v3-hero--statement {
   position: relative;
   overflow: hidden;
-  min-height: min(31vh, 17rem);
+  min-height: min(38vh, 22rem);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: clamp(1.15rem, 3.4vw, 2.1rem) var(--v3-space-4);
+  padding: clamp(1.35rem, 3.6vw, 2.35rem) var(--v3-space-4);
 }
 
 .v3-hero__inner {
   position: relative;
   z-index: 1;
-  max-width: min(42rem, 100%);
+  max-width: min(40rem, 100%);
   margin: 0 auto;
 }
 
@@ -229,24 +229,45 @@ a {
   letter-spacing: -0.02em;
 }
 
-.v3-bridge__intro-copy {
-  margin: 0 auto var(--v3-space-3);
-  max-width: min(36rem, 100%);
-  text-align: center;
+.v3-hero__subtitle-stack {
+  margin-top: clamp(1rem, 2.8vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: min(34rem, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.v3-hero__subtitle {
+  margin: 0;
+  font-family: var(--v3-font-display);
+  font-weight: 600;
+  line-height: 1.35;
   color: var(--v3-heading-soft);
 }
 
-.v3-bridge__intro-copy__line {
-  margin: 0;
-  font-family: var(--v3-font-body);
-  font-size: clamp(0.95rem, 2vw, 1.05rem);
-  font-weight: 600;
-  line-height: 1.5;
-  color: inherit;
+.v3-hero__subtitle--works {
+  font-size: clamp(1.02rem, 2.35vw, 1.35rem);
+  color: var(--v3-heading);
+  letter-spacing: -0.015em;
 }
 
-.v3-bridge__intro-copy__line + .v3-bridge__intro-copy__line {
-  margin-top: 0.45rem;
+.v3-hero__subtitle--pivot {
+  font-size: clamp(0.98rem, 2.1vw, 1.2rem);
+  font-weight: 500;
+}
+
+.v3-hero__subtitle--promise {
+  font-size: clamp(0.98rem, 2.1vw, 1.2rem);
+  font-weight: 500;
+  color: var(--v3-heading-soft);
+}
+
+.v3-hero__subtitle--promise em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--v3-heading-soft);
 }
 
 .v3-bridge-list {
@@ -275,6 +296,10 @@ a {
 
 .v3-bridge-list strong {
   color: var(--v3-text);
+}
+
+.v3-bridge > .v3-bridge-list:first-child {
+  margin-top: 0;
 }
 
 .v3-audit-cta {
@@ -709,10 +734,6 @@ a {
   background: radial-gradient(circle at 10% 20%, var(--v3-tools-tint-a), transparent 40%);
 }
 
-.v3-tools-page-title {
-  margin-bottom: var(--v3-space-4);
-}
-
 .v3-tool-category {
   margin-bottom: var(--v3-space-4);
 }
@@ -848,6 +869,10 @@ a {
 
 .v3-book-note {
   color: var(--v3-muted);
+}
+
+.v3-tools-intro {
+  background: linear-gradient(120deg, var(--v3-tools-tint-a), transparent 50%);
 }
 
 .v3-books-intro {
