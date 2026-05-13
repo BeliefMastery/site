@@ -5,9 +5,8 @@ export const homeHero = {
 };
 
 export const homeBridge = {
-  title: "Room to grow—with clear steps.",
   intro:
-    "Belief Mastery, Sovereign of Mind, and peer counseling all point toward the same thing: seeing the patterns behind your life so you can choose what comes next.",
+    "Belief Mastery, Sovereign of Mind, and Peer-Counseling all point toward the same thing: seeing the patterns behind your life so you can choose what comes next.",
   bullets: [
     {
       label: "Old habits",
@@ -26,6 +25,13 @@ export const homeBridge = {
       text: "Books, tools, or sessions—pick the door that fits you today.",
     },
   ],
-  ctaPrimary: { label: "Start a free life review", to: "/engines/coaching" },
-  ctaSecondary: { label: "Try the meaning map", to: "/engines/paradigm" },
+  /** Low-friction entry points — mix of engines and hub pages */
+  ctas: [
+    { label: "Start a free life review", to: "/engines/coaching", variant: "primary" },
+    { label: "Try the meaning map", to: "/engines/paradigm", variant: "outline" },
+    { label: "Spot symptom patterns", to: "/engines/diagnosis", variant: "soft" },
+    { label: "Trace dependency loops", to: "/engines/needs-dependency", variant: "ghost" },
+    { label: "Browse all tools", to: "/tools", variant: "outline" },
+    { label: "Explore books", to: "/books", variant: "soft" },
+  ],
 };

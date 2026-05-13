@@ -28,6 +28,8 @@ html.theme-earth {
   --v3-hero-tint-b: rgba(255, 252, 248, 0.5);
   --v3-tools-tint-a: rgba(107, 125, 95, 0.12);
   --v3-books-tint-a: rgba(156, 92, 64, 0.1);
+  /* Flat “white” panels alternating with gradient bands on Home */
+  --v3-band-solid-bg: #fffefb;
 }
 
 html.theme-cosmic {

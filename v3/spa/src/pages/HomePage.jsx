@@ -30,39 +30,52 @@ function ToolCoverLink({ to, src, alt }) {
   );
 }
 
+const bridgeCtaClass = (variant) => {
+  const base = "v3-btn";
+  switch (variant) {
+    case "primary":
+      return `${base} v3-btn--primary`;
+    case "ghost":
+      return `${base} v3-btn--ghost`;
+    case "soft":
+      return `${base} v3-btn--soft`;
+    case "outline":
+    default:
+      return `${base} v3-btn--outline`;
+  }
+};
+
 
 export default function HomePage() {
   return (
     <div className="stack v3-home">
-      <section className="surface v3-hero v3-hero--statement">
+      <section className="surface v3-hero--statement v3-section-band--gradient">
         <div className="v3-hero__inner">
           <h1 className="v3-hero-title v3-hero-title--single">{homeHero.thesis}</h1>
         </div>
       </section>
 
-      <section className="surface v3-section--breathable v3-bridge">
-        <h2 className="v3-section-title">{homeBridge.title}</h2>
-        <p className="v3-lead v3-bridge__intro">{homeBridge.intro}</p>
-        <ul className="v3-bridge-list">
-          {homeBridge.bullets.map((item) => (
-            <li key={item.label}>
+      <section className="surface v3-section--breathable v3-bridge v3-section-band--solid" aria-label="Introduction">
+        <p className="v3-lead v3-bridge__intro v3-bridge__intro--center">{homeBridge.intro}</p>
+        <ul className="v3-bridge-list v3-bridge-list--layered">
+          {homeBridge.bullets.map((item, i) => (
+            <li key={item.label} style={{ "--v3-bridge-layer": i }}>
               <strong>{item.label}.</strong> {item.text}
             </li>
           ))}
         </ul>
-        <div className="v3-audit-cta">
-          <Link className="v3-btn v3-btn--primary" to={homeBridge.ctaPrimary.to}>
-            {homeBridge.ctaPrimary.label}
-          </Link>
-          <Link className="v3-btn v3-btn--outline" to={homeBridge.ctaSecondary.to}>
-            {homeBridge.ctaSecondary.label}
-          </Link>
+        <div className="v3-bridge-cta">
+          {homeBridge.ctas.map((cta) => (
+            <Link key={cta.label} className={bridgeCtaClass(cta.variant)} to={cta.to}>
+              {cta.label}
+            </Link>
+          ))}
         </div>
       </section>
 
       <TestimonialStack />
 
-      <section className="surface v3-section--breathable">
+      <section className="surface v3-section--breathable v3-section-band--solid">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/tools">Tools you can use online</Link>
@@ -80,7 +93,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-section--breathable">
+      <section className="surface v3-section--breathable v3-section-band--gradient">
         <div className="v3-section-head">
           <h2 className="v3-section-title">
             <Link to="/books">Books</Link>
@@ -95,7 +108,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="surface v3-disclosures v3-section--breathable">
+      <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid">
         <details className="v3-details">
           <summary>How these works fit together</summary>
           <div className="v3-details__body">
