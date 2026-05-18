@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint . --ext .js,.jsx",
     "test": "node --test tests/outlier-aptitude-scoring.test.mjs",
+    "build:timezones": "node scripts/build-timezones.mjs",
     "v3:dev": "vite --config v3/vite.config.js",
     "v3:build": "vite build --config v3/vite.config.js",
     "v3:preview": "vite preview --config v3/vite.config.js"

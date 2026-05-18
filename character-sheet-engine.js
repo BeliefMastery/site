@@ -51,7 +51,8 @@ export class CharacterSheetEngine {
     if (!select || !Array.isArray(TIMEZONES)) return;
     if (select.options.length > 1) return;
 
-    TIMEZONES.forEach((tz) => {
+    const sorted = [...TIMEZONES].sort((a, b) => a.name.localeCompare(b.name));
+    sorted.forEach((tz) => {
       const option = document.createElement('option');
       const countries = Array.isArray(tz.countries) ? tz.countries.join(', ') : '';
       option.value = tz.name;
@@ -61,10 +62,9 @@ export class CharacterSheetEngine {
   }
 
   getSampleTimeZone() {
-    const candidates = ['Etc/UTC', 'UTC', 'Europe/London'];
     const timeZoneList = Array.isArray(TIMEZONES) ? TIMEZONES : [];
-    const match = candidates.find((candidate) => timeZoneList.some((tz) => tz.name === candidate));
-    return match || timeZoneList[0]?.name || '';
+    if (timeZoneList.some((tz) => tz.name === 'Etc/UTC')) return 'Etc/UTC';
+    return timeZoneList[0]?.name || '';
   }
 
   /**
@@ -309,7 +309,6 @@ export class CharacterSheetEngine {
       this.setFieldValue('timeZone', this.getSampleTimeZone());
       this.setFieldValue('birthLatitude', '51.5074');
       this.setFieldValue('birthLongitude', '-0.1278');
-      this.setFieldValue('birthLocation', 'Sample City');
       this.setFieldValue('sunSign', sunSign);
       this.setFieldValue('moonSign', moonSign);
       this.setFieldValue('ascendantSign', ascendantSign);
@@ -352,6 +351,91 @@ export class CharacterSheetEngine {
     }
   }
 
+  hasMoonAscendantCalcInputs() {
+    const birthDate = document.getElementById('birthDate')?.value;
+    const birthTime = document.getElementById('birthTime')?.value;
+    const timeZone = document.getElementById('timeZone')?.value;
+    const latitude = document.getElementById('birthLatitude')?.value;
+    const longitude = document.getElementById('birthLongitude')?.value;
+    return Boolean(birthDate && birthTime && timeZone && latitude && longitude);
+  }
+
+  needsMoonAscendantComputation() {
+    const moonSign = document.getElementById('moonSign')?.value?.trim();
+    const ascendantSign = document.getElementById('ascendantSign')?.value?.trim();
+    return (!moonSign || !ascendantSign) && this.hasMoonAscendantCalcInputs();
+  }
+
+  /**
+   * Compute Moon and Ascendant from birth date, time, timezone, and coordinates.
+   * @returns {Promise<{ok: boolean, reason?: string, message?: string}>}
+   */
+  async computeMoonAndAscendantFromBirthInputs() {
+    const birthDateInput = document.getElementById('birthDate');
+    const birthTimeInput = document.getElementById('birthTime');
+    const timeZoneInput = document.getElementById('timeZone');
+    const latitudeInput = document.getElementById('birthLatitude');
+    const longitudeInput = document.getElementById('birthLongitude');
+
+    if (
+      !birthDateInput?.value
+      || !birthTimeInput?.value
+      || !timeZoneInput?.value
+      || !latitudeInput?.value
+      || !longitudeInput?.value
+    ) {
+      return { ok: false, reason: 'incomplete_inputs' };
+    }
+
+    await this.loadAstronomyEngine();
+
+    const utcDate = this.createUtcDateFromInputs(
+      birthDateInput.value,
+      birthTimeInput.value,
+      timeZoneInput.value
+    );
+    const julianDate = this.calculateJulianDate(utcDate);
+    const latitude = parseFloat(latitudeInput.value);
+    const longitude = parseFloat(longitudeInput.value);
+
+    if (
+      Number.isNaN(latitude) || Number.isNaN(longitude)
+      || latitude < -90 || latitude > 90
+      || longitude < -180 || longitude > 180
+    ) {
+      return {
+        ok: false,
+        reason: 'invalid_coordinates',
+        message: 'Latitude/longitude must be valid decimal degrees.'
+      };
+    }
+
+    let moonLongitude = null;
+    if (typeof Astronomy.EclipticGeoMoon === 'function') {
+      moonLongitude = Astronomy.EclipticGeoMoon(utcDate)?.elon ?? null;
+    } else if (typeof Astronomy.Ecliptic === 'function' && typeof Astronomy.GeoMoon === 'function') {
+      moonLongitude = Astronomy.Ecliptic(Astronomy.GeoMoon(utcDate))?.elon ?? null;
+    }
+    if (moonLongitude !== null) {
+      this.setFieldValue('moonSign', this.getZodiacFromLongitude(moonLongitude));
+    }
+
+    const ascendantLongitude = this.calculateAscendantLongitude(julianDate, latitude, longitude);
+    this.setFieldValue('ascendantSign', this.getZodiacFromLongitude(ascendantLongitude));
+
+    const moonSign = document.getElementById('moonSign')?.value?.trim();
+    const ascendantSign = document.getElementById('ascendantSign')?.value?.trim();
+    if (!moonSign || !ascendantSign) {
+      return {
+        ok: false,
+        reason: 'compute_failed',
+        message: 'Could not compute Moon/Ascendant — check birth time, time zone, and coordinates.'
+      };
+    }
+
+    return { ok: true };
+  }
+
   async calculateFromBirthDate() {
     try {
       await this.loadAstrologyData();
@@ -381,59 +465,25 @@ export class CharacterSheetEngine {
       this.setFieldValue('mayanTone', MAYAN_TONES[mayanData.tone]?.name || '');
       this.setFieldValue('mayanKin', MAYAN_SEALS[mayanData.seal]?.name || '');
 
-      const birthTimeInput = document.getElementById('birthTime');
-      const timeZoneInput = document.getElementById('timeZone');
-      const latitudeInput = document.getElementById('birthLatitude');
-      const longitudeInput = document.getElementById('birthLongitude');
+      const moonResult = await this.computeMoonAndAscendantFromBirthInputs();
+      if (moonResult.reason === 'incomplete_inputs') {
+        const birthTimeInput = document.getElementById('birthTime');
+        const timeZoneInput = document.getElementById('timeZone');
+        const latitudeInput = document.getElementById('birthLatitude');
+        const longitudeInput = document.getElementById('birthLongitude');
+        const wantsMoonAscendant = timeZoneInput?.value !== ''
+          || latitudeInput?.value
+          || longitudeInput?.value;
 
-      const wantsMoonAscendant = timeZoneInput?.value !== ''
-        || latitudeInput?.value
-        || longitudeInput?.value;
-
-      const hasMoonInputs = birthTimeInput?.value
-        && timeZoneInput?.value !== ''
-        && latitudeInput?.value
-        && longitudeInput?.value;
-
-      if (hasMoonInputs) {
-        await this.loadAstronomyEngine();
-
-        const utcDate = this.createUtcDateFromInputs(
-          birthDateInput.value,
-          birthTimeInput.value,
-          timeZoneInput.value
-        );
-        const julianDate = this.calculateJulianDate(utcDate);
-        const latitude = parseFloat(latitudeInput.value);
-        const longitude = parseFloat(longitudeInput.value);
-
-        if (
-          Number.isNaN(latitude) || Number.isNaN(longitude)
-          || latitude < -90 || latitude > 90
-          || longitude < -180 || longitude > 180
-        ) {
-          ErrorHandler.showUserError('Latitude/longitude must be valid decimal degrees.');
-          return;
+        if (wantsMoonAscendant) {
+          this.setFieldError('birthTime', !birthTimeInput?.value);
+          this.setFieldError('timeZone', timeZoneInput?.value === '');
+          this.setFieldError('birthLatitude', !latitudeInput?.value);
+          this.setFieldError('birthLongitude', !longitudeInput?.value);
+          ErrorHandler.showUserError('To calculate Moon and Ascendant, enter birth time, time zone, latitude, and longitude.');
         }
-
-        let moonLongitude = null;
-        if (typeof Astronomy.EclipticGeoMoon === 'function') {
-          moonLongitude = Astronomy.EclipticGeoMoon(utcDate)?.elon ?? null;
-        } else if (typeof Astronomy.Ecliptic === 'function' && typeof Astronomy.GeoMoon === 'function') {
-          moonLongitude = Astronomy.Ecliptic(Astronomy.GeoMoon(utcDate))?.elon ?? null;
-        }
-        if (moonLongitude !== null) {
-          this.setFieldValue('moonSign', this.getZodiacFromLongitude(moonLongitude));
-        }
-
-        const ascendantLongitude = this.calculateAscendantLongitude(julianDate, latitude, longitude);
-        this.setFieldValue('ascendantSign', this.getZodiacFromLongitude(ascendantLongitude));
-      } else if (wantsMoonAscendant) {
-        this.setFieldError('birthTime', !birthTimeInput?.value);
-        this.setFieldError('timeZone', timeZoneInput?.value === '');
-        this.setFieldError('birthLatitude', !latitudeInput?.value);
-        this.setFieldError('birthLongitude', !longitudeInput?.value);
-        ErrorHandler.showUserError('To calculate Moon and Ascendant, enter birth time, time zone, latitude, and longitude.');
+      } else if (!moonResult.ok && moonResult.message) {
+        ErrorHandler.showUserError(moonResult.message);
       }
     } catch (error) {
       this.debugReporter.logError(error, 'calculateFromBirthDate');
@@ -448,10 +498,17 @@ export class CharacterSheetEngine {
   async generateCharacter() {
     try {
       await this.loadAstrologyData();
-      
-      // Collect form data
+
+      if (this.needsMoonAscendantComputation()) {
+        const moonResult = await this.computeMoonAndAscendantFromBirthInputs();
+        if (!moonResult.ok && moonResult.message) {
+          ErrorHandler.showUserError(moonResult.message);
+          return;
+        }
+      }
+
       const formData = this.collectFormData();
-      
+
       if (!this.validateFormData(formData)) {
         return;
       }
@@ -484,7 +541,6 @@ export class CharacterSheetEngine {
       timeZone: document.getElementById('timeZone')?.value || '',
       birthLatitude: document.getElementById('birthLatitude')?.value || '',
       birthLongitude: document.getElementById('birthLongitude')?.value || '',
-      birthLocation: document.getElementById('birthLocation')?.value || '',
       sunSign: document.getElementById('sunSign')?.value || '',
       moonSign: document.getElementById('moonSign')?.value || '',
       ascendantSign: document.getElementById('ascendantSign')?.value || '',
@@ -540,6 +596,24 @@ export class CharacterSheetEngine {
     });
 
     if (missingFields.length) {
+      const missingMoon = missingFields.some((f) => f.key === 'moonSign' || f.key === 'ascendantSign');
+      const hasCalcInputs = Boolean(
+        String(formData.birthTime || '').trim()
+        && String(formData.timeZone || '').trim()
+        && String(formData.birthLatitude || '').trim()
+        && String(formData.birthLongitude || '').trim()
+      );
+
+      if (missingMoon && hasCalcInputs) {
+        ['birthTime', 'timeZone', 'birthLatitude', 'birthLongitude', 'moonSign', 'ascendantSign'].forEach((key) => {
+          this.setFieldError(key, missingFields.some((f) => f.key === key));
+        });
+        ErrorHandler.showUserError(
+          'Could not compute Moon/Ascendant — check birth time, time zone, and coordinates.'
+        );
+        return false;
+      }
+
       ErrorHandler.showUserError(`Please complete the ${missingFields[0].label} field.`);
       return false;
     }
@@ -748,6 +822,13 @@ export class CharacterSheetEngine {
       innovativeOutcomes,
       flaws,
       astrologyData,
+      birthMetadata: {
+        birthDate: formData.birthDate,
+        birthTime: formData.birthTime,
+        timeZone: formData.timeZone,
+        birthLatitude: formData.birthLatitude,
+        birthLongitude: formData.birthLongitude
+      },
       timestamp: new Date().toISOString()
     };
   }

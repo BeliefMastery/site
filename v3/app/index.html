@@ -5,17 +5,41 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Moved — Belief Mastery</title>
   <link rel="canonical" href="https://beliefmastery.github.io/site/#/" />
-  <script>
-    (function () {
-      var tail = (window.location.search || "") + (window.location.hash || "#/");
-      window.location.replace(window.location.origin + "/site/" + tail);
-    })();
-  </script>
   <noscript>
     <meta http-equiv="refresh" content="0; url=/site/" />
   </noscript>
 </head>
 <body>
-  <p>The app now lives at the site root. <a href="/site/">Open Belief Mastery</a>.</p>
+  <p id="bm-v3-app-fallback">The app now lives at the site root. <a id="bm-v3-app-link" href="/site/">Open Belief Mastery</a></p>
+  <script>
+    (function () {
+      var tail = (window.location.search || "") + (window.location.hash || "#/");
+      var dest = window.location.origin + "/site/" + tail;
+      var link = document.getElementById("bm-v3-app-link");
+      if (link) link.setAttribute("href", dest);
+      var k = "bm_v3app_bounce";
+      try {
+        var now = Date.now();
+        var o = JSON.parse(sessionStorage.getItem(k) || "null");
+        var n = o && now - o.t < 5000 ? o.n + 1 : 1;
+        if (n >= 6) {
+          sessionStorage.removeItem(k);
+          document.body.innerHTML =
+            "<main style=\"font-family:system-ui,sans-serif;padding:1.5rem;max-width:42rem;line-height:1.5\">" +
+            "<h1 style=\"font-size:1.15rem\">Could not open the site automatically</h1>" +
+            "<p>Your browser may be using an <strong>old cached copy</strong> of the homepage that keeps sending you here.</p>" +
+            "<p><a href=\"" +
+            dest +
+            "\">Open Belief Mastery</a> — or clear <em>cached images and files</em> for this site, then try again.</p>" +
+            "</main>";
+          return;
+        }
+        sessionStorage.setItem(k, JSON.stringify({ t: now, n: n }));
+      } catch (e) {
+        /* private mode / blocked storage */
+      }
+      window.location.replace(dest);
+    })();
+  </script>
 </body>
 </html>
