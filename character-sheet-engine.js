@@ -788,6 +788,28 @@ export class CharacterSheetEngine {
       .replace(/[^a-z]/g, '');
   }
 
+  normalizeContextKey(context) {
+    return String(context || '')
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  dedupeModifiers(modifiers, maxItems = 10) {
+    const seen = new Set();
+    const result = [];
+    for (const entry of modifiers) {
+      const key = this.normalizeContextKey(entry.context);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      result.push(entry);
+      if (result.length >= maxItems) break;
+    }
+    return result;
+  }
+
   buildCharacterSheet(formData, astrologyData) {
     // Calculate D&D stats from astrological data
     const baseStats = this.calculateBaseStats(astrologyData);
@@ -801,7 +823,7 @@ export class CharacterSheetEngine {
     const proficiencies = this.generateProficiencies(astrologyData, characterClass);
     const traits = this.generateTraits(astrologyData);
     const savingThrows = this.generateSavingThrows(baseStats, characterClass);
-    const contextBonusModifiers = this.generateContextBonusModifiers(astrologyData, characterClass, proficiencies, traits);
+    const contextBonusModifiers = this.generateContextBonusModifiers(astrologyData, characterClass, proficiencies);
     
     // Generate Innovative Outcomes (theme-derived from proficiencies, traits, context modifiers)
     const innovativeOutcomes = this.generateInnovativeOutcomes(astrologyData, characterClass, proficiencies, traits, contextBonusModifiers);
@@ -1081,10 +1103,14 @@ export class CharacterSheetEngine {
 
   generateTraits(astrologyData) {
     const traits = [];
-    
-    // Sun sign traits
+    const seen = new Set();
+
     if (astrologyData.western.sun) {
-      astrologyData.western.sun.keyTraits.forEach(trait => {
+      const sunTraits = (astrologyData.western.sun.keyTraits || []).slice(0, 2);
+      sunTraits.forEach((trait) => {
+        const key = this.normalizeContextKey(trait);
+        if (!key || seen.has(key)) return;
+        seen.add(key);
         traits.push({
           name: trait,
           source: `Sun Sign (${SecurityUtils.sanitizeHTML(astrologyData.western.sun.name || '')})`,
@@ -1092,18 +1118,24 @@ export class CharacterSheetEngine {
         });
       });
     }
-    
-    // Mayan seal ability — use theme keywords (e.g. Spirit & Communication) not system terms
+
     if (astrologyData.mayan.seal) {
       const seal = astrologyData.mayan.seal;
       const themeLabel = seal.theme || seal.name || '';
-      traits.push({
-        name: seal.ability.split(' - ')[0],
-        source: themeLabel ? `${SecurityUtils.sanitizeHTML(themeLabel)} (${SecurityUtils.sanitizeHTML(seal.name || '')})` : SecurityUtils.sanitizeHTML(seal.name || ''),
-        modifier: '+2'
-      });
+      const name = seal.ability.split(' - ')[0];
+      const key = this.normalizeContextKey(name);
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        traits.push({
+          name,
+          source: themeLabel
+            ? `${SecurityUtils.sanitizeHTML(themeLabel)} (${SecurityUtils.sanitizeHTML(seal.name || '')})`
+            : SecurityUtils.sanitizeHTML(seal.name || ''),
+          modifier: '+2'
+        });
+      }
     }
-    
+
     return traits;
   }
 
@@ -1141,11 +1173,10 @@ export class CharacterSheetEngine {
     return savingThrows;
   }
 
-  generateContextBonusModifiers(astrologyData, characterClass, proficiencies, traits) {
+  generateContextBonusModifiers(astrologyData, characterClass, proficiencies) {
     const modifiers = [];
-    
-    // Each proficiency becomes a context where you receive a bonus
-    (proficiencies || []).forEach((prof, idx) => {
+
+    (proficiencies || []).slice(0, 5).forEach((prof, idx) => {
       const tier = [2, 2, 1, 1, 1][idx % 5];
       modifiers.push({
         context: prof,
@@ -1153,42 +1184,16 @@ export class CharacterSheetEngine {
         source: 'Proficiency'
       });
     });
-    
-    // Traits add context-specific modifiers
-    (traits || []).forEach((trait, idx) => {
-      const mod = trait.modifier || '+1';
-      modifiers.push({
-        context: trait.name,
-        modifier: mod,
-        source: trait.source || 'Trait'
-      });
-    });
-    
-    // Astrological context bonuses
-    if (astrologyData.western.sun?.element === 'Fire') {
-      modifiers.push({ context: 'Initiative and decisive action', modifier: '+2', source: 'Sun (Fire)' });
-    }
-    if (astrologyData.western.sun?.element === 'Water') {
-      modifiers.push({ context: 'Empathic listening and emotional attunement', modifier: '+2', source: 'Sun (Water)' });
-    }
-    if (astrologyData.western.sun?.element === 'Air') {
-      modifiers.push({ context: 'Strategic communication and idea synthesis', modifier: '+2', source: 'Sun (Air)' });
-    }
-    if (astrologyData.western.sun?.element === 'Earth') {
-      modifiers.push({ context: 'Operational planning and grounded execution', modifier: '+2', source: 'Sun (Earth)' });
-    }
+
     if (astrologyData.chinese.animal?.name === 'Monkey') {
-      modifiers.push({ context: 'Adaptability and quick pivots', modifier: '+1', source: 'Chinese (Monkey)' });
+      modifiers.push({
+        context: 'Adaptability and quick pivots',
+        modifier: '+1',
+        source: 'Chinese (Monkey)'
+      });
     }
-    
-    // Dedupe by context
-    const seen = new Set();
-    return modifiers.filter(m => {
-      const key = m.context.toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    }).slice(0, 12);
+
+    return this.dedupeModifiers(modifiers, 8);
   }
 
   generateInnovativeOutcomes(astrologyData, characterClass, proficiencies, traits, contextBonusModifiers) {
@@ -1437,50 +1442,59 @@ export class CharacterSheetEngine {
         effectiveRange: 'Self or team (20 meters)'
       });
     }
-    
-    return features;
+
+    const seenNames = new Set();
+    return features.filter((feature) => {
+      const key = this.normalizeContextKey(feature.name);
+      if (!key || seenNames.has(key)) return false;
+      seenNames.add(key);
+      return true;
+    });
   }
 
   generateFlaws(astrologyData) {
     const flaws = [];
-    const getScaledModifier = (index, scale) => {
-      const tier = scale[index % scale.length];
-      return tier > 0 ? `+${tier}` : `${tier}`;
+    const seen = new Set();
+    const sunScale = [-2, -1, -2, -3];
+    const addFlaw = (name, source, modifier) => {
+      const key = this.normalizeContextKey(name);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      flaws.push({ name, source, modifier });
     };
-    
-    // Sun sign challenges
+
     if (astrologyData.western.sun) {
-      const sunScale = [-2, -1, -2, -3];
-      astrologyData.western.sun.challenges.forEach(challenge => {
-        const modifier = getScaledModifier(flaws.length, sunScale);
-        flaws.push({
-          name: challenge,
-          source: `Sun Sign (${SecurityUtils.sanitizeHTML(astrologyData.western.sun.name || '')})`,
+      (astrologyData.western.sun.challenges || []).slice(0, 2).forEach((challenge, index) => {
+        const tier = sunScale[index % sunScale.length];
+        const modifier = tier > 0 ? `+${tier}` : `${tier}`;
+        addFlaw(
+          challenge,
+          `Sun Sign (${SecurityUtils.sanitizeHTML(astrologyData.western.sun.name || '')})`,
           modifier
-        });
+        );
       });
     }
-    
-    // Mayan seal negative modifier — use theme keywords, not system terms
+
     if (astrologyData.mayan.seal) {
       const seal = astrologyData.mayan.seal;
       const themeLabel = seal.theme || seal.name || '';
-      flaws.push({
-        name: seal.negativeModifier.split(' - ')[0],
-        source: themeLabel ? `${SecurityUtils.sanitizeHTML(themeLabel)} (${SecurityUtils.sanitizeHTML(seal.name || '')})` : SecurityUtils.sanitizeHTML(seal.name || ''),
-        modifier: '-2'
-      });
+      addFlaw(
+        seal.negativeModifier.split(' - ')[0],
+        themeLabel
+          ? `${SecurityUtils.sanitizeHTML(themeLabel)} (${SecurityUtils.sanitizeHTML(seal.name || '')})`
+          : SecurityUtils.sanitizeHTML(seal.name || ''),
+        '-2'
+      );
     }
-    
-    // Chinese animal challenges
-    if (astrologyData.chinese.animal) {
-      flaws.push({
-        name: astrologyData.chinese.animal.challenges[0],
-        source: `Chinese Animal (${SecurityUtils.sanitizeHTML(astrologyData.chinese.animal.name || '')})`,
-        modifier: '-2'
-      });
+
+    if (astrologyData.chinese.animal?.challenges?.[0]) {
+      addFlaw(
+        astrologyData.chinese.animal.challenges[0],
+        `Chinese Animal (${SecurityUtils.sanitizeHTML(astrologyData.chinese.animal.name || '')})`,
+        '-2'
+      );
     }
-    
+
     return flaws;
   }
 
