@@ -258,7 +258,7 @@
 
   <script type="module">
     // Import performance monitoring and utilities
-    import { initializePerformanceMonitoring } from './shared/performance-monitor.js';
+    import { initializePerformanceMonitoring } from '../../shared/performance-monitor.js';
     
     // Initialize performance monitoring
     if (document.readyState === 'loading') {
@@ -278,7 +278,7 @@
     }
     
     // Import and initialize engine
-    import('./manipulation-engine.js').then(module => {
+    import('../../manipulation-engine.js').then(module => {
       const { ManipulationEngine } = module;
       
       function initEngine() {

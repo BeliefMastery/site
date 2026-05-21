@@ -1487,3 +1487,18 @@ export class ChannelsEngine {
   }
 }
 
+function shouldAutoBootChannelsEngine() {
+  if (typeof document === 'undefined') return false;
+  return Boolean(document.getElementById('questionContainer'));
+}
+
+function bootChannelsEngine() {
+  if (!shouldAutoBootChannelsEngine()) return;
+  window.channelsEngine = new ChannelsEngine();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootChannelsEngine);
+} else {
+  bootChannelsEngine();
+}

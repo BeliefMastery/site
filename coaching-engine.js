@@ -173,6 +173,21 @@ export class CoachingEngine {
     `);
     domainsCard.addEventListener('click', () => this.toggleSection('domains'));
     grid.appendChild(domainsCard);
+
+    this.selectDefaultSections();
+  }
+
+  selectDefaultSections() {
+    ['obstacles', 'domains'].forEach((sectionId) => {
+      const card = document.querySelector(`[data-section="${sectionId}"]`);
+      if (!card) return;
+      if (!this.selectedSections.includes(sectionId)) {
+        this.selectedSections.push(sectionId);
+      }
+      card.classList.add('selected');
+    });
+    const startBtn = document.getElementById('startAssessment');
+    if (startBtn) startBtn.disabled = this.selectedSections.length === 0;
   }
 
   toggleSection(sectionId) {
@@ -1446,9 +1461,22 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     this.ui.transition('idle');
     
     this.renderSectionSelection();
-    document.getElementById('startAssessment').disabled = true;
   }
 }
 
-// Note: Engine is initialized explicitly in coaching.html to avoid conflicts
+function shouldAutoBootCoachingEngine() {
+  if (typeof document === 'undefined') return false;
+  return Boolean(document.getElementById('sectionGrid'));
+}
+
+function bootCoachingEngine() {
+  if (!shouldAutoBootCoachingEngine()) return;
+  window.coachingEngine = new CoachingEngine();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootCoachingEngine);
+} else {
+  bootCoachingEngine();
+}
 
