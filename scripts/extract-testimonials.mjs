@@ -16,17 +16,17 @@ const EXCERPT_OVERRIDES = {
     "He's not stuck in a box like most professionals—he's got range, and he's not scared to go deep.",
   "titus-willke-mens-group-2025":
     "The culture of willingness to grow set it apart from any other group work I had done.",
-  "minnie-bobyk-2022":
+  "minnie-bobyk-2021":
     "Belief Mastery has been the innermost profound life's work I have ever experienced to date.",
-  "kristin-nelson-2022":
+  "kristin-nelson-2021":
     "Our whole family unit feels more bonded and harmonious.",
-  "aurora-august-2022":
+  "aurora-august-2021":
     "What felt like a lifetime of searching turned out to be four phone conversations that radically transformed my life.",
-  "shannon-moulds-2022":
+  "shannon-moulds-2021":
     "You've empowered me by giving me the tools to navigate my own inner workings.",
-  "greta-french-kennedy-2022":
+  "greta-french-kennedy-2021":
     "It is truly life changing work. You will never be the same!",
-  "jess-stephenson-2022":
+  "jess-stephenson-2021":
     "Clearing my beliefs has been one of the best decisions I've ever made.",
 };
 
@@ -248,7 +248,8 @@ function parse2025(html) {
 }
 
 /** @param {string} html */
-function parse2022(html) {
+/** Parse testimonials/2021 Testimonials.htm (legacy Word export; was mislabeled 2022). */
+function parse2021(html) {
   const paras = extractParagraphs(html);
   const records = [];
   let currentName = null;
@@ -270,12 +271,12 @@ function parse2022(html) {
     const embedded = last.match(/^(.+?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z'-]+){1,2})\s+(.+)$/);
     if (embedded && parseNameOnly(embedded[2])) {
       currentParas[currentParas.length - 1] = embedded[1].trim();
-      records.push(buildRecord(currentName, 2022, currentParas));
+      records.push(buildRecord(currentName, 2021, currentParas));
       currentName = embedded[2];
       currentParas = [embedded[3].trim()];
       return;
     }
-    records.push(buildRecord(currentName, 2022, currentParas));
+    records.push(buildRecord(currentName, 2021, currentParas));
     currentName = null;
     currentParas = [];
   }
@@ -323,7 +324,7 @@ function postProcess(items) {
       if (gretaIdx >= 0) {
         const gretaBody = t.paragraphs.slice(gretaIdx + 1);
         out.push({ ...t, paragraphs: t.paragraphs.slice(0, gretaIdx) });
-        if (gretaBody.length) out.push(buildRecord("Greta French-Kennedy", 2022, gretaBody));
+        if (gretaBody.length) out.push(buildRecord("Greta French-Kennedy", 2021, gretaBody));
         continue;
       }
       const last = t.paragraphs[t.paragraphs.length - 1] ?? "";
@@ -331,7 +332,7 @@ function postProcess(items) {
       if (split) {
         const mainParas = [...t.paragraphs.slice(0, -1), split[1].trim()].filter(Boolean);
         out.push({ ...t, paragraphs: mainParas });
-        out.push(buildRecord("Greta French-Kennedy", 2022, [split[3].trim()]));
+        out.push(buildRecord("Greta French-Kennedy", 2021, [split[3].trim()]));
         continue;
       }
     }
@@ -364,7 +365,7 @@ function main() {
   fs.writeFileSync(outPath, `${JSON.stringify(records, null, 2)}\n`, "utf8");
 
   console.log(`Wrote ${records.length} × 2025 testimonials → ${outPath}`);
-  console.log("2022 entries are maintained in v3/spa/src/data/testimonials-2022-curated.js");
+  console.log("2021 entries are maintained in v3/spa/src/data/testimonials-2021-curated.js");
   for (const t of records) {
     console.log(`  ${t.by.padEnd(24)}  ${t.excerpt.slice(0, 52)}…`);
   }

@@ -663,7 +663,7 @@ a.v3-testimonial-ticker:focus-visible {
   display: flex;
   gap: var(--v3-space-5);
   width: max-content;
-  animation: v3TestimonialTicker 55s linear infinite;
+  animation: v3TestimonialTicker var(--v3-ticker-duration, 72s) linear infinite;
 }
 
 .v3-testimonial-ticker:hover .v3-testimonial-ticker__track,

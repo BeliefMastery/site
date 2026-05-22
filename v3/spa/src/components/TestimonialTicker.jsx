@@ -1,7 +1,6 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { getTickerTestimonials } from "@/data/testimonials";
-
-const TICKER_ITEMS = getTickerTestimonials();
 
 function TickerItem({ t }) {
   const attribution = t.byShort ?? t.by;
@@ -14,9 +13,12 @@ function TickerItem({ t }) {
 }
 
 export default function TestimonialTicker() {
-  if (!TICKER_ITEMS.length) return null;
+  const items = useMemo(() => getTickerTestimonials(), []);
 
-  const track = [...TICKER_ITEMS, ...TICKER_ITEMS];
+  if (!items.length) return null;
+
+  const durationSec = Math.max(72, items.length * 4.5);
+  const track = [...items, ...items];
 
   return (
     <Link
@@ -30,7 +32,10 @@ export default function TestimonialTicker() {
       </p>
 
       <div className="v3-testimonial-ticker__viewport" aria-hidden="true">
-        <div className="v3-testimonial-ticker__track">
+        <div
+          className="v3-testimonial-ticker__track"
+          style={{ "--v3-ticker-duration": `${durationSec}s` }}
+        >
           {track.map((t, i) => (
             <TickerItem key={`${t.id}-${i}`} t={t} />
           ))}

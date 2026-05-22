@@ -1,9 +1,9 @@
 /**
  * Client testimonials for the SPA.
  * 2025: from scripts/extract-testimonials.mjs (Word HTML).
- * 2022: curated in testimonials-2022-curated.js (author-organized source).
+ * 2021: curated in testimonials-2021-curated.js (author-organized source; Word file was mislabeled 2022).
  */
-import { testimonials2022Curated } from "./testimonials-2022-curated.js";
+import { testimonials2021Curated } from "./testimonials-2021-curated.js";
 
 const testimonials2025 = [
   {
@@ -11,6 +11,8 @@ const testimonials2025 = [
     sourceYear: 2025,
     by: "Nathan Douglas",
     byShort: "N. D.",
+    tickerExcerpt:
+      "He's not stuck in a box like most professionals—he's got range, and he's not scared to go deep.",
     excerpt:
       "He's not stuck in a box like most professionals—he's got range, and he's not scared to go deep.",
     paragraphs: [
@@ -26,6 +28,7 @@ const testimonials2025 = [
     sourceYear: 2025,
     by: "Titus Willke",
     byShort: "T. W.",
+    tickerExcerpt: "Belief Mastery changed how I operate on a daily basis—it changed my life.",
     excerpt: "Belief Mastery changed how I operate on a daily basis—it changed my life.",
     paragraphs: [
       "Initially, I approached Belief Mastery with caution and curiosity. I engaged with the Journey Home and got a lot of profound insight, but it was the deeper processes that followed, the 'Belief Inference', that gave me a step-by-step breakdown of the structures holding me back in life: From unmet needs and unbearable emotional conditions to the contradictions required to transform them, the content was all richly and personally specific to me....",
@@ -43,6 +46,8 @@ const testimonials2025 = [
     by: "Titus Willke",
     byShort: "T. W.",
     role: "Men's group, 2025",
+    tickerExcerpt:
+      "The culture of willingness to grow set it apart from any other group work I had done.",
     excerpt: "The culture of willingness to grow set it apart from any other group work I had done.",
     paragraphs: [
       "I also attended Warwick's men's group – which had a very intriguing methodology. I committed to weekly sessions over nearly a year. The openness, self-reflection, and most of all, the culture of willingness to grow set it apart from any other group work I had done.",
@@ -50,12 +55,18 @@ const testimonials2025 = [
   },
 ];
 
-export const testimonials = [...testimonials2025, ...testimonials2022Curated].sort((a, b) => {
+export const testimonials = [...testimonials2025, ...testimonials2021Curated].sort((a, b) => {
   if (b.sourceYear !== a.sourceYear) return b.sourceYear - a.sourceYear;
   return a.by.localeCompare(b.by);
 });
 
-/** Testimonials suitable for the home ticker (has excerpt, not marked short). */
+/** One scrolling snippet per testimonial (all voices, including Aurora). */
 export function getTickerTestimonials() {
-  return testimonials.filter((t) => t.excerpt && !t.short);
+  return testimonials
+    .map((t) => {
+      const snippet = t.tickerExcerpt ?? t.excerpt;
+      if (!snippet) return null;
+      return { ...t, excerpt: snippet };
+    })
+    .filter(Boolean);
 }
