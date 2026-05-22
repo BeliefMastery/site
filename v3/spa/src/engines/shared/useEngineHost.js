@@ -2,6 +2,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { engineLoaders } from './engineModules';
 import { engineClassNames } from './engineClassNames';
 
+function teardownEngineInstance(instance) {
+  if (!instance) return;
+  try {
+    instance.setExternalQuestionMount?.(null);
+    instance.setExternalResultsMount?.(null);
+  } catch {
+    /* ignore */
+  }
+  try {
+    instance.destroy?.();
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
  * @param {string} engineId
  * @param {{ EngineClass?: string }} [options] - default export name = PascalCase + Engine
@@ -14,6 +29,7 @@ export function useEngineHost(engineId, options = {}) {
   const [ready, setReady] = useState(false);
   const instanceRef = useRef(null);
   const mountedRef = useRef(true);
+  const initGenerationRef = useRef(0);
 
   const bump = useCallback(() => {
     if (mountedRef.current) setTick((t) => t + 1);
@@ -32,13 +48,13 @@ export function useEngineHost(engineId, options = {}) {
       } else if (event === 'selection' || event === 'question' || event === 'refinement-offer') {
         bump();
       }
-      bump();
     },
     [bump]
   );
 
   useEffect(() => {
     mountedRef.current = true;
+    const generation = ++initGenerationRef.current;
     let cancelled = false;
 
     (async () => {
@@ -50,27 +66,27 @@ export function useEngineHost(engineId, options = {}) {
         const EngineClass = (className && mod[className]) || mod.default;
         if (!EngineClass) throw new Error(`Engine class not found for ${engineId}`);
 
-        if (instanceRef.current?.destroy) {
-          try {
-            instanceRef.current.destroy();
-          } catch {
-            /* ignore */
-          }
-        }
+        teardownEngineInstance(instanceRef.current);
 
         const instance = new EngineClass({ externalUI: true, onNotify });
         instanceRef.current = instance;
-        if (cancelled) return;
+        if (cancelled || generation !== initGenerationRef.current) {
+          teardownEngineInstance(instance);
+          return;
+        }
 
         await (instance.ready ?? Promise.resolve());
-        if (cancelled) return;
+        if (cancelled || generation !== initGenerationRef.current) {
+          teardownEngineInstance(instance);
+          return;
+        }
 
         setEngine(instance);
         setPhase(instance.getPhase?.() || 'idle');
         setReady(true);
         setError(null);
       } catch (e) {
-        if (!cancelled) {
+        if (!cancelled && generation === initGenerationRef.current) {
           setError(e?.message || 'Failed to load assessment engine');
           setReady(false);
         }
@@ -80,8 +96,10 @@ export function useEngineHost(engineId, options = {}) {
     return () => {
       cancelled = true;
       mountedRef.current = false;
+      teardownEngineInstance(instanceRef.current);
       instanceRef.current = null;
       setEngine(null);
+      setReady(false);
     };
   }, [engineId, onNotify, options.EngineClass]);
 

@@ -3,12 +3,43 @@
  */
 
 import { spaEmit } from './spa-engine-external.js';
+import { createEmptyWeights } from './allocation-scales.js';
 
 export function buildQuestionSnapshot(engine, question, overrides = {}) {
   if (!question) return null;
   const total =
     overrides.totalQuestions ??
     (Array.isArray(engine.questionSequence) ? engine.questionSequence.length : 0);
+
+  if (question.type === 'allocation' && Array.isArray(question.allocationMembers)) {
+    const memberIds = question.allocationMembers.map((m) => m.id);
+    const stored = engine.answers?.[question.id];
+    const weights =
+      stored?.weights && typeof stored.weights === 'object'
+        ? { ...stored.weights }
+        : createEmptyWeights(memberIds);
+    return {
+      question: {
+        id: question.id,
+        type: 'allocation',
+        text: question.question || question.questionText || '',
+        plainHint:
+          question.description ||
+          'Adjust sliders so the total equals 100%. Other sliders rebalance automatically.',
+        badge: overrides.badge || 'Importance allocation',
+        allocationMembers: question.allocationMembers.map((m) => ({
+          id: m.id,
+          label: m.label || m.mapsTo?.dimension || m.id,
+          hint: m.question,
+        })),
+        allocationWeights: weights,
+        allocationTargetSum: question.allocationTargetSum ?? 100,
+      },
+      currentIndex: engine.currentQuestionIndex ?? 0,
+      totalQuestions: total,
+    };
+  }
+
   const text = question.questionText ?? question.question ?? '';
   const plainHint = question.plainLanguageHint ?? question.description ?? '';
   const initialValue = engine.answers?.[question.id] ?? 5;
@@ -23,6 +54,7 @@ export function buildQuestionSnapshot(engine, question, overrides = {}) {
   return {
     question: {
       id: question.id,
+      type: question.type || 'scaled',
       text,
       plainHint,
       clinicalAnchor: question.clinicalAnchorText || '',

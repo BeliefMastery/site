@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
+import AllocationSliders from './AllocationSliders';
 
-export default function QuestionFlow({
+function QuestionFlow({
   snapshot,
   onNext,
   onPrev,
@@ -17,6 +18,18 @@ export default function QuestionFlow({
 
   if (!q) {
     return <p className="v3-muted">Loading question…</p>;
+  }
+
+  if (q.type === 'allocation' && Array.isArray(q.allocationMembers)) {
+    return (
+      <AllocationSliders
+        snapshot={snapshot}
+        onNext={onNext}
+        onPrev={onPrev}
+        onAbandon={onAbandon}
+        canGoBack={canGoBack}
+      />
+    );
   }
 
   const progress = snapshot.totalQuestions
@@ -79,3 +92,5 @@ export default function QuestionFlow({
     </div>
   );
 }
+
+export default memo(QuestionFlow);

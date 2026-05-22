@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import EngineLayout from '../shared/EngineLayout';
 import ExtendedExplanation from '../shared/ExtendedExplanation';
 import SelectionGrid from '../shared/SelectionGrid';
@@ -11,10 +11,9 @@ const LEAD =
   'Educational DSM-5 symptom mapping for pattern clarity—not a substitute for clinical assessment.';
 
 export default function DiagnosisEngineView({ label }) {
-  const { engine, phase, ready, error, tick, bump } = useEngineHost('diagnosis');
+  const { engine, phase, ready, error, tick } = useEngineHost('diagnosis');
   const [categories, setCategories] = useState([]);
   const [selected, setSelected] = useState([]);
-  const resultsReady = useRef(false);
 
   const loadCategories = useCallback(async () => {
     if (!engine?.getCategorySelectionModel) return;
@@ -32,19 +31,22 @@ export default function DiagnosisEngineView({ label }) {
 
   useEffect(() => {
     if (ready && engine && phase === 'idle') loadCategories();
-  }, [ready, engine, phase, tick, loadCategories]);
+  }, [ready, engine, phase, loadCategories]);
 
-  useEffect(() => {
-    if (phase === 'results') resultsReady.current = true;
-  }, [phase]);
+  const snapshot = useMemo(() => engine?.getQuestionSnapshot?.(), [engine, tick]);
+  const refinement = useMemo(() => engine?.getRefinementOffer?.(), [engine, tick]);
 
-  const snapshot = engine?.getQuestionSnapshot?.();
-  const refinement = engine?.getRefinementOffer?.();
+  const onToggle = useCallback(
+    (id) => {
+      engine?.toggleCategoryFromExternal?.(id);
+      setSelected(engine.getSelectedCategoryKeys?.() || []);
+    },
+    [engine]
+  );
 
-  const onToggle = (id) => {
-    engine?.toggleCategoryFromExternal?.(id);
-    setSelected(engine.getSelectedCategoryKeys?.() || []);
-  };
+  const onNext = useCallback((v) => engine?.nextQuestionFromExternal?.(v), [engine]);
+  const onPrev = useCallback((v) => engine?.prevQuestionFromExternal?.(v), [engine]);
+  const onAbandon = useCallback(() => engine?.abandonAssessment?.(), [engine]);
 
   if (error) {
     return (
@@ -97,9 +99,9 @@ export default function DiagnosisEngineView({ label }) {
           snapshot={snapshot}
           sliderStep={0.5}
           canGoBack={snapshot.currentIndex > 0}
-          onNext={(v) => engine.nextQuestionFromExternal(v)}
-          onPrev={(v) => engine.prevQuestionFromExternal(v)}
-          onAbandon={() => engine.abandonAssessment?.()}
+          onNext={onNext}
+          onPrev={onPrev}
+          onAbandon={onAbandon}
         />
       )}
 
@@ -135,7 +137,7 @@ export default function DiagnosisEngineView({ label }) {
 
       {phase === 'results' && (
         <>
-          <ResultsHtmlBridge engine={engine} ready={ready} />
+          <ResultsHtmlBridge engine={engine} ready={ready} phase={phase} />
           <ExportActions engine={engine} showSample={false} />
         </>
       )}

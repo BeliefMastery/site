@@ -1405,3 +1405,37 @@ article.surface.progress-card.v3-section-band--gradient > .v3-muted {
   display: none;
 }
 
+.bm-allocation-flow .bm-allocation-sum {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.bm-allocation-sum--ok strong {
+  color: var(--v3-accent);
+}
+
+.bm-allocation-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.bm-allocation-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--v3-surface-border);
+}
+
+.bm-allocation-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  text-transform: capitalize;
+}
+
+.bm-allocation-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--v3-muted);
+}
+

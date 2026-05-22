@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EngineLayout from './EngineLayout';
 import ExtendedExplanation from './ExtendedExplanation';
 import SelectionGrid from './SelectionGrid';
@@ -20,9 +20,10 @@ export default function QuestionnaireEngineView({
   selectionHint,
   defaultSelections,
 }) {
-  const { engine, phase, ready, error, tick, bump } = useEngineHost(engineId);
+  const { engine, phase, ready, error, tick } = useEngineHost(engineId);
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState([]);
+  const defaultsAppliedRef = useRef(false);
 
   const refreshSelection = useCallback(async () => {
     if (!engine?.getSelectionModel) return;
@@ -41,20 +42,41 @@ export default function QuestionnaireEngineView({
 
   useEffect(() => {
     if (ready && engine && phase === 'idle') refreshSelection();
-  }, [ready, engine, phase, tick, refreshSelection]);
+  }, [ready, engine, phase, refreshSelection]);
 
   useEffect(() => {
-    if (ready && engine && defaultSelections?.length && phase === 'idle') {
-      defaultSelections.forEach((id) => {
-        if (!selected.includes(id)) engine?.toggleSelectionFromExternal?.(id);
-      });
-      refreshSelection();
-    }
-  }, [ready, engine]);
+    if (!ready || !engine || !defaultSelections?.length || phase !== 'idle') return;
+    if (defaultsAppliedRef.current) return;
+    defaultsAppliedRef.current = true;
+    defaultSelections.forEach((id) => {
+      engine.toggleSelectionFromExternal?.(id);
+    });
+    refreshSelection();
+  }, [ready, engine, phase, defaultSelections, refreshSelection]);
 
-  const snapshot = engine?.getQuestionSnapshot?.();
-  const domQuestions = engine?.usesDomQuestions?.() === true;
+  useEffect(() => {
+    if (phase === 'idle') defaultsAppliedRef.current = false;
+  }, [phase]);
+
+  const snapshot = useMemo(() => engine?.getQuestionSnapshot?.(), [engine, tick]);
+  const isAllocation = snapshot?.question?.type === 'allocation';
+  const domQuestions = !isAllocation && engine?.usesDomQuestions?.() === true;
   const showSelection = items.length > 0 && typeof engine?.getSelectionModel === 'function';
+  const questionKey = snapshot?.question?.id ?? `${snapshot?.currentIndex ?? 0}`;
+
+  const onToggleSelection = useCallback(
+    (id) => {
+      engine?.toggleSelectionFromExternal?.(id);
+      const ids =
+        engine.getSelectedIds?.() ?? engine.selectedSections ?? engine.selectedCategories ?? [];
+      setSelected([...ids]);
+    },
+    [engine]
+  );
+
+  const onNext = useCallback((v) => engine?.nextQuestionFromExternal?.(v), [engine]);
+  const onPrev = useCallback((v) => engine?.prevQuestionFromExternal?.(v), [engine]);
+  const onAbandon = useCallback(() => engine?.resetAssessment?.(), [engine]);
 
   if (error) {
     return (
@@ -81,15 +103,7 @@ export default function QuestionnaireEngineView({
             <>
               <h2 className="bm-engine-heading">{selectionTitle}</h2>
               {selectionHint ? <p className="v3-muted">{selectionHint}</p> : null}
-              <SelectionGrid
-                items={items}
-                selectedIds={selected}
-                onToggle={(id) => {
-                  engine.toggleSelectionFromExternal?.(id);
-                  bump();
-                  refreshSelection();
-                }}
-              />
+              <SelectionGrid items={items} selectedIds={selected} onToggle={onToggleSelection} />
             </>
           ) : null}
           <div className="bm-engine-actions">
@@ -107,22 +121,22 @@ export default function QuestionnaireEngineView({
       )}
 
       {phase === 'assessment' && domQuestions ? (
-        <QuestionHtmlBridge engine={engine} tick={tick} phase={phase} />
+        <QuestionHtmlBridge engine={engine} phase={phase} questionKey={questionKey} />
       ) : null}
 
       {phase === 'assessment' && !domQuestions && snapshot ? (
         <QuestionFlow
           snapshot={snapshot}
           canGoBack={snapshot.currentIndex > 0}
-          onNext={(v) => engine.nextQuestionFromExternal?.(v)}
-          onPrev={(v) => engine.prevQuestionFromExternal?.(v)}
-          onAbandon={() => engine.resetAssessment?.()}
+          onNext={onNext}
+          onPrev={onPrev}
+          onAbandon={onAbandon}
         />
       ) : null}
 
       {phase === 'results' && (
         <>
-          <ResultsHtmlBridge engine={engine} ready={ready} />
+          <ResultsHtmlBridge engine={engine} ready={ready} phase={phase} />
           <ExportActions engine={engine} showSample={false} />
         </>
       )}

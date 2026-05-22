@@ -47,6 +47,14 @@ When `externalUI` is true:
 
 Engines must not auto-boot when loaded from the Vite SPA bundle. Gate module-level boot on `document.body.dataset.bmLegacyPage === 'true'` (set only on archived HTML pages).
 
+## Allocation questions (paradigm Phase 2 pilot)
+
+- Engine emits `question.type === 'allocation'` with `allocationMembers[]`.
+- Snapshot includes `allocationWeights` (sum to 100).
+- React: [`AllocationSliders.jsx`](../v3/spa/src/engines/shared/AllocationSliders.jsx).
+- Helpers: [`shared/allocation-scales.js`](../shared/allocation-scales.js).
+- `nextQuestionFromExternal({ weights, sum })` — engine maps to per-member 1–7 for legacy scoring.
+
 ## React kit
 
 See `v3/spa/src/engines/shared/`.

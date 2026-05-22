@@ -3,11 +3,18 @@ import { useEffect, useRef } from 'react';
 /**
  * Renders engine-generated results HTML into a React-hosted div.
  */
-export default function ResultsHtmlBridge({ engine, ready }) {
+export default function ResultsHtmlBridge({ engine, ready, phase }) {
   const ref = useRef(null);
+  const hydratedRef = useRef(false);
 
   useEffect(() => {
     if (!ready || !engine || !ref.current) return;
+    if (phase !== 'results') {
+      hydratedRef.current = false;
+      return;
+    }
+    if (hydratedRef.current) return;
+
     engine.setExternalResultsMount?.(ref.current);
     const run = async () => {
       if (engine.hydrateResultsView) {
@@ -17,9 +24,15 @@ export default function ResultsHtmlBridge({ engine, ready }) {
       } else if (engine.renderResults) {
         await engine.renderResults(ref.current);
       }
+      hydratedRef.current = true;
     };
     run().catch(console.error);
-  }, [engine, ready]);
+
+    return () => {
+      hydratedRef.current = false;
+      engine.setExternalResultsMount?.(null);
+    };
+  }, [engine, ready, phase]);
 
   return <div ref={ref} className="bm-results-bridge" />;
 }

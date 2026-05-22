@@ -1,3 +1,5 @@
+import { lazy } from "react";
+
 export const navItems = [
   { label: "Home", to: "/" },
   { label: "Tools", to: "/tools" },
@@ -8,31 +10,21 @@ export const navItems = [
 /** Published static engines (archived HTML; iframe embed). */
 const legacyV3 = (file) => `/site/archive/v3-engines/${file}`;
 
-import DiagnosisEngineView from "@/engines/diagnosis/DiagnosisEngineView";
-import CoachingEngineView from "@/engines/coaching/CoachingEngineView";
-import NeedsDependencyEngineView from "@/engines/needs-dependency/NeedsDependencyEngineView";
-import SovereigntySpectrumEngineView from "@/engines/sovereignty-spectrum/SovereigntySpectrumEngineView";
-import ParadigmEngineView from "@/engines/paradigm/ParadigmEngineView";
-import ManipulationEngineView from "@/engines/manipulation/ManipulationEngineView";
-import SovereigntyEngineView from "@/engines/sovereignty/SovereigntyEngineView";
-import ChannelsEngineView from "@/engines/channels/ChannelsEngineView";
-import CharacterSheetEngineView from "@/engines/character-sheet/CharacterSheetEngineView";
-import EntitiesEngineView from "@/engines/entities/EntitiesEngineView";
-import OutlierAptitudeEngineView from "@/engines/outlier-aptitude/OutlierAptitudeEngineView";
-
-/** Native React assessment hosts (no iframe). */
+/** Native React assessment hosts (lazy-loaded; no iframe). */
 export const nativeEngineViews = {
-  diagnosis: DiagnosisEngineView,
-  coaching: CoachingEngineView,
-  "needs-dependency": NeedsDependencyEngineView,
-  "sovereignty-spectrum": SovereigntySpectrumEngineView,
-  paradigm: ParadigmEngineView,
-  manipulation: ManipulationEngineView,
-  sovereignty: SovereigntyEngineView,
-  channels: ChannelsEngineView,
-  "character-sheet": CharacterSheetEngineView,
-  entities: EntitiesEngineView,
-  "outlier-aptitude": OutlierAptitudeEngineView,
+  diagnosis: lazy(() => import("@/engines/diagnosis/DiagnosisEngineView")),
+  coaching: lazy(() => import("@/engines/coaching/CoachingEngineView")),
+  "needs-dependency": lazy(() => import("@/engines/needs-dependency/NeedsDependencyEngineView")),
+  "sovereignty-spectrum": lazy(() =>
+    import("@/engines/sovereignty-spectrum/SovereigntySpectrumEngineView")
+  ),
+  paradigm: lazy(() => import("@/engines/paradigm/ParadigmEngineView")),
+  manipulation: lazy(() => import("@/engines/manipulation/ManipulationEngineView")),
+  sovereignty: lazy(() => import("@/engines/sovereignty/SovereigntyEngineView")),
+  channels: lazy(() => import("@/engines/channels/ChannelsEngineView")),
+  "character-sheet": lazy(() => import("@/engines/character-sheet/CharacterSheetEngineView")),
+  entities: lazy(() => import("@/engines/entities/EntitiesEngineView")),
+  "outlier-aptitude": lazy(() => import("@/engines/outlier-aptitude/OutlierAptitudeEngineView")),
 };
 
 export const engineRoutes = [

@@ -1,7 +1,17 @@
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { engineRoutes, nativeEngineViews } from "@/routes";
 import EngineAdapterView from "@/engines/EngineAdapterView";
+
+function EngineLoading() {
+  return (
+    <section className="stack">
+      <article className="surface">
+        <p className="v3-muted">Loading assessment…</p>
+      </article>
+    </section>
+  );
+}
 
 export default function EngineRoutePage() {
   const { engineId } = useParams();
@@ -19,8 +29,12 @@ export default function EngineRoutePage() {
   }
 
   const NativeView = engineId ? nativeEngineViews[engineId] : undefined;
-  if (typeof NativeView === "function") {
-    return <NativeView label={routeConfig.label} />;
+  if (NativeView) {
+    return (
+      <Suspense fallback={<EngineLoading />}>
+        <NativeView label={routeConfig.label} />
+      </Suspense>
+    );
   }
 
   return <EngineAdapterView label={routeConfig.label} legacyPage={routeConfig.legacyPage} />;

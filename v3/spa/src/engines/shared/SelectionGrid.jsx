@@ -1,12 +1,15 @@
-export default function SelectionGrid({ items, selectedIds, onToggle, emptyLabel = 'No options' }) {
+import { memo } from 'react';
+
+function SelectionGrid({ items, selectedIds, onToggle, emptyLabel = 'No options' }) {
   if (!items?.length) {
     return <p className="v3-muted">{emptyLabel}</p>;
   }
+  const selectedSet = new Set(selectedIds);
   return (
     <div className="bm-selection-grid" role="listbox" aria-multiselectable="true">
       {items.map((item) => {
         const id = item.id ?? item.key;
-        const selected = selectedIds.includes(id);
+        const selected = selectedSet.has(id);
         return (
           <button
             key={id}
@@ -26,3 +29,5 @@ export default function SelectionGrid({ items, selectedIds, onToggle, emptyLabel
     </div>
   );
 }
+
+export default memo(SelectionGrid);

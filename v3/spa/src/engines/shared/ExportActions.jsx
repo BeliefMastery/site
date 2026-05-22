@@ -1,4 +1,6 @@
-export default function ExportActions({ engine, showSample = true }) {
+import { memo } from 'react';
+
+function ExportActions({ engine, showSample = true }) {
   if (!engine) return null;
   return (
     <div className="bm-export-actions">
@@ -25,3 +27,5 @@ export default function ExportActions({ engine, showSample = true }) {
     </div>
   );
 }
+
+export default memo(ExportActions);

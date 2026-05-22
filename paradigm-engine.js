@@ -14,7 +14,14 @@ import {
   attachDomQuestionSpaApi,
   legacyEngineBoot,
   showResultsExternal,
+  standardNextQuestion,
+  standardPrevQuestion,
 } from './shared/spa-questionnaire-host.js';
+import { emitQuestionSnapshot } from './shared/spa-questionnaire-engine.js';
+import {
+  allocationWeightToScale7,
+  buildAllocationAnswer,
+} from './shared/allocation-scales.js';
 
 // Data modules - will be loaded lazily
 let GOOD_LIFE_PARADIGMS, GOD_PERSPECTIVES, PARADIGM_SCORING;
@@ -474,12 +481,70 @@ export class ParadigmEngine {
       this.currentPhase = 2;
       this.currentQuestionIndex = 0;
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
-      
+      if (this.externalUI) {
+        this.collapsePhase2DimensionBlocks();
+      }
+
       this.renderCurrentQuestion();
     } catch (error) {
       this.debugReporter.logError(error, 'buildPhase2Sequence');
       ErrorHandler.showUserError('Failed to load Phase 2. Please refresh the page.');
     }
+  }
+
+  /**
+   * SPA: replace four independent dimension sliders with one linked allocation question per track.
+   */
+  collapsePhase2DimensionBlocks() {
+    const specs = [
+      {
+        memberPrefix: 'p2_dimension_',
+        allocId: 'p2_good_life_dimension_allocation',
+        track: 'good_life',
+        prompt:
+          'How important is each way of understanding "The Good Life"? Distribute 100% across literal, symbolic, esoteric, and mystical emphasis.',
+      },
+      {
+        memberPrefix: 'p2_god_dimension_',
+        allocId: 'p2_god_dimension_allocation',
+        track: 'god',
+        prompt:
+          'How important is each way of understanding God? Distribute 100% across literal, symbolic, esoteric, and mystical emphasis.',
+      },
+    ];
+    let seq = [...this.questionSequence];
+    specs.forEach((spec) => {
+      const members = seq.filter((q) => q.id && q.id.startsWith(spec.memberPrefix));
+      if (members.length < 2) return;
+      const allocQ = {
+        id: spec.allocId,
+        type: 'allocation',
+        category: spec.track,
+        question: spec.prompt,
+        allocationMembers: members.map((m) => ({
+          id: m.id,
+          label: m.mapsTo?.dimension || m.id.replace(spec.memberPrefix, ''),
+          question: m.question,
+          mapsTo: m.mapsTo,
+        })),
+        mapsTo: { category: spec.track },
+      };
+      const firstIdx = seq.findIndex((q) => q.id === members[0].id);
+      seq = seq.filter((q) => !members.includes(q));
+      seq.splice(firstIdx, 0, allocQ);
+    });
+    this.questionSequence = seq;
+  }
+
+  applyAllocationAnswer(allocationQuestion, payload) {
+    const weights = payload?.weights || {};
+    const ids = allocationQuestion.allocationMembers?.map((m) => m.id) || Object.keys(weights);
+    const answer = buildAllocationAnswer(ids, weights);
+    this.answers[allocationQuestion.id] = answer;
+    ids.forEach((id) => {
+      const pct = answer.weights[id] ?? 0;
+      this.answers[id] = allocationWeightToScale7(pct);
+    });
   }
 
   /**
@@ -523,6 +588,14 @@ export class ParadigmEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
+
+    if (this.externalUI && question?.type === 'allocation') {
+      emitQuestionSnapshot(this, question, {
+        badge: this.getPhaseLabel?.(this.currentPhase) || 'Phase 2',
+      });
+      return;
+    }
+
     const container = this.externalUI
       ? this._externalQuestionMount
       : document.getElementById('questionContainer');
@@ -533,9 +606,8 @@ export class ParadigmEngine {
       }
       return;
     }
-    
+
     try {
-    
     let html = '';
     
     // Show phase explanation if this is the first question of a phase
@@ -1962,6 +2034,35 @@ export class ParadigmEngine {
 }
 
 attachDomQuestionSpaApi(ParadigmEngine, { legacyMarkerId: 'questionContainer' });
+
+ParadigmEngine.prototype.usesDomQuestions = function usesDomQuestions() {
+  const q = this.questionSequence?.[this.currentQuestionIndex];
+  return q?.type !== 'allocation';
+};
+
+ParadigmEngine.prototype.nextQuestionFromExternal = function nextQuestionFromExternal(value) {
+  const q = this.questionSequence?.[this.currentQuestionIndex];
+  if (q?.type === 'allocation' && value?.weights) {
+    this.applyAllocationAnswer(q, value);
+    this.currentQuestionIndex++;
+    this.saveProgress?.();
+    if (this.currentQuestionIndex < this.questionSequence.length) {
+      this.renderCurrentQuestion();
+    } else {
+      this.completePhase();
+    }
+    return;
+  }
+  standardNextQuestion(this, value);
+};
+
+ParadigmEngine.prototype.prevQuestionFromExternal = function prevQuestionFromExternal(value) {
+  const q = this.questionSequence?.[this.currentQuestionIndex];
+  if (q?.type === 'allocation' && value?.weights) {
+    this.applyAllocationAnswer(q, value);
+  }
+  standardPrevQuestion(this, value);
+};
 
 function bootParadigmEngine() {
   window.paradigmEngine = new ParadigmEngine();
