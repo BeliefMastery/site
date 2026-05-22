@@ -9,7 +9,7 @@ export default function EngineLayout({ label, lead, children }) {
           <a href="#/">Disclaimers and notices</a> are on the home page.
         </p>
       </article>
-      <div className="v3-engine-native__body">{children}</div>
+      <div className="v3-engine-native__body bm-engine-content">{children}</div>
     </section>
   );
 }

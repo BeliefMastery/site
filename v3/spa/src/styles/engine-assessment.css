@@ -1,0 +1,932 @@
+/**
+ * Unified assessment + report layout for all SPA-hosted engines.
+ * Scoped to .bm-engine-content so shell chrome keeps V3-only tokens.
+ * Legacy --brand/--glass vars are bridged in tokens.css per html.theme-*.
+ */
+
+/* ---------- Shell ---------- */
+.bm-engine-content {
+  padding: var(--v3-space-4);
+  background: var(--v3-surface);
+  border: 1px solid var(--v3-surface-border);
+  border-radius: var(--v3-radius);
+  color: var(--v3-text);
+  box-shadow: var(--shadow-md);
+}
+
+.bm-engine-content :where(h2, h3, h4, h5) {
+  color: var(--brand);
+  font-family: var(--v3-font-display);
+  line-height: 1.25;
+}
+
+.bm-engine-content :where(p, li, label, td, th) {
+  color: var(--v3-text);
+  line-height: 1.6;
+}
+
+.bm-engine-content a {
+  color: var(--link-color);
+  font-weight: 600;
+}
+
+.bm-engine-content a:hover {
+  color: var(--accent-hover);
+}
+
+.bm-engine-content .hidden {
+  display: none !important;
+}
+
+/* ---------- Tool containers (legacy wrappers) ---------- */
+.bm-engine-content :is(
+    .tool-container,
+    .manipulation-container,
+    .archetype-container,
+    .dependency-container,
+    .channels-container,
+    .coaching-container,
+    .needs-dependency-container,
+    .attraction-container,
+    .spectrum-container,
+    .paradigm-container,
+    .relationship-container,
+    .temperament-container,
+    .character-sheet-container,
+    .diagnosis-container,
+    .sovereignty-container
+  ) {
+  max-width: min(var(--layout-content-max), 100%);
+  margin: 0 auto;
+  padding: var(--v3-space-4) var(--v3-space-3);
+  background: var(--glass);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+}
+
+.bm-engine-content .questionnaire-container,
+.bm-engine-content #questionnaire-form,
+.bm-engine-content .tool-wrapper {
+  max-width: min(52rem, 100%);
+  margin: var(--v3-space-4) auto;
+}
+
+/* ---------- Panels ---------- */
+.bm-engine-content .panel {
+  background: var(--glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  margin: var(--v3-space-3) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.bm-engine-content .panel-accent-left {
+  background: var(--accent-panel);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .panel-brand-left {
+  background: var(--brand-panel);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .panel-outline-accent,
+.bm-engine-content .panel-outline-brand {
+  background: var(--glass);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  margin: var(--v3-space-3) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.bm-engine-content .panel-outline-accent {
+  border: 2px solid var(--accent);
+}
+
+.bm-engine-content .panel-outline-brand {
+  border: 2px solid var(--border-medium);
+}
+
+.bm-engine-content .panel-title {
+  color: var(--brand);
+  margin: 0 0 var(--v3-space-3);
+  font-size: 1.35rem;
+}
+
+.bm-engine-content .panel-text {
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0 0 var(--v3-space-3);
+  max-width: 65ch;
+}
+
+/* ---------- Questions ---------- */
+.bm-engine-content .question-block,
+.bm-engine-content .question-card {
+  background: var(--glass);
+  padding: var(--v3-space-4);
+  border-radius: var(--radius);
+  margin-bottom: var(--v3-space-4);
+  border: 1px solid var(--border-subtle);
+}
+
+.bm-engine-content .question-card {
+  background: var(--interactive-panel-tint);
+}
+
+.bm-engine-content .question-card h3,
+.bm-engine-content .question-block h3 {
+  color: var(--brand);
+  margin-top: 0;
+  margin-bottom: var(--v3-space-3);
+  font-size: 1.15rem;
+}
+
+.bm-engine-content .question-plain-hint {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 var(--v3-space-3);
+  padding: var(--v3-space-2) var(--v3-space-3);
+  border-left: 3px solid var(--accent);
+  background: var(--question-hint-bg);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.bm-engine-content .question-clinical-ref,
+.bm-engine-content .bm-question-clinical {
+  margin: 0 0 var(--v3-space-3);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.bm-engine-content .question-clinical-ref summary,
+.bm-engine-content .bm-question-clinical summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.bm-engine-content .question-helper {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: var(--v3-space-2);
+}
+
+/* ---------- Selection grids (legacy + React) ---------- */
+.bm-engine-content :is(
+    .assessment-grid,
+    .paradigm-options,
+    .selection-grid,
+    .section-selection,
+    .category-selection,
+    .diagnosis-options,
+    .pathology-selection,
+    .section-grid,
+    .category-grid,
+    .options-container
+  ),
+.bm-engine-content .bm-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--v3-space-3);
+  margin: var(--v3-space-4) 0 var(--v3-space-3);
+  width: 100%;
+}
+
+.bm-engine-content :is(
+    .assessment-card,
+    .paradigm-card,
+    .paradigm-option,
+    .option-card,
+    .section-card,
+    .choice-box,
+    .diagnosis-card,
+    .category-card,
+    .pathology-card
+  ),
+.bm-engine-content .bm-selection-card {
+  background: var(--glass-light);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--v3-space-2);
+  min-height: 8rem;
+  color: var(--brand);
+  font-family: inherit;
+  width: 100%;
+}
+
+.bm-engine-content .bm-selection-card {
+  appearance: none;
+  position: relative;
+}
+
+.bm-engine-content :is(
+    .assessment-card:hover,
+    .paradigm-card:hover,
+    .option-card:hover,
+    .section-card:hover,
+    .diagnosis-card:hover,
+    .category-card:hover,
+    .bm-selection-card:hover
+  ) {
+  background: var(--card-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--glow-accent);
+}
+
+.bm-engine-content :is(
+    .assessment-card.selected,
+    .paradigm-card.selected,
+    .option-card.selected,
+    .section-card.selected,
+    .diagnosis-card.selected,
+    .category-card.selected,
+    .bm-selection-card--selected
+  ) {
+  border-color: var(--accent) !important;
+  background: var(--accent-panel) !important;
+  box-shadow: 0 0 24px var(--glow-accent) !important;
+}
+
+.bm-engine-content .bm-selection-card__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.bm-engine-content .bm-selection-card__desc,
+.bm-engine-content .bm-selection-card__meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.bm-engine-content .bm-selection-card__badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--accent-panel);
+}
+
+.bm-engine-content .bm-selection-card--suggested:not(.bm-selection-card--selected) {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-medium));
+}
+
+/* ---------- Progress ---------- */
+.bm-engine-content .progress-bar-container,
+.bm-engine-content .progress-bar,
+.bm-engine-content .bm-progress {
+  width: 100%;
+  height: 8px;
+  background: color-mix(in srgb, var(--v3-accent) 12%, var(--v3-surface-border));
+  border-radius: 999px;
+  overflow: hidden;
+  margin: var(--v3-space-3) 0 var(--v3-space-2);
+}
+
+.bm-engine-content .progress-bar-fill,
+.bm-engine-content .progress-fill,
+.bm-engine-content #progressFill,
+.bm-engine-content .bm-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  border-radius: 999px;
+  transition: width 0.25s ease;
+  box-shadow: 0 0 10px var(--glow-accent);
+}
+
+.bm-engine-content .progress-text,
+.bm-engine-content .bm-progress__text {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 0 var(--v3-space-3);
+}
+
+/* ---------- Buttons (legacy engine controls) ---------- */
+.bm-engine-content .btn,
+.bm-engine-content button.action-btn,
+.bm-engine-content .next-btn,
+.bm-engine-content .prev-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: var(--transition);
+  text-decoration: none;
+  min-height: 44px;
+  gap: 0.5rem;
+  background: var(--glass-light);
+  color: var(--brand);
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.bm-engine-content .btn::before,
+.bm-engine-content button.action-btn::before {
+  display: none;
+}
+
+.bm-engine-content .btn-primary,
+.bm-engine-content .next-btn,
+.bm-engine-content #calculate-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover)) !important;
+  border-color: transparent !important;
+  color: var(--v3-on-accent) !important;
+  box-shadow: 0 4px 14px var(--glow-accent);
+}
+
+.bm-engine-content .btn-primary:hover,
+.bm-engine-content .next-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.bm-engine-content .btn-secondary,
+.bm-engine-content .btn-outline,
+.bm-engine-content .prev-btn,
+.bm-engine-content button.secondary {
+  background: color-mix(in srgb, var(--v3-surface) 90%, var(--v3-bg)) !important;
+  border: 1px solid var(--border-medium) !important;
+  color: var(--brand) !important;
+}
+
+.bm-engine-content .btn-secondary:hover,
+.bm-engine-content .prev-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.bm-engine-content .results-actions,
+.bm-engine-content .action-links,
+.bm-engine-content .bm-export-actions,
+.bm-engine-content .bm-question-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--v3-space-2);
+  justify-content: center;
+  margin-top: var(--v3-space-4);
+  padding-top: var(--v3-space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.bm-engine-content .abandon-link {
+  margin-top: var(--v3-space-3);
+  padding-top: var(--v3-space-3);
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+/* ---------- Active sections (questionnaire / results reveal) ---------- */
+.bm-engine-content :is(
+    .questionnaire-section.active,
+    .results-section.active,
+    .disclaimer-section.expanded,
+    .instructions-panel.expanded
+  ) {
+  display: block !important;
+  opacity: 1;
+  padding: var(--v3-space-4);
+  background: var(--panel-expanded-highlight-bg);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  margin: var(--v3-space-3) 0;
+  color: var(--brand);
+}
+
+.bm-engine-content .results-section:not(.active):not(.hidden) {
+  display: block;
+  opacity: 1;
+}
+
+.bm-engine-content .bm-results-bridge .results-section.hidden {
+  display: none;
+}
+
+/* ---------- Results layout ---------- */
+.bm-engine-content .results-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v3-space-4);
+}
+
+.bm-engine-content .results-dashboard {
+  max-width: min(var(--layout-content-max), 100%);
+  margin: 0 auto;
+}
+
+.bm-engine-content .results-dashboard .report-section {
+  margin-bottom: var(--v3-space-5);
+  padding-bottom: var(--v3-space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.bm-engine-content .results-dashboard .report-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.bm-engine-content .results-dashboard .report-section-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 var(--v3-space-3);
+}
+
+.bm-engine-content :is(
+    .primary-loop-section,
+    .secondary-loops-section,
+    .need-chain-section,
+    .recommendations-section,
+    .closure-section,
+    .selected-paradigms,
+    .derailer-scores,
+    .remediation-paths
+  ) {
+  background: var(--glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  margin: var(--v3-space-3) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Score bars & spectrum ---------- */
+.bm-engine-content .score-bar,
+.bm-engine-content .spectrum-bar,
+.bm-engine-content .layer-bar,
+.bm-engine-content .pattern-score-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--interactive-chip-bg);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: var(--v3-space-2) 0;
+  border: 1px solid var(--border-subtle);
+}
+
+.bm-engine-content .spectrum-bar {
+  height: 28px;
+  border-radius: 999px;
+}
+
+.bm-engine-content :is(
+    .sovereignty-score-fill,
+    .spectrum-fill,
+    .progress-bar-fill
+  ) {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--brand) 40%, var(--accent)));
+  border-radius: inherit;
+  transition: width 0.4s ease;
+}
+
+.bm-engine-content .spectrum-label,
+.bm-engine-content .spectrum-value,
+.bm-engine-content .score-value {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.bm-engine-content .paradigm-result-card {
+  background: var(--brand-panel);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius);
+  padding: var(--v3-space-4);
+  margin-bottom: var(--v3-space-3);
+}
+
+.bm-engine-content .derailer-item,
+.bm-engine-content .remediation-item,
+.bm-engine-content .loop-card {
+  background: var(--glass-light);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: var(--v3-space-3);
+  margin: var(--v3-space-2) 0;
+}
+
+.bm-engine-content .loop-card.primary {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px var(--glow-accent);
+}
+
+/* ---------- Needs dependency ---------- */
+.bm-engine-content .needs-dep-loop-card--featured {
+  border-left: 4px solid var(--brand);
+  background: var(--brand-panel);
+}
+
+.bm-engine-content .needs-dep-sourcing-highlight {
+  margin: 0 0 var(--v3-space-3);
+  padding: var(--v3-space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 4px;
+}
+
+.bm-engine-content .needs-dep-sourcing-highlight--avoidant {
+  border-left-color: var(--brand);
+  background: var(--brand-panel);
+}
+
+.bm-engine-content .needs-dep-sourcing-highlight--compulsive {
+  border-left-color: var(--accent);
+  background: var(--accent-panel);
+}
+
+.bm-engine-content .needs-dep-secondary-row {
+  margin-bottom: var(--v3-space-2);
+  padding: var(--v3-space-2) var(--v3-space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  background: var(--glass);
+  border-left-width: 4px;
+}
+
+.bm-engine-content .needs-dep-secondary-row--tier-2 {
+  border-left-color: var(--accent);
+}
+
+.bm-engine-content .needs-dep-secondary-row--tier-3 {
+  border-left-color: var(--brand);
+}
+
+/* ---------- Likert, sliders, inputs ---------- */
+.bm-engine-content .likert-container {
+  margin-top: var(--v3-space-3);
+}
+
+.bm-engine-content .likert-scale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--v3-space-2);
+  margin-top: var(--v3-space-2);
+}
+
+.bm-engine-content .likert-option {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--v3-space-2) var(--v3-space-3);
+  background: var(--interactive-chip-bg);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--brand);
+}
+
+.bm-engine-content .likert-option:hover {
+  border-color: var(--border-medium);
+  background: var(--card-hover);
+}
+
+.bm-engine-content .likert-option.selected {
+  background: var(--accent-panel);
+  border-color: var(--accent);
+}
+
+.bm-engine-content .slider-container input[type="range"],
+.bm-engine-content .bm-scale input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+  height: 6px;
+}
+
+.bm-engine-content .bm-scale {
+  display: flex;
+  align-items: center;
+  gap: var(--v3-space-3);
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .bm-scale__value {
+  min-width: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.bm-engine-content .text-input-container textarea,
+.bm-engine-content .form-group input,
+.bm-engine-content .form-group select,
+.bm-engine-content .search-input {
+  width: 100%;
+  max-width: 100%;
+  padding: var(--v3-space-2) var(--v3-space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--input-bg);
+  color: var(--brand);
+}
+
+.bm-engine-content .form-group input:focus,
+.bm-engine-content .form-group select:focus,
+.bm-engine-content .text-input-container textarea:focus {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+  background: var(--input-bg-focus);
+}
+
+.bm-engine-content .form-group label {
+  display: block;
+  margin-bottom: var(--v3-space-1);
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* ---------- Tables ---------- */
+.bm-engine-content .table-wrap {
+  overflow-x: auto;
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .archetype-table,
+.bm-engine-content .frequency-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.bm-engine-content .archetype-table th,
+.bm-engine-content .archetype-table td,
+.bm-engine-content .frequency-grid-table th,
+.bm-engine-content .frequency-grid-table td {
+  padding: var(--v3-space-2) var(--v3-space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--brand);
+}
+
+.bm-engine-content .archetype-table th {
+  color: var(--accent);
+  background: var(--table-header-bg);
+}
+
+/* ---------- Sovereignty / SEA matrices ---------- */
+.bm-engine-content .sea-matrices-grid,
+.bm-engine-content .loops-grid,
+.bm-engine-content .layer-scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--v3-space-3);
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .sea-matrix-card,
+.bm-engine-content .layer-score-item {
+  background: var(--glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: var(--v3-space-3);
+}
+
+.bm-engine-content .layer-score-item.weak {
+  border-left: 3px solid var(--accent);
+}
+
+.bm-engine-content .layer-score-item.strong {
+  border-left: 3px solid var(--brand);
+}
+
+/* ---------- React-only helpers ---------- */
+.bm-engine-content .bm-extended-explanation {
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .bm-extended-explanation__panel {
+  margin-top: var(--v3-space-2);
+  padding: var(--v3-space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  background: var(--question-hint-bg);
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.bm-engine-content .bm-refinement-offer {
+  margin: var(--v3-space-3) 0;
+  padding: var(--v3-space-4);
+}
+
+.bm-engine-content .bm-question-flow {
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.bm-engine-content .bm-question-stem {
+  margin: 0 0 var(--v3-space-3);
+  font-size: 1.15rem;
+  color: var(--brand);
+}
+
+.bm-engine-content .bm-question-hint,
+.bm-engine-content .bm-question-badge {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.bm-engine-content .bm-allocation-flow .bm-allocation-sum {
+  margin: 0 0 var(--v3-space-3);
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.bm-engine-content .bm-allocation-sum--ok strong {
+  color: var(--accent);
+}
+
+.bm-engine-content .bm-allocation-row {
+  padding: var(--v3-space-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.bm-engine-content .bm-allocation-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--v3-space-1);
+  color: var(--brand);
+}
+
+.bm-engine-content .bm-allocation-hint {
+  margin: 0 0 var(--v3-space-2);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Theme-aware notices (replaces hardcoded gold/blue tints where class is used) */
+.bm-engine-content .bm-notice-accent {
+  padding: var(--v3-space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-medium);
+  border-left: 4px solid var(--accent);
+  background: var(--accent-panel);
+  margin: var(--v3-space-3) 0;
+}
+
+.bm-engine-content .bm-notice-brand {
+  padding: var(--v3-space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand);
+  background: var(--brand-panel);
+  margin: var(--v3-space-3) 0;
+}
+
+@media (max-width: 720px) {
+  .bm-engine-content {
+    padding: var(--v3-space-3);
+  }
+
+  .bm-engine-content :is(
+      .assessment-grid,
+      .bm-selection-grid,
+      .diagnosis-options,
+      .options-container
+    ) {
+    grid-template-columns: 1fr;
+  }
+
+  .bm-engine-content :is(
+      .assessment-card,
+      .bm-selection-card,
+      .diagnosis-card
+    ) {
+    min-height: auto;
+    padding: var(--v3-space-3);
+  }
+}
+
+/* ---------- Diagnosis results ---------- */
+.bm-engine-content .diagnosis-results-heading {
+  margin-bottom: var(--v3-space-3);
+}
+
+.bm-engine-content .diagnosis-primary-summary {
+  background: var(--brand-panel);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius);
+  padding: var(--v3-space-3) var(--v3-space-4);
+  margin-bottom: var(--v3-space-4);
+}
+
+.bm-engine-content .diagnosis-primary-summary__text {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--brand);
+}
+
+.bm-engine-content .diagnosis-primary-summary__link {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.bm-engine-content details.category-group--diagnosis {
+  margin-bottom: var(--v3-space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--glass);
+}
+
+.bm-engine-content details.category-group--diagnosis > summary.category-group-header--diagnosis {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--v3-space-2);
+  padding: var(--v3-space-3) var(--v3-space-4);
+  background: var(--brand-panel);
+  font-weight: 600;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.bm-engine-content details.category-group--diagnosis > summary.category-group-header--diagnosis::-webkit-details-marker {
+  display: none;
+}
+
+.bm-engine-content .category-group-content--diagnosis {
+  padding: var(--v3-space-3) var(--v3-space-4) var(--v3-space-4);
+}
+
+.bm-engine-content .pattern-card--primary {
+  margin-bottom: var(--v3-space-4);
+  padding: var(--v3-space-4);
+  background: var(--brand-panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand);
+}
+
+.bm-engine-content .pattern-card__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.bm-engine-content .pattern-card__disorder {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.bm-engine-content .pattern-card__score {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.bm-engine-content .comorbidity-notice {
+  padding: var(--v3-space-4);
+  background: var(--accent-panel);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  margin-bottom: var(--v3-space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-engine-content :is(.assessment-card, .bm-selection-card, .btn, .likert-option) {
+    transition: none;
+  }
+}

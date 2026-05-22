@@ -12,29 +12,29 @@ export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/site/images/BM-cover.jpg`;
 const SITE_NAME = "Belief Mastery";
 
 const DEFAULT_META = {
-  title: `${SITE_NAME} — V3`,
+  title: SITE_NAME,
   description:
     "Freedom is achievable. Books, online tools, and gentle structure for Belief Mastery, Sovereign of Mind, and peer counseling—in one place.",
 };
 
 const STATIC_ROUTE_META = {
   "/": {
-    title: `${SITE_NAME} — V3`,
+    title: SITE_NAME,
     description:
-      "Freedom is achievable. Explore books, free tools, and a simple life review to get oriented—Belief Mastery V3.",
+      "Freedom is achievable. Explore books, free tools, and a simple life review to get oriented—Belief Mastery.",
   },
   "/tools": {
-    title: `Online tools | ${SITE_NAME} — V3`,
+    title: `Online tools | ${SITE_NAME}`,
     description:
       "Comprehensive sovereignty tools: cognitive resistance capacity assessment, manipulation vector identification, channel flow diagnostics, logos structure, pathology assessment, life domain review, dependency loop tracing, and more. Diagnostic clarity for the cognitively vigilant. Warwick Marshall, Golden Bay, New Zealand.",
   },
   "/books": {
-    title: `Books | ${SITE_NAME} — V3`,
+    title: `Books | ${SITE_NAME}`,
     description:
       "Belief Mastery, Sovereign of Mind, the Codex, and more—practical language for real change.",
   },
   "/about": {
-    title: `About the author | ${SITE_NAME} — V3`,
+    title: `About the author | ${SITE_NAME}`,
     description:
       "Warwick Marshall—author and practitioner—books, tools, and sessions for people ready to look honestly at their patterns.",
   },
@@ -54,7 +54,7 @@ export function resolvePageMeta(pathname) {
     const label = route?.label || "Tool";
     const ogImage = tm?.thumb ? `${SITE_ORIGIN}/site/images/${tm.thumb}` : DEFAULT_OG_IMAGE;
     return {
-      title: `${label} | ${SITE_NAME} — V3`,
+      title: `${label} | ${SITE_NAME}`,
       description: `Run ${label} here—your progress is saved the same way as on the full tool page.`,
       canonical: `${V3_APP_BASE}/#${path}`,
       ogImage,

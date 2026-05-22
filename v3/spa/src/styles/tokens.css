@@ -141,3 +141,64 @@ html.theme-neomorphism {
   --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 14%, transparent);
   --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 10%, transparent);
 }
+
+/*
+ * Legacy engine markup (--brand, --glass, …) used by *-engine.js HTML.
+ * Mapped from the active V3 theme so assessments/reports track the theme picker.
+ */
+html.theme-earth,
+html.theme-cosmic,
+html.theme-light,
+html.theme-forge,
+html.theme-neomorphism {
+  --brand: var(--v3-heading);
+  --muted: var(--v3-muted);
+  --accent: var(--v3-accent);
+  --accent-hover: var(--v3-accent-strong);
+  --bg: var(--v3-bg);
+  --glass: var(--v3-surface);
+  --glass-light: color-mix(in srgb, var(--v3-surface) 92%, var(--v3-bg));
+  --card-bg: var(--v3-surface);
+  --card-hover: color-mix(in srgb, var(--v3-accent) 10%, var(--v3-surface));
+  --accent-panel: color-mix(in srgb, var(--v3-accent) 14%, transparent);
+  --accent-panel-strong: color-mix(in srgb, var(--v3-accent) 22%, transparent);
+  --brand-panel: color-mix(in srgb, var(--v3-heading) 8%, transparent);
+  --border-subtle: var(--v3-surface-border);
+  --border-medium: color-mix(in srgb, var(--v3-accent) 35%, var(--v3-surface-border));
+  --border-bright: color-mix(in srgb, var(--v3-accent) 55%, var(--v3-surface-border));
+  --glow-blue: color-mix(in srgb, var(--v3-accent) 18%, transparent);
+  --glow-bright: color-mix(in srgb, var(--v3-accent) 28%, transparent);
+  --glow-accent: color-mix(in srgb, var(--v3-accent) 24%, transparent);
+  --shadow-sm: 0 2px 8px color-mix(in srgb, var(--v3-bg) 65%, transparent);
+  --shadow-md: 0 6px 20px color-mix(in srgb, var(--v3-bg) 55%, transparent);
+  --shadow-lg: 0 10px 32px color-mix(in srgb, var(--v3-bg) 50%, transparent);
+  --shadow: var(--shadow-md);
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --radius: var(--v3-radius);
+  --transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease,
+    box-shadow 0.18s ease, transform 0.18s ease;
+  --text-primary: var(--brand);
+  --text-secondary: var(--muted);
+  --link-color: var(--v3-accent);
+  --focus-color: var(--v3-accent);
+  --surface-section: transparent;
+  --section-inset-line: var(--v3-surface-border);
+  --section-inset-line-strong: var(--v3-surface-border);
+  --input-bg: color-mix(in srgb, var(--v3-surface) 88%, var(--v3-bg));
+  --input-bg-focus: var(--v3-surface);
+  --range-track: var(--v3-surface-border);
+  --range-thumb-bg: var(--v3-surface);
+  --range-thumb-shadow: var(--shadow-sm);
+  --panel-expanded-highlight-bg: color-mix(in srgb, var(--v3-accent) 8%, transparent);
+  --question-hint-bg: color-mix(in srgb, var(--v3-accent) 10%, var(--v3-surface));
+  --interactive-chip-bg: color-mix(in srgb, var(--v3-accent) 12%, var(--v3-surface));
+  --interactive-panel-tint: color-mix(in srgb, var(--v3-accent) 8%, var(--v3-surface));
+  --interactive-panel-tint-weak: color-mix(in srgb, var(--v3-surface) 75%, var(--v3-bg));
+  --interactive-border-subtle: var(--v3-surface-border);
+  --table-header-bg: color-mix(in srgb, var(--v3-accent) 12%, var(--v3-surface));
+  --table-row-hover-bg: color-mix(in srgb, var(--v3-accent) 8%, var(--v3-surface));
+  --layout-content-max: 1100px;
+  --layout-gutter-x: var(--v3-space-3);
+}

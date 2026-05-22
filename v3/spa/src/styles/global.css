@@ -950,6 +950,20 @@ article.surface.progress-card.v3-section-band--gradient > .v3-muted {
   color: var(--v3-accent-strong);
 }
 
+.v3-btn--secondary {
+  background: color-mix(in srgb, var(--v3-surface) 92%, var(--v3-bg));
+  border-color: var(--v3-surface-border);
+  color: var(--v3-heading-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .v3-btn--secondary:hover {
+    border-color: color-mix(in srgb, var(--v3-accent) 42%, var(--v3-surface-border));
+    background: color-mix(in srgb, var(--v3-accent) 12%, var(--v3-surface));
+    color: var(--v3-text);
+  }
+}
+
 .suite-progress-list {
   list-style: none;
   margin: var(--v3-space-3) 0 0;
@@ -1274,168 +1288,5 @@ article.surface.progress-card.v3-section-band--gradient > .v3-muted {
   background: var(--v3-bg);
 }
 
-/* Native engine UI (scoped legacy assessment markup) */
-.bm-engine {
-  --bm-radius: var(--v3-radius);
-  color: var(--v3-text);
-}
-
-.bm-engine-heading {
-  margin: 0 0 1rem;
-  font-size: 1.25rem;
-}
-
-.bm-engine-actions {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.bm-engine .btn,
-.bm-engine .form-group,
-.bm-engine .question-block,
-.bm-engine .options-container,
-.bm-engine .progress-bar {
-  font-family: inherit;
-}
-
-.bm-engine .btn {
-  border-radius: var(--v3-radius);
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border: 1px solid var(--v3-surface-border);
-  background: var(--v3-surface);
-  color: var(--v3-text);
-}
-
-.bm-engine .btn-primary {
-  background: var(--v3-accent);
-  border-color: var(--v3-accent);
-  color: var(--v3-bg);
-}
-
-.bm-engine .form-group {
-  margin-bottom: 1rem;
-}
-
-.bm-engine .form-group label {
-  display: block;
-  margin-bottom: 0.35rem;
-  font-weight: 600;
-}
-
-.bm-engine .form-group input,
-.bm-engine .form-group select {
-  width: 100%;
-  max-width: 28rem;
-  padding: 0.5rem 0.65rem;
-  border-radius: var(--v3-radius);
-  border: 1px solid var(--v3-surface-border);
-  background: var(--v3-bg);
-  color: var(--v3-text);
-}
-
-.bm-progress {
-  height: 6px;
-  background: var(--v3-surface-border);
-  border-radius: 999px;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-}
-
-.bm-progress__fill {
-  height: 100%;
-  background: var(--v3-accent);
-  transition: width 0.2s ease;
-}
-
-.bm-progress__text {
-  font-size: 0.9rem;
-  color: var(--v3-muted);
-  margin: 0 0 1rem;
-}
-
-.bm-question-stem {
-  margin: 0 0 1rem;
-  font-size: 1.15rem;
-}
-
-.bm-question-hint,
-.bm-question-badge {
-  color: var(--v3-muted);
-  font-size: 0.95rem;
-}
-
-.bm-scale {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 1rem 0;
-}
-
-.bm-scale input[type="range"] {
-  flex: 1;
-}
-
-.bm-scale__value {
-  min-width: 2.5rem;
-  font-weight: 600;
-}
-
-.bm-question-nav {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.bm-abandon {
-  margin-top: 0.75rem;
-}
-
-.bm-results-bridge {
-  margin-top: 1rem;
-}
-
-.bm-results-bridge .results-section.hidden {
-  display: none;
-}
-
-.bm-character-sheet-host .results-section.hidden {
-  display: none;
-}
-
-.bm-allocation-flow .bm-allocation-sum {
-  margin: 0 0 1rem;
-  font-size: 0.95rem;
-}
-
-.bm-allocation-sum--ok strong {
-  color: var(--v3-accent);
-}
-
-.bm-allocation-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 1rem;
-}
-
-.bm-allocation-row {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--v3-surface-border);
-}
-
-.bm-allocation-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  text-transform: capitalize;
-}
-
-.bm-allocation-hint {
-  margin: 0 0 0.5rem;
-  font-size: 0.9rem;
-  color: var(--v3-muted);
-}
+/* Native engine assessment/report UI → engine-assessment.css (scoped to .bm-engine-content) */
 
