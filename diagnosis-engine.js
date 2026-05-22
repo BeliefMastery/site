@@ -15,6 +15,7 @@ import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
+import { shouldBootLegacyEngine, bootLegacyEngine } from './shared/spa-engine-external.js';
 
 // Data modules - will be loaded lazily
 let DSM5_CATEGORIES, QUESTION_TEMPLATES, PLAIN_LANGUAGE_HINTS, VALIDATION_PAIRS, SCORING_THRESHOLDS;
@@ -780,8 +781,9 @@ export class DiagnosisEngine {
       this.currentStage = 'questionnaire';
       this.ui.transition('assessment');
       
-      this.renderCurrentQuestion();
+      await this.renderCurrentQuestion();
       this.updateProgress();
+      this._emitExternal('phase', { phase: 'assessment' });
       this.logDebug('Assessment started', { categories: this.selectedCategories, questionCount: this.questionSequence.length });
     } catch (error) {
       this.debugReporter.logError(error, 'startAssessment');
@@ -2414,23 +2416,35 @@ export class DiagnosisEngine {
     this.attachEventListeners();
     document.getElementById('startAssessment').disabled = true;
   }
-}
 
-function shouldAutoBootDiagnosisEngine() {
-  if (typeof document === 'undefined') return false;
-  // Legacy diagnosis.html defines this container; V3 SPA does not — avoids double init when bundled.
-  return Boolean(document.getElementById('questionContainer'));
+  getPhase() {
+    if (this.currentStage === 'results') return 'results';
+    if (this.currentStage === 'questionnaire') return 'assessment';
+    return 'idle';
+  }
+
+  getQuestionSnapshot() {
+    return this._externalQuestionSnapshot;
+  }
+
+  getRefinementOffer() {
+    return this._externalRefinementGroups;
+  }
+
+  getSelectedCategoryKeys() {
+    return [...this.selectedCategories];
+  }
+
+  toggleCategoryFromExternal(categoryKey) {
+    this.toggleCategory(categoryKey, null);
+  }
 }
 
 function bootDiagnosisEngine() {
-  if (!shouldAutoBootDiagnosisEngine()) return;
   window.diagnosisEngine = new DiagnosisEngine();
 }
 
-// Initialize engine when DOM is ready (legacy page only)
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootDiagnosisEngine);
-} else {
-  bootDiagnosisEngine();
+if (shouldBootLegacyEngine('questionContainer')) {
+  bootLegacyEngine('questionContainer', bootDiagnosisEngine);
 }
 

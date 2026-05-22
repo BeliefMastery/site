@@ -7,8 +7,15 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let MANIPULATION_VECTORS, MANIPULATION_TACTICS;
@@ -23,7 +30,8 @@ export class ManipulationEngine {
   /**
    * Initialize the manipulation assessment engine
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -55,36 +63,36 @@ export class ManipulationEngine {
     // Initialize data store
     this.dataStore = new DataStore('manipulation-assessment', '1.0.0');
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection'],
+      },
     });
-    
-    this.init();
+
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine - attach listeners and load stored data
-   */
   init() {
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
-    }).catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
+    if (!this.externalUI) this.attachEventListeners();
+    return Promise.resolve(this.loadStoredData())
+      .then(() => {
+        if (!this.externalUI && this.shouldAutoGenerateSample()) {
+          return this.generateSampleReport();
+        }
+        finishSpaInit(this);
+      })
+      .catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
   }
 
   /**
@@ -578,10 +586,14 @@ renderCurrentQuestion() {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
-    const container = document.getElementById('questionContainer');
-    
+    const container = this.externalUI
+      ? this._externalQuestionMount
+      : document.getElementById('questionContainer');
+
     if (!container) {
-      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      if (!this.externalUI) {
+        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      }
       return;
     }
     
@@ -1111,8 +1123,12 @@ renderCurrentQuestion() {
     this.analysisData.allAnswers = { ...this.answers };
     this.analysisData.questionSequence = this.getAllQuestionsAnswered();
     
-    await this.renderResults();
     this.reportComplete = true;
+    if (this.externalUI) {
+      await showResultsExternal(this, this.renderResults);
+    } else {
+      await this.renderResults();
+    }
     this.saveProgress();
   }
 
@@ -1219,11 +1235,11 @@ renderCurrentQuestion() {
   /**
    * Render assessment results
    */
-  async renderResults() {
-    this.ui.transition('results');
-    const container = document.getElementById('vectorResults');
+  async renderResults(containerEl) {
+    if (!this.externalUI) this.ui.transition('results');
+    const container = containerEl || document.getElementById('vectorResults');
     if (!container) {
-      ErrorHandler.showUserError('Results container not found.');
+      if (!this.externalUI) ErrorHandler.showUserError('Results container not found.');
       return;
     }
     
@@ -1445,3 +1461,11 @@ renderCurrentQuestion() {
     this.buildPhase1Sequence();
   }
 }
+
+attachDomQuestionSpaApi(ManipulationEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootManipulationEngine() {
+  window.manipulationEngine = new ManipulationEngine();
+}
+
+legacyEngineBoot('questionContainer', bootManipulationEngine);

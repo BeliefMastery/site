@@ -8,6 +8,8 @@ import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils
 import { TIMEZONES } from './shared/timezones.js';
 import { showAlert } from './shared/confirm-modal.js';
 import { downloadReportHtml } from './shared/export-utils.js';
+import { applySpaExternalOptions, spaEmit, spaSetPhase } from './shared/spa-engine-external.js';
+import { legacyEngineBoot } from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign;
@@ -22,7 +24,8 @@ export class CharacterSheetEngine {
   /**
    * Initialize the character sheet engine
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.characterData = null;
     
     // Initialize debug reporter
@@ -33,17 +36,78 @@ export class CharacterSheetEngine {
     // Initialize data store
     this.dataStore = new DataStore('character-sheet', '1.0.0');
     
-    this.init();
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine
-   */
   init() {
-    this.attachEventListeners();
+    if (!this.externalUI) {
+      this.attachEventListeners();
+      this.populateTimezones();
+      if (this.shouldAutoGenerateSample()) {
+        return this.generateSampleReport();
+      }
+      return Promise.resolve();
+    }
+    return Promise.resolve().then(() => {
+      spaSetPhase(this, 'idle');
+      spaEmit(this, 'init');
+    });
+  }
+
+  getPhase() {
+    if (this.characterData || this._spaPhase === 'results') return 'results';
+    return 'idle';
+  }
+
+  mountExternalShell(container) {
+    if (!container) return;
+    container.innerHTML = `
+      <section id="characterFormSection" class="question-block bm-character-form">
+        <form id="characterForm">
+          <div class="form-group"><label for="characterName">Character Name</label>
+            <input type="text" id="characterName" placeholder="Enter your name or character name"></div>
+          <div class="form-group"><label for="birthDate">Birth Date *</label>
+            <input type="date" id="birthDate" required>
+            <button type="button" class="btn btn-secondary btn-small" id="calculateAstrology">Calculate from Birth Date</button></div>
+          <div class="form-group"><label for="birthTime">Birth Time</label>
+            <input type="time" id="birthTime" value="12:00"></div>
+          <div class="form-group"><label for="timeZone">Time Zone</label>
+            <select id="timeZone"><option value="">Select a time zone</option></select></div>
+          <div class="form-group"><label for="birthLatitude">Birth Latitude</label>
+            <input type="number" id="birthLatitude" step="0.0001"></div>
+          <div class="form-group"><label for="birthLongitude">Birth Longitude</label>
+            <input type="number" id="birthLongitude" step="0.0001"></div>
+          <div class="form-group"><label for="sunSign">Sun Sign *</label>
+            <input type="text" id="sunSign" required></div>
+          <div class="form-group"><label for="moonSign">Moon Sign</label>
+            <input type="text" id="moonSign"></div>
+          <div class="form-group"><label for="ascendantSign">Ascendant (Rising) Sign</label>
+            <input type="text" id="ascendantSign"></div>
+          <div class="form-group"><label for="chineseAnimal">Chinese Animal</label>
+            <input type="text" id="chineseAnimal"></div>
+          <div class="form-group"><label for="chineseElement">Chinese Element</label>
+            <input type="text" id="chineseElement"></div>
+          <div class="form-group"><label for="mayanTone">Mayan Dreamspell Tone</label>
+            <input type="text" id="mayanTone"></div>
+          <div class="form-group"><label for="mayanKin">Mayan Dreamspell Kin</label>
+            <input type="text" id="mayanKin"></div>
+          <button type="button" id="generateCharacter" class="btn btn-primary">Generate Character Sheet</button>
+        </form>
+      </section>
+      <section id="characterSheetResults" class="results-section hidden">
+        <button type="button" id="exportReportHtml" class="btn btn-primary">Download sheet (MHTML)</button>
+        <button type="button" id="newCharacter" class="btn btn-secondary">Create New Character</button>
+        <div id="characterSheetDisplay"></div>
+      </section>`;
     this.populateTimezones();
-    if (this.shouldAutoGenerateSample()) {
-      this.generateSampleReport();
+    this.attachEventListeners();
+  }
+
+  async hydrateResultsView(el) {
+    this.mountExternalShell(el);
+    if (this.characterData) {
+      this.displayCharacterSheet(this.characterData);
+      this.showResults();
     }
   }
   populateTimezones() {
@@ -1690,12 +1754,18 @@ export class CharacterSheetEngine {
   showResults() {
     const formSection = document.getElementById('characterFormSection');
     const resultsSection = document.getElementById('characterSheetResults');
-    
+
     if (formSection) formSection.classList.add('hidden');
     if (resultsSection) {
       resultsSection.classList.remove('hidden');
       resultsSection.classList.add('active');
-      resultsSection.scrollIntoView({ behavior: 'smooth' });
+      if (!this.externalUI) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    if (this.externalUI) {
+      spaSetPhase(this, 'results');
+      spaEmit(this, 'results');
     }
   }
 
@@ -1730,4 +1800,10 @@ export class CharacterSheetEngine {
   }
 
 }
+
+function bootCharacterSheetEngine() {
+  window.characterSheetEngine = new CharacterSheetEngine();
+}
+
+legacyEngineBoot('characterForm', bootCharacterSheetEngine);
 

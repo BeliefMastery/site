@@ -2,14 +2,22 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
 import { showConfirm } from './shared/confirm-modal.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 import { downloadReportHtml } from './shared/export-utils.js';
 
 let DSM5_CATEGORIES, NODES, CHANNELS, NEEDS_VOCABULARY;
 let WILL_ANOMALY_TIERS, WILL_ANOMALY_QUESTIONS, TASTE_SKEW_OPTIONS, CONTRACT_THEMES, NODE_CONTRACT_MAP, NODE_TAINTED_EXPRESSIONS;
 
 export class EntitiesEngine {
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.currentQuestionIndex = 0;
     this.currentStage = 'tier';
     this.answers = {};
@@ -34,19 +42,19 @@ export class EntitiesEngine {
       contract: null
     };
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#intakeSection', '#actionButtonsSection', '#disclaimerSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#intakeSection', '#actionButtonsSection', '#disclaimerSection', '#resultsSection']
+        hide: ['#introSection', '#intakeSection', '#actionButtonsSection', '#disclaimerSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#intakeSection', '#actionButtonsSection', '#disclaimerSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#intakeSection', '#actionButtonsSection', '#disclaimerSection', '#questionnaireSection'],
+      },
     });
 
     this.debugReporter = createDebugReporter('EntitiesEngine');
@@ -54,21 +62,24 @@ export class EntitiesEngine {
     this.debugReporter.markInitialized();
 
     this.dataStore = new DataStore('entities-assessment', '1.0.0');
-    this.init();
+    this.ready = this.init();
   }
 
   async init() {
     try {
       await this.loadEntitiesData();
-      this.populateIntakeSelectors();
-      this.bindEvents();
+      if (!this.externalUI) {
+        this.populateIntakeSelectors();
+        this.bindEvents();
+      }
       await this.loadStoredData();
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
+      if (!this.externalUI && this.shouldAutoGenerateSample()) {
+        await this.generateSampleReport();
         return;
       }
-      if (this._storageAppliedUi) return;
-      this.ui.transition('idle');
+      if (!this.externalUI && this._storageAppliedUi) return;
+      if (!this.externalUI) this.ui.transition('idle');
+      finishSpaInit(this);
     } catch (error) {
       this.debugReporter.logError(error, 'EntitiesEngine init');
       ErrorHandler.showUserError('Failed to initialize the entities assessment.');
@@ -251,6 +262,29 @@ export class EntitiesEngine {
     return true;
   }
 
+  mountExternalShell(container) {
+    if (!container) return;
+    container.innerHTML = `
+      <section id="intakeSection" class="content-section">
+        <select id="pathologyCategory"><option value="">Select category</option></select>
+        <select id="pathologyDisorder"><option value="">Select disorder</option></select>
+        <select id="nodeSelect"><option value="">Select node</option></select>
+        <select id="channelSelect"><option value="">Select channel</option></select>
+        <select id="rootNeedSelect"><option value="">Select need</option></select>
+        <button type="button" class="btn btn-primary" id="startAssessment">Begin Entities Assessment</button>
+      </section>
+      <section id="questionnaireSection">
+        <div id="questionCount"></div>
+        <div class="progress-bar"><div id="progressFill"></div></div>
+        <div id="questionContainer"></div>
+        <button type="button" id="prevQuestion">Previous</button>
+        <button type="button" id="nextQuestion">Next</button>
+      </section>
+      <section id="resultsSection" class="hidden"><div id="resultsContainer"></div></section>`;
+    this.populateIntakeSelectors();
+    this.bindEvents();
+  }
+
   startAssessment() {
     this.captureIntake();
     if (!this.validateIntake()) return;
@@ -270,7 +304,9 @@ export class EntitiesEngine {
       this.renderTasteSkewStep();
       return;
     }
-    const questionContainer = document.getElementById('questionContainer');
+    const questionContainer = this.externalUI
+      ? this._externalQuestionMount || document.getElementById('questionContainer')
+      : document.getElementById('questionContainer');
     const questionCount = document.getElementById('questionCount');
     const progressFill = document.getElementById('progressFill');
     const question = WILL_ANOMALY_QUESTIONS[this.currentQuestionIndex];
@@ -518,13 +554,17 @@ export class EntitiesEngine {
 
     this.reportComplete = true;
     this.currentStage = 'results';
-    this.renderResults();
     this.ui.transition('results');
+    if (this.externalUI) {
+      showResultsExternal(this, this.renderResults);
+    } else {
+      this.renderResults();
+    }
     this.saveProgress();
   }
 
-  renderResults() {
-    const resultsContainer = document.getElementById('resultsContainer');
+  renderResults(containerEl) {
+    const resultsContainer = containerEl || document.getElementById('resultsContainer');
     if (!resultsContainer) return;
     const tierData = this.analysisData.tierSummary;
     const contract = this.analysisData.contract;
@@ -694,11 +734,15 @@ export class EntitiesEngine {
       tasteSkewSuggestions: [],
       contract: null
     };
-    this.ui.transition('idle');
+    if (!this.externalUI) this.ui.transition('idle');
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+attachDomQuestionSpaApi(EntitiesEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootEntitiesEngine() {
   window.entitiesEngine = new EntitiesEngine();
-});
+}
+
+legacyEngineBoot('questionContainer', bootEntitiesEngine);
 

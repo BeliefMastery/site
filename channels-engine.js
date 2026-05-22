@@ -6,8 +6,15 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let NODES, CHANNELS, REMEDIATION_STRATEGIES;
@@ -20,7 +27,8 @@ export class ChannelsEngine {
   /**
    * Initialize the channels engine
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -52,36 +60,36 @@ export class ChannelsEngine {
     // Initialize data store
     this.dataStore = new DataStore('channels-assessment', '1.0.0');
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection'],
+      },
     });
-    
-    this.init();
+
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine
-   */
   init() {
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
-    }).catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
+    if (!this.externalUI) this.attachEventListeners();
+    return Promise.resolve(this.loadStoredData())
+      .then(() => {
+        if (!this.externalUI && this.shouldAutoGenerateSample()) {
+          return this.generateSampleReport();
+        }
+        finishSpaInit(this);
+      })
+      .catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
   }
 
   /**
@@ -560,8 +568,10 @@ export class ChannelsEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
-    const container = document.getElementById('questionContainer');
-    
+    const container = this.externalUI
+      ? this._externalQuestionMount
+      : document.getElementById('questionContainer');
+
     if (!container) return;
     
     let html = '';
@@ -1089,8 +1099,12 @@ export class ChannelsEngine {
     this.analysisData.allAnswers = { ...this.answers };
     this.analysisData.questionSequence = this.getAllQuestionsAnswered();
     
-    await this.renderResults();
     this.reportComplete = true;
+    if (this.externalUI) {
+      await showResultsExternal(this, this.renderResults);
+    } else {
+      await this.renderResults();
+    }
     this.saveProgress();
   }
 
@@ -1154,19 +1168,21 @@ export class ChannelsEngine {
    * Render assessment results
    * @returns {Promise<void>}
    */
-  async renderResults() {
-    this.ui.transition('results');
+  async renderResults(containerEl) {
+    if (!this.externalUI) this.ui.transition('results');
     try {
-      await this.loadChannelsData(); // Ensure data is loaded
-      
-      const questionnaireSection = document.getElementById('questionnaireSection');
-      const resultsSection = document.getElementById('resultsSection');
-      if (questionnaireSection) questionnaireSection.classList.remove('active');
-      if (resultsSection) resultsSection.classList.add('active');
-      
-      const container = document.getElementById('channelResults');
+      await this.loadChannelsData();
+
+      if (!this.externalUI) {
+        const questionnaireSection = document.getElementById('questionnaireSection');
+        const resultsSection = document.getElementById('resultsSection');
+        if (questionnaireSection) questionnaireSection.classList.remove('active');
+        if (resultsSection) resultsSection.classList.add('active');
+      }
+
+      const container = containerEl || document.getElementById('channelResults');
       if (!container) {
-        ErrorHandler.showUserError('Results container not found.');
+        if (!this.externalUI) ErrorHandler.showUserError('Results container not found.');
         return;
       }
       
@@ -1487,18 +1503,10 @@ export class ChannelsEngine {
   }
 }
 
-function shouldAutoBootChannelsEngine() {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.getElementById('questionContainer'));
-}
+attachDomQuestionSpaApi(ChannelsEngine, { legacyMarkerId: 'questionContainer' });
 
 function bootChannelsEngine() {
-  if (!shouldAutoBootChannelsEngine()) return;
   window.channelsEngine = new ChannelsEngine();
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootChannelsEngine);
-} else {
-  bootChannelsEngine();
-}
+legacyEngineBoot('questionContainer', bootChannelsEngine);

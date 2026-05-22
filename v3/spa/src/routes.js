@@ -8,10 +8,32 @@ export const navItems = [
 /** Published static engines (archived HTML; iframe embed). */
 const legacyV3 = (file) => `/site/archive/v3-engines/${file}`;
 
-/**
- * Phase 2: map engine id → React component to replace iframe. Empty until ported.
- */
-export const nativeEngineViews = {};
+import DiagnosisEngineView from "@/engines/diagnosis/DiagnosisEngineView";
+import CoachingEngineView from "@/engines/coaching/CoachingEngineView";
+import NeedsDependencyEngineView from "@/engines/needs-dependency/NeedsDependencyEngineView";
+import SovereigntySpectrumEngineView from "@/engines/sovereignty-spectrum/SovereigntySpectrumEngineView";
+import ParadigmEngineView from "@/engines/paradigm/ParadigmEngineView";
+import ManipulationEngineView from "@/engines/manipulation/ManipulationEngineView";
+import SovereigntyEngineView from "@/engines/sovereignty/SovereigntyEngineView";
+import ChannelsEngineView from "@/engines/channels/ChannelsEngineView";
+import CharacterSheetEngineView from "@/engines/character-sheet/CharacterSheetEngineView";
+import EntitiesEngineView from "@/engines/entities/EntitiesEngineView";
+import OutlierAptitudeEngineView from "@/engines/outlier-aptitude/OutlierAptitudeEngineView";
+
+/** Native React assessment hosts (no iframe). */
+export const nativeEngineViews = {
+  diagnosis: DiagnosisEngineView,
+  coaching: CoachingEngineView,
+  "needs-dependency": NeedsDependencyEngineView,
+  "sovereignty-spectrum": SovereigntySpectrumEngineView,
+  paradigm: ParadigmEngineView,
+  manipulation: ManipulationEngineView,
+  sovereignty: SovereigntyEngineView,
+  channels: ChannelsEngineView,
+  "character-sheet": CharacterSheetEngineView,
+  entities: EntitiesEngineView,
+  "outlier-aptitude": OutlierAptitudeEngineView,
+};
 
 export const engineRoutes = [
   {

@@ -6,8 +6,15 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
@@ -36,7 +43,8 @@ export class NeedsDependencyEngine {
   /**
    * Initialize the needs dependency engine
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.currentPhase = 0;
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -70,36 +78,36 @@ export class NeedsDependencyEngine {
     // Initialize data store
     this.dataStore = new DataStore('needs-dependency-assessment', '1.0.0');
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection'],
+      },
     });
-    
-    this.init();
+
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine
-   */
   init() {
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
-    }).catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
+    if (!this.externalUI) this.attachEventListeners();
+    return Promise.resolve(this.loadStoredData())
+      .then(() => {
+        if (!this.externalUI && this.shouldAutoGenerateSample()) {
+          return this.generateSampleReport();
+        }
+        finishSpaInit(this);
+      })
+      .catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
   }
 
   /**
@@ -689,10 +697,14 @@ export class NeedsDependencyEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
-    const container = document.getElementById('questionContainer');
-    
+    const container = this.externalUI
+      ? this._externalQuestionMount
+      : document.getElementById('questionContainer');
+
     if (!container) {
-      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      if (!this.externalUI) {
+        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      }
       return;
     }
     
@@ -1362,12 +1374,13 @@ export class NeedsDependencyEngine {
       this.analysisData.questionSequence = this.getAllQuestionsAnswered();
       
       // Hide questionnaire, show results
-      const questionnaireSection = document.getElementById('questionnaireSection');
-      const resultsSection = document.getElementById('resultsSection');
       this.ui.transition('results');
-      
-      await this.renderResults();
       this.reportComplete = true;
+      if (this.externalUI) {
+        await showResultsExternal(this, this.renderResults);
+      } else {
+        await this.renderResults();
+      }
       this.saveProgress();
     } catch (error) {
       this.debugReporter.logError(error, 'completeAssessment');
@@ -1475,13 +1488,13 @@ export class NeedsDependencyEngine {
    * Render assessment results
    * @returns {Promise<void>}
    */
-  async renderResults() {
+  async renderResults(containerEl) {
     try {
-      await this.loadNeedsDependencyData(); // Ensure all data is loaded
-      
-      const container = document.getElementById('resultsContainer');
+      await this.loadNeedsDependencyData();
+
+      const container = containerEl || document.getElementById('resultsContainer');
       if (!container) {
-        ErrorHandler.showUserError('Results container not found.');
+        if (!this.externalUI) ErrorHandler.showUserError('Results container not found.');
         return;
       }
       
@@ -2032,12 +2045,11 @@ export class NeedsDependencyEngine {
   }
 }
 
-// Initialize engine when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.needsDependencyEngine = new NeedsDependencyEngine();
-  });
-} else {
+attachDomQuestionSpaApi(NeedsDependencyEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootNeedsDependencyEngine() {
   window.needsDependencyEngine = new NeedsDependencyEngine();
 }
+
+legacyEngineBoot('questionContainer', bootNeedsDependencyEngine);
 

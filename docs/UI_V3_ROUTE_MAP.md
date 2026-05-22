@@ -23,5 +23,5 @@
 - `/engines/entities`
 - `/engines/outlier-aptitude`
 
-## Legacy bridge strategy
-Each engine route currently maps to an adapter card with direct legacy page handoff while componentized migration continues.
+## Native assessment hosts
+All engine routes above resolve through `nativeEngineViews` in `v3/spa/src/routes.js` (no iframe, no “Open full page”). Standalone HTML remains at `/site/archive/v3-engines/*.html` with `data-bm-legacy-page="true"` for legacy auto-boot only.

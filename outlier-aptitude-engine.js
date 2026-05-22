@@ -1,7 +1,14 @@
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, SecurityUtils } from './shared/utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 import { showConfirm } from './shared/confirm-modal.js';
 import { downloadReportHtml } from './shared/export-utils.js';
 import {
@@ -17,25 +24,26 @@ let APTITUDE_DIMENSIONS, APTITUDE_QUESTIONS, MARKET_PROJECTION_MATRIX, VALIDATIO
 let ARCHETYPE_OPTIONS, QUALIFICATION_LEVELS, AGE_RANGES, INDUSTRY_OPTIONS, INDUSTRY_TO_SECTOR, QUALIFICATION_ORDER;
 
 export class OutlierAptitudeEngine {
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.currentQuestionIndex = 0;
     this.answers = {};
     this.reportComplete = false;
     this.analysisData = this.getEmptyAnalysisData();
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection', '#disclaimerSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#disclaimerSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#disclaimerSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#disclaimerSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#disclaimerSection', '#questionnaireSection'],
+      },
     });
 
     this.debugReporter = createDebugReporter('OutlierAptitudeEngine');
@@ -43,20 +51,21 @@ export class OutlierAptitudeEngine {
     this.debugReporter.markInitialized();
 
     this.dataStore = new DataStore('outlier-aptitude-assessment', '1.0.0');
-    this.init();
+    this.ready = this.init();
   }
 
   async init() {
     try {
       await this.loadData();
-      this.bindEvents();
+      if (!this.externalUI) this.bindEvents();
       await this.loadStoredData();
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
+      if (!this.externalUI && this.shouldAutoGenerateSample()) {
+        await this.generateSampleReport();
         return;
       }
-      if (this._storageAppliedUi) return;
-      this.ui.transition('idle');
+      if (!this.externalUI && this._storageAppliedUi) return;
+      if (!this.externalUI) this.ui.transition('idle');
+      finishSpaInit(this);
     } catch (error) {
       this.debugReporter.logError(error, 'OutlierAptitudeEngine init');
       ErrorHandler.showUserError('Failed to initialize the Aptitude assessment.');
@@ -157,6 +166,21 @@ export class OutlierAptitudeEngine {
     if (!params.has('sample')) return false;
     const value = params.get('sample');
     return value === null || value === '' || value === '1' || value === 'true';
+  }
+
+  mountExternalShell(container) {
+    if (!container) return;
+    container.innerHTML = `
+      <section id="questionnaireSection">
+        <div id="questionCount"></div>
+        <div class="progress-bar"><div id="progressFill"></div></div>
+        <div id="questionContainer"></div>
+        <button type="button" id="prevQuestion">Previous</button>
+        <button type="button" id="nextQuestion">Next</button>
+        <button type="button" id="startAssessment" class="btn btn-primary">Begin assessment</button>
+      </section>
+      <section id="resultsSection" class="hidden"><div id="resultsContainer"></div></section>`;
+    this.bindEvents();
   }
 
   startAssessment() {
@@ -562,8 +586,12 @@ export class OutlierAptitudeEngine {
       validationPrompts: VALIDATION_PROMPTS
     };
     this.reportComplete = true;
-    this.renderResults();
     this.ui.transition('results');
+    if (this.externalUI) {
+      showResultsExternal(this, this.renderResults);
+    } else {
+      this.renderResults();
+    }
     this.saveProgress();
   }
 
@@ -652,8 +680,8 @@ export class OutlierAptitudeEngine {
     return { immediate, shortTerm, mediumTerm, ongoing };
   }
 
-  renderResults() {
-    const resultsContainer = document.getElementById('resultsContainer');
+  renderResults(containerEl) {
+    const resultsContainer = containerEl || document.getElementById('resultsContainer');
     if (!resultsContainer) return;
     const vulnHtml = this.getVulnerabilityWarnings();
     const actions = this.getRecommendedCourseOfAction();
@@ -830,7 +858,11 @@ export class OutlierAptitudeEngine {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+attachDomQuestionSpaApi(OutlierAptitudeEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootOutlierAptitudeEngine() {
   window.outlierAptitudeEngine = new OutlierAptitudeEngine();
-});
+}
+
+legacyEngineBoot('questionContainer', bootOutlierAptitudeEngine);
 

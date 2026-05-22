@@ -2,7 +2,14 @@
 // Multi-dimensional assessment of AI dependency, attachment, cognitive profile, and resistance capacity
 
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { loadDataModule } from './shared/data-loader.js';
@@ -12,8 +19,9 @@ let COGNITIVE_BANDS, SUBCLASSES, SOVEREIGN_SPLIT_POSITIONS, SOVEREIGNTY_LAYERS;
 let SECTION_1_USAGE_PATTERNS, SECTION_2_COGNITIVE_STYLE, SECTION_3_ATTACHMENT, SECTION_4_SOVEREIGNTY, SECTION_5_RESILIENCE;
 
 export class SovereigntyEngine {
-  constructor() {
-    this.currentSection = 0; // 0 = IQ bracket selection, 1-4 = assessment sections
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
+    this.currentSection = 0;
     this.currentQuestionIndex = 0;
     this.iqBracket = null; // Primary IQ bracket for faster funneling
     this.iqBracketSecondary = null; // Secondary bracket for border crossover (weighted 0.5)
@@ -56,50 +64,62 @@ export class SovereigntyEngine {
     // Initialize DataStore for persistent storage
     this.dataStore = new DataStore('sovereignty-assessment');
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsContainer']
+        hide: ['#questionnaireSection', '#resultsContainer'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsContainer']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsContainer'],
       },
       results: {
         show: ['#resultsContainer'],
-        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection'],
+      },
     });
-    
-    this.init();
+
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine and attach event listeners
-   */
   init() {
     try {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-          this.attachEventListeners();
-          Promise.resolve(this.loadStoredData()).then(() => {
-            if (this.shouldAutoGenerateSample()) {
-              this.generateSampleReport();
-            }
-          });
-        });
-      } else {
-        this.attachEventListeners();
-        Promise.resolve(this.loadStoredData()).then(() => {
-          if (this.shouldAutoGenerateSample()) {
-            this.generateSampleReport();
+      if (!this.externalUI) this.attachEventListeners();
+      return Promise.resolve(this.loadStoredData())
+        .then(() => {
+          if (!this.externalUI && this.shouldAutoGenerateSample()) {
+            return this.generateSampleReport();
           }
+          finishSpaInit(this);
         });
-      }
     } catch (error) {
       ErrorHandler.logError(error, 'SovereigntyEngine.init');
       ErrorHandler.showUserError('Failed to initialize assessment. Please refresh the page.');
     }
+  }
+
+  getQuestionContainer() {
+    return this.externalUI
+      ? this._externalQuestionMount
+      : document.getElementById('questionContainer');
+  }
+
+  mountExternalShell(container) {
+    if (!container) return;
+    container.innerHTML = `
+      <section id="questionnaireSection">
+        <div id="questionContainer"></div>
+        <button type="button" id="prevQuestion">Previous</button>
+        <button type="button" id="nextQuestion">Next</button>
+        <button type="button" id="startAssessment" class="btn btn-primary">Begin assessment</button>
+      </section>
+      <section id="resultsContainer" class="hidden"><div id="resultsContent"></div></section>`;
+    this._externalQuestionMount = container.querySelector('#questionContainer');
+    this.attachEventListeners();
+  }
+
+  async renderResults(containerEl) {
+    return this.displayResults(containerEl);
   }
 
   async ensureDataLoaded() {
@@ -335,7 +355,7 @@ export class SovereigntyEngine {
       this.saveProgress();
       
       // Focus management for accessibility
-      const container = document.getElementById('questionContainer');
+      const container = this.getQuestionContainer();
       if (container) {
         DOMUtils.focusElement(container);
       }
@@ -346,7 +366,7 @@ export class SovereigntyEngine {
   }
 
   showIQBracketSelection() {
-    const container = document.getElementById('questionContainer');
+    const container = this.getQuestionContainer();
     if (!container) return;
 
     // Static HTML - use safeInnerHTML for consistency
@@ -807,7 +827,7 @@ export class SovereigntyEngine {
     }
 
     const question = this.questionSequence[this.currentQuestionIndex];
-    const container = document.getElementById('questionContainer');
+    const container = this.getQuestionContainer();
     if (!container) return;
 
     let html = '';
@@ -1523,10 +1543,13 @@ export class SovereigntyEngine {
       type: q.type
     }));
     
-    // Display results
-    this.displayResults();
-    this.showResults();
     this.reportComplete = true;
+    if (this.externalUI) {
+      showResultsExternal(this, this.displayResults);
+    } else {
+      this.displayResults();
+      this.showResults();
+    }
     this.saveProgress();
   }
 
@@ -1737,8 +1760,8 @@ export class SovereigntyEngine {
     `;
   }
 
-  displayResults() {
-    const container = document.getElementById('resultsContent');
+  displayResults(containerEl) {
+    const container = containerEl || document.getElementById('resultsContent');
     if (!container) return;
 
     const band = this.analysisData.cognitiveBand;
@@ -2243,4 +2266,12 @@ export class SovereigntyEngine {
     return rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
   }
 }
+
+attachDomQuestionSpaApi(SovereigntyEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootSovereigntyEngine() {
+  window.sovereigntyEngine = new SovereigntyEngine();
+}
+
+legacyEngineBoot('questionContainer', bootSovereigntyEngine);
 

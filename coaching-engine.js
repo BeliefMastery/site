@@ -8,6 +8,15 @@ import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
+import {
+  applySpaExternalOptions,
+  noopEngineUI,
+  spaEmit,
+  spaSetPhase,
+  shouldBootLegacyEngine,
+  bootLegacyEngine,
+} from './shared/spa-engine-external.js';
+import { emitQuestionSnapshot, buildQuestionSnapshot } from './shared/spa-questionnaire-engine.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
@@ -20,9 +29,10 @@ const COACHING_SLIDER_STEP = 0.5;
  */
 export class CoachingEngine {
   /**
-   * Initialize the coaching engine
+   * @param {{ externalUI?: boolean, onNotify?: (event: string, payload?: *) => void }} [options]
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.selectedSections = [];
     this.currentQuestionIndex = 0;
     this.answers = {};
@@ -50,40 +60,50 @@ export class CoachingEngine {
     // Initialize data store
     this.dataStore = new DataStore('coaching-assessment', '1.0.0');
 
-    this.ui = new EngineUIController({
-      idle: {
-        show: ['#introSection', '#actionButtonsSection', '#selectionSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
-      },
-      assessment: {
-        show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#resultsSection']
-      },
-      results: {
-        show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#questionnaireSection']
-      }
-    });
-    
-    // Make instance accessible globally for deployment context selection
+    this.ui = this.externalUI
+      ? {
+          transition: (state) => {
+            const phase = state === 'assessment' ? 'assessment' : state === 'results' ? 'results' : 'idle';
+            spaSetPhase(this, phase);
+          },
+        }
+      : new EngineUIController({
+          idle: {
+            show: ['#introSection', '#actionButtonsSection', '#selectionSection'],
+            hide: ['#questionnaireSection', '#resultsSection'],
+          },
+          assessment: {
+            show: ['#questionnaireSection'],
+            hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#resultsSection'],
+          },
+          results: {
+            show: ['#resultsSection'],
+            hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#questionnaireSection'],
+          },
+        });
+
     window.coachingEngine = this;
-    
-    this.init();
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine
-   */
   init() {
-    this.renderSectionSelection();
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
-    }).catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
+    if (!this.externalUI) {
+      this.renderSectionSelection();
+      this.attachEventListeners();
+    }
+    return Promise.resolve(this.loadStoredData())
+      .then(() => {
+        if (!this.externalUI && this.shouldAutoGenerateSample()) {
+          return this.generateSampleReport();
+        }
+        if (this.externalUI) {
+          spaSetPhase(this, this.getPhase());
+          spaEmit(this, 'init');
+        }
+      })
+      .catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
   }
 
   /**
@@ -202,7 +222,12 @@ export class CoachingEngine {
       card.classList.add('selected');
     }
     
-    document.getElementById('startAssessment').disabled = this.selectedSections.length === 0;
+    if (!this.externalUI) {
+      const btn = document.getElementById('startAssessment');
+      if (btn) btn.disabled = this.selectedSections.length === 0;
+    } else {
+      spaEmit(this, 'selection', { selectedIds: [...this.selectedSections] });
+    }
   }
 
   attachEventListeners() {
@@ -537,10 +562,19 @@ export class CoachingEngine {
       this.completeAssessment();
       return;
     }
-    
+
     const question = this.questionSequence[this.currentQuestionIndex];
+    if (this.externalUI) {
+      emitQuestionSnapshot(this, question, {
+        description: question.description,
+        tip: question.type === 'obstacle'
+          ? 'Higher scores indicate greater obstacles to sovereignty.'
+          : 'Higher scores indicate greater satisfaction in this area.',
+      });
+      return;
+    }
+
     const container = document.getElementById('questionContainer');
-    
     if (!container) return;
     
     const isObstacle = question.type === 'obstacle';
@@ -686,16 +720,25 @@ export class CoachingEngine {
     }
   }
 
-  completeAssessment() {
-    // Calculate weighted scores and generate profile
+  async completeAssessment() {
     this.calculateProfile();
-    
-    // Hide questionnaire, show results
     this.ui.transition('results');
-    
-    this.renderResults();
     this.assessmentComplete = true;
+    if (this.externalUI) {
+      await this.showResultsExternal();
+    } else {
+      this.renderResults();
+    }
     this.saveProgress();
+  }
+
+  async showResultsExternal() {
+    const container = this._externalResultsMount;
+    if (container) {
+      await this.renderResults(container);
+      spaSetPhase(this, 'results');
+      spaEmit(this, 'results');
+    }
   }
 
   calculateProfile() {
@@ -878,8 +921,8 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     return lowestAspects.length ? lowestAspects.join(' • ') : '';
   }
 
-  renderResults() {
-    const container = document.getElementById('profileResults');
+  renderResults(containerEl) {
+    const container = containerEl || document.getElementById('profileResults');
     if (!container) return;
     
     const areas = this.profileData.priorities.topImprovementAreas;
@@ -1460,23 +1503,79 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     document.getElementById('selectionSection')?.classList.remove('hidden');
     this.ui.transition('idle');
     
-    this.renderSectionSelection();
+    if (!this.externalUI) {
+      this.renderSectionSelection();
+    } else {
+      this._externalQuestionSnapshot = null;
+      spaSetPhase(this, 'idle');
+      spaEmit(this, 'reset');
+    }
+  }
+
+  getPhase() {
+    if (this.assessmentComplete || this._spaPhase === 'results') return 'results';
+    if (this.currentQuestionIndex > 0 || this._spaPhase === 'assessment') return 'assessment';
+    return 'idle';
+  }
+
+  getQuestionSnapshot() {
+    return this._externalQuestionSnapshot;
+  }
+
+  async getSelectionModel() {
+    return [
+      { id: 'obstacles', name: '15 Obstacles to Sovereignty', meta: 'Constraints on freedom and satisfaction' },
+      { id: 'domains', name: '10 Satisfaction Domains', meta: 'Depth of life satisfaction' },
+    ];
+  }
+
+  getSelectedIds() {
+    return [...this.selectedSections];
+  }
+
+  toggleSelectionFromExternal(sectionId) {
+    this.toggleSection(sectionId);
+  }
+
+  nextQuestionFromExternal(value) {
+    const q = this.questionSequence[this.currentQuestionIndex];
+    if (q) this.answers[q.id] = parseFloat(value);
+    this.currentQuestionIndex++;
+    this.saveProgress();
+    if (this.currentQuestionIndex < this.questionSequence.length) {
+      this.renderCurrentQuestion();
+    } else {
+      this.completeAssessment();
+    }
+  }
+
+  prevQuestionFromExternal(value) {
+    if (this.currentQuestionIndex <= 0) return;
+    const q = this.questionSequence[this.currentQuestionIndex];
+    if (q) this.answers[q.id] = parseFloat(value);
+    this.currentQuestionIndex--;
+    this.saveProgress();
+    this.renderCurrentQuestion();
+  }
+
+  setExternalResultsMount(el) {
+    this._externalResultsMount = el;
+  }
+
+  async hydrateResultsView(el) {
+    this._externalResultsMount = el;
+    await this.renderResults(el);
+    this.assessmentComplete = true;
+    spaSetPhase(this, 'results');
+    spaEmit(this, 'results');
   }
 }
 
-function shouldAutoBootCoachingEngine() {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.getElementById('sectionGrid'));
-}
-
 function bootCoachingEngine() {
-  if (!shouldAutoBootCoachingEngine()) return;
   window.coachingEngine = new CoachingEngine();
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootCoachingEngine);
-} else {
-  bootCoachingEngine();
+if (shouldBootLegacyEngine('sectionGrid')) {
+  bootLegacyEngine('sectionGrid', bootCoachingEngine);
 }
 

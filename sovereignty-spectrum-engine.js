@@ -6,8 +6,17 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+  spaEmit,
+  spaSetPhase,
+} from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_PARADIGMS, SPECTRUM_THRESHOLDS, DERAILERS, SPECTRUM_QUESTIONS;
@@ -20,7 +29,8 @@ export class SovereigntySpectrumEngine {
   /**
    * Initialize the spectrum engine
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.selectedParadigms = [];
     this.paradigmRatings = {}; // Store ratings for all paradigms (0-100 continuous values)
     this.currentParadigmIndex = 0; // Track which paradigm is currently being shown
@@ -61,36 +71,36 @@ export class SovereigntySpectrumEngine {
     // Initialize data store
     this.dataStore = new DataStore('spectrum-assessment', '1.0.0');
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection'],
+      },
     });
-    
-    this.init();
+
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine
-   */
   init() {
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
-    }).catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
+    if (!this.externalUI) this.attachEventListeners();
+    return Promise.resolve(this.loadStoredData())
+      .then(() => {
+        if (!this.externalUI && this.shouldAutoGenerateSample()) {
+          return this.generateSampleReport();
+        }
+        finishSpaInit(this);
+      })
+      .catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
   }
 
   /**
@@ -688,9 +698,13 @@ export class SovereigntySpectrumEngine {
    * Render current question
    */
   renderCurrentQuestion() {
-    const container = document.getElementById('questionContainer');
+    const container = this.externalUI
+      ? this._externalQuestionMount
+      : document.getElementById('questionContainer');
     if (!container) {
-      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      if (!this.externalUI) {
+        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      }
       return;
     }
 
@@ -1305,16 +1319,17 @@ export class SovereigntySpectrumEngine {
   /**
    * Render results
    */
-  renderResults() {
-    const container = document.getElementById('resultsContainer');
+  renderResults(containerEl) {
+    const container = containerEl || document.getElementById('resultsContainer');
     if (!container) return;
 
     this.reportComplete = true;
-    
-    // Hide questionnaire, show results
-    const questionnaireSection = document.getElementById('questionnaireSection');
-    const resultsSection = document.getElementById('resultsSection');
-    this.ui.transition('results');
+
+    if (!this.externalUI) {
+      const questionnaireSection = document.getElementById('questionnaireSection');
+      const resultsSection = document.getElementById('resultsSection');
+      this.ui.transition('results');
+    }
     
     let html = '<div class="spectrum-results">';
     html += '<h3>Your Sovereignty Paradigm Results</h3>';
@@ -1413,8 +1428,12 @@ export class SovereigntySpectrumEngine {
     html += '</div>';
     
     SecurityUtils.safeInnerHTML(container, html);
-    
-    // Save final results
+
+    if (this.externalUI) {
+      spaSetPhase(this, 'results');
+      spaEmit(this, 'results');
+    }
+
     this.saveProgress();
   }
 
@@ -1596,7 +1615,20 @@ export class SovereigntySpectrumEngine {
       paradigmSelection.classList.add('hidden');
     }
     if (selectionAbandon) selectionAbandon.classList.add('hidden');
-    this.ui.transition('idle');
+    if (this.externalUI) {
+      spaSetPhase(this, 'idle');
+      spaEmit(this, 'reset');
+    } else {
+      this.ui.transition('idle');
+    }
   }
 }
+
+attachDomQuestionSpaApi(SovereigntySpectrumEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootSovereigntySpectrumEngine() {
+  window.sovereigntySpectrumEngine = new SovereigntySpectrumEngine();
+}
+
+legacyEngineBoot('questionContainer', bootSovereigntySpectrumEngine);
 

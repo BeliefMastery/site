@@ -6,8 +6,15 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm } from './shared/confirm-modal.js';
+import {
+  applySpaExternalOptions,
+  createSpaUi,
+  finishSpaInit,
+  attachDomQuestionSpaApi,
+  legacyEngineBoot,
+  showResultsExternal,
+} from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let GOOD_LIFE_PARADIGMS, GOD_PERSPECTIVES, PARADIGM_SCORING;
@@ -20,7 +27,8 @@ export class ParadigmEngine {
   /**
    * Initialize the paradigm engine
    */
-  constructor() {
+  constructor(options = {}) {
+    applySpaExternalOptions(this, options);
     this.selectedCategories = ['good_life', 'god'];
     this.currentPhase = 1;
     this.currentQuestionIndex = 0;
@@ -54,36 +62,36 @@ export class ParadigmEngine {
     // Initialize data store
     this.dataStore = new DataStore('paradigm-assessment', '1.0.0');
 
-    this.ui = new EngineUIController({
+    this.ui = createSpaUi(this, {
       idle: {
         show: ['#introSection', '#actionButtonsSection'],
-        hide: ['#questionnaireSection', '#resultsSection']
+        hide: ['#questionnaireSection', '#resultsSection'],
       },
       assessment: {
         show: ['#questionnaireSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#resultsSection']
+        hide: ['#introSection', '#actionButtonsSection', '#resultsSection'],
       },
       results: {
         show: ['#resultsSection'],
-        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection']
-      }
+        hide: ['#introSection', '#actionButtonsSection', '#questionnaireSection'],
+      },
     });
-    
-    this.init();
+
+    this.ready = this.init();
   }
 
-  /**
-   * Initialize the engine
-   */
   init() {
-    this.attachEventListeners();
-    Promise.resolve(this.loadStoredData()).then(() => {
-      if (this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
-    }).catch(error => {
-      this.debugReporter.logError(error, 'init');
-    });
+    if (!this.externalUI) this.attachEventListeners();
+    return Promise.resolve(this.loadStoredData())
+      .then(() => {
+        if (!this.externalUI && this.shouldAutoGenerateSample()) {
+          return this.generateSampleReport();
+        }
+        finishSpaInit(this);
+      })
+      .catch((error) => {
+        this.debugReporter.logError(error, 'init');
+      });
   }
 
   /**
@@ -515,10 +523,14 @@ export class ParadigmEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
-    const container = document.getElementById('questionContainer');
-    
+    const container = this.externalUI
+      ? this._externalQuestionMount
+      : document.getElementById('questionContainer');
+
     if (!container) {
-      ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      if (!this.externalUI) {
+        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
+      }
       return;
     }
     
@@ -1192,19 +1204,17 @@ export class ParadigmEngine {
     return 'Very Low Integration - Your perspectives are largely disconnected';
   }
 
-  completeAssessment() {
-    // Calculate final results
+  async completeAssessment() {
     this.calculateResults();
-    
-    // Include all raw answers and question sequence
     this.analysisData.allAnswers = { ...this.answers };
     this.analysisData.questionSequence = this.getAllQuestionsAnswered();
-    
-    // Hide questionnaire, show results
     this.ui.transition('results');
-    
-    this.renderResults();
     this.reportComplete = true;
+    if (this.externalUI) {
+      await showResultsExternal(this, this.renderResults);
+    } else {
+      this.renderResults();
+    }
     this.saveProgress();
   }
 
@@ -1540,8 +1550,8 @@ export class ParadigmEngine {
     this.analysisData.tensionPoints = tensions;
   }
 
-  renderResults() {
-    const container = document.getElementById('resultsContainer');
+  renderResults(containerEl) {
+    const container = containerEl || document.getElementById('resultsContainer');
     if (!container) return;
     
     let html = '<div class="paradigm-summary">';
@@ -1951,12 +1961,11 @@ export class ParadigmEngine {
   }
 }
 
-// Initialize engine when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.paradigmEngine = new ParadigmEngine();
-  });
-} else {
+attachDomQuestionSpaApi(ParadigmEngine, { legacyMarkerId: 'questionContainer' });
+
+function bootParadigmEngine() {
   window.paradigmEngine = new ParadigmEngine();
 }
+
+legacyEngineBoot('questionContainer', bootParadigmEngine);
 
