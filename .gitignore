@@ -39,6 +39,9 @@ yarn.lock
 *.temp
 .cache/
 
+# Word HTML export sidecars (source .htm files are kept)
+testimonials/*_files/
+
 # Python (if any scripts)
 __pycache__/
 *.pyc

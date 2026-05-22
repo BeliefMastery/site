@@ -5,7 +5,7 @@ import { generalDisclaimer, toolDisclaimerSections } from "@/data/homeDisclaimer
 import { homeBridge, homeHero } from "@/data/homeCopy";
 import HomeEngageSlider from "@/components/HomeEngageSlider";
 import SuiteProgressCard from "@/components/SuiteProgressCard";
-import TestimonialStack from "@/components/TestimonialStack";
+import TestimonialTicker from "@/components/TestimonialTicker";
 
 const UNLOCKED_GPT = {
   href: "https://chatgpt.com/g/g-684212ba47e081918d000ec3f9cf8f69-simulacrum-exorcist-edition",
@@ -117,7 +117,7 @@ export default function HomePage() {
         </details>
       </section>
 
-      <TestimonialStack />
+      <TestimonialTicker />
 
       <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid" aria-label="Disclaimers and privacy">
         <details className="v3-details">

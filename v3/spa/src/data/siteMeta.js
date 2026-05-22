@@ -38,6 +38,11 @@ const STATIC_ROUTE_META = {
     description:
       "Warwick Marshall—author and practitioner—books, tools, and sessions for people ready to look honestly at their patterns.",
   },
+  "/testimonials": {
+    title: `Testimonials | ${SITE_NAME}`,
+    description:
+      "Client reflections on Belief Mastery, coaching, and men's group work—in their own words.",
+  },
 };
 
 /**
