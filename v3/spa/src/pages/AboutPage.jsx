@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import TestimonialTicker from "@/components/TestimonialTicker";
 import { SITE_IMAGES } from "@/data/toolsCatalog";
 
 /**
@@ -63,9 +65,13 @@ export default function AboutPage() {
         <p>Across all domains—from infrastructure to human temperament—the goal remains constant: restore and enhance operator control through structural clarity.</p>
       </section>
 
+      <TestimonialTicker />
+
       <section className="surface">
         <p>This work serves individuals, teams, and organizations where failure is costly and structural clarity is the fix.</p>
         <p className="v3-about-links">
+          <Link to="/testimonials">Testimonials</Link>{" "}
+          |
           <a href="https://beliefmastery.github.io/site/" target="_blank" rel="noreferrer">
             beliefmastery.github.io
           </a>{" "}
