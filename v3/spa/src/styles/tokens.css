@@ -20,8 +20,8 @@ html.theme-earth {
   --v3-bg: #f2ebe3;
   --v3-bg-glow: rgba(156, 92, 64, 0.14);
   --v3-bg-soft: rgba(60, 48, 40, 0.05);
-  --v3-surface: rgba(255, 252, 248, 0.94);
-  --v3-surface-border: rgba(92, 77, 60, 0.2);
+  --v3-surface: rgba(235, 225, 208, 0.94);
+  --v3-surface-border: rgba(92, 77, 60, 0.22);
   --v3-nav-bg: rgba(242, 235, 227, 0.92);
   --v3-text: #3a342f;
   --v3-heading: #252019;
@@ -31,14 +31,14 @@ html.theme-earth {
   --v3-accent-strong: #6d4628;
   --v3-on-accent: #fffef9;
   --v3-hero-tint-a: rgba(139, 92, 58, 0.1);
-  --v3-hero-tint-b: rgba(255, 252, 248, 0.5);
+  --v3-hero-tint-b: rgba(235, 225, 208, 0.5);
   /* Tools/Books page title bands — hue from theme accent */
   --v3-tools-tint-a: color-mix(in srgb, var(--v3-accent) 14%, transparent);
   --v3-books-tint-a: color-mix(in srgb, var(--v3-accent-strong) 12%, transparent);
-  /* Solid bands: warmer than pure white, pulled toward page bg, more translucent vs gradients */
+  /* Solid bands: soft tan, pulled toward page bg, more translucent vs gradients */
   --v3-band-solid-bg: color-mix(
     in srgb,
-    color-mix(in srgb, #fff6ec 64%, var(--v3-bg) 36%) 62%,
+    color-mix(in srgb, #e8dfd0 64%, var(--v3-bg) 36%) 62%,
     transparent
   );
 }
