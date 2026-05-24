@@ -6951,6 +6951,65 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     flex: 1;
 }
 
+/* Long scenario choices: single column, readable wrapping (Outlier Aptitude) */
+.options-container.options-container-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    width: 100%;
+    grid-template-columns: unset;
+}
+
+.options-container-stacked .scenario-option-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    line-height: 1.55;
+}
+
+.options-container-stacked .scenario-option-label input[type="radio"],
+.options-container-stacked .scenario-option-label input[type="checkbox"] {
+    flex-shrink: 0;
+    margin: 0.2rem 0 0 0;
+}
+
+.options-container-stacked .scenario-option-label span {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.acuity-scenario-group {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.acuity-scenario-group:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.acuity-domain-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    color: var(--brand);
+    font-weight: 600;
+}
+
+.acuity-scenario-group .acuity-slider-desc {
+    margin: 0 0 0.75rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
 .option-label .selected-check {
     color: var(--brand);
     font-weight: 700;

@@ -226,9 +226,9 @@ export class OutlierAptitudeEngine {
         <div class="question-block">
           <h3>${SecurityUtils.sanitizeHTML(question.text)}</h3>
           <p class="form-help">Choose the option that best matches what you would most likely do—not what sounds most impressive.</p>
-          <div class="options-container">
+          <div class="options-container options-container-stacked">
             ${question.choices.map(choice => `
-              <label class="option-label ${selected === choice.id ? 'selected' : ''}">
+              <label class="option-label scenario-option-label ${selected === choice.id ? 'selected' : ''}">
                 <input type="radio" name="question_${question.id}" value="${SecurityUtils.sanitizeHTML(choice.id)}" ${selected === choice.id ? 'checked' : ''}>
                 <span>${SecurityUtils.sanitizeHTML(choice.label)}</span>
               </label>
@@ -456,9 +456,9 @@ export class OutlierAptitudeEngine {
         <div class="form-group acuity-scenario-group">
           <h4 class="acuity-domain-title">${SecurityUtils.sanitizeHTML(domain.name)}</h4>
           <p class="acuity-slider-desc">${SecurityUtils.sanitizeHTML(domain.scenarioStem || domain.description)}</p>
-          <div class="options-container">
+          <div class="options-container options-container-stacked">
             ${choices.map(choice => `
-              <label class="option-label ${selected === choice.id ? 'selected' : ''}">
+              <label class="option-label scenario-option-label ${selected === choice.id ? 'selected' : ''}">
                 <input type="radio" name="acuity_${domain.id}" value="${SecurityUtils.sanitizeHTML(choice.id)}" data-domain="${SecurityUtils.sanitizeHTML(domain.id)}" ${selected === choice.id ? 'checked' : ''}>
                 <span>${SecurityUtils.sanitizeHTML(choice.label)}</span>
               </label>
