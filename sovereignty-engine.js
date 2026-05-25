@@ -12,7 +12,7 @@ import {
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
 import {
-  scenarioOptionsToAllocationQuestion,
+  mapQuestionsForAllocation,
   domAllocationQuestionHtml,
   attachDomAllocationListeners,
   isValidAllocationAnswer,
@@ -608,8 +608,7 @@ export class SovereigntyEngine {
         break;
     }
     
-    const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
-    this.questionSequence = questions.map(mapQ);
+    this.questionSequence = mapQuestionsForAllocation(questions);
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 

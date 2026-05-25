@@ -17,7 +17,8 @@ import {
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
 import {
-  scenarioOptionsToAllocationQuestion,
+  mapQuestionsForAllocation,
+  resolveAllocationQuestion,
   familiesFromAllocationAnswer,
   forEachWeightedMapsTo,
   domAllocationQuestionHtml,
@@ -231,8 +232,10 @@ export class NeedsDependencyEngine {
     await this.loadNeedsDependencyData();
 
     try {
-      const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
-      this.questionSequence = [...PHASE_0_QUESTIONS, ...PHASE_1_QUESTIONS].map(mapQ);
+      this.questionSequence = mapQuestionsForAllocation([
+        ...PHASE_0_QUESTIONS,
+        ...PHASE_1_QUESTIONS
+      ]);
       this.currentPhase = 1;
       this.currentQuestionIndex = 0;
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
@@ -254,9 +257,7 @@ export class NeedsDependencyEngine {
       PHASE_0_QUESTIONS.forEach(question => {
         const answer = this.answers[question.id];
         if (!answer) return;
-        const allocQ = question.type === 'scenario'
-          ? scenarioOptionsToAllocationQuestion(question)
-          : question;
+        const allocQ = resolveAllocationQuestion(question);
         if (answer.weights && allocQ.allocationMembers) {
           familiesFromAllocationAnswer(answer, allocQ.allocationMembers).forEach((f) => activeFamilies.add(f));
         } else if (answer.mapsTo && Array.isArray(answer.mapsTo.families)) {
@@ -333,9 +334,7 @@ export class NeedsDependencyEngine {
         if (!answer) return;
 
         const weight = question.scoringWeight ?? 2;
-        const allocQ = question.type === 'scenario'
-          ? scenarioOptionsToAllocationQuestion(question)
-          : question;
+        const allocQ = resolveAllocationQuestion(question);
 
         if (answer.weights && allocQ.allocationMembers) {
           forEachWeightedMapsTo(answer, allocQ.allocationMembers, (mapsTo, frac) => {

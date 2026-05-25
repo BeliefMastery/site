@@ -23,7 +23,8 @@ import {
   buildAllocationAnswer,
 } from './shared/allocation-scales.js';
 import {
-  scenarioOptionsToAllocationQuestion,
+  mapQuestionsForAllocation,
+  resolveAllocationQuestion,
   forEachWeightedMapsTo,
   domAllocationQuestionHtml,
   attachDomAllocationListeners,
@@ -339,12 +340,11 @@ export class ParadigmEngine {
     
     this.questionSequence = [];
     
-    const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
     this.selectedCategories.forEach(category => {
       if (category === 'good_life' && PHASE_1_QUESTIONS.good_life) {
-        this.questionSequence.push(...PHASE_1_QUESTIONS.good_life.map(mapQ));
+        this.questionSequence.push(...mapQuestionsForAllocation(PHASE_1_QUESTIONS.good_life));
       } else if (category === 'god' && PHASE_1_QUESTIONS.god) {
-        this.questionSequence.push(...PHASE_1_QUESTIONS.god.map(mapQ));
+        this.questionSequence.push(...mapQuestionsForAllocation(PHASE_1_QUESTIONS.god));
       }
     });
     

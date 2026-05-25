@@ -5,12 +5,42 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   scenarioOptionsToAllocationQuestion,
+  multiselectOptionsToAllocationQuestion,
+  mapQuestionForAllocation,
+  selectionFromAllocationAnswer,
   familiesFromAllocationAnswer,
   forEachWeightedMapsTo,
   isValidAllocationAnswer,
   applyAllocationScores
 } from '../shared/questionnaire-allocation.js';
 import { buildAllocationAnswer, createEmptyWeights } from '../shared/allocation-scales.js';
+
+test('mapQuestionForAllocation converts multiselect prioritization', () => {
+  const q = mapQuestionForAllocation(
+    {
+      id: 'p2_prioritization',
+      type: 'multiselect',
+      options: [
+        { text: 'A', mapsTo: { channel: 'a' } },
+        { text: 'B', mapsTo: { channel: 'b' } }
+      ]
+    },
+    { convertMultiselect: true }
+  );
+  assert.equal(q.type, 'allocation');
+  assert.equal(q.allocationMembers.length, 2);
+});
+
+test('selectionFromAllocationAnswer picks channels by weight', () => {
+  const members = [
+    { id: 'a', mapsTo: { channel: 'ch_a' } },
+    { id: 'b', mapsTo: { channel: 'ch_b' } },
+    { id: 'c', mapsTo: { channel: 'ch_c' } }
+  ];
+  const answer = buildAllocationAnswer(['a', 'b', 'c'], { a: 50, b: 35, c: 5 });
+  const picked = selectionFromAllocationAnswer(answer, members, (m) => m.mapsTo.channel, 12, 2);
+  assert.deepEqual(picked, ['ch_a', 'ch_b']);
+});
 
 test('scenarioOptionsToAllocationQuestion maps options to members', () => {
   const q = scenarioOptionsToAllocationQuestion({

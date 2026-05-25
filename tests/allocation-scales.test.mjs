@@ -21,11 +21,19 @@ test('redistributeOnChange applies delta evenly when others match', () => {
   assert.equal(sumWeights(w), 100);
 });
 
-test('redistributeOnChange leaves zero axes at zero when lead increases', () => {
+test('redistributeOnChange retracts across all others when lead increases and some are zero', () => {
   const w = redistributeOnChange('a', 50, { a: 40, b: 60, c: 0 }, 100, ['a', 'b', 'c']);
   assert.equal(w.a, 50);
-  assert.equal(w.b, 50);
-  assert.equal(w.c, 0);
+  assert.equal(w.b, 25);
+  assert.equal(w.c, 25);
+  assert.equal(sumWeights(w), 100);
+});
+
+test('redistributeOnChange leaves zero axes at zero when all others are non-zero', () => {
+  const w = redistributeOnChange('a', 50, { a: 40, b: 55, c: 5 }, 100, ['a', 'b', 'c']);
+  assert.equal(w.a, 50);
+  assert.equal(w.b, 46);
+  assert.equal(w.c, 4);
   assert.equal(sumWeights(w), 100);
 });
 
@@ -60,10 +68,18 @@ test('redistributeOnChange keeps zero others when lead decreases and all others 
 });
 
 test('redistributeOnChange splits remainder evenly when lead increases and all others are zero', () => {
-  const w = redistributeOnChange('a', 70, { a: 50, b: 0, c: 0 });
+  const w = redistributeOnChange('a', 70, { a: 50, b: 0, c: 0 }, 100, ['a', 'b', 'c']);
   assert.equal(w.a, 70);
   assert.equal(w.b, 15);
   assert.equal(w.c, 15);
+  assert.equal(sumWeights(w), 100);
+});
+
+test('redistributeOnChange retracts proportionally when all others are non-zero', () => {
+  const w = redistributeOnChange('a', 60, { a: 50, b: 30, c: 20 }, 100, ['a', 'b', 'c']);
+  assert.equal(w.a, 60);
+  assert.equal(w.b, 24);
+  assert.equal(w.c, 16);
   assert.equal(sumWeights(w), 100);
 });
 

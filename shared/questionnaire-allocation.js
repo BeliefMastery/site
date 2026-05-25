@@ -3,6 +3,7 @@
  */
 
 import {
+  ALLOCATION_ANSWER_VERSION,
   buildAllocationAnswer,
   createEmptyWeights,
   redistributeOnChange,
@@ -12,6 +13,9 @@ import {
 export const ALLOCATION_FAMILY_THRESHOLD_PCT = 12;
 export const ALLOCATION_PLAIN_HINT =
   'Distribute 100% across the options. Moving one slider rebalances the others automatically.';
+
+export const ALLOCATION_PRIORITIZATION_HINT =
+  'Distribute 100% across the areas you want to focus on. Moving one slider rebalances the others automatically.';
 
 /**
  * Convert a scenario-style question to allocation type (mutates copy).
@@ -35,6 +39,86 @@ export function scenarioOptionsToAllocationQuestion(q, opts = {}) {
     allocationTargetSum: q.allocationTargetSum ?? 100,
     allocationPlainHint: q.allocationPlainHint || opts.plainHint || ALLOCATION_PLAIN_HINT
   };
+}
+
+/**
+ * Convert a multiselect prioritization question to coupled allocation sliders.
+ */
+export function multiselectOptionsToAllocationQuestion(q, opts = {}) {
+  if (!q || !Array.isArray(q.options) || q.options.length < 2) return q;
+  return scenarioOptionsToAllocationQuestion(
+    { ...q, type: 'scenario' },
+    {
+      ...opts,
+      plainHint: opts.plainHint || q.allocationPlainHint || ALLOCATION_PRIORITIZATION_HINT
+    }
+  );
+}
+
+/**
+ * Map scenario (and optionally multiselect) questions to allocation for a uniform slider UX.
+ * @param {object} q
+ * @param {{ convertMultiselect?: boolean, plainHint?: string, idPrefix?: string }} [opts]
+ */
+export function mapQuestionForAllocation(q, opts = {}) {
+  if (!q) return q;
+  if (q.type === 'allocation') return q;
+  if (q.type === 'scenario') return scenarioOptionsToAllocationQuestion(q, opts);
+  if (opts.convertMultiselect && q.type === 'multiselect' && q.options?.length >= 2) {
+    return multiselectOptionsToAllocationQuestion(q, opts);
+  }
+  return q;
+}
+
+/** @param {object[]} questions */
+export function mapQuestionsForAllocation(questions, opts = {}) {
+  if (!Array.isArray(questions)) return [];
+  return questions.map((q) => mapQuestionForAllocation(q, opts));
+}
+
+/**
+ * Resolve allocation members for scoring (sequence item or raw data question).
+ */
+export function resolveAllocationQuestion(q) {
+  if (!q) return q;
+  if (q.type === 'allocation' && q.allocationMembers) return q;
+  if (q.type === 'scenario' || q.type === 'multiselect') return mapQuestionForAllocation(q, {
+    convertMultiselect: q.type === 'multiselect'
+  });
+  return q;
+}
+
+/**
+ * Pick ranked keys from an allocation answer (channels, vectors, families, etc.).
+ */
+export function selectionFromAllocationAnswer(
+  answer,
+  members,
+  pickKey,
+  thresholdPct = ALLOCATION_FAMILY_THRESHOLD_PCT,
+  topN = 3
+) {
+  const weights = answer?.weights || {};
+  const selected = [];
+  const ranked = members
+    .map((m) => ({ member: m, w: Number(weights[m.id]) || 0 }))
+    .filter((x) => x.w > 0)
+    .sort((a, b) => b.w - a.w);
+
+  ranked.forEach(({ member, w }) => {
+    if (w >= thresholdPct) {
+      const key = pickKey(member);
+      if (key != null && key !== '') selected.push(key);
+    }
+  });
+
+  if (!selected.length && ranked.length) {
+    ranked.slice(0, topN).forEach(({ member }) => {
+      const key = pickKey(member);
+      if (key != null && key !== '') selected.push(key);
+    });
+  }
+  return [...new Set(selected)];
 }
 
 /**
@@ -165,7 +249,12 @@ export function attachDomAllocationListeners(container, engine, question) {
   const sumWrap = container.querySelector('.bm-allocation-sum');
 
   const persist = () => {
-    engine.answers[question.id] = buildAllocationAnswer(ids, weights, targetSum);
+    engine.answers[question.id] = {
+      ids: [...ids],
+      weights: { ...weights },
+      sum: targetSum,
+      version: ALLOCATION_ANSWER_VERSION
+    };
     engine.saveProgress?.();
     const total = sumWeights(weights);
     if (sumEl) sumEl.textContent = `${total}%`;
@@ -242,6 +331,24 @@ export function applyAllocationScores(scoresObj, question, answer, priorDeltas =
 export function applyAllocationToEngineAnswers(engine, question, payload) {
   const members = question.allocationMembers || [];
   const ids = members.map((m) => m.id);
-  const weights = payload?.weights || {};
-  engine.answers[question.id] = buildAllocationAnswer(ids, weights, question.allocationTargetSum ?? 100);
+  const base = createEmptyWeights(ids);
+  const merged = { ...base, ...(payload?.weights || {}) };
+  const targetSum = question.allocationTargetSum ?? 100;
+  engine.answers[question.id] = {
+    ids: [...ids],
+    weights: merged,
+    sum: targetSum,
+    version: ALLOCATION_ANSWER_VERSION
+  };
+}
+
+/** Persist normalized weights (e.g. before export). */
+export function applyAllocationToEngineAnswersNormalized(engine, question, payload) {
+  const members = question.allocationMembers || [];
+  const ids = members.map((m) => m.id);
+  engine.answers[question.id] = buildAllocationAnswer(
+    ids,
+    payload?.weights || {},
+    question.allocationTargetSum ?? 100
+  );
 }

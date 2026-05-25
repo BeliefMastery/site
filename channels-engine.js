@@ -17,7 +17,9 @@ import {
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
 import {
-  scenarioOptionsToAllocationQuestion,
+  mapQuestionForAllocation,
+  mapQuestionsForAllocation,
+  selectionFromAllocationAnswer,
   forEachWeightedMapsTo,
   domAllocationQuestionHtml,
   attachDomAllocationListeners,
@@ -307,7 +309,7 @@ export class ChannelsEngine {
       this.currentQuestionIndex = 0;
       
       Object.keys(PHASE_1_NODE_QUESTIONS).forEach(nodeKey => {
-        PHASE_1_NODE_QUESTIONS[nodeKey].forEach(question => {
+        mapQuestionsForAllocation(PHASE_1_NODE_QUESTIONS[nodeKey]).forEach(question => {
           this.questionSequence.push({
             ...question,
             phase: 1,
@@ -436,24 +438,29 @@ export class ChannelsEngine {
     });
     
     // Create prioritization question
-    this.questionSequence.push({
-      id: 'p2_prioritization',
-      question: 'Based on your node assessment, which areas would you like to focus on?',
-      type: 'multiselect',
-      maxSelections: 3,
-      options: criticalChannels.slice(0, 12).map(ch => {
-        const channel = CHANNELS[ch.id];
-        const fromNode = NODES[channel.from];
-        const toNode = NODES[channel.to];
-        return {
-          text: `${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}: ${SecurityUtils.sanitizeHTML(channel.description || '')}`,
-          mapsTo: { channel: ch.id, priority: ch.priority },
-          channel: ch.id
-        };
-      }),
-      phase: 2,
-      criticalChannels: criticalChannels
-      });
+    this.questionSequence.push(
+      mapQuestionForAllocation(
+        {
+          id: 'p2_prioritization',
+          question: 'Based on your node assessment, how much do you want to focus on each area?',
+          type: 'multiselect',
+          maxSelections: 3,
+          options: criticalChannels.slice(0, 12).map(ch => {
+            const channel = CHANNELS[ch.id];
+            const fromNode = NODES[channel.from];
+            const toNode = NODES[channel.to];
+            return {
+              text: `${SecurityUtils.sanitizeHTML(fromNode.name || '')} → ${SecurityUtils.sanitizeHTML(toNode.name || '')}: ${SecurityUtils.sanitizeHTML(channel.description || '')}`,
+              mapsTo: { channel: ch.id, priority: ch.priority },
+              channel: ch.id
+            };
+          }),
+          phase: 2,
+          criticalChannels: criticalChannels
+        },
+        { convertMultiselect: true }
+      )
+    );
       
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
       this.renderCurrentQuestion();
@@ -471,8 +478,18 @@ export class ChannelsEngine {
     try {
       // Get user's prioritized channels
       const prioritizationAnswer = this.answers['p2_prioritization'];
-      if (Array.isArray(prioritizationAnswer)) {
-        this.prioritizedChannels = prioritizationAnswer.map(item => item.mapsTo.channel);
+      const prioritizationQ = this.questionSequence.find((q) => q.id === 'p2_prioritization');
+      if (prioritizationAnswer?.weights && prioritizationQ?.allocationMembers) {
+        this.prioritizedChannels = selectionFromAllocationAnswer(
+          prioritizationAnswer,
+          prioritizationQ.allocationMembers,
+          (m) => m.mapsTo?.channel,
+          12,
+          3
+        );
+        this.analysisData.prioritizedChannels = this.prioritizedChannels;
+      } else if (Array.isArray(prioritizationAnswer)) {
+        this.prioritizedChannels = prioritizationAnswer.map((item) => item.mapsTo.channel);
         this.analysisData.prioritizedChannels = this.prioritizedChannels;
       }
       
@@ -502,7 +519,7 @@ export class ChannelsEngine {
       const channel = CHANNELS[channelId];
       if (channel) {
         const channelQuestions = generatePhase3ChannelQuestions(channelId, channel);
-        channelQuestions.forEach(q => {
+        mapQuestionsForAllocation(channelQuestions).forEach((q) => {
           this.questionSequence.push({
             ...q,
             phase: 3,
@@ -528,10 +545,9 @@ export class ChannelsEngine {
         if (conditionalQuestions) {
           // Insert conditional questions after current question
           const currentIndex = this.questionSequence.findIndex(q => q.id === question.id);
-          const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
           conditionalQuestions.forEach((condQ, index) => {
             this.questionSequence.splice(currentIndex + 1 + index, 0, {
-              ...mapQ(condQ),
+              ...mapQuestionForAllocation(condQ),
               phase: 3,
               channel: question.channel
             });
@@ -557,7 +573,7 @@ export class ChannelsEngine {
       const channel = CHANNELS[channelId];
       if (channel) {
         const channelQuestions = generatePhase3ChannelQuestions(channelId, channel);
-        channelQuestions.forEach(q => {
+        mapQuestionsForAllocation(channelQuestions).forEach((q) => {
           this.questionSequence.push({
             ...q,
             phase: 4,
@@ -1107,12 +1123,26 @@ export class ChannelsEngine {
         .map(key => this.answers[key]);
       
       // Calculate flow state
-      const binaryAnswer = channelAnswers.find(a => a && a.mapsTo && a.mapsTo.flow);
+      const binaryAnswer = channelAnswers.find((a) => a && a.mapsTo && a.mapsTo.flow);
       const flowState = binaryAnswer ? binaryAnswer.mapsTo.flow : 'unknown';
-      
+
+      const symptomId = `p3_${channelId}_symptom`;
+      const symptomAnswer = this.answers[symptomId];
+      const symptomQ = this.questionSequence.find((q) => q.id === symptomId);
+      let weightedSymptom = null;
+      if (symptomAnswer?.weights && symptomQ?.allocationMembers) {
+        forEachWeightedMapsTo(symptomAnswer, symptomQ.allocationMembers, (mapsTo, frac) => {
+          if (!mapsTo.symptom) return;
+          if (!weightedSymptom || frac > weightedSymptom.frac) {
+            weightedSymptom = { symptom: mapsTo.symptom, frac, weight: (mapsTo.weight || 1) * frac };
+          }
+        });
+      }
+
       this.analysisData.phase3Results[channelId] = {
         channel: CHANNELS[channelId],
         flowState: flowState,
+        symptom: weightedSymptom?.symptom || null,
         answers: channelAnswers
       };
     });

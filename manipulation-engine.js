@@ -15,7 +15,16 @@ import {
   attachDomQuestionSpaApi,
   legacyEngineBoot,
   showResultsExternal,
+  externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
+import {
+  mapQuestionForAllocation,
+  mapQuestionsForAllocation,
+  selectionFromAllocationAnswer,
+  domAllocationQuestionHtml,
+  attachDomAllocationListeners,
+  isValidAllocationAnswer,
+} from './shared/questionnaire-allocation.js';
 
 // Data modules - will be loaded lazily
 let MANIPULATION_VECTORS, MANIPULATION_TACTICS;
@@ -414,19 +423,25 @@ export class ManipulationEngine {
         .slice(0, 6); // Top 6 for selection
       
       // Create prioritization question
-      this.questionSequence.push({
-        id: 'p2_prioritization',
-        question: 'Based on your initial screening, which manipulation vectors would you like to explore in depth?',
-        type: 'multiselect',
-        maxSelections: 3,
-        options: likelyVectors.map(v => ({
-          text: `${v.vector.name}: ${v.vector.description}`,
-          mapsTo: { vector: v.id, priority: v.state === 'high' ? 'high' : 'medium' },
-          vector: v.id
-        })),
-        phase: 2,
-        likelyVectors: likelyVectors
-      });
+      this.questionSequence.push(
+        mapQuestionForAllocation(
+          {
+            id: 'p2_prioritization',
+            question:
+              'Based on your initial screening, how much do you want to explore each manipulation vector?',
+            type: 'multiselect',
+            maxSelections: 3,
+            options: likelyVectors.map((v) => ({
+              text: `${v.vector.name}: ${v.vector.description}`,
+              mapsTo: { vector: v.id, priority: v.state === 'high' ? 'high' : 'medium' },
+              vector: v.id
+            })),
+            phase: 2,
+            likelyVectors: likelyVectors
+          },
+          { convertMultiselect: true }
+        )
+      );
       
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
       this.renderCurrentQuestion();
@@ -444,8 +459,18 @@ export class ManipulationEngine {
     try {
       // Get user's prioritized vectors
       const prioritizationAnswer = this.answers['p2_prioritization'];
-      if (Array.isArray(prioritizationAnswer)) {
-        this.prioritizedVectors = prioritizationAnswer.map(item => item.mapsTo.vector);
+      const prioritizationQ = this.questionSequence.find((q) => q.id === 'p2_prioritization');
+      if (prioritizationAnswer?.weights && prioritizationQ?.allocationMembers) {
+        this.prioritizedVectors = selectionFromAllocationAnswer(
+          prioritizationAnswer,
+          prioritizationQ.allocationMembers,
+          (m) => m.mapsTo?.vector,
+          12,
+          3
+        );
+        this.analysisData.prioritizedVectors = this.prioritizedVectors;
+      } else if (Array.isArray(prioritizationAnswer)) {
+        this.prioritizedVectors = prioritizationAnswer.map((item) => item.mapsTo.vector);
         this.analysisData.prioritizedVectors = this.prioritizedVectors;
       }
       
@@ -532,7 +557,7 @@ export class ManipulationEngine {
         if (conditionalQuestions) {
           // Insert conditional questions after current question
           const currentIndex = this.questionSequence.findIndex(q => q.id === question.id);
-          conditionalQuestions.forEach((condQ, index) => {
+          mapQuestionsForAllocation(conditionalQuestions).forEach((condQ, index) => {
             this.questionSequence.splice(currentIndex + 1 + index, 0, {
               ...condQ,
               phase: 3,
@@ -586,6 +611,20 @@ renderCurrentQuestion() {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
+
+    if (
+      externalRenderQuestion(this, question, {
+        totalQuestions: this.questionSequence.length,
+        questionIndex: this.currentQuestionIndex,
+        phase: this.currentPhase,
+        stageLabel: this.getPhaseLabel(this.currentPhase),
+      })
+    ) {
+      this.updateProgress();
+      this.updateNavigationButtons();
+      return;
+    }
+
     const container = this.externalUI
       ? this._externalQuestionMount
       : document.getElementById('questionContainer');
@@ -601,7 +640,14 @@ renderCurrentQuestion() {
       let html = '';
       
       // Render based on question type
-      if (question.type === 'three_point') {
+      if (question.type === 'allocation') {
+        html = domAllocationQuestionHtml(question, this.answers[question.id], {
+          phase: this.currentPhase,
+          questionIndex: this.currentQuestionIndex,
+          questionTotal: this.questionSequence.length,
+          stageLabel: this.getPhaseLabel(this.currentPhase),
+        });
+      } else if (question.type === 'three_point') {
         html = this.renderThreePointQuestion(question);
       } else if (question.type === 'binary_unsure') {
         html = this.renderBinaryUnsureQuestion(question);
@@ -616,6 +662,9 @@ renderCurrentQuestion() {
       
       // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
+      if (question.type === 'allocation') {
+        attachDomAllocationListeners(container, this, question);
+      }
       
       this.updateProgress();
       this.updateNavigationButtons();
@@ -998,7 +1047,17 @@ renderCurrentQuestion() {
   async nextQuestion() {
     // Check if current question has been answered
     const currentQuestion = this.questionSequence[this.currentQuestionIndex];
-    if (currentQuestion && !this.answers[currentQuestion.id]) {
+    if (currentQuestion?.type === 'allocation') {
+      if (
+        !isValidAllocationAnswer(
+          this.answers[currentQuestion.id],
+          currentQuestion.allocationTargetSum ?? 100
+        )
+      ) {
+        ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');
+        return;
+      }
+    } else if (currentQuestion && !this.answers[currentQuestion.id]) {
       ErrorHandler.showUserError('Please select an answer before proceeding.');
       return;
     }

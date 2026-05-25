@@ -105,9 +105,9 @@ function splitProportional(ids, prior, total) {
 
 /**
  * When one slider changes, redistribute the remainder across other keys.
- * - Increase: proportional take from others with weight > 0; if all others are 0, split evenly.
- * - Decrease: proportional give to others with weight > 0 when all others are > 0; if any other is
- *   0, split remainder evenly so zero axes can rise together with non-zero axes.
+ * - All others > 0: proportional to each other's prior share (same % cut / gain for everyone).
+ * - Any other at 0: split remainder evenly so every axis moves together (not only the largest).
+ * - All others 0 on increase: even split; on decrease: stay 0 until user raises another axis.
  * The changed slider is pinned. Pass allIds (e.g. allocation member ids) so every axis is tracked.
  */
 export function redistributeOnChange(changedId, newValue, weights, targetSum = 100, allIds = null) {
@@ -127,8 +127,6 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
 
   const remainder = targetSum - clamped;
   const priorChanged = prior[changedId];
-  const isIncrease = clamped > priorChanged;
-  const isDecrease = clamped < priorChanged;
   const out = { [changedId]: clamped };
 
   if (remainder <= 0) {
@@ -138,12 +136,11 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
     return out;
   }
 
-  const activeOthers = others.filter((id) => prior[id] > 0);
+  const priorOtherSum = others.reduce((s, id) => s + prior[id], 0);
   const hasZeroOther = others.some((id) => prior[id] === 0);
-  const poolSum = activeOthers.reduce((s, id) => s + prior[id], 0);
 
-  if (poolSum <= 0) {
-    if (isIncrease) {
+  if (priorOtherSum <= 0) {
+    if (clamped > priorChanged) {
       Object.assign(out, splitEvenly(others, remainder));
     } else {
       others.forEach((id) => {
@@ -153,17 +150,9 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
     return out;
   }
 
-  let split;
-  if (isDecrease && hasZeroOther) {
-    split = splitEvenly(others, remainder);
-  } else if (isIncrease) {
-    others.forEach((id) => {
-      if (!activeOthers.includes(id)) out[id] = 0;
-    });
-    split = splitProportional(activeOthers, prior, remainder);
-  } else {
-    split = splitProportional(others, prior, remainder);
-  }
+  const split = hasZeroOther
+    ? splitEvenly(others, remainder)
+    : splitProportional(others, prior, remainder);
 
   Object.assign(out, split);
   return out;
