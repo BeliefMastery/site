@@ -29,12 +29,20 @@ test('redistributeOnChange leaves zero axes at zero', () => {
   assert.equal(sumWeights(w), 100);
 });
 
-test('redistributeOnChange does not inflate zero others when all others are zero', () => {
+test('redistributeOnChange keeps zero others when lead decreases and all others are zero', () => {
   const w = redistributeOnChange('a', 80, { a: 100, b: 0, c: 0 });
   assert.equal(w.a, 80);
   assert.equal(w.b, 0);
   assert.equal(w.c, 0);
   assert.equal(sumWeights(w), 80);
+});
+
+test('redistributeOnChange splits remainder evenly when lead increases and all others are zero', () => {
+  const w = redistributeOnChange('a', 70, { a: 50, b: 0, c: 0 });
+  assert.equal(w.a, 70);
+  assert.equal(w.b, 15);
+  assert.equal(w.c, 15);
+  assert.equal(sumWeights(w), 100);
 });
 
 test('redistributeOnChange pins changed slider to requested value', () => {

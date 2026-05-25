@@ -53,8 +53,33 @@ export function normalizeAllocation(weights, targetSum = 100) {
 }
 
 /**
+ * Split an integer total evenly across ids (largest-remainder).
+ */
+function splitEvenly(ids, total) {
+  if (!ids.length) return {};
+  const shares = ids.map((id) => {
+    const ideal = total / ids.length;
+    const floor = Math.floor(ideal);
+    return { id, floor, frac: ideal - floor };
+  });
+  const out = {};
+  shares.forEach((s) => {
+    out[s.id] = s.floor;
+  });
+  let leftover = total - shares.reduce((s, x) => s + x.floor, 0);
+  if (leftover > 0) {
+    const byFrac = [...shares].sort((a, b) => b.frac - a.frac || a.id.localeCompare(b.id));
+    for (let i = 0; i < leftover; i++) {
+      out[byFrac[i].id] += 1;
+    }
+  }
+  return out;
+}
+
+/**
  * When one slider changes, redistribute the remainder across other keys with weight > 0,
- * in proportion to each key's prior value (zeros stay at 0). The changed slider is pinned.
+ * in proportion to each key's prior value (zeros stay at 0 unless all others are zero and
+ * the changed slider increased — then remainder is split evenly). The changed slider is pinned.
  */
 export function redistributeOnChange(changedId, newValue, weights, targetSum = 100) {
   const ids = Object.keys(weights);
@@ -84,6 +109,10 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
   });
 
   if (poolSum <= 0) {
+    const priorChanged = Number(weights[changedId]) || 0;
+    if (clamped > priorChanged) {
+      Object.assign(out, splitEvenly(others, remainder));
+    }
     return out;
   }
 
