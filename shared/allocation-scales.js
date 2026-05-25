@@ -77,15 +77,15 @@ function splitEvenly(ids, total) {
 }
 
 /**
- * Largest-remainder split of total across ids using prior weights (zeros excluded from pool).
+ * Largest-remainder (Hamilton) split of an integer point budget across ids by prior weights.
  */
-function splitProportional(ids, prior, total) {
-  if (!ids.length) return {};
+function splitProportionalDelta(ids, prior, deltaPoints) {
+  if (!ids.length || deltaPoints <= 0) return {};
   const poolSum = ids.reduce((s, id) => s + (prior[id] || 0), 0);
-  if (poolSum <= 0) return splitEvenly(ids, total);
+  if (poolSum <= 0) return splitEvenly(ids, deltaPoints);
 
   const shares = ids.map((id) => {
-    const ideal = ((prior[id] || 0) / poolSum) * total;
+    const ideal = ((prior[id] || 0) / poolSum) * deltaPoints;
     const floor = Math.floor(ideal);
     return { id, floor, frac: ideal - floor };
   });
@@ -93,7 +93,7 @@ function splitProportional(ids, prior, total) {
   shares.forEach((s) => {
     out[s.id] = s.floor;
   });
-  let leftover = total - shares.reduce((s, x) => s + x.floor, 0);
+  let leftover = deltaPoints - shares.reduce((s, x) => s + x.floor, 0);
   if (leftover > 0) {
     const byFrac = [...shares].sort((a, b) => b.frac - a.frac || a.id.localeCompare(b.id));
     for (let i = 0; i < leftover; i++) {
@@ -104,11 +104,55 @@ function splitProportional(ids, prior, total) {
 }
 
 /**
- * When one slider changes, redistribute the remainder across other keys.
- * - All others > 0: proportional to each other's prior share (same % cut / gain for everyone).
- * - Any other at 0: split remainder evenly so every axis moves together (not only the largest).
- * - All others 0 on increase: even split; on decrease: stay 0 until user raises another axis.
- * The changed slider is pinned. Pass allIds (e.g. allocation member ids) so every axis is tracked.
+ * When |delta| is large enough, nudge 1 point from the largest mover to stuck non-zero axes
+ * so multi-point drags visibly update every active slider (sum preserved).
+ */
+function applyStagnationGuard(out, prior, activeOthers, delta) {
+  const absDelta = Math.abs(delta);
+  if (absDelta < activeOthers.length) return;
+
+  const isIncrease = delta > 0;
+  let stuck = activeOthers.filter((id) => prior[id] >= 1 && out[id] === prior[id]);
+  while (stuck.length) {
+    let maxMover = null;
+    let maxChange = 0;
+    for (const id of activeOthers) {
+      const change = Math.abs(out[id] - prior[id]);
+      if (change > maxChange) {
+        maxChange = change;
+        maxMover = id;
+      }
+    }
+    if (!maxMover || maxChange < 1) break;
+
+    const recipient = [...stuck].sort(
+      (a, b) => (prior[b] || 0) - (prior[a] || 0) || a.localeCompare(b)
+    )[0];
+
+    if (isIncrease) {
+      if (out[maxMover] >= prior[maxMover]) break;
+      out[maxMover] += 1;
+      out[recipient] = Math.max(0, out[recipient] - 1);
+    } else {
+      if (out[maxMover] <= prior[maxMover]) break;
+      out[maxMover] -= 1;
+      out[recipient] += 1;
+    }
+
+    if (out[recipient] === prior[recipient]) {
+      stuck = stuck.filter((id) => id !== recipient);
+    } else {
+      stuck = activeOthers.filter((id) => prior[id] >= 1 && out[id] === prior[id]);
+    }
+  }
+}
+
+/**
+ * When one slider changes, redistribute across other keys by prior share among non-zero others.
+ * - Non-zero others: proportional delta (take/give integer points via largest-remainder).
+ * - Zero others: stay 0 until the user raises them.
+ * - All others 0 on increase: even bootstrap; on decrease: stay 0.
+ * The changed slider is pinned. Pass allIds so every axis is tracked.
  */
 export function redistributeOnChange(changedId, newValue, weights, targetSum = 100, allIds = null) {
   const keyList = allIds?.length ? [...allIds] : Object.keys(weights);
@@ -125,10 +169,11 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
     return { [changedId]: targetSum };
   }
 
-  const remainder = targetSum - clamped;
   const priorChanged = prior[changedId];
+  const delta = clamped - priorChanged;
   const out = { [changedId]: clamped };
 
+  const remainder = targetSum - clamped;
   if (remainder <= 0) {
     others.forEach((id) => {
       out[id] = 0;
@@ -136,25 +181,48 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
     return out;
   }
 
-  const priorOtherSum = others.reduce((s, id) => s + prior[id], 0);
-  const hasZeroOther = others.some((id) => prior[id] === 0);
+  const activeOthers = others.filter((id) => prior[id] > 0);
+  const zeroOthers = others.filter((id) => prior[id] === 0);
+  const priorActiveSum = activeOthers.reduce((s, id) => s + prior[id], 0);
 
-  if (priorOtherSum <= 0) {
-    if (clamped > priorChanged) {
+  if (priorActiveSum <= 0) {
+    if (delta > 0) {
       Object.assign(out, splitEvenly(others, remainder));
     } else {
-      others.forEach((id) => {
+      zeroOthers.forEach((id) => {
         out[id] = 0;
       });
     }
     return out;
   }
 
-  const split = hasZeroOther
-    ? splitEvenly(others, remainder)
-    : splitProportional(others, prior, remainder);
+  if (delta === 0) {
+    activeOthers.forEach((id) => {
+      out[id] = prior[id];
+    });
+    zeroOthers.forEach((id) => {
+      out[id] = 0;
+    });
+    return out;
+  }
 
-  Object.assign(out, split);
+  if (delta > 0) {
+    const reductions = splitProportionalDelta(activeOthers, prior, delta);
+    activeOthers.forEach((id) => {
+      out[id] = Math.max(0, prior[id] - (reductions[id] || 0));
+    });
+    applyStagnationGuard(out, prior, activeOthers, delta);
+  } else {
+    const additions = splitProportionalDelta(activeOthers, prior, -delta);
+    activeOthers.forEach((id) => {
+      out[id] = prior[id] + (additions[id] || 0);
+    });
+    applyStagnationGuard(out, prior, activeOthers, delta);
+  }
+
+  zeroOthers.forEach((id) => {
+    out[id] = 0;
+  });
   return out;
 }
 
