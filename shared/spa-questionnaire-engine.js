@@ -14,10 +14,10 @@ export function buildQuestionSnapshot(engine, question, overrides = {}) {
   if (question.type === 'allocation' && Array.isArray(question.allocationMembers)) {
     const memberIds = question.allocationMembers.map((m) => m.id);
     const stored = engine.answers?.[question.id];
-    const weights =
-      stored?.weights && typeof stored.weights === 'object'
-        ? { ...stored.weights }
-        : createEmptyWeights(memberIds);
+    const weights = createEmptyWeights(memberIds);
+    if (stored?.weights && typeof stored.weights === 'object') {
+      Object.assign(weights, stored.weights);
+    }
     return {
       question: {
         id: question.id,

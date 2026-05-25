@@ -21,11 +21,33 @@ test('redistributeOnChange applies delta evenly when others match', () => {
   assert.equal(sumWeights(w), 100);
 });
 
-test('redistributeOnChange leaves zero axes at zero', () => {
-  const w = redistributeOnChange('a', 50, { a: 60, b: 40, c: 0 });
+test('redistributeOnChange leaves zero axes at zero when lead increases', () => {
+  const w = redistributeOnChange('a', 50, { a: 40, b: 60, c: 0 }, 100, ['a', 'b', 'c']);
   assert.equal(w.a, 50);
   assert.equal(w.b, 50);
   assert.equal(w.c, 0);
+  assert.equal(sumWeights(w), 100);
+});
+
+test('redistributeOnChange splits decrease across all others when some are zero', () => {
+  const w = redistributeOnChange('a', 50, { a: 60, b: 40, c: 0 }, 100, ['a', 'b', 'c']);
+  assert.equal(w.a, 50);
+  assert.equal(w.b, 25);
+  assert.equal(w.c, 25);
+  assert.equal(sumWeights(w), 100);
+});
+
+test('redistributeOnChange uses all member ids when weights object is partial', () => {
+  const w = redistributeOnChange('a', 40, { a: 50, b: 25 }, 100, ['a', 'b', 'c']);
+  assert.equal(w.b, 30);
+  assert.equal(w.c, 30);
+  assert.equal(sumWeights(w), 100);
+});
+
+test('redistributeOnChange decreases proportionally when all others are non-zero', () => {
+  const w = redistributeOnChange('a', 40, { a: 50, b: 30, c: 20 }, 100, ['a', 'b', 'c']);
+  assert.equal(w.b, 36);
+  assert.equal(w.c, 24);
   assert.equal(sumWeights(w), 100);
 });
 

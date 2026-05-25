@@ -44,10 +44,11 @@ export function scenarioOptionsToAllocationQuestion(q, opts = {}) {
 export function getAllocationWeightsForQuestion(question, stored) {
   const members = question.allocationMembers || [];
   const ids = members.map((m) => m.id);
+  const base = createEmptyWeights(ids);
   if (stored?.weights && typeof stored.weights === 'object') {
-    return { ...stored.weights };
+    return { ...base, ...stored.weights };
   }
-  return createEmptyWeights(ids);
+  return base;
 }
 
 /**
@@ -183,7 +184,13 @@ export function attachDomAllocationListeners(container, engine, question) {
   container.querySelectorAll('.bm-allocation-slider').forEach((slider) => {
     slider.addEventListener('input', () => {
       const memberId = slider.getAttribute('data-member-id');
-      weights = redistributeOnChange(memberId, parseInt(slider.value, 10), weights, targetSum);
+      weights = redistributeOnChange(
+        memberId,
+        parseInt(slider.value, 10),
+        weights,
+        targetSum,
+        ids
+      );
       container.querySelectorAll('.bm-allocation-slider').forEach((s) => {
         const id = s.getAttribute('data-member-id');
         if (id && weights[id] != null) s.value = weights[id];

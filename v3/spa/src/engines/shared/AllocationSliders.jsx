@@ -1,17 +1,25 @@
-import { memo, useCallback, useState } from 'react';
-import { redistributeOnChange, sumWeights } from '@site/shared/allocation-scales.js';
+import { memo, useCallback, useMemo, useState } from 'react';
+import {
+  createEmptyWeights,
+  redistributeOnChange,
+  sumWeights
+} from '@site/shared/allocation-scales.js';
 
 function AllocationSliders({ snapshot, onNext, onPrev, onAbandon, canGoBack = true }) {
   const q = snapshot?.question;
   const targetSum = q?.allocationTargetSum ?? 100;
   const members = q?.allocationMembers ?? [];
-  const [weights, setWeights] = useState(() => ({ ...(q?.allocationWeights || {}) }));
+  const memberIds = useMemo(() => members.map((m) => m.id), [members]);
+  const [weights, setWeights] = useState(() => {
+    const base = createEmptyWeights(memberIds);
+    return { ...base, ...(q?.allocationWeights || {}) };
+  });
 
   const onWeightChange = useCallback(
     (id, raw) => {
-      setWeights((prev) => redistributeOnChange(id, raw, prev, targetSum));
+      setWeights((prev) => redistributeOnChange(id, raw, prev, targetSum, memberIds));
     },
-    [targetSum]
+    [targetSum, memberIds]
   );
 
   const total = sumWeights(weights);

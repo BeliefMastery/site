@@ -77,19 +77,58 @@ function splitEvenly(ids, total) {
 }
 
 /**
- * When one slider changes, redistribute the remainder across other keys with weight > 0,
- * in proportion to each key's prior value (zeros stay at 0 unless all others are zero and
- * the changed slider increased — then remainder is split evenly). The changed slider is pinned.
+ * Largest-remainder split of total across ids using prior weights (zeros excluded from pool).
  */
-export function redistributeOnChange(changedId, newValue, weights, targetSum = 100) {
-  const ids = Object.keys(weights);
-  if (!ids.includes(changedId)) return { ...weights };
+function splitProportional(ids, prior, total) {
+  if (!ids.length) return {};
+  const poolSum = ids.reduce((s, id) => s + (prior[id] || 0), 0);
+  if (poolSum <= 0) return splitEvenly(ids, total);
+
+  const shares = ids.map((id) => {
+    const ideal = ((prior[id] || 0) / poolSum) * total;
+    const floor = Math.floor(ideal);
+    return { id, floor, frac: ideal - floor };
+  });
+  const out = {};
+  shares.forEach((s) => {
+    out[s.id] = s.floor;
+  });
+  let leftover = total - shares.reduce((s, x) => s + x.floor, 0);
+  if (leftover > 0) {
+    const byFrac = [...shares].sort((a, b) => b.frac - a.frac || a.id.localeCompare(b.id));
+    for (let i = 0; i < leftover; i++) {
+      out[byFrac[i].id] += 1;
+    }
+  }
+  return out;
+}
+
+/**
+ * When one slider changes, redistribute the remainder across other keys.
+ * - Increase: proportional take from others with weight > 0; if all others are 0, split evenly.
+ * - Decrease: proportional give to others with weight > 0 when all others are > 0; if any other is
+ *   0, split remainder evenly so zero axes can rise together with non-zero axes.
+ * The changed slider is pinned. Pass allIds (e.g. allocation member ids) so every axis is tracked.
+ */
+export function redistributeOnChange(changedId, newValue, weights, targetSum = 100, allIds = null) {
+  const keyList = allIds?.length ? [...allIds] : Object.keys(weights);
+  if (!keyList.includes(changedId)) return { ...weights };
+
+  const prior = {};
+  keyList.forEach((id) => {
+    prior[id] = Math.max(0, Number(weights[id]) || 0);
+  });
+
   const clamped = Math.max(0, Math.min(targetSum, Math.round(Number(newValue) || 0)));
-  const others = ids.filter((id) => id !== changedId);
+  const others = keyList.filter((id) => id !== changedId);
   if (!others.length) {
     return { [changedId]: targetSum };
   }
+
   const remainder = targetSum - clamped;
+  const priorChanged = prior[changedId];
+  const isIncrease = clamped > priorChanged;
+  const isDecrease = clamped < priorChanged;
   const out = { [changedId]: clamped };
 
   if (remainder <= 0) {
@@ -99,41 +138,34 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
     return out;
   }
 
-  const activeOthers = others.filter((id) => (Number(weights[id]) || 0) > 0);
-  const poolSum = activeOthers.reduce((s, id) => s + (Number(weights[id]) || 0), 0);
-
-  others.forEach((id) => {
-    if (!activeOthers.includes(id)) {
-      out[id] = 0;
-    }
-  });
+  const activeOthers = others.filter((id) => prior[id] > 0);
+  const hasZeroOther = others.some((id) => prior[id] === 0);
+  const poolSum = activeOthers.reduce((s, id) => s + prior[id], 0);
 
   if (poolSum <= 0) {
-    const priorChanged = Number(weights[changedId]) || 0;
-    if (clamped > priorChanged) {
+    if (isIncrease) {
       Object.assign(out, splitEvenly(others, remainder));
+    } else {
+      others.forEach((id) => {
+        out[id] = 0;
+      });
     }
     return out;
   }
 
-  const shares = activeOthers.map((id) => {
-    const ideal = ((Number(weights[id]) || 0) / poolSum) * remainder;
-    const floor = Math.floor(ideal);
-    return { id, floor, frac: ideal - floor };
-  });
-
-  shares.forEach((s) => {
-    out[s.id] = s.floor;
-  });
-
-  let leftover = remainder - shares.reduce((s, x) => s + x.floor, 0);
-  if (leftover > 0) {
-    const byFrac = [...shares].sort((a, b) => b.frac - a.frac || a.id.localeCompare(b.id));
-    for (let i = 0; i < leftover; i++) {
-      out[byFrac[i].id] += 1;
-    }
+  let split;
+  if (isDecrease && hasZeroOther) {
+    split = splitEvenly(others, remainder);
+  } else if (isIncrease) {
+    others.forEach((id) => {
+      if (!activeOthers.includes(id)) out[id] = 0;
+    });
+    split = splitProportional(activeOthers, prior, remainder);
+  } else {
+    split = splitProportional(others, prior, remainder);
   }
 
+  Object.assign(out, split);
   return out;
 }
 
