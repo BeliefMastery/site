@@ -53,7 +53,8 @@ export function normalizeAllocation(weights, targetSum = 100) {
 }
 
 /**
- * When one slider changes, redistribute the remainder proportionally across other keys.
+ * When one slider changes, redistribute the remainder across other keys with weight > 0,
+ * in proportion to each key's prior value (zeros stay at 0). The changed slider is pinned.
  */
 export function redistributeOnChange(changedId, newValue, weights, targetSum = 100) {
   const ids = Object.keys(weights);
@@ -64,35 +65,47 @@ export function redistributeOnChange(changedId, newValue, weights, targetSum = 1
     return { [changedId]: targetSum };
   }
   const remainder = targetSum - clamped;
-  const otherSum = others.reduce((s, id) => s + (Number(weights[id]) || 0), 0);
   const out = { [changedId]: clamped };
+
   if (remainder <= 0) {
     others.forEach((id) => {
       out[id] = 0;
     });
     return out;
   }
-  if (otherSum <= 0) {
-    const each = Math.floor(remainder / others.length);
-    let assigned = 0;
-    others.forEach((id, i) => {
-      const w = i === others.length - 1 ? remainder - assigned : each;
-      out[id] = w;
-      assigned += w;
-    });
-    return out;
-  }
-  let assigned = 0;
-  others.forEach((id, i) => {
-    if (i === others.length - 1) {
-      out[id] = remainder - assigned;
-    } else {
-      const w = Math.round(((Number(weights[id]) || 0) / otherSum) * remainder);
-      out[id] = w;
-      assigned += w;
+
+  const activeOthers = others.filter((id) => (Number(weights[id]) || 0) > 0);
+  const poolSum = activeOthers.reduce((s, id) => s + (Number(weights[id]) || 0), 0);
+
+  others.forEach((id) => {
+    if (!activeOthers.includes(id)) {
+      out[id] = 0;
     }
   });
-  return normalizeAllocation(out, targetSum);
+
+  if (poolSum <= 0) {
+    return out;
+  }
+
+  const shares = activeOthers.map((id) => {
+    const ideal = ((Number(weights[id]) || 0) / poolSum) * remainder;
+    const floor = Math.floor(ideal);
+    return { id, floor, frac: ideal - floor };
+  });
+
+  shares.forEach((s) => {
+    out[s.id] = s.floor;
+  });
+
+  let leftover = remainder - shares.reduce((s, x) => s + x.floor, 0);
+  if (leftover > 0) {
+    const byFrac = [...shares].sort((a, b) => b.frac - a.frac || a.id.localeCompare(b.id));
+    for (let i = 0; i < leftover; i++) {
+      out[byFrac[i].id] += 1;
+    }
+  }
+
+  return out;
 }
 
 /**
