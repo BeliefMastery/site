@@ -9,7 +9,15 @@ import {
   attachDomQuestionSpaApi,
   legacyEngineBoot,
   showResultsExternal,
+  externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
+import {
+  scenarioOptionsToAllocationQuestion,
+  domAllocationQuestionHtml,
+  attachDomAllocationListeners,
+  isValidAllocationAnswer,
+  applyAllocationScores,
+} from './shared/questionnaire-allocation.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { loadDataModule } from './shared/data-loader.js';
@@ -43,6 +51,7 @@ export class SovereigntyEngine {
       dependencyLevel: null, // 'low', 'medium', 'high'
       cognitiveLevel: null // From Section 2, used for filtering Sections 3 & 4
     };
+    this._allocationScoreDeltas = {};
     this.reportComplete = false;
     this.analysisData = {
       timestamp: new Date().toISOString(),
@@ -599,8 +608,8 @@ export class SovereigntyEngine {
         break;
     }
     
-    this.questionSequence = questions;
-    // Shuffle to mitigate order bias
+    const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
+    this.questionSequence = questions.map(mapQ);
     this.questionSequence.sort(() => Math.random() - 0.5);
   }
 
@@ -827,6 +836,16 @@ export class SovereigntyEngine {
     }
 
     const question = this.questionSequence[this.currentQuestionIndex];
+
+    if (externalRenderQuestion(this, question, {
+      totalQuestions: this.questionSequence.length,
+      questionIndex: this.currentQuestionIndex,
+      badge: `Section ${this.currentSection}`,
+    })) {
+      this.updateNavigation();
+      return;
+    }
+
     const container = this.getQuestionContainer();
     if (!container) return;
 
@@ -859,6 +878,11 @@ export class SovereigntyEngine {
       html += this.renderFrequency(question, isLocked);
     } else if (question.type === 'frequency_grid') {
       html += this.renderFrequencyGrid(question, isLocked);
+    } else if (question.type === 'allocation') {
+      html += domAllocationQuestionHtml(question, this.answers[question.id], {
+        questionIndex: this.currentQuestionIndex,
+        questionTotal: this.questionSequence.length,
+      });
     } else if (question.type === 'scenario') {
       html += this.renderScenario(question, isLocked);
     } else {
@@ -872,6 +896,9 @@ export class SovereigntyEngine {
 
     // HTML is already sanitized in render methods, but use safeInnerHTML for extra safety
     SecurityUtils.safeInnerHTML(container, html);
+    if (question.type === 'allocation' && !isLocked) {
+      attachDomAllocationListeners(container, this, question);
+    }
     this.updateNavigation();
     setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }
@@ -1335,8 +1362,18 @@ export class SovereigntyEngine {
     try {
       // Check if current question has been answered
       const currentQuestion = this.questionSequence[this.currentQuestionIndex];
-      if (currentQuestion && !this.answers[currentQuestion.id]) {
-        // For multiple response questions, allow skipping
+      if (currentQuestion?.type === 'allocation') {
+        if (!isValidAllocationAnswer(this.answers[currentQuestion.id], currentQuestion.allocationTargetSum ?? 100)) {
+          ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');
+          return;
+        }
+        this._allocationScoreDeltas[currentQuestion.id] = applyAllocationScores(
+          this.scores,
+          currentQuestion,
+          this.answers[currentQuestion.id],
+          this._allocationScoreDeltas[currentQuestion.id] || {}
+        );
+      } else if (currentQuestion && !this.answers[currentQuestion.id]) {
         if (currentQuestion.type === 'multiple_response') {
           // Allow progression even if none selected (user can skip)
         } 

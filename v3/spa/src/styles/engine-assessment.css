@@ -243,6 +243,142 @@
   color: var(--muted);
 }
 
+/* ---------- Choice lists (scenario, multiselect, sovereignty radios) ---------- */
+.bm-engine-content :is(
+    .scenario-options,
+    .multiselect-options,
+    .three-point-options,
+    .binary-unsure-options,
+    .frequency-options,
+    .binary-options,
+    .need-chain-options
+  ) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v3-space-2);
+  margin: var(--v3-space-3) 0;
+  width: 100%;
+}
+
+.bm-engine-content :is(
+    .scenario-option,
+    .multiselect-option,
+    .three-point-option,
+    .binary-unsure-option,
+    .frequency-option,
+    .binary-option,
+    .need-chain-option
+  ) {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--v3-space-2);
+  width: 100%;
+  margin: 0;
+  padding: var(--v3-space-3) var(--v3-space-4);
+  text-align: left;
+  line-height: 1.55;
+  background: var(--glass);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.bm-engine-content :is(
+    .scenario-option:hover,
+    .multiselect-option:hover,
+    .three-point-option:hover,
+    .binary-unsure-option:hover,
+    .frequency-option:hover,
+    .binary-option:hover,
+    .need-chain-option:hover
+  ) {
+  background: var(--glass-light);
+  border-color: var(--border-bright);
+}
+
+.bm-engine-content :is(
+    .scenario-option.selected,
+    .multiselect-option.selected,
+    .three-point-option.selected,
+    .binary-unsure-option.selected,
+    .frequency-option.selected,
+    .binary-option.selected,
+    .need-chain-option.selected
+  ) {
+  background: rgba(255, 184, 0, 0.15);
+  border-color: var(--brand);
+}
+
+.bm-engine-content :is(
+    .scenario-option input,
+    .multiselect-option input,
+    .three-point-option input,
+    .binary-unsure-option input,
+    .frequency-option input,
+    .binary-option input,
+    .need-chain-option input
+  ) {
+  flex-shrink: 0;
+  margin: 0.2rem 0 0 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  cursor: pointer;
+}
+
+.bm-engine-content .option-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.bm-engine-content .options-container:not(.options-container-grid) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v3-space-2);
+  margin: var(--v3-space-3) 0;
+  width: 100%;
+  grid-template-columns: unset;
+}
+
+.bm-engine-content .options-container:not(.options-container-grid) .option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--v3-space-2);
+  width: 100%;
+  margin: 0;
+  padding: var(--v3-space-3) var(--v3-space-4);
+  text-align: left;
+  line-height: 1.55;
+  background: var(--interactive-chip-bg);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.bm-engine-content .options-container:not(.options-container-grid) .option-label.selected {
+  background: rgba(255, 184, 0, 0.25);
+  border-color: var(--brand);
+}
+
+.bm-engine-content .options-container:not(.options-container-grid) .option-label input {
+  flex-shrink: 0;
+  margin: 0.2rem 0 0 0;
+}
+
+.bm-engine-content .options-container:not(.options-container-grid) .option-label span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.bm-engine-content .options-container.options-container-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--v3-space-2);
+}
+
 /* ---------- Selection grids (legacy + React) ---------- */
 .bm-engine-content :is(
     .assessment-grid,
@@ -253,8 +389,7 @@
     .diagnosis-options,
     .pathology-selection,
     .section-grid,
-    .category-grid,
-    .options-container
+    .category-grid
   ),
 .bm-engine-content .bm-selection-grid {
   display: grid;
@@ -880,7 +1015,7 @@
       .assessment-grid,
       .bm-selection-grid,
       .diagnosis-options,
-      .options-container
+      .options-container.options-container-grid
     ) {
     grid-template-columns: 1fr;
   }

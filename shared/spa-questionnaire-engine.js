@@ -24,8 +24,9 @@ export function buildQuestionSnapshot(engine, question, overrides = {}) {
         type: 'allocation',
         text: question.question || question.questionText || '',
         plainHint:
+          question.allocationPlainHint ||
           question.description ||
-          'Adjust sliders so the total equals 100%. Other sliders rebalance automatically.',
+          'Distribute 100% across the options. Moving one slider rebalances the others automatically.',
         badge: overrides.badge || 'Importance allocation',
         allocationMembers: question.allocationMembers.map((m) => ({
           id: m.id,

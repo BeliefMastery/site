@@ -14,7 +14,15 @@ import {
   attachDomQuestionSpaApi,
   legacyEngineBoot,
   showResultsExternal,
+  externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
+import {
+  scenarioOptionsToAllocationQuestion,
+  forEachWeightedMapsTo,
+  domAllocationQuestionHtml,
+  attachDomAllocationListeners,
+  isValidAllocationAnswer,
+} from './shared/questionnaire-allocation.js';
 
 // Data modules - will be loaded lazily
 let NODES, CHANNELS, REMEDIATION_STRATEGIES;
@@ -520,9 +528,10 @@ export class ChannelsEngine {
         if (conditionalQuestions) {
           // Insert conditional questions after current question
           const currentIndex = this.questionSequence.findIndex(q => q.id === question.id);
+          const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
           conditionalQuestions.forEach((condQ, index) => {
             this.questionSequence.splice(currentIndex + 1 + index, 0, {
-              ...condQ,
+              ...mapQ(condQ),
               phase: 3,
               channel: question.channel
             });
@@ -568,22 +577,41 @@ export class ChannelsEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
+
+    if (externalRenderQuestion(this, question, {
+      totalQuestions: this.questionSequence.length,
+      questionIndex: this.currentQuestionIndex,
+      phase: this.currentPhase,
+      stageLabel: this.getPhaseLabel(this.currentPhase),
+    })) {
+      this.updateProgress();
+      this.updateNavigationButtons();
+      this.updateStageIndicator();
+      return;
+    }
+
     const container = this.externalUI
       ? this._externalQuestionMount
       : document.getElementById('questionContainer');
 
     if (!container) return;
-    
+
     let html = '';
-    
+
     const renderStart = performance.now();
-    
+
     try {
-      // Render based on question type
       if (question.type === 'three_point') {
         html = this.renderThreePointQuestion(question);
       } else if (question.type === 'binary_unsure') {
         html = this.renderBinaryUnsureQuestion(question);
+      } else if (question.type === 'allocation') {
+        html = domAllocationQuestionHtml(question, this.answers[question.id], {
+          phase: this.currentPhase,
+          questionIndex: this.currentQuestionIndex,
+          questionTotal: this.questionSequence.length,
+          stageLabel: this.getPhaseLabel(this.currentPhase),
+        });
       } else if (question.type === 'scenario') {
         html = this.renderScenarioQuestion(question);
       } else if (question.type === 'frequency') {
@@ -597,25 +625,25 @@ export class ChannelsEngine {
       
       // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
-      
+      if (question.type === 'allocation') {
+        attachDomAllocationListeners(container, this, question);
+      }
+
       this.updateProgress();
       this.updateNavigationButtons();
-      
-      // Track render performance
+
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
 
-      // Scroll to question after rendering
       setTimeout(() => {
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
-      
-      // Focus management for accessibility
+
       const firstInput = container.querySelector('input, button, select, textarea');
       if (firstInput) {
         DOMUtils.focusElement(firstInput);
       }
-      
+
       this.updateStageIndicator();
     } catch (error) {
       this.debugReporter.logError(error, 'renderCurrentQuestion');
@@ -978,13 +1006,18 @@ export class ChannelsEngine {
   async nextQuestion() {
     // Check if current question has been answered
     const currentQuestion = this.questionSequence[this.currentQuestionIndex];
-    if (currentQuestion && !this.answers[currentQuestion.id]) {
+    if (currentQuestion?.type === 'allocation') {
+      if (!isValidAllocationAnswer(this.answers[currentQuestion.id], currentQuestion.allocationTargetSum ?? 100)) {
+        ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');
+        return;
+      }
+    } else if (currentQuestion && !this.answers[currentQuestion.id]) {
       ErrorHandler.showUserError('Please select an answer before proceeding.');
       return;
     }
-    
+
     this.saveCurrentAnswer();
-    
+
     this.currentQuestionIndex++;
     this.saveProgress();
     

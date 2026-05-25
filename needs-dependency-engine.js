@@ -14,7 +14,16 @@ import {
   attachDomQuestionSpaApi,
   legacyEngineBoot,
   showResultsExternal,
+  externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
+import {
+  scenarioOptionsToAllocationQuestion,
+  familiesFromAllocationAnswer,
+  forEachWeightedMapsTo,
+  domAllocationQuestionHtml,
+  attachDomAllocationListeners,
+  isValidAllocationAnswer,
+} from './shared/questionnaire-allocation.js';
 
 // Data modules - will be loaded lazily
 let NEEDS_VOCABULARY, VICES_VOCABULARY;
@@ -222,8 +231,8 @@ export class NeedsDependencyEngine {
     await this.loadNeedsDependencyData();
 
     try {
-      // Prepend Phase 0 gateway questions followed by Phase 1 symptom questions
-      this.questionSequence = [...PHASE_0_QUESTIONS, ...PHASE_1_QUESTIONS];
+      const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
+      this.questionSequence = [...PHASE_0_QUESTIONS, ...PHASE_1_QUESTIONS].map(mapQ);
       this.currentPhase = 1;
       this.currentQuestionIndex = 0;
       this.debugReporter.recordQuestionCount(this.questionSequence.length);
@@ -244,8 +253,14 @@ export class NeedsDependencyEngine {
     if (PHASE_0_QUESTIONS) {
       PHASE_0_QUESTIONS.forEach(question => {
         const answer = this.answers[question.id];
-        if (answer && answer.mapsTo && Array.isArray(answer.mapsTo.families)) {
-          answer.mapsTo.families.forEach(f => activeFamilies.add(f));
+        if (!answer) return;
+        const allocQ = question.type === 'scenario'
+          ? scenarioOptionsToAllocationQuestion(question)
+          : question;
+        if (answer.weights && allocQ.allocationMembers) {
+          familiesFromAllocationAnswer(answer, allocQ.allocationMembers).forEach((f) => activeFamilies.add(f));
+        } else if (answer.mapsTo && Array.isArray(answer.mapsTo.families)) {
+          answer.mapsTo.families.forEach((f) => activeFamilies.add(f));
         }
       });
     }
@@ -292,35 +307,45 @@ export class NeedsDependencyEngine {
       // Generalised metadata-driven scoring — no hardcoded question IDs.
       // Each question declares scoringWeight; mapsTo.sourcing / mapsTo.loops drive scoring.
       // Adding a new Phase 0 or Phase 1 question requires no engine changes.
-      PHASE_1_QUESTIONS.forEach(question => {
+      const applyMapsTo = (mapsTo, effectiveWeight) => {
+        const loops = mapsTo.loops || [];
+        const sourcing = mapsTo.sourcing;
+        loops.forEach((loop) => {
+          if (!loopScores[loop]) return;
+          if (sourcing === 'compulsive') {
+            loopScores[loop].compulsionIndex += effectiveWeight;
+          } else if (sourcing === 'avoidant') {
+            loopScores[loop].aversionIndex += effectiveWeight;
+          } else {
+            loopScores[loop].compulsionIndex += effectiveWeight;
+          }
+        });
+        if (mapsTo.triggers) {
+          triggerSensitivity.push(...mapsTo.triggers);
+          loops.forEach((loop) => {
+            if (loopScores[loop]) loopScores[loop].triggerMatch += effectiveWeight;
+          });
+        }
+      };
+
+      PHASE_1_QUESTIONS.forEach((question) => {
         const answer = this.answers[question.id];
         if (!answer) return;
 
         const weight = question.scoringWeight ?? 2;
+        const allocQ = question.type === 'scenario'
+          ? scenarioOptionsToAllocationQuestion(question)
+          : question;
 
-        // Single-select scenario / scaled questions
-        if (!Array.isArray(answer) && answer.mapsTo) {
-          const loops = answer.mapsTo.loops || [];
-          const sourcing = answer.mapsTo.sourcing;
-
-          loops.forEach(loop => {
-            if (!loopScores[loop]) return; // only score active-family loops
-            if (sourcing === 'compulsive') {
-              loopScores[loop].compulsionIndex += weight;
-            } else if (sourcing === 'avoidant') {
-              loopScores[loop].aversionIndex += weight;
-            } else {
-              loopScores[loop].compulsionIndex += weight;
-            }
+        if (answer.weights && allocQ.allocationMembers) {
+          forEachWeightedMapsTo(answer, allocQ.allocationMembers, (mapsTo, frac) => {
+            applyMapsTo(mapsTo, weight * frac);
           });
+          return;
+        }
 
-          // Trigger sensitivity
-          if (answer.mapsTo.triggers) {
-            triggerSensitivity.push(...answer.mapsTo.triggers);
-            loops.forEach(loop => {
-              if (loopScores[loop]) loopScores[loop].triggerMatch += weight;
-            });
-          }
+        if (!Array.isArray(answer) && answer.mapsTo) {
+          applyMapsTo(answer.mapsTo, weight);
         }
 
         // Multiselect questions (vice states)
@@ -697,6 +722,18 @@ export class NeedsDependencyEngine {
     }
     
     const question = this.questionSequence[this.currentQuestionIndex];
+
+    if (externalRenderQuestion(this, question, {
+      totalQuestions: this.questionSequence.length,
+      questionIndex: this.currentQuestionIndex,
+      phase: this.currentPhase,
+      stageLabel: this.getPhaseLabel(this.currentPhase),
+    })) {
+      this.updateProgress();
+      this.updateNavigationButtons();
+      return;
+    }
+
     const container = this.externalUI
       ? this._externalQuestionMount
       : document.getElementById('questionContainer');
@@ -714,6 +751,13 @@ export class NeedsDependencyEngine {
       // Render based on question type
       if (question.type === 'scaled') {
         html = this.renderScaledQuestion(question);
+      } else if (question.type === 'allocation') {
+        html = domAllocationQuestionHtml(question, this.answers[question.id], {
+          phase: this.currentPhase,
+          questionIndex: this.currentQuestionIndex,
+          questionTotal: this.questionSequence.length,
+          stageLabel: this.getPhaseLabel(this.currentPhase),
+        });
       } else if (question.type === 'scenario') {
         html = this.renderScenarioQuestion(question);
       } else if (question.type === 'multiselect') {
@@ -725,8 +769,10 @@ export class NeedsDependencyEngine {
       // Sanitize HTML before rendering - all dynamic content is already sanitized above
       SecurityUtils.safeInnerHTML(container, html);
       
-      // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
+      if (question.type === 'allocation') {
+        attachDomAllocationListeners(container, this, question);
+      }
       
       this.updateProgress();
       this.updateNavigationButtons();
@@ -1184,7 +1230,13 @@ export class NeedsDependencyEngine {
   async nextQuestion() {
     // Check if current question has been answered
     const currentQuestion = this.questionSequence[this.currentQuestionIndex];
-    if (currentQuestion && !this.answers[currentQuestion.id]) {
+    if (!currentQuestion) return;
+    if (currentQuestion.type === 'allocation') {
+      if (!isValidAllocationAnswer(this.answers[currentQuestion.id], currentQuestion.allocationTargetSum ?? 100)) {
+        ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');
+        return;
+      }
+    } else if (!this.answers[currentQuestion.id]) {
       ErrorHandler.showUserError('Please select an answer before proceeding.');
       return;
     }

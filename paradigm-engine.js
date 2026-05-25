@@ -22,6 +22,12 @@ import {
   allocationWeightToScale7,
   buildAllocationAnswer,
 } from './shared/allocation-scales.js';
+import {
+  scenarioOptionsToAllocationQuestion,
+  forEachWeightedMapsTo,
+  domAllocationQuestionHtml,
+  attachDomAllocationListeners,
+} from './shared/questionnaire-allocation.js';
 
 // Data modules - will be loaded lazily
 let GOOD_LIFE_PARADIGMS, GOD_PERSPECTIVES, PARADIGM_SCORING;
@@ -333,11 +339,12 @@ export class ParadigmEngine {
     
     this.questionSequence = [];
     
+    const mapQ = (q) => (q.type === 'scenario' ? scenarioOptionsToAllocationQuestion(q) : q);
     this.selectedCategories.forEach(category => {
       if (category === 'good_life' && PHASE_1_QUESTIONS.good_life) {
-        this.questionSequence.push(...PHASE_1_QUESTIONS.good_life);
+        this.questionSequence.push(...PHASE_1_QUESTIONS.good_life.map(mapQ));
       } else if (category === 'god' && PHASE_1_QUESTIONS.god) {
-        this.questionSequence.push(...PHASE_1_QUESTIONS.god);
+        this.questionSequence.push(...PHASE_1_QUESTIONS.god.map(mapQ));
       }
     });
     
@@ -357,31 +364,34 @@ export class ParadigmEngine {
     const dimensionScores = {};
     
     // Process Phase 1 answers
+    const applyMapsTo = (question, mapsTo, factor) => {
+      if (mapsTo.paradigm) {
+        const key = mapsTo.paradigm;
+        if (!paradigmScores[key]) paradigmScores[key] = 0;
+        paradigmScores[key] += (mapsTo.weight || 1) * factor;
+      }
+      if (mapsTo.dimension) {
+        const dimKey = `${question.category || 'unknown'}_${mapsTo.dimension}`;
+        if (!dimensionScores[dimKey]) dimensionScores[dimKey] = 0;
+        dimensionScores[dimKey] += (mapsTo.weight || 1) * factor;
+      }
+      if (mapsTo.perspective) {
+        const key = mapsTo.perspective;
+        if (!paradigmScores[key]) paradigmScores[key] = 0;
+        paradigmScores[key] += (mapsTo.weight || 1) * factor;
+      }
+    };
+
     this.questionSequence.forEach(question => {
       const answer = this.answers[question.id];
       if (!answer) return;
-      
-      if (answer.mapsTo) {
-        // Track paradigm scores
-        if (answer.mapsTo.paradigm) {
-          const key = answer.mapsTo.paradigm;
-          if (!paradigmScores[key]) paradigmScores[key] = 0;
-          paradigmScores[key] += answer.mapsTo.weight || 1;
-        }
-        
-        // Track dimension scores
-        if (answer.mapsTo.dimension) {
-          const dimKey = `${question.category || 'unknown'}_${answer.mapsTo.dimension}`;
-          if (!dimensionScores[dimKey]) dimensionScores[dimKey] = 0;
-          dimensionScores[dimKey] += answer.mapsTo.weight || 1;
-        }
-        
-        // Track perspective scores (for God)
-        if (answer.mapsTo.perspective) {
-          const key = answer.mapsTo.perspective;
-          if (!paradigmScores[key]) paradigmScores[key] = 0;
-          paradigmScores[key] += answer.mapsTo.weight || 1;
-        }
+
+      if (answer.weights && question.allocationMembers) {
+        forEachWeightedMapsTo(answer, question.allocationMembers, (mapsTo, frac) => {
+          applyMapsTo(question, mapsTo, frac);
+        });
+      } else if (answer.mapsTo) {
+        applyMapsTo(question, answer.mapsTo, 1);
       }
       
       // Handle multi-select answers
@@ -618,6 +628,13 @@ export class ParadigmEngine {
     // Render based on question type
     if (question.type === 'binary') {
       html += this.renderBinaryQuestion(question);
+    } else if (question.type === 'allocation') {
+      html += domAllocationQuestionHtml(question, this.answers[question.id], {
+        phase: this.currentPhase,
+        questionIndex: this.currentQuestionIndex,
+        questionTotal: this.questionSequence.length,
+        stageLabel: this.getPhaseLabel(this.currentPhase),
+      });
     } else if (question.type === 'scenario') {
       html += this.renderScenarioQuestion(question);
     } else if (question.type === 'multiselect') {
@@ -633,20 +650,20 @@ export class ParadigmEngine {
       
       // Attach event listeners for the specific question type
       this.attachQuestionListeners(question);
-      
+      if (question.type === 'allocation') {
+        attachDomAllocationListeners(container, this, question);
+      }
+
       this.updateProgress();
       this.updateNavigationButtons();
-      
-      // Track render performance
+
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
 
-// Scroll to question after rendering
       setTimeout(() => {
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
-      
-      // Focus management for accessibility
+
       const firstInput = container.querySelector('input, button, select, textarea');
       if (firstInput) {
         DOMUtils.focusElement(firstInput);

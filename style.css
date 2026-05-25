@@ -6985,6 +6985,32 @@ details.category-group--diagnosis[open] .category-group-header__chev {
     word-wrap: break-word;
 }
 
+/* v3 parity: default options-container stacks (grid only with .options-container-grid) */
+.options-container:not(.options-container-grid) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    width: 100%;
+    grid-template-columns: unset;
+}
+
+.options-container:not(.options-container-grid) .option-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    text-align: left;
+    line-height: 1.55;
+}
+
+.options-container:not(.options-container-grid) .option-label span {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
 .acuity-scenario-group {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;

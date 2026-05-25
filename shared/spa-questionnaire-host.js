@@ -3,6 +3,7 @@
  */
 
 import { EngineUIController } from './engine-ui-controller.js';
+import { ErrorHandler } from './utils.js';
 import {
   applySpaExternalOptions,
   spaEmit,
@@ -11,6 +12,10 @@ import {
   bootLegacyEngine,
 } from './spa-engine-external.js';
 import { emitQuestionSnapshot } from './spa-questionnaire-engine.js';
+import {
+  applyAllocationToEngineAnswers,
+  isValidAllocationAnswer
+} from './questionnaire-allocation.js';
 
 export function createSpaUi(instance, uiConfig) {
   if (!instance.externalUI) return new EngineUIController(uiConfig);
@@ -76,13 +81,66 @@ export async function showResultsExternal(instance, renderFn) {
  * @param {Function} EngineClass
  * @param {{ legacyMarkerId: string, phaseOpts?: object }} cfg
  */
+export function allocationNextQuestion(instance, payload) {
+  const q = instance.questionSequence?.[instance.currentQuestionIndex];
+  if (q?.type === 'allocation') {
+    if (!payload?.weights || !isValidAllocationAnswer(
+      { weights: payload.weights, sum: q.allocationTargetSum ?? 100 },
+      q.allocationTargetSum ?? 100
+    )) {
+      return false;
+    }
+    applyAllocationToEngineAnswers(instance, q, payload);
+  } else if (q && payload !== undefined && typeof payload === 'number') {
+    instance.answers[q.id] = payload;
+  } else if (q && payload?.weights) {
+    applyAllocationToEngineAnswers(instance, q, payload);
+  }
+  instance.currentQuestionIndex++;
+  instance.saveProgress?.();
+  if (instance.currentQuestionIndex < instance.questionSequence.length) {
+    instance.renderCurrentQuestion();
+  } else if (instance.completeAssessment) {
+    instance.completeAssessment();
+  } else if (instance.completePhase) {
+    instance.completePhase();
+  } else if (instance.completeReport) {
+    instance.completeReport();
+  }
+  return true;
+}
+
+export function allocationPrevQuestion(instance, payload) {
+  if (instance.currentQuestionIndex <= 0) return;
+  const q = instance.questionSequence?.[instance.currentQuestionIndex];
+  if (q?.type === 'allocation' && payload?.weights) {
+    applyAllocationToEngineAnswers(instance, q, payload);
+  } else if (q && payload !== undefined && typeof payload === 'number') {
+    instance.answers[q.id] = payload;
+  } else if (q && payload?.weights) {
+    applyAllocationToEngineAnswers(instance, q, payload);
+  }
+  instance.currentQuestionIndex--;
+  instance.saveProgress?.();
+  instance.renderCurrentQuestion();
+}
+
 export function attachDomQuestionSpaApi(EngineClass, cfg) {
   attachStandardSpaApi(EngineClass, cfg);
   EngineClass.prototype.usesDomQuestions = function usesDomQuestions() {
-    return true;
+    const q = this.questionSequence?.[this.currentQuestionIndex];
+    return q?.type !== 'allocation';
   };
   EngineClass.prototype.setExternalQuestionMount = function setExternalQuestionMount(el) {
     this._externalQuestionMount = el;
+  };
+  EngineClass.prototype.nextQuestionFromExternal = function nextQuestionFromExternal(v) {
+    if (!allocationNextQuestion(this, v)) {
+      ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');
+    }
+  };
+  EngineClass.prototype.prevQuestionFromExternal = function prevQuestionFromExternal(v) {
+    allocationPrevQuestion(this, v);
   };
 }
 
