@@ -1051,7 +1051,7 @@ renderCurrentQuestion() {
       if (
         !isValidAllocationAnswer(
           this.answers[currentQuestion.id],
-          currentQuestion.allocationTargetSum ?? 100
+          currentQuestion.allocationTargetSum ?? 1000
         )
       ) {
         ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');

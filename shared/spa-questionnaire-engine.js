@@ -3,7 +3,12 @@
  */
 
 import { spaEmit } from './spa-engine-external.js';
-import { createEmptyWeights } from './allocation-scales.js';
+import {
+  createEmptyWeights,
+  DEFAULT_ALLOCATION_TARGET,
+  getAllocationTargetSum,
+  maybeUpgradeAllocationWeights
+} from './allocation-scales.js';
 
 export function buildQuestionSnapshot(engine, question, overrides = {}) {
   if (!question) return null;
@@ -14,9 +19,10 @@ export function buildQuestionSnapshot(engine, question, overrides = {}) {
   if (question.type === 'allocation' && Array.isArray(question.allocationMembers)) {
     const memberIds = question.allocationMembers.map((m) => m.id);
     const stored = engine.answers?.[question.id];
-    const weights = createEmptyWeights(memberIds);
+    const targetSum = getAllocationTargetSum(question);
+    const weights = createEmptyWeights(memberIds, null, targetSum);
     if (stored?.weights && typeof stored.weights === 'object') {
-      Object.assign(weights, stored.weights);
+      Object.assign(weights, maybeUpgradeAllocationWeights(stored.weights, targetSum));
     }
     return {
       question: {
@@ -34,7 +40,7 @@ export function buildQuestionSnapshot(engine, question, overrides = {}) {
           hint: m.question,
         })),
         allocationWeights: weights,
-        allocationTargetSum: question.allocationTargetSum ?? 100,
+        allocationTargetSum: question.allocationTargetSum ?? DEFAULT_ALLOCATION_TARGET,
       },
       currentIndex: engine.currentQuestionIndex ?? 0,
       totalQuestions: total,

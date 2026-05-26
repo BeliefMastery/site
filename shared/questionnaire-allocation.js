@@ -6,6 +6,11 @@ import {
   ALLOCATION_ANSWER_VERSION,
   buildAllocationAnswer,
   createEmptyWeights,
+  DEFAULT_ALLOCATION_TARGET,
+  formatAllocationPercent,
+  getAllocationTargetSum,
+  maybeUpgradeAllocationWeights,
+  parseAllocationPercentInput,
   redistributeOnChange,
   sumWeights
 } from './allocation-scales.js';
@@ -36,7 +41,7 @@ export function scenarioOptionsToAllocationQuestion(q, opts = {}) {
     ...q,
     type: 'allocation',
     allocationMembers: members,
-    allocationTargetSum: q.allocationTargetSum ?? 100,
+    allocationTargetSum: q.allocationTargetSum ?? DEFAULT_ALLOCATION_TARGET,
     allocationPlainHint: q.allocationPlainHint || opts.plainHint || ALLOCATION_PLAIN_HINT
   };
 }
@@ -99,6 +104,8 @@ export function selectionFromAllocationAnswer(
   topN = 3
 ) {
   const weights = answer?.weights || {};
+  const target = answer?.sum ?? DEFAULT_ALLOCATION_TARGET;
+  const thresholdUnits = (thresholdPct / 100) * target;
   const selected = [];
   const ranked = members
     .map((m) => ({ member: m, w: Number(weights[m.id]) || 0 }))
@@ -106,7 +113,7 @@ export function selectionFromAllocationAnswer(
     .sort((a, b) => b.w - a.w);
 
   ranked.forEach(({ member, w }) => {
-    if (w >= thresholdPct) {
+    if (w >= thresholdUnits) {
       const key = pickKey(member);
       if (key != null && key !== '') selected.push(key);
     }
@@ -128,9 +135,10 @@ export function selectionFromAllocationAnswer(
 export function getAllocationWeightsForQuestion(question, stored) {
   const members = question.allocationMembers || [];
   const ids = members.map((m) => m.id);
-  const base = createEmptyWeights(ids);
+  const targetSum = getAllocationTargetSum(question);
+  const base = createEmptyWeights(ids, null, targetSum);
   if (stored?.weights && typeof stored.weights === 'object') {
-    return { ...base, ...stored.weights };
+    return { ...base, ...maybeUpgradeAllocationWeights(stored.weights, targetSum) };
   }
   return base;
 }
@@ -142,6 +150,8 @@ export function getAllocationWeightsForQuestion(question, stored) {
  */
 export function familiesFromAllocationAnswer(answer, members, thresholdPct = ALLOCATION_FAMILY_THRESHOLD_PCT, topN = 3) {
   const weights = answer?.weights || {};
+  const target = answer?.sum ?? DEFAULT_ALLOCATION_TARGET;
+  const thresholdUnits = (thresholdPct / 100) * target;
   const active = new Set();
   const ranked = members
     .map((m) => ({ member: m, w: Number(weights[m.id]) || 0 }))
@@ -149,7 +159,7 @@ export function familiesFromAllocationAnswer(answer, members, thresholdPct = ALL
     .sort((a, b) => b.w - a.w);
 
   ranked.forEach(({ member, w }) => {
-    if (w >= thresholdPct && member.mapsTo?.families) {
+    if (w >= thresholdUnits && member.mapsTo?.families) {
       member.mapsTo.families.forEach((f) => active.add(f));
     }
   });
@@ -170,7 +180,7 @@ export function familiesFromAllocationAnswer(answer, members, thresholdPct = ALL
  */
 export function forEachWeightedMapsTo(answer, members, visitor) {
   const weights = answer?.weights || {};
-  const target = answer?.sum ?? 100;
+  const target = answer?.sum ?? DEFAULT_ALLOCATION_TARGET;
   members.forEach((m) => {
     const w = Number(weights[m.id]) || 0;
     if (w <= 0 || !m.mapsTo) return;
@@ -183,9 +193,10 @@ export function forEachWeightedMapsTo(answer, members, visitor) {
  */
 export function domAllocationQuestionHtml(question, storedAnswer, context = {}) {
   const members = question.allocationMembers || [];
-  const targetSum = question.allocationTargetSum ?? 100;
+  const targetSum = getAllocationTargetSum(question);
   const weights = getAllocationWeightsForQuestion(question, storedAnswer);
   const total = sumWeights(weights);
+  const displayTotal = formatAllocationPercent(total, targetSum);
   const phase = context.phase != null ? context.phase : '';
   const qNum = context.questionIndex != null ? context.questionIndex + 1 : '';
   const qTotal = context.questionTotal ?? '';
@@ -200,14 +211,15 @@ export function domAllocationQuestionHtml(question, storedAnswer, context = {}) 
   const rows = members
     .map((m) => {
       const val = weights[m.id] ?? 0;
+      const displayVal = formatAllocationPercent(val, targetSum);
       return `
         <div class="bm-allocation-row">
           <label class="bm-allocation-label" for="alloc-${question.id}-${m.id}">${escapeHtml(m.label)}</label>
           ${m.hint ? `<p class="bm-allocation-hint">${escapeHtml(m.hint)}</p>` : ''}
           <div class="bm-scale">
             <input type="range" id="alloc-${question.id}-${m.id}" class="bm-allocation-slider"
-              data-member-id="${escapeHtml(m.id)}" min="0" max="${targetSum}" step="1" value="${val}" />
-            <span class="bm-scale__value bm-allocation-pct">${val}%</span>
+              data-member-id="${escapeHtml(m.id)}" min="0" max="100" step="0.1" value="${displayVal}" />
+            <span class="bm-scale__value bm-allocation-pct">${displayVal}%</span>
           </div>
         </div>`;
     })
@@ -219,7 +231,7 @@ export function domAllocationQuestionHtml(question, storedAnswer, context = {}) 
       ${header}
       <h3 class="question-text">${escapeHtml(question.question || question.questionText || '')}</h3>
       <p class="form-help">${escapeHtml(question.allocationPlainHint || ALLOCATION_PLAIN_HINT)}</p>
-      <p class="bm-allocation-sum${sumClass}">Total: <strong class="bm-allocation-sum-val">${total}%</strong> / ${targetSum}%</p>
+      <p class="bm-allocation-sum${sumClass}">Total: <strong class="bm-allocation-sum-val">${displayTotal}%</strong> / 100%</p>
       <div class="bm-allocation-grid" data-question-id="${escapeHtml(question.id)}">${rows}</div>
     </div>`;
 }
@@ -240,7 +252,7 @@ function escapeHtml(str) {
  * @param {object} question
  */
 export function attachDomAllocationListeners(container, engine, question) {
-  const targetSum = question.allocationTargetSum ?? 100;
+  const targetSum = getAllocationTargetSum(question);
   const members = question.allocationMembers || [];
   const ids = members.map((m) => m.id);
   let weights = getAllocationWeightsForQuestion(question, engine.answers?.[question.id]);
@@ -257,7 +269,7 @@ export function attachDomAllocationListeners(container, engine, question) {
     };
     engine.saveProgress?.();
     const total = sumWeights(weights);
-    if (sumEl) sumEl.textContent = `${total}%`;
+    if (sumEl) sumEl.textContent = `${formatAllocationPercent(total, targetSum)}%`;
     if (sumWrap) {
       sumWrap.classList.toggle('bm-allocation-sum--ok', total === targetSum);
     }
@@ -265,7 +277,7 @@ export function attachDomAllocationListeners(container, engine, question) {
       const memberId = slider.getAttribute('data-member-id');
       const pctEl = slider.closest('.bm-allocation-row')?.querySelector('.bm-allocation-pct');
       if (memberId && pctEl && weights[memberId] != null) {
-        pctEl.textContent = `${weights[memberId]}%`;
+        pctEl.textContent = `${formatAllocationPercent(weights[memberId], targetSum)}%`;
       }
     });
   };
@@ -275,14 +287,16 @@ export function attachDomAllocationListeners(container, engine, question) {
       const memberId = slider.getAttribute('data-member-id');
       weights = redistributeOnChange(
         memberId,
-        parseInt(slider.value, 10),
+        parseAllocationPercentInput(slider.value),
         weights,
         targetSum,
         ids
       );
       container.querySelectorAll('.bm-allocation-slider').forEach((s) => {
         const id = s.getAttribute('data-member-id');
-        if (id && weights[id] != null) s.value = weights[id];
+        if (id && weights[id] != null) {
+          s.value = formatAllocationPercent(weights[id], targetSum);
+        }
       });
       persist();
     });
@@ -290,7 +304,7 @@ export function attachDomAllocationListeners(container, engine, question) {
   persist();
 }
 
-export function isValidAllocationAnswer(answer, targetSum = 100) {
+export function isValidAllocationAnswer(answer, targetSum = DEFAULT_ALLOCATION_TARGET) {
   if (!answer?.weights) return false;
   return sumWeights(answer.weights) === targetSum;
 }
@@ -301,7 +315,7 @@ export function isValidAllocationAnswer(answer, targetSum = 100) {
  */
 export function applyAllocationScores(scoresObj, question, answer, priorDeltas = {}) {
   const members = question.allocationMembers || [];
-  const target = answer?.sum ?? question.allocationTargetSum ?? 100;
+  const target = answer?.sum ?? getAllocationTargetSum(question);
   const weights = answer?.weights || {};
   Object.entries(priorDeltas).forEach(([key, delta]) => {
     if (scoresObj[key] !== undefined) scoresObj[key] -= delta;
@@ -333,7 +347,7 @@ export function applyAllocationToEngineAnswers(engine, question, payload) {
   const ids = members.map((m) => m.id);
   const base = createEmptyWeights(ids);
   const merged = { ...base, ...(payload?.weights || {}) };
-  const targetSum = question.allocationTargetSum ?? 100;
+  const targetSum = getAllocationTargetSum(question);
   engine.answers[question.id] = {
     ids: [...ids],
     weights: merged,
@@ -349,6 +363,6 @@ export function applyAllocationToEngineAnswersNormalized(engine, question, paylo
   engine.answers[question.id] = buildAllocationAnswer(
     ids,
     payload?.weights || {},
-    question.allocationTargetSum ?? 100
+    getAllocationTargetSum(question)
   );
 }

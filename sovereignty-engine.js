@@ -1362,7 +1362,7 @@ export class SovereigntyEngine {
       // Check if current question has been answered
       const currentQuestion = this.questionSequence[this.currentQuestionIndex];
       if (currentQuestion?.type === 'allocation') {
-        if (!isValidAllocationAnswer(this.answers[currentQuestion.id], currentQuestion.allocationTargetSum ?? 100)) {
+        if (!isValidAllocationAnswer(this.answers[currentQuestion.id], currentQuestion.allocationTargetSum ?? 1000)) {
           ErrorHandler.showUserError('Please distribute 100% across the options before continuing.');
           return;
         }

@@ -1,18 +1,23 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   createEmptyWeights,
+  formatAllocationPercent,
+  getAllocationTargetSum,
+  maybeUpgradeAllocationWeights,
+  parseAllocationPercentInput,
   redistributeOnChange,
   sumWeights
 } from '@site/shared/allocation-scales.js';
 
 function AllocationSliders({ snapshot, onNext, onPrev, onAbandon, canGoBack = true }) {
   const q = snapshot?.question;
-  const targetSum = q?.allocationTargetSum ?? 100;
+  const targetSum = getAllocationTargetSum(q);
   const members = q?.allocationMembers ?? [];
   const memberIds = useMemo(() => members.map((m) => m.id), [members]);
   const [weights, setWeights] = useState(() => {
-    const base = createEmptyWeights(memberIds);
-    return { ...base, ...(q?.allocationWeights || {}) };
+    const base = createEmptyWeights(memberIds, null, targetSum);
+    const merged = { ...base, ...(q?.allocationWeights || {}) };
+    return maybeUpgradeAllocationWeights(merged, targetSum);
   });
 
   const onWeightChange = useCallback(
@@ -42,7 +47,7 @@ function AllocationSliders({ snapshot, onNext, onPrev, onAbandon, canGoBack = tr
       {q.plainHint ? <p className="bm-question-hint">{q.plainHint}</p> : null}
       <h3 className="bm-question-stem">{q.text}</h3>
       <p className={`bm-allocation-sum${total === targetSum ? ' bm-allocation-sum--ok' : ''}`}>
-        Total: <strong>{total}%</strong> / {targetSum}%
+        Total: <strong>{formatAllocationPercent(total, targetSum)}%</strong> / 100%
       </p>
       <div className="bm-allocation-grid">
         {members.map((m) => (
@@ -56,12 +61,14 @@ function AllocationSliders({ snapshot, onNext, onPrev, onAbandon, canGoBack = tr
                 id={`alloc-${m.id}`}
                 type="range"
                 min={0}
-                max={targetSum}
-                step={1}
-                value={weights[m.id] ?? 0}
-                onChange={(e) => onWeightChange(m.id, parseInt(e.target.value, 10))}
+                max={100}
+                step={0.1}
+                value={formatAllocationPercent(weights[m.id] ?? 0, targetSum)}
+                onChange={(e) => onWeightChange(m.id, parseAllocationPercentInput(e.target.value))}
               />
-              <span className="bm-scale__value">{weights[m.id] ?? 0}%</span>
+              <span className="bm-scale__value">
+                {formatAllocationPercent(weights[m.id] ?? 0, targetSum)}%
+              </span>
             </div>
           </div>
         ))}

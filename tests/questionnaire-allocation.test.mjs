@@ -89,10 +89,10 @@ test('forEachWeightedMapsTo scales mapsTo by weight fraction', () => {
 
 test('isValidAllocationAnswer requires exact target sum', () => {
   const w = createEmptyWeights(['a', 'b']);
-  assert.equal(isValidAllocationAnswer({ weights: w, sum: 100 }, 100), true);
-  w.a = 60;
-  w.b = 30;
-  assert.equal(isValidAllocationAnswer({ weights: w, sum: 100 }, 100), false);
+  assert.equal(isValidAllocationAnswer({ weights: w, sum: 1000 }, 1000), true);
+  w.a = 600;
+  w.b = 300;
+  assert.equal(isValidAllocationAnswer({ weights: w, sum: 1000 }, 1000), false);
 });
 
 test('applyAllocationScores applies weighted option scores', () => {

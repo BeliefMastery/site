@@ -12,6 +12,7 @@ import {
   bootLegacyEngine,
 } from './spa-engine-external.js';
 import { emitQuestionSnapshot } from './spa-questionnaire-engine.js';
+import { DEFAULT_ALLOCATION_TARGET } from './allocation-scales.js';
 import {
   applyAllocationToEngineAnswers,
   isValidAllocationAnswer
@@ -85,8 +86,8 @@ export function allocationNextQuestion(instance, payload) {
   const q = instance.questionSequence?.[instance.currentQuestionIndex];
   if (q?.type === 'allocation') {
     if (!payload?.weights || !isValidAllocationAnswer(
-      { weights: payload.weights, sum: q.allocationTargetSum ?? 100 },
-      q.allocationTargetSum ?? 100
+      { weights: payload.weights, sum: q.allocationTargetSum ?? DEFAULT_ALLOCATION_TARGET },
+      q.allocationTargetSum ?? DEFAULT_ALLOCATION_TARGET
     )) {
       return false;
     }
