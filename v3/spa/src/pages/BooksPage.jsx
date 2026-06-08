@@ -36,7 +36,7 @@ function StandardBookSection({ data, moreInfoLead }) {
   return (
     <section
       id={data.sectionId}
-      className="surface v3-book-section v3-books-page-section v3-section--breathable v3-section-band--gradient"
+      className="surface v3-book-section v3-books-page-section"
       aria-labelledby={data.titleId}
     >
       <h2 id={data.titleId} className="v3-book-title">
@@ -57,17 +57,15 @@ function StandardBookSection({ data, moreInfoLead }) {
           <Link className="v3-btn v3-btn--outline" to={purchaseLink(data.purchaseCta.hash)}>
             {data.purchaseCta.label}
           </Link>
-          <div className="v3-book-features-panel">
-            <ul className="v3-feature-list v3-feature-list--in-hero">
-              {data.features.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
-          </div>
+          <ul className="v3-feature-list v3-feature-list--in-hero">
+            {data.features.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
         </div>
       </div>
       {"note" in data && data.note != null ? (
-        <p className="v3-book-note v3-book-note-panel">{data.note}</p>
+        <p className="v3-book-note">{data.note}</p>
       ) : null}
       <div className="v3-books-spacer">
         <details className="v3-details" id={data.moreInfoId}>
@@ -144,7 +142,7 @@ export default function BooksPage() {
     <div className="stack v3-books-page">
       <section
         id={booksIntro.sectionId}
-        className="surface v3-book-section v3-books-intro v3-books-page-section v3-section--breathable v3-section-band--gradient"
+        className="surface v3-book-section v3-books-intro v3-books-page-section"
         aria-labelledby={booksIntro.titleId}
       >
         <h1 id={booksIntro.titleId} className="v3-hero-title">
