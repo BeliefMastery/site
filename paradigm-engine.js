@@ -2044,6 +2044,7 @@ export class ParadigmEngine {
     };
     
     sessionStorage.removeItem('paradigmProgress');
+    this._externalQuestionSnapshot = null;
     
     // Reset UI
     this.ui.transition('idle');

@@ -5,7 +5,7 @@ import { useEngineHost } from '../shared/useEngineHost';
 import { engineNativeCopy } from '../engineNativeConfig';
 
 export default function OutlierAptitudeEngineView({ label }) {
-  const { engine, ready, error } = useEngineHost('outlier-aptitude');
+  const { engine, phase, ready, error } = useEngineHost('outlier-aptitude');
   const shellRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function OutlierAptitudeEngineView({ label }) {
   return (
     <EngineLayout label={label} lead={engineNativeCopy['outlier-aptitude'].lead}>
       <div ref={shellRef} className="bm-engine bm-outlier-host" />
-      <ExportActions engine={engine} />
+      <ExportActions engine={engine} variant={phase === 'results' ? 'results' : 'idle'} />
     </EngineLayout>
   );
 }

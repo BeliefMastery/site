@@ -734,7 +734,8 @@ export class EntitiesEngine {
       tasteSkewSuggestions: [],
       contract: null
     };
-    if (!this.externalUI) this.ui.transition('idle');
+    this._externalQuestionSnapshot = null;
+    this.ui.transition('idle');
   }
 }
 

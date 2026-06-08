@@ -5,7 +5,7 @@ import { useEngineHost } from '../shared/useEngineHost';
 import { engineNativeCopy } from '../engineNativeConfig';
 
 export default function SovereigntyEngineView({ label }) {
-  const { engine, ready, error } = useEngineHost('sovereignty');
+  const { engine, phase, ready, error } = useEngineHost('sovereignty');
   const shellRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function SovereigntyEngineView({ label }) {
   return (
     <EngineLayout label={label} lead={engineNativeCopy.sovereignty.lead}>
       <div ref={shellRef} className="bm-engine bm-sovereignty-host" />
-      <ExportActions engine={engine} />
+      <ExportActions engine={engine} variant={phase === 'results' ? 'results' : 'idle'} />
     </EngineLayout>
   );
 }

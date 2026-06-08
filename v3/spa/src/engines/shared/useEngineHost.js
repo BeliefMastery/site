@@ -40,9 +40,10 @@ export function useEngineHost(engineId, options = {}) {
       if (!mountedRef.current) return;
       if (event === 'phase' && payload?.phase) {
         setPhase(payload.phase);
-      } else if (event === 'init') {
+      } else if (event === 'init' || event === 'reset') {
         const inst = instanceRef.current;
-        if (inst?.getPhase) setPhase(inst.getPhase());
+        setPhase(inst?.getPhase?.() || 'idle');
+        if (event === 'reset') bump();
       } else if (event === 'results') {
         setPhase('results');
       } else if (event === 'selection' || event === 'question' || event === 'refinement-offer') {

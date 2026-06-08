@@ -17,7 +17,7 @@ export default function TestimonialTicker() {
 
   if (!items.length) return null;
 
-  const durationSec = Math.max(72, items.length * 4.5);
+  const durationSec = Math.max(120, items.length * 8);
   const track = [...items, ...items];
 
   return (

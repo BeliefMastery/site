@@ -2020,6 +2020,7 @@ export class NeedsDependencyEngine {
       this.dataStore.clear('progress');
       localStorage.removeItem('needsDependencyProgress');
       localStorage.removeItem('needsDependencyResults');
+      this._externalQuestionSnapshot = null;
       
       const resultsSection = document.getElementById('resultsSection');
       const introSection = document.getElementById('introSection');

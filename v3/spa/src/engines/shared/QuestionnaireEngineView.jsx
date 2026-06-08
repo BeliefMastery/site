@@ -97,7 +97,7 @@ export default function QuestionnaireEngineView({
   return (
     <EngineLayout label={label} lead={lead}>
       {phase === 'idle' && (
-        <>
+        <div className="bm-init-stage">
           {explanation ? <ExtendedExplanation>{explanation}</ExtendedExplanation> : null}
           {showSelection ? (
             <>
@@ -106,7 +106,7 @@ export default function QuestionnaireEngineView({
               <SelectionGrid items={items} selectedIds={selected} onToggle={onToggleSelection} />
             </>
           ) : null}
-          <div className="bm-engine-actions">
+          <div className="bm-engine-actions bm-engine-actions--primary">
             <button
               type="button"
               className="v3-btn v3-btn--primary"
@@ -116,8 +116,8 @@ export default function QuestionnaireEngineView({
               Begin assessment
             </button>
           </div>
-          <ExportActions engine={engine} />
-        </>
+          <ExportActions engine={engine} variant="idle" />
+        </div>
       )}
 
       {phase === 'assessment' && domQuestions ? (
@@ -137,7 +137,7 @@ export default function QuestionnaireEngineView({
       {phase === 'results' && (
         <>
           <ResultsHtmlBridge engine={engine} ready={ready} phase={phase} />
-          <ExportActions engine={engine} showSample={false} />
+          <ExportActions engine={engine} variant="results" />
         </>
       )}
     </EngineLayout>

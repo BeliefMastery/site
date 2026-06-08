@@ -67,7 +67,7 @@ export default function DiagnosisEngineView({ label }) {
   return (
     <EngineLayout label={label} lead={LEAD}>
       {phase === 'idle' && (
-        <>
+        <div className="bm-init-stage">
           <ExtendedExplanation title="Extended explanation">
             <p>
               Choose the diagnostic categories you wish to explore. You can select multiple
@@ -80,7 +80,7 @@ export default function DiagnosisEngineView({ label }) {
           </ExtendedExplanation>
           <h2 className="bm-engine-heading">Select diagnostic categories</h2>
           <SelectionGrid items={categories} selectedIds={selected} onToggle={onToggle} />
-          <div className="bm-engine-actions">
+          <div className="bm-engine-actions bm-engine-actions--primary">
             <button
               type="button"
               className="v3-btn v3-btn--primary"
@@ -90,8 +90,8 @@ export default function DiagnosisEngineView({ label }) {
               Begin assessment
             </button>
           </div>
-          <ExportActions engine={engine} />
-        </>
+          <ExportActions engine={engine} variant="idle" />
+        </div>
       )}
 
       {phase === 'assessment' && !refinement && snapshot && (
@@ -138,7 +138,7 @@ export default function DiagnosisEngineView({ label }) {
       {phase === 'results' && (
         <>
           <ResultsHtmlBridge engine={engine} ready={ready} phase={phase} />
-          <ExportActions engine={engine} showSample={false} />
+          <ExportActions engine={engine} variant="results" />
         </>
       )}
     </EngineLayout>

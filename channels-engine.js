@@ -1558,6 +1558,7 @@ export class ChannelsEngine {
     this.reportComplete = false;
     sessionStorage.removeItem('channelProgress');
     this.dataStore.clear('progress');
+    this._externalQuestionSnapshot = null;
     
     // Reset UI
     this.ui.transition('idle');

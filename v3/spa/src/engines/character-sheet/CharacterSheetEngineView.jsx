@@ -32,7 +32,7 @@ export default function CharacterSheetEngineView({ label }) {
   return (
     <EngineLayout label={label} lead={engineNativeCopy['character-sheet'].lead}>
       <div ref={shellRef} className="bm-engine bm-character-sheet-host" />
-      <ExportActions engine={engine} showSample={phase !== 'results'} />
+      <ExportActions engine={engine} variant={phase === 'results' ? 'results' : 'idle'} />
     </EngineLayout>
   );
 }

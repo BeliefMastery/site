@@ -15,7 +15,7 @@ import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { shouldBootLegacyEngine, bootLegacyEngine } from './shared/spa-engine-external.js';
+import { shouldBootLegacyEngine, bootLegacyEngine, spaSetPhase, spaEmit } from './shared/spa-engine-external.js';
 
 // Data modules - will be loaded lazily
 let DSM5_CATEGORIES, QUESTION_TEMPLATES, PLAIN_LANGUAGE_HINTS, VALIDATION_PAIRS, SCORING_THRESHOLDS;
@@ -2387,7 +2387,10 @@ export class DiagnosisEngine {
     this.dataStore.clear('progress');
 
     if (this.externalUI) {
-      this._emitExternal('reset');
+      this._externalQuestionSnapshot = null;
+      this._externalRefinementGroups = null;
+      spaSetPhase(this, 'idle');
+      spaEmit(this, 'reset');
       return;
     }
     

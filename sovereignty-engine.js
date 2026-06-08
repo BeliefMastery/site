@@ -2135,6 +2135,7 @@ export class SovereigntyEngine {
       this.dataStore.clear('progress');
       sessionStorage.removeItem('sovereigntyAssessment');
       localStorage.removeItem('sovereigntyAssessment');
+      this._externalQuestionSnapshot = null;
 
       this.ui.transition('idle');
       

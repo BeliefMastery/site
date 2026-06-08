@@ -1513,6 +1513,7 @@ renderCurrentQuestion() {
     this.reportComplete = false;
     sessionStorage.removeItem('manipulationProgress');
     this.dataStore.clear('progress');
+    this._externalQuestionSnapshot = null;
     
     // Reset UI
     this.ui.transition('idle');

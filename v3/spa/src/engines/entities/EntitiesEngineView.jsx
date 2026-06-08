@@ -5,7 +5,7 @@ import { useEngineHost } from '../shared/useEngineHost';
 import { engineNativeCopy } from '../engineNativeConfig';
 
 export default function EntitiesEngineView({ label }) {
-  const { engine, ready, error } = useEngineHost('entities');
+  const { engine, phase, ready, error } = useEngineHost('entities');
   const shellRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function EntitiesEngineView({ label }) {
   return (
     <EngineLayout label={label} lead={engineNativeCopy.entities.lead}>
       <div ref={shellRef} className="bm-engine bm-entities-host" />
-      <ExportActions engine={engine} />
+      <ExportActions engine={engine} variant={phase === 'results' ? 'results' : 'idle'} />
     </EngineLayout>
   );
 }
