@@ -414,27 +414,31 @@ article.surface.progress-card.v3-section-band--gradient > .v3-muted {
   gap: var(--v3-space-3);
 }
 
-.v3-engage-slider__nav {
+.v3-engage-slider__stage {
   display: flex;
-  justify-content: center;
+  align-items: center;
   gap: var(--v3-space-2);
-  flex-wrap: wrap;
 }
 
 .v3-engage-slider__arrow {
-  font: inherit;
-  font-weight: 600;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
   cursor: pointer;
-  padding: 0.45rem 1rem;
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--v3-accent) 32%, var(--v3-surface-border));
-  background: color-mix(in srgb, var(--v3-accent) 8%, var(--v3-surface));
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--v3-accent) 28%, var(--v3-surface-border));
+  background: color-mix(in srgb, var(--v3-accent) 6%, var(--v3-surface));
   color: var(--v3-text);
 }
 
 .v3-engage-slider__arrow:hover {
   border-color: color-mix(in srgb, var(--v3-accent) 48%, var(--v3-surface-border));
   background: color-mix(in srgb, var(--v3-accent) 14%, var(--v3-surface));
+  color: var(--v3-heading);
 }
 
 .v3-engage-slider__arrow:focus-visible {
@@ -442,18 +446,46 @@ article.surface.progress-card.v3-section-band--gradient > .v3-muted {
   outline-offset: 2px;
 }
 
+.v3-engage-slider__arrow-icon {
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.v3-engage-slider__arrow-icon--prev {
+  margin-left: -1px;
+  border-width: 4px 6px 4px 0;
+  border-color: transparent currentColor transparent transparent;
+}
+
+.v3-engage-slider__arrow-icon--next {
+  margin-right: -1px;
+  border-width: 4px 0 4px 6px;
+  border-color: transparent transparent transparent currentColor;
+}
+
 .v3-engage-slider__panel {
+  flex: 1;
+  min-width: 0;
   min-height: 12.5rem;
   padding: var(--v3-space-3) var(--v3-space-2);
   border-radius: var(--v3-radius);
   border: 1px solid var(--v3-surface-border);
   background: color-mix(in srgb, var(--v3-surface) 55%, transparent);
   text-align: center;
+  opacity: 1;
+  transition: opacity 320ms ease;
+}
+
+.v3-engage-slider__panel--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .v3-engage-slider__panel {
-    scroll-behavior: auto;
+    transition: none;
   }
 }
 
