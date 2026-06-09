@@ -3,6 +3,7 @@ import { engineRoutes } from "@/routes";
 import { toolMeta, SITE_IMAGES } from "@/data/toolsCatalog";
 import { generalDisclaimer, toolDisclaimerSections } from "@/data/homeDisclaimers";
 import { homeBridge, homeHero } from "@/data/homeCopy";
+import CoverScrollGrid from "@/components/CoverScrollGrid";
 import HomeEngageSlider from "@/components/HomeEngageSlider";
 import SuiteProgressCard from "@/components/SuiteProgressCard";
 import TestimonialTicker from "@/components/TestimonialTicker";
@@ -60,7 +61,7 @@ export default function HomePage() {
             <Link to="/tools">Tools you can use online</Link>
           </h2>
         </div>
-        <div className="v3-cover-grid">
+        <CoverScrollGrid aria-label="Online tools">
           {engineRoutes.map((tool) => {
             const meta = toolMeta[tool.id];
             if (!meta) return null;
@@ -69,7 +70,7 @@ export default function HomePage() {
           <a className="v3-cover-tile" href={UNLOCKED_GPT.href} target="_blank" rel="noreferrer">
             <img src={`${SITE_IMAGES}/${UNLOCKED_GPT.thumb}`} alt={UNLOCKED_GPT.alt} width={378} height={605} loading="lazy" />
           </a>
-        </div>
+        </CoverScrollGrid>
       </section>
 
       <section
@@ -90,13 +91,13 @@ export default function HomePage() {
             <Link to="/books">Books</Link>
           </h2>
         </div>
-        <div className="v3-cover-grid">
+        <CoverScrollGrid aria-label="Books">
           {BOOK_LINKS.map((b) => (
             <Link key={b.hash} to={`/books#${b.hash}`} className="v3-cover-tile">
               <img src={`${SITE_IMAGES}/${b.cover}`} alt={b.alt} width={378} height={605} loading="lazy" />
             </Link>
           ))}
-        </div>
+        </CoverScrollGrid>
       </section>
 
       <section className="surface v3-disclosures v3-section--breathable v3-section-band--solid" aria-label="How these works fit together">

@@ -856,6 +856,51 @@ a.v3-testimonial-ticker:focus-visible {
   gap: var(--v3-space-2);
 }
 
+/* Home: slow auto-scrolling cover rows (books, tools) */
+.v3-cover-scroll__viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 5%,
+    #000 95%,
+    transparent 100%
+  );
+}
+
+.v3-cover-scroll__track {
+  display: flex;
+  gap: var(--v3-space-2);
+  width: max-content;
+  animation: v3TestimonialTicker var(--v3-cover-scroll-duration, 360s) linear infinite;
+}
+
+.v3-cover-scroll:hover .v3-cover-scroll__track,
+.v3-cover-scroll:focus-within .v3-cover-scroll__track {
+  animation-play-state: paused;
+}
+
+.v3-cover-scroll__cell {
+  flex: 0 0 auto;
+  width: clamp(120px, 14vw, 168px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v3-cover-scroll__track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--v3-space-1);
+  }
+
+  .v3-cover-scroll__cell {
+    scroll-snap-align: start;
+  }
+}
+
 .v3-cover-tile {
   display: block;
   border-radius: 12px;
