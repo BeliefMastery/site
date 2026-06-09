@@ -15,7 +15,7 @@ import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils
 import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { shouldBootLegacyEngine, bootLegacyEngine, spaSetPhase, spaEmit } from './shared/spa-engine-external.js';
+import { shouldBootLegacyEngine, bootLegacyEngine, applySpaExternalOptions, spaSetPhase, spaEmit } from './shared/spa-engine-external.js';
 
 // Data modules - will be loaded lazily
 let DSM5_CATEGORIES, QUESTION_TEMPLATES, PLAIN_LANGUAGE_HINTS, VALIDATION_PAIRS, SCORING_THRESHOLDS;
@@ -34,9 +34,7 @@ export class DiagnosisEngine {
    * @param {{ externalUI?: boolean, onNotify?: (event: string, payload?: *) => void }} [options] - When externalUI is true, skip legacy DOM wiring (UI V3 / React host).
    */
   constructor(options = {}) {
-    this.externalUI = Boolean(options && options.externalUI);
-    this._externalNotify =
-      options && typeof options.onNotify === 'function' ? options.onNotify : null;
+    applySpaExternalOptions(this, options);
     this._externalResultsMount = null;
     this._externalRefinementGroups = null;
     this._externalQuestionSnapshot = null;
@@ -91,14 +89,6 @@ export class DiagnosisEngine {
     this.dataStore = new DataStore('diagnosis-assessment', '1.0.0');
     
     this.ready = this.init();
-  }
-
-  _emitExternal(event, payload) {
-    try {
-      this._externalNotify?.(event, payload);
-    } catch (e) {
-      console.warn('DiagnosisEngine external notify:', e);
-    }
   }
 
   /**
@@ -188,7 +178,7 @@ export class DiagnosisEngine {
     } catch (error) {
       this.debugReporter.logError(error, 'init');
     }
-    this._emitExternal('init');
+    spaEmit(this, 'init');
   }
 
   /**
@@ -609,7 +599,7 @@ export class DiagnosisEngine {
     if (startAssessmentBtn) startAssessmentBtn.disabled = this.selectedCategories.length === 0;
 
     if (this.externalUI) {
-      this._emitExternal('selection', { selectedCategories: [...this.selectedCategories] });
+      spaEmit(this, 'selection', { selectedCategories: [...this.selectedCategories] });
     }
   }
 
@@ -783,7 +773,7 @@ export class DiagnosisEngine {
       
       await this.renderCurrentQuestion();
       this.updateProgress();
-      this._emitExternal('phase', { phase: 'assessment' });
+      spaSetPhase(this, 'assessment');
       this.logDebug('Assessment started', { categories: this.selectedCategories, questionCount: this.questionSequence.length });
     } catch (error) {
       this.debugReporter.logError(error, 'startAssessment');
@@ -1051,7 +1041,7 @@ export class DiagnosisEngine {
           totalQuestions
         };
         this.saveProgress();
-        this._emitExternal('question');
+        spaEmit(this, 'question');
         const renderDuration = performance.now() - renderStart;
         this.debugReporter.recordRender('question', renderDuration);
         this.logDebug('Rendered question (external)', { questionId: question.id, index: this.currentQuestionIndex });
@@ -1340,7 +1330,7 @@ export class DiagnosisEngine {
       if (this.multiBranchingDetected && hasRefinedQuestions && !this.refinementRequested) {
         if (this.externalUI) {
           this._externalRefinementGroups = comorbidityGroups;
-          this._emitExternal('refinement-offer', { groups: comorbidityGroups });
+          spaEmit(this, 'refinement-offer', { groups: comorbidityGroups });
           return;
         }
         this.offerRefinement(comorbidityGroups);
@@ -1461,7 +1451,7 @@ export class DiagnosisEngine {
         : document.getElementById('resultsContainer');
       await this.renderResults(resultsContainer);
       this.saveResults();
-      if (this.externalUI) this._emitExternal('results');
+      if (this.externalUI) spaEmit(this, 'results');
     } catch (error) {
       this.debugReporter.logError(error, 'showResults');
       ErrorHandler.showUserError('Failed to show results. Please try again.');

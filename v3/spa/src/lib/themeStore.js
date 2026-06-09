@@ -41,7 +41,6 @@ export function saveTheme(theme) {
   if (!themes.includes(theme)) return;
   window.localStorage.setItem(STORAGE_KEY, theme);
   syncLegacySiteThemeStorage(theme);
-  window.dispatchEvent(new CustomEvent("bm-v3-theme-change", { detail: { theme } }));
 }
 
 export function toLegacySiteTheme(theme) {

@@ -1,7 +1,9 @@
-import { Suspense, useMemo } from "react";
+import { Suspense, lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { engineRoutes, nativeEngineViews } from "@/routes";
-import EngineAdapterView from "@/engines/EngineAdapterView";
+import { getEngineManifestEntry } from "@/engines/engineManifest";
+
+const QuestionnaireEngineView = lazy(() => import("@/engines/shared/QuestionnaireEngineView"));
+const ExternalShellEngineView = lazy(() => import("@/engines/shared/ExternalShellEngineView"));
 
 function EngineLoading() {
   return (
@@ -13,11 +15,45 @@ function EngineLoading() {
   );
 }
 
+function NativeEngineView({ entry }) {
+  const { label, id, viewType, hostClassName, loadingMessage, copy = {} } = entry;
+
+  if (viewType === "externalShell") {
+    return (
+      <ExternalShellEngineView
+        engineId={id}
+        label={label}
+        lead={copy.lead}
+        hostClassName={hostClassName}
+        loadingMessage={loadingMessage}
+      />
+    );
+  }
+
+  return (
+    <QuestionnaireEngineView
+      label={label}
+      engineId={id}
+      lead={copy.lead}
+      selectionTitle={copy.selectionTitle}
+      selectionHint={copy.selectionHint}
+      defaultSelections={copy.defaultSelections}
+      selectionAdapter={copy.selectionAdapter}
+      sliderStep={copy.sliderStep}
+      abandonMethod={copy.abandonMethod}
+      showRefinementOffer={copy.showRefinementOffer}
+      explanationTitle={copy.explanationTitle}
+      explanationText={copy.explanationText}
+      explanationParagraphs={copy.explanationParagraphs}
+    />
+  );
+}
+
 export default function EngineRoutePage() {
   const { engineId } = useParams();
-  const routeConfig = useMemo(() => engineRoutes.find((entry) => entry.id === engineId), [engineId]);
+  const entry = useMemo(() => getEngineManifestEntry(engineId), [engineId]);
 
-  if (!routeConfig) {
+  if (!entry) {
     return (
       <section className="stack">
         <article className="surface">
@@ -28,14 +64,9 @@ export default function EngineRoutePage() {
     );
   }
 
-  const NativeView = engineId ? nativeEngineViews[engineId] : undefined;
-  if (NativeView) {
-    return (
-      <Suspense fallback={<EngineLoading />}>
-        <NativeView label={routeConfig.label} />
-      </Suspense>
-    );
-  }
-
-  return <EngineAdapterView label={routeConfig.label} legacyPage={routeConfig.legacyPage} />;
+  return (
+    <Suspense fallback={<EngineLoading />}>
+      <NativeEngineView entry={entry} />
+    </Suspense>
+  );
 }

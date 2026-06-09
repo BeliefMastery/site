@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getSuiteCompletion } from "../../../../shared/suite-completion.js";
+import { subscribeSuiteCompletion } from "../../../../shared/suite-completion-events.js";
 import { engineRoutes } from "@/routes";
 
 function routeForToolId(id) {
@@ -11,8 +12,18 @@ export default function SuiteProgressCard() {
   const [completion, setCompletion] = useState(() => getSuiteCompletion());
 
   useEffect(() => {
-    const id = window.setInterval(() => setCompletion(getSuiteCompletion()), 2000);
-    return () => window.clearInterval(id);
+    const refresh = () => setCompletion(getSuiteCompletion());
+    const unsubscribe = subscribeSuiteCompletion(refresh);
+    const onStorage = (event) => {
+      if (event.key?.includes('-assessment:') || event.key === 'sovereigntyAssessment') {
+        refresh();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      unsubscribe();
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   const { completeCount, totalCount, items } = completion;

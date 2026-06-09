@@ -82,6 +82,8 @@ export const SecurityUtils = {
 /**
  * DataStore abstraction for localStorage with versioning and error handling
  */
+import { notifySuiteCompletionChanged } from './suite-completion-events.js';
+
 export class DataStore {
   constructor(namespace) {
     this.namespace = namespace;
@@ -105,6 +107,7 @@ export class DataStore {
         localStorage.setItem(`resume:${this.namespace}`, 'true');
       }
       localStorage.setItem(`${this.namespace}:${key}`, JSON.stringify(payload));
+      notifySuiteCompletionChanged();
       return true;
     } catch (error) {
       console.error('Save failed:', error);
@@ -114,6 +117,7 @@ export class DataStore {
           sessionStorage.setItem(`resume:${this.namespace}`, 'true');
         }
         sessionStorage.setItem(`${this.namespace}:${key}`, JSON.stringify(payload));
+        notifySuiteCompletionChanged();
         return true;
       } catch {
         return false;

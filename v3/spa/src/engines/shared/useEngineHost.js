@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { notifySuiteCompletionChanged } from '../../../../../shared/suite-completion-events.js';
 import { engineLoaders } from './engineModules';
 import { engineClassNames } from './engineClassNames';
 
@@ -101,6 +102,7 @@ export function useEngineHost(engineId, options = {}) {
       instanceRef.current = null;
       setEngine(null);
       setReady(false);
+      notifySuiteCompletionChanged();
     };
   }, [engineId, onNotify, options.EngineClass]);
 
