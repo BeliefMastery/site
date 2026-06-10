@@ -50,15 +50,9 @@ export default function SuiteProgressCard() {
           );
           return (
             <li key={item.id}>
-              {to ? (
-                <Link to={to}>
-                  {label} <span className="suite-progress-status">{status}</span>
-                </Link>
-              ) : (
-                <a href={`/site/archive/v3-engines/${item.href}`}>
-                  {label} <span className="suite-progress-status">{status}</span>
-                </a>
-              )}
+              <Link to={to || `/engines/${item.id}`}>
+                {label} <span className="suite-progress-status">{status}</span>
+              </Link>
             </li>
           );
         })}

@@ -1,3 +1,4 @@
+import '@/styles/engine-assessment.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EngineLayout from './EngineLayout';
 import ExtendedExplanation from './ExtendedExplanation';

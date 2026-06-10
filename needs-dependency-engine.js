@@ -12,7 +12,6 @@ import {
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
@@ -107,14 +106,8 @@ export class NeedsDependencyEngine {
   }
 
   init() {
-    if (!this.externalUI) this.attachEventListeners();
     return Promise.resolve(this.loadStoredData())
-      .then(() => {
-        if (!this.externalUI && this.shouldAutoGenerateSample()) {
-          return this.generateSampleReport();
-        }
-        finishSpaInit(this);
-      })
+      .then(() => finishSpaInit(this))
       .catch((error) => {
         this.debugReporter.logError(error, 'init');
       });
@@ -537,56 +530,6 @@ export class NeedsDependencyEngine {
     return loopNeedMap[loop] || 'this need';
   }
 
-  attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
-    }
-
-    const nextBtn = document.getElementById('nextQuestion');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
-    }
-    
-    const prevBtn = document.getElementById('prevQuestion');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
-    }
-    
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-    
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => this.abandonAssessment());
-    }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
-  }
-
   getEmptyAnalysisData() {
     return {
       timestamp: new Date().toISOString(),
@@ -728,8 +671,6 @@ export class NeedsDependencyEngine {
       phase: this.currentPhase,
       stageLabel: this.getPhaseLabel(this.currentPhase),
     })) {
-      this.updateProgress();
-      this.updateNavigationButtons();
       return;
     }
 
@@ -738,9 +679,6 @@ export class NeedsDependencyEngine {
       : document.getElementById('questionContainer');
 
     if (!container) {
-      if (!this.externalUI) {
-        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
-      }
       return;
     }
     
@@ -772,9 +710,6 @@ export class NeedsDependencyEngine {
       if (question.type === 'allocation') {
         attachDomAllocationListeners(container, this, question);
       }
-      
-      this.updateProgress();
-      this.updateNavigationButtons();
       
       // Track render performance
       const renderDuration = performance.now() - renderStart;
@@ -1168,17 +1103,6 @@ export class NeedsDependencyEngine {
     return labels[phase] || `Phase ${phase}`;
   }
 
-  updateProgress() {
-    const totalQuestions = this.getTotalQuestions();
-    const currentQuestion = this.getCurrentQuestionNumber();
-    const progress = totalQuestions > 0 ? (currentQuestion / totalQuestions) * 100 : 0;
-    
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
-    }
-  }
-
   getTotalQuestions() {
     // Estimate: Phase 1 (6) + Phase 2 (15 per loop * 3 loops = 45) + Phase 3 (5) + Phase 4 (3) = ~59
     // But we'll calculate dynamically
@@ -1206,20 +1130,6 @@ export class NeedsDependencyEngine {
       current += this.currentQuestionIndex;
     }
     return current;
-  }
-
-  updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevQuestion');
-    const nextBtn = document.getElementById('nextQuestion');
-    
-    if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0 && this.currentPhase === 1;
-    }
-    
-    if (nextBtn) {
-      const isLastQuestion = this.currentQuestionIndex === this.questionSequence.length - 1;
-      nextBtn.textContent = isLastQuestion ? 'Complete Phase' : 'Next';
-    }
   }
 
   /**
@@ -1545,7 +1455,6 @@ export class NeedsDependencyEngine {
 
       const container = containerEl || document.getElementById('resultsContainer');
       if (!container) {
-        if (!this.externalUI) ErrorHandler.showUserError('Results container not found.');
         return;
       }
       
@@ -1982,9 +1891,8 @@ export class NeedsDependencyEngine {
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0 || this.currentPhase > 1) {
         const actionButtonsSection = document.getElementById('actionButtonsSection');
-        const questionnaireSection = document.getElementById('questionnaireSection');
         if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
-        if (questionnaireSection) questionnaireSection.classList.add('active');
+        this.ui.transition('assessment');
         this.renderCurrentQuestion();
       }
     } catch (error) {
@@ -2098,10 +2006,4 @@ export class NeedsDependencyEngine {
 }
 
 attachDomQuestionSpaApi(NeedsDependencyEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootNeedsDependencyEngine() {
-  window.needsDependencyEngine = new NeedsDependencyEngine();
-}
-
-legacyEngineBoot('questionContainer', bootNeedsDependencyEngine);
 

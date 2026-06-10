@@ -1,12 +1,10 @@
-# Archived V3 static engine HTML
+# Archived V3 static engine HTML (retired)
 
-These files were moved from `v3/*.html` (2026 cutover) so the React SPA at **[`/site/`](https://beliefmastery.github.io/site/)** is the canonical site. Engines are still loaded in-app via **iframe** from here.
+Standalone engine HTML pages that previously lived here have been **retired** (SPA-only, 2026).
 
-| Old URL (GitHub Pages) | New URL |
-|------------------------|---------|
-| `/site/v3/diagnosis.html` | `/site/archive/v3-engines/diagnosis.html` |
-| … (same pattern for each engine file) | `/site/archive/v3-engines/<file>` |
+Use the React SPA as the only supported surface:
 
-In-repo path: `archive/v3-engines/<file>.html`
+- **Site:** [`/site/`](https://beliefmastery.github.io/site/)
+- **Engine routes:** `#/engines/<engineId>` (see [`v3/spa/src/routes.js`](../../v3/spa/src/routes.js))
 
-SPA routes are unchanged: `#/engines/<engineId>` (see [`v3/spa/src/routes.js`](../../v3/spa/src/routes.js)).
+Engine logic remains in the repo root `*-engine.js` modules, hosted by native SPA views (`externalUI: true`).

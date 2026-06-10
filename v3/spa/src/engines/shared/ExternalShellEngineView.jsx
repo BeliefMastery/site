@@ -1,3 +1,4 @@
+import '@/styles/engine-assessment.css';
 import { useEffect, useRef } from 'react';
 import EngineLayout from './EngineLayout';
 import ExportActions from './ExportActions';

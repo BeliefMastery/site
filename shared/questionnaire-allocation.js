@@ -14,6 +14,7 @@ import {
   redistributeOnChange,
   sumWeights
 } from './allocation-scales.js';
+import { debounce } from './utils.js';
 
 export const ALLOCATION_FAMILY_THRESHOLD_PCT = 12;
 export const ALLOCATION_PLAIN_HINT =
@@ -260,7 +261,7 @@ export function attachDomAllocationListeners(container, engine, question) {
   const sumEl = container.querySelector('.bm-allocation-sum-val');
   const sumWrap = container.querySelector('.bm-allocation-sum');
 
-  const persist = () => {
+  const persistImmediate = () => {
     engine.answers[question.id] = {
       ids: [...ids],
       weights: { ...weights },
@@ -282,6 +283,8 @@ export function attachDomAllocationListeners(container, engine, question) {
     });
   };
 
+  const persist = debounce(persistImmediate, 400);
+
   container.querySelectorAll('.bm-allocation-slider').forEach((slider) => {
     slider.addEventListener('input', () => {
       const memberId = slider.getAttribute('data-member-id');
@@ -300,8 +303,9 @@ export function attachDomAllocationListeners(container, engine, question) {
       });
       persist();
     });
+    slider.addEventListener('change', () => persistImmediate());
   });
-  persist();
+  persistImmediate();
 }
 
 export function isValidAllocationAnswer(answer, targetSum = DEFAULT_ALLOCATION_TARGET) {

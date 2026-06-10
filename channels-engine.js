@@ -12,7 +12,6 @@ import {
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
@@ -89,14 +88,8 @@ export class ChannelsEngine {
   }
 
   init() {
-    if (!this.externalUI) this.attachEventListeners();
     return Promise.resolve(this.loadStoredData())
-      .then(() => {
-        if (!this.externalUI && this.shouldAutoGenerateSample()) {
-          return this.generateSampleReport();
-        }
-        finishSpaInit(this);
-      })
+      .then(() => finishSpaInit(this))
       .catch((error) => {
         this.debugReporter.logError(error, 'init');
       });
@@ -147,64 +140,6 @@ export class ChannelsEngine {
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
       throw error;
     }
-  }
-
-  attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.startAssessment();
-      });
-    }
-
-    const nextBtn = document.getElementById('nextQuestion');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
-    }
-    
-    const prevBtn = document.getElementById('prevQuestion');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
-    }
-    
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-    
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-    
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', async () => {
-        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
-          this.resetAssessment();
-        }
-      });
-    }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyAnalysisData() {
@@ -600,15 +535,11 @@ export class ChannelsEngine {
       phase: this.currentPhase,
       stageLabel: this.getPhaseLabel(this.currentPhase),
     })) {
-      this.updateProgress();
-      this.updateNavigationButtons();
       this.updateStageIndicator();
       return;
     }
 
-    const container = this.externalUI
-      ? this._externalQuestionMount
-      : document.getElementById('questionContainer');
+    const container = this._externalQuestionMount || document.getElementById('questionContainer');
 
     if (!container) return;
 
@@ -644,9 +575,6 @@ export class ChannelsEngine {
       if (question.type === 'allocation') {
         attachDomAllocationListeners(container, this, question);
       }
-
-      this.updateProgress();
-      this.updateNavigationButtons();
 
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
@@ -950,17 +878,6 @@ export class ChannelsEngine {
     return labels[phase] || `Phase ${phase}`;
   }
 
-  updateProgress() {
-    const totalQuestions = this.getTotalQuestions();
-    const currentQuestion = this.getCurrentQuestionNumber();
-    const progress = totalQuestions > 0 ? (currentQuestion / totalQuestions) * 100 : 0;
-    
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-      progressFill.style.width = `${progress}%`;
-    }
-  }
-
   getTotalQuestions() {
     // Estimate total questions
     let total = 0;
@@ -998,20 +915,6 @@ export class ChannelsEngine {
     const indicator = document.getElementById('stageIndicator');
     if (indicator) {
       indicator.textContent = `${this.getPhaseLabel(this.currentPhase)}`;
-    }
-  }
-
-  updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevQuestion');
-    const nextBtn = document.getElementById('nextQuestion');
-    
-    if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0 && this.currentPhase === 1;
-    }
-    
-    if (nextBtn) {
-      const isLastQuestion = this.currentQuestionIndex === this.questionSequence.length - 1;
-      nextBtn.textContent = isLastQuestion ? 'Complete Phase' : 'Next';
     }
   }
 
@@ -1232,22 +1135,10 @@ export class ChannelsEngine {
    * @returns {Promise<void>}
    */
   async renderResults(containerEl) {
-    if (!this.externalUI) this.ui.transition('results');
     try {
       await this.loadChannelsData();
-
-      if (!this.externalUI) {
-        const questionnaireSection = document.getElementById('questionnaireSection');
-        const resultsSection = document.getElementById('resultsSection');
-        if (questionnaireSection) questionnaireSection.classList.remove('active');
-        if (resultsSection) resultsSection.classList.add('active');
-      }
-
-      const container = containerEl || document.getElementById('channelResults');
-      if (!container) {
-        if (!this.externalUI) ErrorHandler.showUserError('Results container not found.');
-        return;
-      }
+      const container = containerEl || this._externalResultsMount || document.getElementById('channelResults');
+      if (!container) return;
       
       let html = '<div class="channel-summary">';
       html += '<h3>Your Channel Analysis Results</h3>';
@@ -1471,9 +1362,11 @@ export class ChannelsEngine {
         nodeScores: this.nodeScores,
         prioritizedChannels: this.prioritizedChannels,
         assessedChannels: this.assessedChannels,
-        analysisData: this.analysisData,
         timestamp: new Date().toISOString()
       };
+      if (this.reportComplete) {
+        progressData.analysisData = this.analysisData;
+      }
       this.dataStore.save('progress', progressData);
     } catch (error) {
       this.debugReporter.logError(error, 'saveProgress');
@@ -1522,8 +1415,6 @@ export class ChannelsEngine {
           await this.buildPhase4Sequence();
         }
         
-        const questionnaireSection = document.getElementById('questionnaireSection');
-        if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
     } catch (error) {
@@ -1568,9 +1459,3 @@ export class ChannelsEngine {
 }
 
 attachDomQuestionSpaApi(ChannelsEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootChannelsEngine() {
-  window.channelsEngine = new ChannelsEngine();
-}
-
-legacyEngineBoot('questionContainer', bootChannelsEngine);

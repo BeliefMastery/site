@@ -30,7 +30,8 @@ function decorateToolsNav() {
   if (!dropdown) return;
 
   const completion = getSuiteCompletion();
-  const byHref = new Map(completion.items.map((item) => [item.href, item]));
+  const byId = new Map(completion.items.map((item) => [item.id, item]));
+  const legacyHtmlById = new Map(completion.items.map((item) => [`${item.id}.html`, item]));
   const currentFile = currentPageFile();
 
   const links = dropdown.querySelectorAll('.dropdown-menu a[role="menuitem"]');
@@ -49,7 +50,7 @@ function decorateToolsNav() {
       return;
     }
 
-    const item = byHref.get(file);
+    const item = legacyHtmlById.get(file) || byId.get(file.replace(/\.html$/, ''));
     if (!item) return;
 
     if (!link.dataset.suiteNavPlainLabel) {

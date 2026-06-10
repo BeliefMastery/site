@@ -7,7 +7,7 @@ function renderSuiteProgress() {
   const html = completion.items.map((item) => {
     const status = item.completed ? 'Complete' : 'Pending';
     const icon = item.completed ? '✓' : '○';
-    return `<li><a href="${item.href}">${icon} ${item.label}</a> <span>${status}</span></li>`;
+    return `<li><a href="/site/#/engines/${item.id}">${icon} ${item.label}</a> <span>${status}</span></li>`;
   }).join('');
   list.innerHTML = html;
 

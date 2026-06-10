@@ -6,22 +6,17 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
-import { showConfirm } from './shared/confirm-modal.js';
 import {
   applySpaExternalOptions,
-  noopEngineUI,
   spaEmit,
   spaSetPhase,
-  shouldBootLegacyEngine,
-  bootLegacyEngine,
 } from './shared/spa-engine-external.js';
 import { emitQuestionSnapshot, buildQuestionSnapshot } from './shared/spa-questionnaire-engine.js';
 
 // Data modules - will be loaded lazily
 let SOVEREIGNTY_OBSTACLES, SATISFACTION_DOMAINS;
 let SATISFACTION_DOMAIN_EXAMPLES, QUESTION_WEIGHTINGS;
-let COACHING_PROMPTS, DEEPER_INQUIRY, ACTION_PLANNING;
+let COACHING_PROMPTS;
 const COACHING_SLIDER_STEP = 0.5;
 
 /**
@@ -60,50 +55,26 @@ export class CoachingEngine {
     // Initialize data store
     this.dataStore = new DataStore('coaching-assessment', '1.0.0');
 
-    this.ui = this.externalUI
-      ? {
-          transition: (state) => {
-            const phase = state === 'assessment' ? 'assessment' : state === 'results' ? 'results' : 'idle';
-            spaSetPhase(this, phase);
-          },
-        }
-      : new EngineUIController({
-          idle: {
-            show: ['#introSection', '#actionButtonsSection', '#selectionSection'],
-            hide: ['#questionnaireSection', '#resultsSection'],
-          },
-          assessment: {
-            show: ['#questionnaireSection'],
-            hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#resultsSection'],
-          },
-          results: {
-            show: ['#resultsSection'],
-            hide: ['#introSection', '#actionButtonsSection', '#selectionSection', '#questionnaireSection'],
-          },
-        });
+    this.ui = {
+      transition: (state) => {
+        if (!this.externalUI) return;
+        const phase = state === 'assessment' ? 'assessment' : state === 'results' ? 'results' : 'idle';
+        spaSetPhase(this, phase);
+      },
+    };
 
     window.coachingEngine = this;
     this.ready = this.init();
   }
 
-  init() {
-    if (!this.externalUI) {
-      this.renderSectionSelection();
-      this.attachEventListeners();
+  async init() {
+    try {
+      await this.loadStoredData();
+      spaSetPhase(this, this.getPhase());
+      spaEmit(this, 'init');
+    } catch (error) {
+      this.debugReporter.logError(error, 'init');
     }
-    return Promise.resolve(this.loadStoredData())
-      .then(() => {
-        if (!this.externalUI && this.shouldAutoGenerateSample()) {
-          return this.generateSampleReport();
-        }
-        if (this.externalUI) {
-          spaSetPhase(this, this.getPhase());
-          spaEmit(this, 'init');
-        }
-      })
-      .catch((error) => {
-        this.debugReporter.logError(error, 'init');
-      });
   }
 
   /**
@@ -151,14 +122,6 @@ export class CoachingEngine {
       );
       COACHING_PROMPTS = promptsModule.COACHING_PROMPTS;
 
-      // Load inquiry data
-      const inquiryModule = await loadDataModule(
-        './coaching-data/deeper-inquiry.js',
-        'Deeper Inquiry'
-      );
-      DEEPER_INQUIRY = inquiryModule.DEEPER_INQUIRY;
-      ACTION_PLANNING = inquiryModule.ACTION_PLANNING;
-
       this.debugReporter.recordSection('Obstacles', Object.keys(SOVEREIGNTY_OBSTACLES || {}).length);
       this.debugReporter.recordSection('Domains', Object.keys(SATISFACTION_DOMAINS || {}).length);
     } catch (error) {
@@ -168,58 +131,15 @@ export class CoachingEngine {
     }
   }
 
-  renderSectionSelection() {
-    const grid = document.getElementById('sectionGrid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    
-    // Add Obstacles section
-    const obstaclesCard = document.createElement('div');
-    obstaclesCard.className = 'section-card';
-    obstaclesCard.dataset.section = 'obstacles';
-    SecurityUtils.safeInnerHTML(obstaclesCard, `
-      <h3>15 Obstacles to Sovereignty</h3>
-    `);
-    obstaclesCard.addEventListener('click', () => this.toggleSection('obstacles'));
-    grid.appendChild(obstaclesCard);
-    
-    // Add Satisfaction Domains section
-    const domainsCard = document.createElement('div');
-    domainsCard.className = 'section-card';
-    domainsCard.dataset.section = 'domains';
-    SecurityUtils.safeInnerHTML(domainsCard, `
-      <h3>10 Satisfaction Domains</h3>
-    `);
-    domainsCard.addEventListener('click', () => this.toggleSection('domains'));
-    grid.appendChild(domainsCard);
-
-    this.selectDefaultSections();
-  }
-
-  selectDefaultSections() {
-    ['obstacles', 'domains'].forEach((sectionId) => {
-      const card = document.querySelector(`[data-section="${sectionId}"]`);
-      if (!card) return;
-      if (!this.selectedSections.includes(sectionId)) {
-        this.selectedSections.push(sectionId);
-      }
-      card.classList.add('selected');
-    });
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) startBtn.disabled = this.selectedSections.length === 0;
-  }
-
   toggleSection(sectionId) {
     const card = document.querySelector(`[data-section="${sectionId}"]`);
-    if (!card) return;
     
     if (this.selectedSections.includes(sectionId)) {
       this.selectedSections = this.selectedSections.filter(s => s !== sectionId);
-      card.classList.remove('selected');
+      if (card) card.classList.remove('selected');
     } else {
       this.selectedSections.push(sectionId);
-      card.classList.add('selected');
+      if (card) card.classList.add('selected');
     }
     
     if (!this.externalUI) {
@@ -228,80 +148,6 @@ export class CoachingEngine {
     } else {
       spaEmit(this, 'selection', { selectedIds: [...this.selectedSections] });
     }
-  }
-
-  attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
-    }
-
-    const nextBtn = document.getElementById('nextQuestion');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
-    }
-    
-    const prevBtn = document.getElementById('prevQuestion');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
-    }
-    
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const startDeeperBtn = document.getElementById('startDeeperInquiry');
-    if (startDeeperBtn) {
-      startDeeperBtn.addEventListener('click', () => this.startDeeperInquiry());
-    }
-
-    const backToResultsBtn = document.getElementById('backToResults');
-    if (backToResultsBtn) {
-      backToResultsBtn.addEventListener('click', () => this.backToInitialResults());
-    }
-
-    const exportHtmlDeeperBtn = document.getElementById('exportReportHtmlDeeper');
-    if (exportHtmlDeeperBtn) {
-      exportHtmlDeeperBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefDeeperBtn = document.getElementById('exportExecutiveBriefDeeper');
-    if (exportBriefDeeperBtn) {
-      exportBriefDeeperBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-    
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-    
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-    
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', async () => {
-        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
-          this.resetAssessment();
-        }
-      });
-    }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyProfileData() {
@@ -650,41 +496,7 @@ export class CoachingEngine {
       }
     }
     
-    this.updateProgress();
-    this.updateNavigationButtons();
     setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  }
-
-  updateProgress() {
-    const progress = this.questionSequence.length > 0 
-      ? ((this.currentQuestionIndex + 1) / this.questionSequence.length) * 100 
-      : 0;
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-      progressFill.style.width = `${progress}%`;
-    }
-    
-    // Update question count display
-    const questionCount = document.getElementById('questionCount');
-    if (questionCount) {
-      const remaining = this.questionSequence.length - this.currentQuestionIndex;
-      questionCount.textContent = `${remaining} question${remaining !== 1 ? 's' : ''} remaining`;
-    }
-  }
-
-  updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevQuestion');
-    const nextBtn = document.getElementById('nextQuestion');
-    
-    if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0;
-    }
-    
-    if (nextBtn) {
-      nextBtn.textContent = this.currentQuestionIndex === this.questionSequence.length - 1 
-        ? 'Complete' 
-        : 'Next';
-    }
   }
 
   nextQuestion() {
@@ -1066,136 +878,6 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     `;
   }
 
-  async startDeeperInquiry() {
-    try {
-      await this.loadCoachingData();
-    } catch {
-      return;
-    }
-    const resultsSection = document.getElementById('resultsSection');
-    const deeperSection = document.getElementById('deeperInquirySection');
-
-    if (resultsSection) resultsSection.classList.add('hidden');
-    if (deeperSection) {
-      deeperSection.classList.remove('hidden');
-      this.renderDeeperInquiry();
-    }
-  }
-
-  backToInitialResults() {
-    const resultsSection = document.getElementById('resultsSection');
-    const deeperSection = document.getElementById('deeperInquirySection');
-    
-    if (deeperSection) deeperSection.classList.add('hidden');
-    if (resultsSection) resultsSection.classList.remove('hidden');
-  }
-
-  renderDeeperInquiry() {
-    const container = document.getElementById('deeperInquiryResults');
-    if (!container) return;
-
-    let html = '<div class="deeper-inquiry-content">';
-    html += '<p>';
-    html += 'The following deeper inquiry questions are designed to help you explore your top priorities more thoroughly. ';
-    html += 'These questions will help clarify specific actions, identify support needs, and create strategic action plans.';
-    html += '</p>';
-
-    // Top Obstacles - Deeper Inquiry
-    if (this.profileData.priorities.topObstacles.length > 0) {
-      html += '<h3>Deeper Inquiry: Top Obstacles</h3>';
-      
-      this.profileData.priorities.topObstacles.forEach((obstacle, index) => {
-        const inquiry = DEEPER_INQUIRY.obstacles[obstacle.key];
-        if (inquiry) {
-          html += `<div class="info-box panel-brand-left">`;
-          html += `<h4>${SecurityUtils.sanitizeHTML(obstacle.name || '')}</h4>`;
-          html += `<p>${SecurityUtils.sanitizeHTML(obstacle.description || '')}</p>`;
-          
-          html += '<div class="reflection-section"><strong>Reflection Questions:</strong><ul>';
-          inquiry.questions.forEach(q => {
-            html += `<li>${q}</li>`;
-          });
-          html += '</ul></div>';
-
-          html += '<div class="reflection-section"><strong>Key Action Areas:</strong><ul>';
-          inquiry.actionAreas.forEach(area => {
-            html += `<li>${area}</li>`;
-          });
-          html += '</ul></div>';
-
-          html += '</div>';
-        }
-      });
-    }
-
-    // Top Improvement Areas - Deeper Inquiry
-    if (this.profileData.priorities.topImprovementAreas.length > 0) {
-      html += '<h3 class="section-title">Deeper Inquiry: Areas for Improvement</h3>';
-      
-      this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
-        const inquiry = DEEPER_INQUIRY.domains[domain.key];
-        if (inquiry) {
-          html += `<div class="info-box info-box-accent panel-brand-left">`;
-          html += `<h4>${SecurityUtils.sanitizeHTML(domain.name || '')}</h4>`;
-          html += `<p>Current Satisfaction: ${domain.combinedScore.toFixed(1)}/10</p>`;
-          
-          html += '<div class="reflection-section"><strong>Reflection Questions:</strong><ul>';
-          inquiry.questions.forEach(q => {
-            html += `<li>${q}</li>`;
-          });
-          html += '</ul></div>';
-
-          html += '<div class="reflection-section"><strong>Key Action Areas:</strong><ul>';
-          inquiry.actionAreas.forEach(area => {
-            html += `<li>${area}</li>`;
-          });
-          html += '</ul></div>';
-
-          html += '</div>';
-        }
-      });
-    }
-
-    // Strategic Action Planning
-    html += '<h3 class="section-title">Strategic Action Planning</h3>';
-    html += '<p class="content-section">';
-    html += 'Based on your priorities, consider these timeframes for action. Start with immediate actions to build momentum, ';
-    html += 'then progressively work toward longer-term transformation.';
-    html += '</p>';
-
-    Object.entries(ACTION_PLANNING).forEach(([key, plan]) => {
-      html += '<div class="action-plan-card panel-outline-accent">';
-      html += `<h4 class="action-plan-heading">${plan.timeframe}</h4>`;
-      html += `<p class="action-plan-focus">${plan.focus}</p>`;
-      html += '<ul class="action-plan-list">';
-      plan.examples.forEach(example => {
-        html += `<li>${example}</li>`;
-      });
-      html += '</ul></div>';
-    });
-
-    html += '<div class="next-steps-card panel-brand-left">';
-    html += '<h4>Next Steps</h4>';
-    html += '<p class="next-steps-intro">';
-    html += 'Use the reflection questions above to clarify your specific actions. Consider:';
-    html += '</p>';
-    html += '<ul>';
-    html += '<li>What is one specific action you can take this week in your top priority area?</li>';
-    html += '<li>What support or resources do you need to take this action?</li>';
-    html += '<li>What would success look like in 30 days? 90 days? 6 months?</li>';
-    html += '<li>How will you track your progress and adjust your approach?</li>';
-    html += '</ul>';
-    html += '</div>';
-
-    html += '<div class="panel-brand-left" style="background: var(--glass); border-radius: var(--radius); padding: 1.25rem; margin-top: 2rem; border-left: 4px solid var(--accent);">';
-    html += '<p style="margin: 0;"><strong style="color: var(--accent);">Explore further:</strong> Life domains connect to deeper structures. <a href="paradigm.html">Logos Structure</a> maps how you frame the Good Life and meaning—the lenses behind domain satisfaction; <a href="needs-dependency.html">Dependency Loop Tracer</a> traces need patterns that may underlie dissatisfaction; <a href="sovereignty-spectrum.html">Your Sovereignty Paradigm</a> shows values alignment and where action may be blocked.</p>';
-    html += '</div>';
-
-    html += '</div>';
-    // Sanitize HTML before rendering - all dynamic content is already sanitized above
-    SecurityUtils.safeInnerHTML(container, html);
-  }
-
   exportProfile(format = 'json') {
     // Deployment threshold applies to structured exports only (not HTML snapshot).
     const deploymentContext = this.getDeploymentContext();
@@ -1213,17 +895,12 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     }
   }
 
-  /** Snapshot of #resultsSection and, when populated, #deeperInquirySection (no deployment gate). */
+  /** Snapshot of #resultsSection (no deployment gate). */
   exportReportHtml() {
-    const selectors = ['#resultsSection'];
-    const deeper = document.getElementById('deeperInquiryResults');
-    if (deeper && deeper.textContent.trim().length > 40) {
-      selectors.push('#deeperInquirySection');
-    }
     const ok = downloadReportHtml({
       title: 'Life Domain Review — Coaching Profile',
       filenameBase: `coaching-profile-${Date.now()}`,
-      rootSelectors: selectors
+      rootSelectors: ['#resultsSection']
     });
     if (!ok) {
       ErrorHandler.showUserError('Could not build report file. Open results and try again.');
@@ -1280,125 +957,6 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     downloadFile(brief, `coaching-executive-brief-${Date.now()}.txt`, 'text/plain');
   }
 
-  exportCSV_legacy() {
-    // Legacy detailed CSV export - keeping for reference but using shared utility above
-    // Build CSV with comprehensive explanations
-    let csv = 'Life Domain Review Profile\n';
-    csv += 'Generated: ' + new Date().toISOString() + '\n';
-    csv += '\n';
-    csv += '=== HOW TO USE THIS DATA ===\n';
-    csv += 'This CSV contains your coaching profile data with explanations for how your AI agent should interpret, value, and prioritize the content.\n';
-    csv += 'Import this data into your AI platform (ChatGPT, Claude, etc.) and use the "Interpretation Guide" section to configure your agent.\n';
-    csv += '\n';
-    csv += '=== INTERPRETATION GUIDE ===\n';
-    csv += 'Column,Meaning,Priority Weight,Interpretation\n';
-    csv += 'Raw Score,Your response on 0-10 scale,Low,Direct user response - use for context\n';
-    csv += 'Weighted Score,Score multiplied by importance weight,High,Primary metric for prioritization - higher = more urgent\n';
-    csv += 'Priority Level,Calculated priority (High/Moderate/Low),High,Use to determine coaching focus and intervention urgency\n';
-    csv += 'Severity/Satisfaction,Interpreted level based on score,Medium,Use to understand user state and adjust tone/approach\n';
-    csv += '\n';
-    csv += '=== SCORING INTERPRETATION ===\n';
-    csv += 'Obstacles: Higher scores = greater obstacles to sovereignty. Weighted scores determine priority.\n';
-    csv += 'Domains: Higher scores = greater satisfaction. Lower scores = areas needing improvement.\n';
-    csv += 'Priority: Focus coaching on high-priority items first, using weighted scores as the primary guide.\n';
-    csv += '\n';
-
-    // Obstacles section
-    if (Object.keys(this.profileData.obstacles).length > 0) {
-      csv += '=== OBSTACLES TO SOVEREIGNTY ===\n';
-      csv += 'Name,Description,Raw Score,Weight,Weighted Score,Priority Level,Severity,Coaching Focus\n';
-      
-      const sortedObstacles = Object.entries(this.profileData.obstacles)
-        .map(([key, data]) => ({ key, ...data }))
-        .sort((a, b) => b.weightedScore - a.weightedScore);
-      
-      sortedObstacles.forEach(obstacle => {
-        const severity = obstacle.rawScore >= 7 ? 'High' : obstacle.rawScore >= 4 ? 'Moderate' : 'Low';
-        const priority = obstacle.weightedScore >= 8 ? 'High' : obstacle.weightedScore >= 5 ? 'Moderate' : 'Low';
-        const focus = obstacle.rawScore >= 7 
-          ? 'Urgent - Address immediately with direct coaching support'
-          : obstacle.rawScore >= 4 
-            ? 'Important - Regular coaching attention and strategies'
-            : 'Monitor - Periodic check-ins and awareness';
-        
-        csv += `"${obstacle.name}","${obstacle.description.replace(/"/g, '""')}",${obstacle.rawScore},${obstacle.weight || 1.0},${obstacle.weightedScore.toFixed(2)},${priority},${severity},"${focus}"\n`;
-      });
-      csv += '\n';
-    }
-
-    // Domains section
-    if (Object.keys(this.profileData.domains).length > 0) {
-      csv += '=== SATISFACTION DOMAINS ===\n';
-      csv += 'Domain,Overall Score,Average Aspect Score,Combined Score,Weight,Weighted Score,Priority Level,Satisfaction Level,Coaching Focus\n';
-      
-      const sortedDomains = Object.entries(this.profileData.domains)
-        .map(([key, data]) => ({ key, ...data }))
-        .sort((a, b) => a.combinedScore - b.combinedScore);
-      
-      sortedDomains.forEach(domain => {
-        const satisfaction = domain.combinedScore >= 7 ? 'High' : domain.combinedScore >= 4 ? 'Moderate' : 'Low';
-        const priority = domain.combinedScore <= 3 ? 'High' : domain.combinedScore <= 5 ? 'Moderate' : 'Low';
-        const focus = domain.combinedScore <= 3
-          ? 'Urgent - Primary focus for satisfaction improvement'
-          : domain.combinedScore <= 5
-            ? 'Important - Regular support and goal-setting'
-            : 'Maintain - Acknowledge strengths and support maintenance';
-        
-        csv += `"${domain.name}",${domain.overviewScore},${domain.averageAspectScore.toFixed(2)},${domain.combinedScore.toFixed(2)},${domain.weight || 1.0},${domain.weightedScore.toFixed(2)},${priority},${satisfaction},"${focus}"\n`;
-      });
-      csv += '\n';
-
-      // Domain aspects detail
-      csv += '=== DOMAIN ASPECTS DETAIL ===\n';
-      csv += 'Domain,Aspect,Score,Importance\n';
-      Object.entries(this.profileData.domains).forEach(([domainKey, domain]) => {
-        domain.aspects.forEach(aspect => {
-          const importance = aspect.score <= 3 ? 'High' : aspect.score <= 5 ? 'Medium' : 'Low';
-          csv += `"${domain.name}","${aspect.name.replace(/"/g, '""')}",${aspect.score},"${importance}"\n`;
-        });
-      });
-      csv += '\n';
-    }
-
-    // Priorities summary
-    csv += '=== PRIORITY SUMMARY ===\n';
-    if (this.profileData.priorities.topObstacles.length > 0) {
-      csv += 'Top Obstacles to Address (Highest Priority):\n';
-      this.profileData.priorities.topObstacles.forEach((obs, index) => {
-        csv += `${index + 1},"${obs.name}",Score: ${obs.rawScore}/10,Weighted: ${obs.weightedScore.toFixed(2)}\n`;
-      });
-      csv += '\n';
-    }
-    
-    if (this.profileData.priorities.topImprovementAreas.length > 0) {
-      csv += 'Top Areas for Improvement (Lowest Satisfaction):\n';
-      this.profileData.priorities.topImprovementAreas.forEach((domain, index) => {
-        csv += `${index + 1},"${domain.name}",Satisfaction: ${domain.combinedScore.toFixed(1)}/10,Weighted: ${domain.weightedScore.toFixed(2)}\n`;
-      });
-      csv += '\n';
-    }
-
-    // Coaching instructions
-    csv += '=== AI AGENT CONFIGURATION INSTRUCTIONS ===\n';
-    csv += 'Section,Instruction\n';
-    csv += '"System Prompt","Use the coaching profile to understand the user\'s obstacles and satisfaction levels. Focus on sovereignty-aligned support."\n';
-    csv += '"Primary Focus","Address top obstacles first (highest weighted scores), then work on improvement areas (lowest satisfaction scores)."\n';
-    csv += '"Tone","Adjust tone based on severity: High severity = supportive but direct; Moderate = encouraging with strategies; Low = awareness and maintenance."\n';
-    csv += '"Coaching Style","Question-based inquiry that surfaces self-awareness. Honor individual autonomy and authorship. Support without imposing."\n';
-    csv += '"Prioritization","Use weighted scores as primary metric. Obstacles with weighted scores ≥8 are urgent. Domains with combined scores ≤3 are high-priority improvement areas."\n';
-    csv += '"Response Approach","Focus coaching responses on identified priorities. Acknowledge strengths in high-satisfaction domains. Provide practical strategies for obstacles and improvement areas."\n';
-    csv += '\n';
-
-    // Create and download
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `coaching-profile-${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   /**
    * Save assessment progress to storage
    */
@@ -1432,17 +990,6 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
       this.answers = data.answers || {};
       this.profileData = data.profileData || this.profileData;
       this.assessmentComplete = data.reportComplete === true;
-      
-      // Restore section selections
-      this.selectedSections.forEach(sectionId => {
-        const card = document.querySelector(`[data-section="${sectionId}"]`);
-        if (card) card.classList.add('selected');
-      });
-      
-      if (this.selectedSections.length > 0) {
-        const startBtn = document.getElementById('startAssessment');
-        if (startBtn) startBtn.disabled = false;
-      }
 
       if (this.selectedSections.length === 0) return;
 
@@ -1455,18 +1002,10 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
         Object.keys(this.profileData.domains || {}).length > 0;
 
       if (this.assessmentComplete && this.questionSequence.length > 0 && hasProfile) {
-        this.ui.transition('results');
-        this.renderResults();
         return;
       }
       
       if (this.currentQuestionIndex > 0) {
-        const sectionSelection = document.getElementById('sectionSelection');
-        const selectionSection = document.getElementById('selectionSection');
-        const questionnaireSection = document.getElementById('questionnaireSection');
-        if (sectionSelection) sectionSelection.classList.add('hidden');
-        if (selectionSection) selectionSection.classList.add('hidden');
-        if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
     } catch (error) {
@@ -1492,20 +1031,7 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     };
     
     sessionStorage.removeItem('coachingProgress');
-
-    const deeperSection = document.getElementById('deeperInquirySection');
-    const deeperResults = document.getElementById('deeperInquiryResults');
-    if (deeperSection) deeperSection.classList.add('hidden');
-    if (deeperResults) deeperResults.innerHTML = '';
-
-    // Reset UI
-    document.getElementById('sectionSelection').classList.remove('hidden');
-    document.getElementById('selectionSection')?.classList.remove('hidden');
-    this.ui.transition('idle');
-    
-    if (!this.externalUI) {
-      this.renderSectionSelection();
-    } else {
+    if (this.externalUI) {
       this._externalQuestionSnapshot = null;
       spaSetPhase(this, 'idle');
       spaEmit(this, 'reset');
@@ -1569,13 +1095,5 @@ QUESTION-FIRST BIAS: ${COACHING_PROMPTS.question_first_bias}`;
     spaSetPhase(this, 'results');
     spaEmit(this, 'results');
   }
-}
-
-function bootCoachingEngine() {
-  window.coachingEngine = new CoachingEngine();
-}
-
-if (shouldBootLegacyEngine('sectionGrid')) {
-  bootLegacyEngine('sectionGrid', bootCoachingEngine);
 }
 

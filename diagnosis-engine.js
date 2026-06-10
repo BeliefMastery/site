@@ -12,21 +12,19 @@
 import { setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
-import { EngineUIController } from './shared/engine-ui-controller.js';
 import { showConfirm, showAlert } from './shared/confirm-modal.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { shouldBootLegacyEngine, bootLegacyEngine, applySpaExternalOptions, spaSetPhase, spaEmit } from './shared/spa-engine-external.js';
+import { applySpaExternalOptions, spaSetPhase, spaEmit } from './shared/spa-engine-external.js';
 
 // Data modules - will be loaded lazily
 let DSM5_CATEGORIES, QUESTION_TEMPLATES, PLAIN_LANGUAGE_HINTS, VALIDATION_PAIRS, SCORING_THRESHOLDS;
 let SUB_INQUIRY_QUESTIONS, COMORBIDITY_GROUPS, COMORBIDITY_REFINEMENT_QUESTIONS;
 let MULTI_BRANCHING_THRESHOLDS, REFINED_QUESTIONS, DIFFERENTIAL_QUESTIONS;
-let CATEGORY_GUIDE_QUESTIONS, CATEGORY_DESCRIPTIONS;
 let TREATMENT_DATABASE;
 const DIAGNOSIS_SLIDER_STEP = 0.5;
 
 /**
- * Diagnosis Engine - Multi-category DSM-5 diagnostic assessment with guide mode
+ * Diagnosis Engine - Multi-category DSM-5 diagnostic assessment
  */
 export class DiagnosisEngine {
   /**
@@ -46,9 +44,6 @@ export class DiagnosisEngine {
     this.questionSequence = [];
     this.refinedQuestionSequence = [];
     this.currentStage = 'selection'; // selection, questionnaire, results
-    this.guideMode = false;
-    this.guideAnswers = {};
-    this.currentGuideQuestion = 0;
     this.suggestedCategories = [];
     this.refinementRequested = false;
     this.multiBranchingDetected = false;
@@ -63,22 +58,17 @@ export class DiagnosisEngine {
       conclusionVector: {}
     };
 
-    this.ui = this.externalUI
-      ? { transition() {} }
-      : new EngineUIController({
-          idle: {
-            show: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection'],
-            hide: ['#questionnaireSection', '#resultsSection']
-          },
-          assessment: {
-            show: ['#questionnaireSection'],
-            hide: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection', '#resultsSection']
-          },
-          results: {
-            show: ['#resultsSection'],
-            hide: ['#introSection', '#actionButtonsSection', '#categorySelection', '#disclaimerSection', '#questionnaireSection']
-          }
-        });
+    this.ui = {
+      transition: (state) => {
+        if (!this.externalUI) return;
+        const phase = state === 'questionnaire' || state === 'assessment'
+          ? 'assessment'
+          : state === 'results'
+            ? 'results'
+            : 'idle';
+        spaSetPhase(this, phase);
+      }
+    };
     
     // Initialize debug reporter (integrate with existing debug system)
     this.debugReporter = createDebugReporter('DiagnosisEngine');
@@ -164,17 +154,9 @@ export class DiagnosisEngine {
    * @returns {Promise<void>}
    */
   async init() {
-    if (!this.externalUI) {
-      this.renderCategorySelection().catch((error) => {
-        this.debugReporter.logError(error, 'init');
-      });
-      this.attachEventListeners();
-    }
     try {
       await this.loadStoredData();
-      if (!this.externalUI && this.shouldAutoGenerateSample()) {
-        this.generateSampleReport();
-      }
+      spaSetPhase(this, this.getPhase());
     } catch (error) {
       this.debugReporter.logError(error, 'init');
     }
@@ -206,11 +188,6 @@ export class DiagnosisEngine {
       MULTI_BRANCHING_THRESHOLDS = dsm5Module.MULTI_BRANCHING_THRESHOLDS;
       REFINED_QUESTIONS = dsm5Module.REFINED_QUESTIONS;
       DIFFERENTIAL_QUESTIONS = dsm5Module.DIFFERENTIAL_QUESTIONS;
-
-      // Load category guide data
-      const categoryGuideModule = await import('./dsm5-data/category-guide.js');
-      CATEGORY_GUIDE_QUESTIONS = categoryGuideModule.CATEGORY_GUIDE_QUESTIONS;
-      CATEGORY_DESCRIPTIONS = categoryGuideModule.CATEGORY_DESCRIPTIONS;
 
       // Load treatment database
       const treatmentModule = await import('./treatment-database.js');
@@ -288,303 +265,6 @@ export class DiagnosisEngine {
     }
   }
 
-  /**
-   * Start category guide mode
-   * @returns {Promise<void>}
-   */
-  async startGuide() {
-    try {
-      await this.loadDiagnosisData();
-      
-      this.guideMode = true;
-      this.guideAnswers = {};
-      this.currentGuideQuestion = 0;
-      this.suggestedCategories = [];
-      
-      // Hide category selection, show guide
-      const categorySelection = document.getElementById('categorySelection');
-      if (categorySelection) categorySelection.classList.add('hidden');
-      
-      this.renderGuideQuestion();
-    } catch (error) {
-      this.debugReporter.logError(error, 'startGuide');
-      ErrorHandler.showUserError('Failed to start guide. Please try again.');
-    }
-  }
-
-  /**
-   * Render guide question
-   * @returns {Promise<void>}
-   */
-  async renderGuideQuestion() {
-    try {
-      await this.loadDiagnosisData(); // Ensure guide questions are loaded
-      
-      const container = document.getElementById('categorySelection');
-      if (!container) {
-        this.logDebug('ERROR: categorySelection container not found in renderGuideQuestion');
-        ErrorHandler.showUserError('Category selection container not found.');
-        return;
-      }
-      
-      const question = CATEGORY_GUIDE_QUESTIONS?.[this.currentGuideQuestion];
-      if (!question) {
-        this.logDebug('ERROR: Guide question not found at index', this.currentGuideQuestion);
-        await this.completeGuide();
-        return;
-      }
-      
-      const isLast = this.currentGuideQuestion === CATEGORY_GUIDE_QUESTIONS.length - 1;
-      
-      container.classList.remove('hidden');
-      
-      // Sanitize question text and warning for display
-      const questionText = SecurityUtils.sanitizeHTML(question.question || '');
-      const warningText = question.warning ? SecurityUtils.sanitizeHTML(question.warning) : '';
-      
-      // questionText and warningText are already sanitized above
-      SecurityUtils.safeInnerHTML(container, `
-      <div class="guide-container">
-        <h2>🧭 Category Selection Guide</h2>
-        <p>Answer a few brief questions to help identify the most relevant diagnostic categories for you.</p>
-        
-        <div class="guide-question">
-          <h3>${questionText}</h3>
-          ${warningText ? `<div class="warning-box"><strong>⚠️ Important:</strong> ${warningText}</div>` : ''}
-          
-          <div class="guide-options">
-            <button class="btn btn-primary" id="guideYes">
-              ✓ Yes
-            </button>
-            <button class="btn btn-secondary" id="guideNo">
-              ✗ No
-            </button>
-            <button class="btn btn-secondary" id="guideUnsure">
-              ? Not Sure / Sometimes
-            </button>
-          </div>
-        </div>
-        
-        <div class="guide-navigation">
-          <button class="btn btn-secondary" id="guideBack" ${this.currentGuideQuestion === 0 ? 'disabled' : ''}>← Previous</button>
-          <div class="guide-counter">
-            Question ${this.currentGuideQuestion + 1} of ${CATEGORY_GUIDE_QUESTIONS.length}
-          </div>
-          ${isLast ? '<button class="btn btn-primary" id="guideComplete">See Recommended Categories →</button>' : '<button class="btn btn-secondary" id="guideSkip">Skip to Categories →</button>'}
-        </div>
-      </div>
-    `);
-    
-    // Attach event listeners with error handling
-    const yesBtn = document.getElementById('guideYes');
-    const noBtn = document.getElementById('guideNo');
-    const unsureBtn = document.getElementById('guideUnsure');
-    
-      if (yesBtn) yesBtn.addEventListener('click', () => this.answerGuide(true));
-      if (noBtn) noBtn.addEventListener('click', () => this.answerGuide(false));
-      if (unsureBtn) unsureBtn.addEventListener('click', () => this.answerGuide('unsure'));
-      
-      const backBtn = document.getElementById('guideBack');
-      if (backBtn && !backBtn.disabled) {
-        backBtn.addEventListener('click', () => this.prevGuideQuestion());
-      }
-    
-      if (isLast) {
-        const completeBtn = document.getElementById('guideComplete');
-        if (completeBtn) completeBtn.addEventListener('click', () => this.completeGuide());
-      } else {
-        const skipBtn = document.getElementById('guideSkip');
-        if (skipBtn) skipBtn.addEventListener('click', () => this.skipGuide());
-      }
-      
-      // Focus management for accessibility
-      const firstButton = container.querySelector('button');
-      if (firstButton) {
-        DOMUtils.focusElement(firstButton);
-      }
-    } catch (error) {
-      this.debugReporter.logError(error, 'renderGuideQuestion');
-      ErrorHandler.showUserError('Failed to render guide question. Please refresh the page.');
-    }
-  }
-
-  /**
-   * Answer guide question and proceed to next
-   * @param {boolean|string} answer - Guide answer (true, false, or 'unsure')
-   * @returns {Promise<void>}
-   */
-  async answerGuide(answer) {
-    try {
-      await this.loadDiagnosisData(); // Ensure guide questions are loaded
-      
-      const question = CATEGORY_GUIDE_QUESTIONS?.[this.currentGuideQuestion];
-      if (!question) {
-        this.logDebug('ERROR: Guide question not found at index', this.currentGuideQuestion);
-        await this.completeGuide();
-        return;
-      }
-      
-      this.guideAnswers[question.id] = answer;
-      
-      // If answered yes or unsure, add categories to suggested
-      if (answer === true || answer === 'unsure') {
-        if (question.categories) {
-          question.categories.forEach(catKey => {
-            if (!this.suggestedCategories.includes(catKey)) {
-              this.suggestedCategories.push(catKey);
-            }
-          });
-        }
-      }
-      
-      // Move to next question
-      this.currentGuideQuestion++;
-      if (this.currentGuideQuestion < CATEGORY_GUIDE_QUESTIONS.length) {
-        await this.renderGuideQuestion();
-      } else {
-        await this.completeGuide();
-      }
-    } catch (error) {
-      this.debugReporter.logError(error, 'answerGuide');
-      ErrorHandler.showUserError('Failed to process guide answer. Please try again.');
-    }
-  }
-
-  /**
-   * Move to previous guide question
-   * @returns {Promise<void>}
-   */
-  async prevGuideQuestion() {
-    if (this.currentGuideQuestion > 0) {
-      this.currentGuideQuestion--;
-      await this.renderGuideQuestion();
-    }
-  }
-
-  /**
-   * Skip guide and proceed to category selection
-   * @returns {Promise<void>}
-   */
-  async skipGuide() {
-    await this.completeGuide();
-  }
-
-  /**
-   * Complete guide and show category selection
-   * @returns {Promise<void>}
-   */
-  async completeGuide() {
-    try {
-      await this.loadDiagnosisData(); // Ensure category data is loaded
-      
-      this.guideMode = false;
-      
-      // Show category selection with suggestions highlighted
-      const container = document.getElementById('categorySelection');
-      if (!container) {
-        this.logDebug('ERROR: categorySelection container not found in completeGuide');
-        ErrorHandler.showUserError('Category selection container not found.');
-        return;
-      }
-      
-      container.classList.remove('hidden');
-      
-      // Generate recommendation summary
-      const recommendationText = this.suggestedCategories.length > 0 
-        ? this.generateRecommendationSummary()
-        : 'Based on your answers, we recommend exploring categories that match your concerns.';
-      
-      // Sanitize recommendation text
-      const sanitizedRecommendation = SecurityUtils.sanitizeHTML(recommendationText);
-      const categoryNames = this.suggestedCategories.map(cat => {
-        const catDesc = CATEGORY_DESCRIPTIONS?.[cat];
-        return SecurityUtils.sanitizeHTML(catDesc?.name || cat);
-      }).join(', ');
-      
-      // Sanitize HTML before rendering - all dynamic content is already sanitized above
-      SecurityUtils.safeInnerHTML(container, `
-      <div class="section-header-flex">
-        <div class="category-header">
-          <h2>Select Diagnostic Category</h2>
-          <p>Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
-        </div>
-        <button class="btn btn-secondary" id="startHereGuide">
-          🧭 Start Here - Not Sure?
-        </button>
-      </div>
-      ${this.suggestedCategories.length > 0 ? `
-        <div class="info-box panel-brand-left">
-          <h3>💡 Recommended Categories Based on Your Answers:</h3>
-          <p>
-            ${sanitizedRecommendation}
-          </p>
-          <div class="recommendation-details">
-            <p>
-              <strong>Recommended categories:</strong> ${categoryNames}
-            </p>
-            <p class="recommendation-note">
-              These categories are pre-selected for you, but you can change your selection or add others.
-            </p>
-          </div>
-        </div>
-      ` : `
-        <div class="info-box panel-brand-left">
-          <p>
-            ${sanitizedRecommendation} Review the categories below and select those that seem most relevant to your concerns.
-          </p>
-        </div>
-      `}
-      <div class="category-grid" id="categoryGrid"></div>
-      <div style="text-align: center; margin-top: 2rem;">
-        <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
-      </div>
-    `);
-    
-      await this.renderCategorySelection();
-      this.attachEventListeners();
-      
-      // Auto-select suggested categories
-      this.suggestedCategories.forEach(categoryKey => {
-        if (!this.selectedCategories.includes(categoryKey)) {
-          this.selectedCategories.push(categoryKey);
-        }
-        const card = document.querySelector(`[data-category="${categoryKey}"]`);
-        if (card) {
-          card.classList.add('selected');
-          card.classList.add('suggested');
-        }
-      });
-      
-      if (this.selectedCategories.length > 0) {
-        const startBtn = document.getElementById('startAssessment');
-        if (startBtn) startBtn.disabled = false;
-      }
-    } catch (error) {
-      this.debugReporter.logError(error, 'completeGuide');
-      ErrorHandler.showUserError('Failed to complete guide. Please try again.');
-    }
-  }
-
-  generateRecommendationSummary() {
-    if (this.suggestedCategories.length === 0) {
-      return 'Based on your answers, we recommend exploring categories that match your concerns.';
-    }
-    
-    const categoryNames = this.suggestedCategories.map(cat => CATEGORY_DESCRIPTIONS[cat]?.name || cat);
-    const descriptions = this.suggestedCategories.map(cat => CATEGORY_DESCRIPTIONS[cat]?.description || '').filter(d => d);
-    
-    let summary = `Based on your responses, we recommend exploring ${categoryNames.length === 1 ? 'this category' : 'these categories'}: `;
-    summary += categoryNames.join(', ') + '. ';
-    
-    if (descriptions.length > 0) {
-      summary += 'These categories address concerns you indicated in the guide questions. ';
-    }
-    
-    summary += 'You can proceed with these recommendations or select additional categories that interest you.';
-    
-    return summary;
-  }
-
   toggleCategory(categoryKey, cardElement) {
     const index = this.selectedCategories.indexOf(categoryKey);
     if (index > -1) {
@@ -601,93 +281,6 @@ export class DiagnosisEngine {
     if (this.externalUI) {
       spaEmit(this, 'selection', { selectedCategories: [...this.selectedCategories] });
     }
-  }
-
-  attachEventListeners() {
-    const startAssessmentBtn = document.getElementById('startAssessment');
-    if (startAssessmentBtn) {
-      // Remove existing listener if any, then add new one
-      const wasDisabled = startAssessmentBtn.disabled;
-      startAssessmentBtn.replaceWith(startAssessmentBtn.cloneNode(true));
-      const newBtn = document.getElementById('startAssessment');
-      if (newBtn) {
-        newBtn.disabled = wasDisabled;
-        newBtn.addEventListener('click', () => this.startAssessment());
-      }
-    }
-
-    const startHereGuideBtn = document.getElementById('startHereGuide');
-    if (startHereGuideBtn) {
-      // Remove existing listener if any, then add new one
-      startHereGuideBtn.replaceWith(startHereGuideBtn.cloneNode(true));
-      document.getElementById('startHereGuide').addEventListener('click', () => {
-        this.logDebug('Start Here Guide button clicked');
-        this.startGuide();
-      });
-    } else {
-      this.logDebug('WARNING: startHereGuide button not found');
-    }
-    
-    const nextQuestionBtn = document.getElementById('nextQuestion');
-    if (nextQuestionBtn) {
-      nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
-    }
-    
-    const prevQuestionBtn = document.getElementById('prevQuestion');
-    if (prevQuestionBtn) {
-      prevQuestionBtn.addEventListener('click', () => this.prevQuestion());
-    }
-    
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-    
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-    
-    const viewAllConditionsBtn = document.getElementById('viewAllConditions');
-    if (viewAllConditionsBtn) {
-      viewAllConditionsBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.showConditionsDirectory();
-      });
-    }
-    
-    const backToMainBtn = document.getElementById('backToMain');
-    if (backToMainBtn) {
-      backToMainBtn.addEventListener('click', () => this.hideConditionsDirectory());
-    }
-    
-    const conditionSearch = document.getElementById('conditionSearch');
-    if (conditionSearch) {
-      conditionSearch.addEventListener('input', (e) => this.filterConditions(e.target.value));
-    }
-    
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', () => this.abandonAssessment());
-    }
-
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyAnalysisData() {
@@ -772,7 +365,6 @@ export class DiagnosisEngine {
       this.ui.transition('assessment');
       
       await this.renderCurrentQuestion();
-      this.updateProgress();
       spaSetPhase(this, 'assessment');
       this.logDebug('Assessment started', { categories: this.selectedCategories, questionCount: this.questionSequence.length });
     } catch (error) {
@@ -1115,9 +707,6 @@ export class DiagnosisEngine {
         DOMUtils.focusElement(slider);
       }
       
-      this.updateProgress();
-      this.updateNavigationButtons();
-      
       // Track render performance
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
@@ -1128,21 +717,6 @@ export class DiagnosisEngine {
       this.debugReporter.logError(error, 'renderCurrentQuestion');
       ErrorHandler.showUserError('Failed to render question. Please refresh the page.');
     }
-  }
-
-  updateProgress() {
-    const isInRefinement = this.refinementRequested && this.refinedQuestionSequence.length > 0;
-    const totalQuestions = this.questionSequence.length + (isInRefinement ? this.refinedQuestionSequence.length : 0);
-    const progress = totalQuestions > 0 ? ((this.currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
-    const el = document.getElementById('progressFill');
-    if (el) el.style.width = `${progress}%`;
-  }
-
-  updateNavigationButtons() {
-    const prevEl = document.getElementById('prevQuestion');
-    const nextEl = document.getElementById('nextQuestion');
-    if (prevEl) prevEl.disabled = this.currentQuestionIndex === 0;
-    if (nextEl) nextEl.disabled = false;
   }
 
   /**
@@ -1171,7 +745,6 @@ export class DiagnosisEngine {
     }
 
     this.currentQuestionIndex++;
-    this.updateProgress();
     this.saveProgress();
 
     const totalQuestions = totalMainQuestions + (isInRefinement ? this.refinedQuestionSequence.length : 0);
@@ -1210,7 +783,6 @@ export class DiagnosisEngine {
     }
 
     this.currentQuestionIndex--;
-    this.updateProgress();
     this.saveProgress();
     this.renderCurrentQuestion();
   }
@@ -1267,7 +839,6 @@ export class DiagnosisEngine {
     }
     
     this.currentQuestionIndex++;
-    this.updateProgress();
     this.saveProgress();
     
     const totalQuestions = totalMainQuestions + (isInRefinement ? this.refinedQuestionSequence.length : 0);
@@ -1306,7 +877,6 @@ export class DiagnosisEngine {
       }
       
       this.currentQuestionIndex--;
-      this.updateProgress();
       this.renderCurrentQuestion();
       this.logDebug('Moved to previous question', { newIndex: this.currentQuestionIndex });
     }
@@ -2193,12 +1763,17 @@ export class DiagnosisEngine {
         refinedQuestionSequence: this.refinedQuestionSequence,
         refinementRequested: this.refinementRequested,
         multiBranchingDetected: this.multiBranchingDetected,
-        guideMode: this.guideMode,
-        guideAnswers: this.guideAnswers,
         suggestedCategories: this.suggestedCategories,
-        analysisData: this.analysisData,
         timestamp: new Date().toISOString()
       };
+      if (progressData.reportComplete) {
+        progressData.analysisData = this.analysisData;
+      } else {
+        progressData.analysisData = {
+          refinementPasses: this.analysisData.refinementPasses,
+          maxRefinementPasses: this.analysisData.maxRefinementPasses,
+        };
+      }
       this.dataStore.save('progress', progressData);
     } catch (error) {
       this.debugReporter.logError(error, 'saveProgress');
@@ -2220,8 +1795,6 @@ export class DiagnosisEngine {
       this.refinedQuestionSequence = data.refinedQuestionSequence || [];
       this.refinementRequested = data.refinementRequested || false;
       this.multiBranchingDetected = data.multiBranchingDetected || false;
-      this.guideMode = data.guideMode || false;
-      this.guideAnswers = data.guideAnswers || {};
       this.suggestedCategories = data.suggestedCategories || [];
       this.analysisData = data.analysisData || this.analysisData;
       this.currentStage = data.currentStage || this.currentStage;
@@ -2237,42 +1810,17 @@ export class DiagnosisEngine {
       if (reportComplete && this.selectedCategories.length > 0 && hasResultsPayload) {
         this.currentStage = 'results';
         await this.loadDiagnosisData();
-        if (!this.externalUI) {
-          this.selectedCategories.forEach(categoryKey => {
-            const card = document.querySelector(`[data-category="${categoryKey}"]`);
-            if (card) card.classList.add('selected');
-          });
-          const startAssessmentBtn = document.getElementById('startAssessment');
-          if (startAssessmentBtn) startAssessmentBtn.disabled = false;
-          this.ui.transition('results');
-          await this.renderResults();
-        }
         return;
       }
 
       // Restore category selections
       if (this.selectedCategories.length > 0) {
         await this.loadDiagnosisData();
-        
-        if (!this.externalUI) {
-          this.selectedCategories.forEach(categoryKey => {
-            const card = document.querySelector(`[data-category="${categoryKey}"]`);
-            if (card) card.classList.add('selected');
-          });
-          
-          const startAssessmentBtn = document.getElementById('startAssessment');
-          if (startAssessmentBtn) startAssessmentBtn.disabled = false;
-        }
       }
       
       // If in progress, restore questionnaire state
       if (this.currentQuestionIndex > 0 && this.selectedCategories.length > 0) {
         await this.buildQuestionSequence();
-        
-        if (!this.externalUI) {
-          const questionnaireSection = document.getElementById('questionnaireSection');
-          if (questionnaireSection) questionnaireSection.classList.add('active');
-        }
         this.renderCurrentQuestion();
       }
     } catch (error) {
@@ -2349,9 +1897,6 @@ export class DiagnosisEngine {
     this.questionSequence = [];
     this.refinedQuestionSequence = [];
     this.currentStage = 'selection';
-    this.guideMode = false;
-    this.guideAnswers = {};
-    this.currentGuideQuestion = 0;
     this.suggestedCategories = [];
     this.refinementRequested = false;
     this._externalQuestionSnapshot = null;
@@ -2376,38 +1921,10 @@ export class DiagnosisEngine {
     sessionStorage.removeItem('diagnosisProgress');
     this.dataStore.clear('progress');
 
-    if (this.externalUI) {
-      this._externalQuestionSnapshot = null;
-      this._externalRefinementGroups = null;
-      spaSetPhase(this, 'idle');
-      spaEmit(this, 'reset');
-      return;
-    }
-    
-    // Reset UI
-    const categorySelection = document.getElementById('categorySelection');
-    categorySelection.classList.remove('hidden');
-    SecurityUtils.safeInnerHTML(categorySelection, `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <h2 style="margin-bottom: 0.5rem;">Select Diagnostic Category</h2>
-          <p style="color: var(--muted); margin: 0;">Choose the category you wish to explore. You can select multiple categories for a comprehensive assessment.</p>
-        </div>
-        <button class="btn btn-secondary" id="startHereGuide" style="white-space: nowrap;">
-          🧭 Start Here - Not Sure?
-        </button>
-      </div>
-      <div class="category-grid" id="categoryGrid"></div>
-      <div style="text-align: center; margin-top: 2rem;">
-        <button class="btn btn-primary" id="startAssessment" disabled>Begin Assessment</button>
-      </div>
-    `);
-    
-    this.ui.transition('idle');
-    
-    this.renderCategorySelection();
-    this.attachEventListeners();
-    document.getElementById('startAssessment').disabled = true;
+    this._externalQuestionSnapshot = null;
+    this._externalRefinementGroups = null;
+    spaSetPhase(this, 'idle');
+    spaEmit(this, 'reset');
   }
 
   getPhase() {
@@ -2433,11 +1950,4 @@ export class DiagnosisEngine {
   }
 }
 
-function bootDiagnosisEngine() {
-  window.diagnosisEngine = new DiagnosisEngine();
-}
-
-if (shouldBootLegacyEngine('questionContainer')) {
-  bootLegacyEngine('questionContainer', bootDiagnosisEngine);
-}
 

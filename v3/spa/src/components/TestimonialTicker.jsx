@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { getTickerTestimonials } from "@/data/testimonials";
+import { getTickerTestimonials } from "@/data/testimonials-ticker";
 
 function TickerItem({ t }) {
   const attribution = t.byShort ?? t.by;

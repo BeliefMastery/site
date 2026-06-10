@@ -7,7 +7,6 @@ import {
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
@@ -92,19 +91,12 @@ export class SovereigntyEngine {
   }
 
   init() {
-    try {
-      if (!this.externalUI) this.attachEventListeners();
-      return Promise.resolve(this.loadStoredData())
-        .then(() => {
-          if (!this.externalUI && this.shouldAutoGenerateSample()) {
-            return this.generateSampleReport();
-          }
-          finishSpaInit(this);
-        });
-    } catch (error) {
-      ErrorHandler.logError(error, 'SovereigntyEngine.init');
-      ErrorHandler.showUserError('Failed to initialize assessment. Please refresh the page.');
-    }
+    return Promise.resolve(this.loadStoredData())
+      .then(() => finishSpaInit(this))
+      .catch((error) => {
+        ErrorHandler.logError(error, 'SovereigntyEngine.init');
+        ErrorHandler.showUserError('Failed to initialize assessment. Please refresh the page.');
+      });
   }
 
   getQuestionContainer() {
@@ -214,14 +206,6 @@ export class SovereigntyEngine {
         }
       });
     }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyAnalysisData() {
@@ -2305,10 +2289,4 @@ export class SovereigntyEngine {
 }
 
 attachDomQuestionSpaApi(SovereigntyEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootSovereigntyEngine() {
-  window.sovereigntyEngine = new SovereigntyEngine();
-}
-
-legacyEngineBoot('questionContainer', bootSovereigntyEngine);
 

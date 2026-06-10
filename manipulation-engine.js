@@ -7,13 +7,11 @@ import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
 import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { showConfirm } from './shared/confirm-modal.js';
 import {
   applySpaExternalOptions,
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
   externalRenderQuestion,
 } from './shared/spa-questionnaire-host.js';
@@ -91,14 +89,8 @@ export class ManipulationEngine {
   }
 
   init() {
-    if (!this.externalUI) this.attachEventListeners();
     return Promise.resolve(this.loadStoredData())
-      .then(() => {
-        if (!this.externalUI && this.shouldAutoGenerateSample()) {
-          return this.generateSampleReport();
-        }
-        finishSpaInit(this);
-      })
+      .then(() => finishSpaInit(this))
       .catch((error) => {
         this.debugReporter.logError(error, 'init');
       });
@@ -168,75 +160,6 @@ export class ManipulationEngine {
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
       throw error;
     }
-  }
-
-  attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
-    }
-
-    const nextBtn = document.getElementById('nextQuestion');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
-    }
-    
-    const prevBtn = document.getElementById('prevQuestion');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
-    }
-    
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-    
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-    
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', async () => {
-        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
-          this.resetAssessment();
-        }
-      });
-    }
-    
-    // Keyboard navigation support
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && e.target.matches('button, input[type="radio"], input[type="checkbox"]')) {
-        // Let default behavior handle it
-        return;
-      }
-      if (e.key === 'ArrowRight' || (e.key === 'Enter' && e.ctrlKey)) {
-        e.preventDefault();
-        this.nextQuestion();
-      } else if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && e.ctrlKey)) {
-        e.preventDefault();
-        this.prevQuestion();
-      }
-    });
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyAnalysisData() {
@@ -620,21 +543,11 @@ renderCurrentQuestion() {
         stageLabel: this.getPhaseLabel(this.currentPhase),
       })
     ) {
-      this.updateProgress();
-      this.updateNavigationButtons();
       return;
     }
 
-    const container = this.externalUI
-      ? this._externalQuestionMount
-      : document.getElementById('questionContainer');
-
-    if (!container) {
-      if (!this.externalUI) {
-        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
-      }
-      return;
-    }
+    const container = this._externalQuestionMount || document.getElementById('questionContainer');
+    if (!container) return;
     
     try {
       let html = '';
@@ -665,9 +578,6 @@ renderCurrentQuestion() {
       if (question.type === 'allocation') {
         attachDomAllocationListeners(container, this, question);
       }
-      
-      this.updateProgress();
-      this.updateNavigationButtons();
       
       // Track render performance
       const renderDuration = performance.now() - renderStart;
@@ -988,17 +898,6 @@ renderCurrentQuestion() {
     return labels[modifier] || modifier || 'Unknown';
   }
 
-  updateProgress() {
-    const totalQuestions = this.getTotalQuestions();
-    const currentQuestion = this.getCurrentQuestionNumber();
-    const progress = totalQuestions > 0 ? (currentQuestion / totalQuestions) * 100 : 0;
-    
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
-    }
-  }
-
   getTotalQuestions() {
     // Estimate total questions
     let total = 0;
@@ -1024,20 +923,6 @@ renderCurrentQuestion() {
     }
     current += this.currentQuestionIndex;
     return current;
-  }
-
-  updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevQuestion');
-    const nextBtn = document.getElementById('nextQuestion');
-    
-    if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0 && this.currentPhase === 1;
-    }
-    
-    if (nextBtn) {
-      const isLastQuestion = this.currentQuestionIndex === this.questionSequence.length - 1;
-      nextBtn.textContent = isLastQuestion ? 'Complete Phase' : 'Next';
-    }
   }
 
   /**
@@ -1295,12 +1180,8 @@ renderCurrentQuestion() {
    * Render assessment results
    */
   async renderResults(containerEl) {
-    if (!this.externalUI) this.ui.transition('results');
-    const container = containerEl || document.getElementById('vectorResults');
-    if (!container) {
-      if (!this.externalUI) ErrorHandler.showUserError('Results container not found.');
-      return;
-    }
+    const container = containerEl || this._externalResultsMount || document.getElementById('vectorResults');
+    if (!container) return;
     
     try {
       await this.loadManipulationData(); // Ensure data is loaded
@@ -1479,7 +1360,6 @@ renderCurrentQuestion() {
           await this.processPhase2Results();
           await this.buildPhase3Sequence();
         }
-        document.getElementById('questionnaireSection').classList.add('active');
         this.renderCurrentQuestion();
       }
     } catch (e) {
@@ -1523,9 +1403,3 @@ renderCurrentQuestion() {
 }
 
 attachDomQuestionSpaApi(ManipulationEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootManipulationEngine() {
-  window.manipulationEngine = new ManipulationEngine();
-}
-
-legacyEngineBoot('questionContainer', bootManipulationEngine);

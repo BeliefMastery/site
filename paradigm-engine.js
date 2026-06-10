@@ -4,15 +4,13 @@
 
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
-import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils, debounce } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { showConfirm } from './shared/confirm-modal.js';
 import {
   applySpaExternalOptions,
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
   standardNextQuestion,
   standardPrevQuestion,
@@ -75,6 +73,7 @@ export class ParadigmEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('paradigm-assessment', '1.0.0');
+    this._debouncedSaveProgress = debounce(() => this.saveProgress(), 400);
 
     this.ui = createSpaUi(this, {
       idle: {
@@ -95,14 +94,8 @@ export class ParadigmEngine {
   }
 
   init() {
-    if (!this.externalUI) this.attachEventListeners();
     return Promise.resolve(this.loadStoredData())
-      .then(() => {
-        if (!this.externalUI && this.shouldAutoGenerateSample()) {
-          return this.generateSampleReport();
-        }
-        finishSpaInit(this);
-      })
+      .then(() => finishSpaInit(this))
       .catch((error) => {
         this.debugReporter.logError(error, 'init');
       });
@@ -154,60 +147,6 @@ export class ParadigmEngine {
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
       throw error;
     }
-  }
-
-  attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
-    }
-
-    const nextBtn = document.getElementById('nextQuestion');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
-    }
-
-    const prevBtn = document.getElementById('prevQuestion');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
-    }
-
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', async () => {
-        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
-          this.resetAssessment();
-        }
-      });
-    }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyAnalysisData() {
@@ -606,16 +545,8 @@ export class ParadigmEngine {
       return;
     }
 
-    const container = this.externalUI
-      ? this._externalQuestionMount
-      : document.getElementById('questionContainer');
-
-    if (!container) {
-      if (!this.externalUI) {
-        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
-      }
-      return;
-    }
+    const container = this._externalQuestionMount || document.getElementById('questionContainer');
+    if (!container) return;
 
     try {
     let html = '';
@@ -653,9 +584,6 @@ export class ParadigmEngine {
       if (question.type === 'allocation') {
         attachDomAllocationListeners(container, this, question);
       }
-
-      this.updateProgress();
-      this.updateNavigationButtons();
 
       const renderDuration = performance.now() - renderStart;
       this.debugReporter.recordRender('question', renderDuration);
@@ -896,7 +824,7 @@ export class ParadigmEngine {
           const value = parseInt(e.target.value);
           valueDisplay.textContent = value;
           this.answers[question.id] = value;
-          this.saveProgress();
+          this._debouncedSaveProgress();
         });
       }
     }
@@ -1043,17 +971,6 @@ export class ParadigmEngine {
     `;
   }
 
-  updateProgress() {
-    const totalQuestions = this.getTotalQuestions();
-    const currentQuestion = this.getCurrentQuestionNumber();
-    const progress = totalQuestions > 0 ? (currentQuestion / totalQuestions) * 100 : 0;
-    
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-      progressFill.style.width = `${progress}%`; // Progress bar width is dynamic, keep inline
-    }
-  }
-
   getTotalQuestions() {
     let total = 0;
     if (this.currentPhase >= 1) {
@@ -1084,20 +1001,6 @@ export class ParadigmEngine {
     }
     current += this.currentQuestionIndex;
     return current;
-  }
-
-  updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevQuestion');
-    const nextBtn = document.getElementById('nextQuestion');
-    
-    if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0 && this.currentPhase === 1;
-    }
-    
-    if (nextBtn) {
-      const isLastQuestion = this.currentQuestionIndex === this.questionSequence.length - 1;
-      nextBtn.textContent = isLastQuestion ? 'Complete Phase' : 'Next';
-    }
   }
 
   nextQuestion() {
@@ -1640,7 +1543,7 @@ export class ParadigmEngine {
   }
 
   renderResults(containerEl) {
-    const container = containerEl || document.getElementById('resultsContainer');
+    const container = containerEl || this._externalResultsMount || document.getElementById('resultsContainer');
     if (!container) return;
     
     let html = '<div class="paradigm-summary">';
@@ -1989,7 +1892,6 @@ export class ParadigmEngine {
 
       if (this.reportComplete && hasParadigmResults) {
         await this.loadParadigmData();
-        this.ui.transition('results');
         this.renderResults();
         return;
       }
@@ -2007,8 +1909,6 @@ export class ParadigmEngine {
           await this.buildPhase3Sequence();
         }
         
-        const questionnaireSection = document.getElementById('questionnaireSection');
-        if (questionnaireSection) questionnaireSection.classList.add('active');
         this.renderCurrentQuestion();
       }
     } catch (error) {
@@ -2081,10 +1981,4 @@ ParadigmEngine.prototype.prevQuestionFromExternal = function prevQuestionFromExt
   }
   standardPrevQuestion(this, value);
 };
-
-function bootParadigmEngine() {
-  window.paradigmEngine = new ParadigmEngine();
-}
-
-legacyEngineBoot('questionContainer', bootParadigmEngine);
 

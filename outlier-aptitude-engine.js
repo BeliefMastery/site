@@ -6,7 +6,6 @@ import {
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
 } from './shared/spa-questionnaire-host.js';
 import { showConfirm } from './shared/confirm-modal.js';
@@ -57,14 +56,7 @@ export class OutlierAptitudeEngine {
   async init() {
     try {
       await this.loadData();
-      if (!this.externalUI) this.bindEvents();
       await this.loadStoredData();
-      if (!this.externalUI && this.shouldAutoGenerateSample()) {
-        await this.generateSampleReport();
-        return;
-      }
-      if (!this.externalUI && this._storageAppliedUi) return;
-      if (!this.externalUI) this.ui.transition('idle');
       finishSpaInit(this);
     } catch (error) {
       this.debugReporter.logError(error, 'OutlierAptitudeEngine init');
@@ -159,13 +151,6 @@ export class OutlierAptitudeEngine {
     if (!ok) {
       ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    return value === null || value === '' || value === '1' || value === 'true';
   }
 
   mountExternalShell(container) {
@@ -859,10 +844,4 @@ export class OutlierAptitudeEngine {
 }
 
 attachDomQuestionSpaApi(OutlierAptitudeEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootOutlierAptitudeEngine() {
-  window.outlierAptitudeEngine = new OutlierAptitudeEngine();
-}
-
-legacyEngineBoot('questionContainer', bootOutlierAptitudeEngine);
 

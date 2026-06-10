@@ -3,6 +3,30 @@
  * Provides common functionality for error handling, state management, and security
  */
 
+import { notifySuiteCompletionChanged } from './suite-completion-events.js';
+
+/**
+ * @param {Function} fn
+ * @param {number} ms
+ * @returns {Function}
+ */
+export function debounce(fn, ms) {
+  let timer;
+  return function debounced(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
+function shouldNotifySuiteCompletion(key, data) {
+  if (key !== 'progress') return true;
+  return (
+    data?.reportComplete === true ||
+    data?.completed === true ||
+    data?.currentStage === 'results'
+  );
+}
+
 /**
  * Security utilities for input sanitization
  */
@@ -82,8 +106,6 @@ export const SecurityUtils = {
 /**
  * DataStore abstraction for localStorage with versioning and error handling
  */
-import { notifySuiteCompletionChanged } from './suite-completion-events.js';
-
 export class DataStore {
   constructor(namespace) {
     this.namespace = namespace;
@@ -107,7 +129,9 @@ export class DataStore {
         localStorage.setItem(`resume:${this.namespace}`, 'true');
       }
       localStorage.setItem(`${this.namespace}:${key}`, JSON.stringify(payload));
-      notifySuiteCompletionChanged();
+      if (shouldNotifySuiteCompletion(key, data)) {
+        notifySuiteCompletionChanged();
+      }
       return true;
     } catch (error) {
       console.error('Save failed:', error);
@@ -117,7 +141,9 @@ export class DataStore {
           sessionStorage.setItem(`resume:${this.namespace}`, 'true');
         }
         sessionStorage.setItem(`${this.namespace}:${key}`, JSON.stringify(payload));
-        notifySuiteCompletionChanged();
+        if (shouldNotifySuiteCompletion(key, data)) {
+          notifySuiteCompletionChanged();
+        }
         return true;
       } catch {
         return false;
@@ -214,121 +240,6 @@ export class DataStore {
 }
 
 /**
- * Storage wrapper with enhanced error handling and fallbacks
- */
-export const Storage = {
-  /**
-   * Save data with fallback to sessionStorage
-   * @param {string} key - Storage key
-   * @param {any} data - Data to store
-   * @returns {boolean} - Success status
-   */
-  save(key, data) {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-      return true;
-    } catch (e) {
-      console.warn('localStorage failed, using sessionStorage:', e);
-      try {
-        sessionStorage.setItem(key, JSON.stringify(data));
-        return true;
-      } catch (e2) {
-        console.error('Storage failed completely:', e2);
-        if (typeof ErrorHandler !== 'undefined' && ErrorHandler.showUserError) {
-          ErrorHandler.showUserError('Unable to save progress. Please ensure cookies and local storage are enabled.');
-        }
-        return false;
-      }
-    }
-  },
-  
-  /**
-   * Load data with fallback support
-   * @param {string} key - Storage key
-   * @returns {any|null} - Stored data or null
-   */
-  load(key) {
-    try {
-      const data = localStorage.getItem(key) || sessionStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
-    } catch (e) {
-      console.warn('Storage load failed:', e);
-      return null;
-    }
-  },
-  
-  /**
-   * Clear storage
-   * @param {string} key - Storage key
-   */
-  clear(key) {
-    try {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    } catch (e) {
-      console.warn('Storage clear failed:', e);
-    }
-  }
-};
-
-/**
- * User-friendly error message display (convenience function)
- * Calls ErrorHandler.showUserError for consistency
- */
-export function showError(message) {
-  return ErrorHandler.showUserError(message);
-}
-
-/**
- * Loading state management
- */
-export const LoadingState = {
-  /**
-   * Show loading indicator
-   * @param {string} message - Loading message
-   */
-  show(message = 'Loading...') {
-    // Remove any existing loader
-    const existing = document.getElementById('loader');
-    if (existing) existing.remove();
-    
-    const loader = document.createElement('div');
-    loader.className = 'loading';
-    loader.id = 'loader';
-    loader.setAttribute('role', 'status');
-    loader.setAttribute('aria-live', 'polite');
-    loader.setAttribute('aria-label', message);
-    loader.textContent = message;
-    document.body.appendChild(loader);
-  },
-  
-  /**
-   * Hide loading indicator
-   */
-  hide() {
-    const loader = document.getElementById('loader');
-    if (loader) loader.remove();
-  }
-};
-
-/**
- * Question validation feedback
- */
-export function markQuestionState(questionId, answered) {
-  const questionEl = document.getElementById(`question-${questionId}`) || 
-                     document.querySelector(`[data-question-id="${questionId}"]`);
-  if (!questionEl) return;
-  
-  if (answered) {
-    questionEl.classList.remove('question-incomplete');
-    questionEl.classList.add('question-complete');
-  } else {
-    questionEl.classList.remove('question-complete');
-    questionEl.classList.add('question-incomplete');
-  }
-}
-
-/**
  * Error handling utilities
  */
 export const ErrorHandler = {
@@ -388,51 +299,6 @@ export const ErrorHandler = {
    */
   clearErrors() {
     this.errors = [];
-  }
-};
-
-/**
- * Common scoring utilities
- */
-export const ScoringUtils = {
-  /**
-   * Calculate weighted score from responses
-   * @param {Array} responses - Array of response objects with value property
-   * @param {Array} weights - Array of weights corresponding to responses
-   * @returns {number} - Weighted score
-   */
-  calculateWeightedScore(responses, weights) {
-    if (!responses || !weights || responses.length !== weights.length) {
-      throw new Error('Responses and weights arrays must have same length');
-    }
-    
-    const total = responses.reduce((sum, response, idx) => {
-      const value = typeof response === 'object' ? response.value : response;
-      return sum + (value * (weights[idx] || 1));
-    }, 0);
-    
-    const totalWeight = weights.reduce((sum, w) => sum + (w || 1), 0);
-    
-    return totalWeight > 0 ? total / totalWeight : 0;
-  },
-
-  /**
-   * Normalize scores to 0-100 range
-   * @param {Object} scores - Object with archetype/category scores
-   * @returns {Object} - Normalized scores
-   */
-  normalizeScores(scores) {
-    const values = Object.values(scores);
-    const max = Math.max(...values, 1); // Avoid division by zero
-    const min = Math.min(...values, 0);
-    const range = max - min || 1; // Avoid division by zero
-    
-    const normalized = {};
-    for (const [key, value] of Object.entries(scores)) {
-      normalized[key] = ((value - min) / range) * 100;
-    }
-    
-    return normalized;
   }
 };
 

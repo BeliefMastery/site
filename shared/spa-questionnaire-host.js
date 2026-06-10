@@ -2,14 +2,11 @@
  * Reusable SPA host helpers for questionnaire-style engines.
  */
 
-import { EngineUIController } from './engine-ui-controller.js';
 import { ErrorHandler } from './utils.js';
 import {
   applySpaExternalOptions,
   spaEmit,
   spaSetPhase,
-  shouldBootLegacyEngine,
-  bootLegacyEngine,
 } from './spa-engine-external.js';
 import { emitQuestionSnapshot } from './spa-questionnaire-engine.js';
 import { DEFAULT_ALLOCATION_TARGET } from './allocation-scales.js';
@@ -18,8 +15,7 @@ import {
   isValidAllocationAnswer
 } from './questionnaire-allocation.js';
 
-export function createSpaUi(instance, uiConfig) {
-  if (!instance.externalUI) return new EngineUIController(uiConfig);
+export function createSpaUi(instance) {
   return {
     transition(state) {
       const phase =
@@ -30,7 +26,6 @@ export function createSpaUi(instance, uiConfig) {
 }
 
 export function finishSpaInit(instance) {
-  if (!instance.externalUI) return;
   spaSetPhase(instance, instance.getPhase?.() || 'idle');
   spaEmit(instance, 'init');
 }
@@ -171,10 +166,6 @@ export function attachStandardSpaApi(EngineClass, cfg) {
     const fn = this.renderResults || this.renderReport;
     if (fn) await showResultsExternal(this, fn);
   };
-}
-
-export function legacyEngineBoot(markerId, bootFn) {
-  if (shouldBootLegacyEngine(markerId)) bootLegacyEngine(markerId, bootFn);
 }
 
 export function externalRenderQuestion(instance, question, overrides = {}) {

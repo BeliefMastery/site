@@ -4,15 +4,13 @@
 
 import { loadDataModule, setDebugReporter } from './shared/data-loader.js';
 import { createDebugReporter } from './shared/debug-reporter.js';
-import { ErrorHandler, DataStore, DOMUtils, SecurityUtils } from './shared/utils.js';
+import { ErrorHandler, DataStore, DOMUtils, SecurityUtils, debounce } from './shared/utils.js';
 import { exportForAIAgent, exportExecutiveBrief, exportJSON, downloadFile, downloadReportHtml } from './shared/export-utils.js';
-import { showConfirm } from './shared/confirm-modal.js';
 import {
   applySpaExternalOptions,
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
   spaEmit,
   spaSetPhase,
@@ -70,6 +68,7 @@ export class SovereigntySpectrumEngine {
     
     // Initialize data store
     this.dataStore = new DataStore('spectrum-assessment', '1.0.0');
+    this._debouncedSaveProgress = debounce(() => this.saveProgress(), 400);
 
     this.ui = createSpaUi(this, {
       idle: {
@@ -90,14 +89,8 @@ export class SovereigntySpectrumEngine {
   }
 
   init() {
-    if (!this.externalUI) this.attachEventListeners();
     return Promise.resolve(this.loadStoredData())
-      .then(() => {
-        if (!this.externalUI && this.shouldAutoGenerateSample()) {
-          return this.generateSampleReport();
-        }
-        finishSpaInit(this);
-      })
+      .then(() => finishSpaInit(this))
       .catch((error) => {
         this.debugReporter.logError(error, 'init');
       });
@@ -131,69 +124,6 @@ export class SovereigntySpectrumEngine {
       ErrorHandler.showUserError('Failed to load assessment data. Please refresh the page.');
       throw error;
     }
-  }
-
-  attachEventListeners() {
-    const startBtn = document.getElementById('startAssessment');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => this.startAssessment());
-    }
-
-    const nextBtn = document.getElementById('nextQuestion');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
-    }
-
-    const prevBtn = document.getElementById('prevQuestion');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
-    }
-
-    const newAssessmentBtn = document.getElementById('newAssessment');
-    if (newAssessmentBtn) {
-      newAssessmentBtn.addEventListener('click', () => this.resetAssessment());
-    }
-
-    const exportHtmlBtn = document.getElementById('exportReportHtml');
-    if (exportHtmlBtn) {
-      exportHtmlBtn.addEventListener('click', () => this.exportReportHtml());
-    }
-
-    const exportBriefBtn = document.getElementById('exportExecutiveBrief');
-    if (exportBriefBtn) {
-      exportBriefBtn.addEventListener('click', () => this.exportExecutiveBrief());
-    }
-
-    const sampleBtn = document.getElementById('generateSampleReport');
-    if (sampleBtn) {
-      sampleBtn.addEventListener('click', () => this.generateSampleReport());
-    }
-
-    const abandonBtn = document.getElementById('abandonAssessment');
-    if (abandonBtn) {
-      abandonBtn.addEventListener('click', async () => {
-        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
-          this.resetAssessment();
-        }
-      });
-    }
-
-    const abandonSelectionBtn = document.getElementById('abandonSelection');
-    if (abandonSelectionBtn) {
-      abandonSelectionBtn.addEventListener('click', async () => {
-        if (await showConfirm('Are you sure you want to abandon this assessment? All progress will be lost.')) {
-          this.resetAssessment();
-        }
-      });
-    }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getEmptyAnalysisData() {
@@ -304,7 +234,7 @@ export class SovereigntySpectrumEngine {
       this.updateSliderAppearance(slider, parseFloat(rating));
     }
     
-    this.saveProgress();
+    this._debouncedSaveProgress();
   }
 
   /**
@@ -702,9 +632,6 @@ export class SovereigntySpectrumEngine {
       ? this._externalQuestionMount
       : document.getElementById('questionContainer');
     if (!container) {
-      if (!this.externalUI) {
-        ErrorHandler.showUserError('Question container not found. Please refresh the page.');
-      }
       return;
     }
 
@@ -756,8 +683,6 @@ export class SovereigntySpectrumEngine {
       
       // Attach listeners
       this.attachQuestionListeners(question);
-      this.updateProgress();
-      this.updateNavigationButtons();
 
 // Scroll to question after rendering
       setTimeout(() => {
@@ -969,7 +894,7 @@ export class SovereigntySpectrumEngine {
       if (textarea) {
         textarea.addEventListener('input', (e) => {
           this.answers[question.id] = e.target.value;
-          this.saveProgress();
+          this._debouncedSaveProgress();
         });
       }
     } else if (question.type === 'select') {
@@ -1011,40 +936,6 @@ export class SovereigntySpectrumEngine {
     if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex--;
       this.renderCurrentQuestion();
-    }
-  }
-
-  /**
-   * Update progress bar
-   */
-  updateProgress() {
-    const progressBar = document.getElementById('progressBar');
-    if (!progressBar) return;
-    
-    const totalQuestions = this.questionSequence.length;
-    const currentProgress = totalQuestions > 0 ? ((this.currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
-    progressBar.style.width = `${currentProgress}%`; // Progress bar width is dynamic, keep inline
-    
-    const progressText = document.getElementById('progressText');
-    if (progressText) {
-      progressText.textContent = `${this.currentQuestionIndex + 1} / ${totalQuestions}`;
-    }
-  }
-
-  /**
-   * Update navigation buttons
-   */
-  updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevQuestion');
-    const nextBtn = document.getElementById('nextQuestion');
-    
-    if (prevBtn) {
-      prevBtn.disabled = this.currentQuestionIndex === 0;
-    }
-    
-    if (nextBtn) {
-      const isLastQuestion = this.currentQuestionIndex >= this.questionSequence.length - 1;
-      nextBtn.textContent = isLastQuestion ? 'Complete Assessment' : 'Next Question';
     }
   }
 
@@ -1324,12 +1215,7 @@ export class SovereigntySpectrumEngine {
     if (!container) return;
 
     this.reportComplete = true;
-
-    if (!this.externalUI) {
-      const questionnaireSection = document.getElementById('questionnaireSection');
-      const resultsSection = document.getElementById('resultsSection');
-      this.ui.transition('results');
-    }
+    this.ui.transition('results');
     
     let html = '<div class="spectrum-results">';
     html += '<h3>Your Sovereignty Paradigm Results</h3>';
@@ -1482,8 +1368,10 @@ export class SovereigntySpectrumEngine {
         questionSequence: this.questionSequence,
         spectrumPosition: this.spectrumPosition,
         derailerScores: this.derailerScores,
-        analysisData: this.analysisData
       };
+      if (this.reportComplete) {
+        progress.analysisData = this.analysisData;
+      }
       this.dataStore.save('progress', progress);
     } catch (error) {
       this.debugReporter.logError(error, 'saveProgress');
@@ -1543,13 +1431,12 @@ export class SovereigntySpectrumEngine {
           const introSection = document.getElementById('introSection');
           const actionButtonsSection = document.getElementById('actionButtonsSection');
           const paradigmSelection = document.getElementById('paradigmSelection');
-          const questionnaireSection = document.getElementById('questionnaireSection');
           const selectionAbandon = document.getElementById('selectionAbandon');
           if (introSection) introSection.classList.add('hidden');
           if (actionButtonsSection) actionButtonsSection.classList.add('hidden');
           if (paradigmSelection) paradigmSelection.classList.add('hidden');
           if (selectionAbandon) selectionAbandon.classList.add('hidden');
-          if (questionnaireSection) questionnaireSection.classList.add('active');
+          this.ui.transition('assessment');
           this.renderCurrentQuestion();
         }
       } else {
@@ -1625,10 +1512,4 @@ export class SovereigntySpectrumEngine {
 }
 
 attachDomQuestionSpaApi(SovereigntySpectrumEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootSovereigntySpectrumEngine() {
-  window.sovereigntySpectrumEngine = new SovereigntySpectrumEngine();
-}
-
-legacyEngineBoot('questionContainer', bootSovereigntySpectrumEngine);
 

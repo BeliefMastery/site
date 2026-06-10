@@ -29,21 +29,3 @@ export function spaSetPhase(instance, phase) {
   instance._spaPhase = phase;
   spaEmit(instance, 'phase', { phase });
 }
-
-/**
- * Legacy HTML pages set data-bm-legacy-page on body; SPA routes do not.
- */
-export function shouldBootLegacyEngine(markerId) {
-  if (typeof document === 'undefined') return false;
-  if (document.body?.dataset?.bmLegacyPage !== 'true') return false;
-  return Boolean(markerId && document.getElementById(markerId));
-}
-
-export function bootLegacyEngine(markerId, bootFn) {
-  const run = () => bootFn();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else {
-    run();
-  }
-}

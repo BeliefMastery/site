@@ -3,11 +3,15 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import LayoutShell from "@/components/LayoutShell";
 import HomePage from "@/pages/HomePage";
 import ToolsHubPage from "@/pages/ToolsHubPage";
-import BooksPage from "@/pages/BooksPage";
-import AboutPage from "@/pages/AboutPage";
 import EngineRoutePage from "@/pages/EngineRoutePage";
 
+const BooksPage = lazy(() => import("@/pages/BooksPage"));
+const AboutPage = lazy(() => import("@/pages/AboutPage"));
 const TestimonialsPage = lazy(() => import("@/pages/TestimonialsPage"));
+
+function PageLoading() {
+  return <p className="v3-muted">Loading…</p>;
+}
 
 export default function App() {
   return (
@@ -15,8 +19,22 @@ export default function App() {
       <Route element={<LayoutShell />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/tools" element={<ToolsHubPage />} />
-        <Route path="/books" element={<BooksPage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route
+          path="/books"
+          element={
+            <Suspense fallback={<PageLoading />}>
+              <BooksPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <Suspense fallback={<PageLoading />}>
+              <AboutPage />
+            </Suspense>
+          }
+        />
         <Route
           path="/testimonials"
           element={

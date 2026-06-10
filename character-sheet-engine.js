@@ -9,7 +9,7 @@ import { TIMEZONES } from './shared/timezones.js';
 import { showAlert } from './shared/confirm-modal.js';
 import { downloadReportHtml } from './shared/export-utils.js';
 import { applySpaExternalOptions, spaEmit, spaSetPhase } from './shared/spa-engine-external.js';
-import { legacyEngineBoot } from './shared/spa-questionnaire-host.js';
+import { finishSpaInit } from './shared/spa-questionnaire-host.js';
 
 // Data modules - will be loaded lazily
 let WESTERN_SIGNS, ELEMENTS, MODALITIES, getWesternSign;
@@ -39,19 +39,8 @@ export class CharacterSheetEngine {
     this.ready = this.init();
   }
 
-  init() {
-    if (!this.externalUI) {
-      this.attachEventListeners();
-      this.populateTimezones();
-      if (this.shouldAutoGenerateSample()) {
-        return this.generateSampleReport();
-      }
-      return Promise.resolve();
-    }
-    return Promise.resolve().then(() => {
-      spaSetPhase(this, 'idle');
-      spaEmit(this, 'init');
-    });
+  async init() {
+    finishSpaInit(this);
   }
 
   getPhase() {
@@ -313,14 +302,6 @@ export class CharacterSheetEngine {
     if (calculateBtn) {
       calculateBtn.addEventListener('click', () => this.calculateFromBirthDate());
     }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    if (value === null || value === '' || value === '1' || value === 'true') return true;
-    return false;
   }
 
   getRandomItem(items) {
@@ -1800,10 +1781,4 @@ export class CharacterSheetEngine {
   }
 
 }
-
-function bootCharacterSheetEngine() {
-  window.characterSheetEngine = new CharacterSheetEngine();
-}
-
-legacyEngineBoot('characterForm', bootCharacterSheetEngine);
 

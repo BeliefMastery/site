@@ -7,7 +7,6 @@ import {
   createSpaUi,
   finishSpaInit,
   attachDomQuestionSpaApi,
-  legacyEngineBoot,
   showResultsExternal,
 } from './shared/spa-questionnaire-host.js';
 import { downloadReportHtml } from './shared/export-utils.js';
@@ -68,17 +67,7 @@ export class EntitiesEngine {
   async init() {
     try {
       await this.loadEntitiesData();
-      if (!this.externalUI) {
-        this.populateIntakeSelectors();
-        this.bindEvents();
-      }
       await this.loadStoredData();
-      if (!this.externalUI && this.shouldAutoGenerateSample()) {
-        await this.generateSampleReport();
-        return;
-      }
-      if (!this.externalUI && this._storageAppliedUi) return;
-      if (!this.externalUI) this.ui.transition('idle');
       finishSpaInit(this);
     } catch (error) {
       this.debugReporter.logError(error, 'EntitiesEngine init');
@@ -234,13 +223,6 @@ export class EntitiesEngine {
     if (!ok) {
       ErrorHandler.showUserError('Could not build report file. Open results and try again.');
     }
-  }
-
-  shouldAutoGenerateSample() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('sample')) return false;
-    const value = params.get('sample');
-    return value === null || value === '' || value === '1' || value === 'true';
   }
 
   captureIntake() {
@@ -740,10 +722,4 @@ export class EntitiesEngine {
 }
 
 attachDomQuestionSpaApi(EntitiesEngine, { legacyMarkerId: 'questionContainer' });
-
-function bootEntitiesEngine() {
-  window.entitiesEngine = new EntitiesEngine();
-}
-
-legacyEngineBoot('questionContainer', bootEntitiesEngine);
 
